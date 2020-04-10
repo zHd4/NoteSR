@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#30302F">
+
+    <EditText
+        android:id="@+id/keyText"
+        android:layout_width="296dp"
+        android:layout_height="336dp"
+        android:ems="10"
+        android:gravity="top|left"
+        android:hint="@string/paste_your_private_key"
+        android:inputType="textPersonName"
+        android:lines="8"
+        android:minLines="6"
+        android:scrollbarThumbHorizontal="@android:color/background_light"
+        android:scrollbarThumbVertical="@android:color/background_light"
+        android:textColor="#FFFFFF"
+        android:textColorHighlight="@color/colorPrimaryDark"
+        android:textColorHint="#8F8F8F"
+        android:textColorLink="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.437" />
+
+    <Button
+        android:id="@+id/decryptButton"
+        android:layout_width="296dp"
+        android:layout_height="52dp"
+        android:background="#3A3A39"
+        android:text="@string/decrypt"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.759" />
+</androidx.constraintlayout.widget.ConstraintLayout>
