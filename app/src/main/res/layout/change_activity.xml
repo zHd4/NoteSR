@@ -24,8 +24,8 @@
 
     <EditText
         android:id="@+id/titleText"
-        android:layout_width="307dp"
-        android:layout_height="39dp"
+        android:layout_width="350dp"
+        android:layout_height="53dp"
         android:ems="10"
         android:hint="@string/title"
         android:inputType="textPersonName"
@@ -37,16 +37,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.166" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/textText"
-        android:layout_width="309dp"
-        android:layout_height="388dp"
+        android:layout_width="350dp"
+        android:layout_height="564dp"
         android:ems="10"
         android:gravity="top|left"
         android:hint="@string/text"
-        android:lines="8"
+        android:lines="25"
         android:minLines="6"
         android:textColor="#FFFFFF"
         android:textColorHighlight="@color/colorPrimaryDark"
@@ -54,8 +54,9 @@
         android:textColorLink="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.63" />
+        app:layout_constraintVertical_bias="0.92" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
