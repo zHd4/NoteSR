@@ -32,7 +32,7 @@ public class Storage extends Application {
     {
         String result = "";
 
-        File file = new File(mcoContext.getFilesDir(),"data");
+        File file = new File(mcoContext.getFilesDir(),"storage");
         if(!file.exists()){
             file.mkdir();
         }
@@ -54,7 +54,7 @@ public class Storage extends Application {
 
     public static void WriteFile(Context mcoContext,String sFileName, String sBody)
     {
-        File file = new File(mcoContext.getFilesDir(),"data");
+        File file = new File(mcoContext.getFilesDir(),"storage");
         if(!file.exists()){
             file.mkdir();
         }

@@ -53,12 +53,12 @@ public class GenkeysActivity extends AppCompatActivity {
         });
 
         try {
-            String randStr = randomString(2048);
-            Config.aesKey = Base64.encodeToString(AES.GenKey(randStr, md5(randStr)), Base64.DEFAULT);
+            String randKey = randomString(2048);
+            Config.aesKey = Base64.encodeToString(AES.GenKey(randKey, md5(randKey)), Base64.DEFAULT);
 
-            visualKey = keyToHex(Config.aesKey);
+            visualKey = keyToHex(randKey);
 
-            pKey.setText(visualKey);
+            pKey.setText(visualKey.substring(0, 100) + "...");
         } catch (Exception e) {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);

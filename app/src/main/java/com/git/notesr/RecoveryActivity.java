@@ -24,11 +24,11 @@ public class RecoveryActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try{
-                    String key = hexToKey(keyText.getText().toString());
-                    byte[] keyB = Base64.decode(key, Base64.DEFAULT);
-                    AES.Decrypt(Storage.ReadFile(getApplicationContext(), "notes.json"), keyB);
+                    String keyS = hexToKey(keyText.getText().toString());
+                    byte[] key = AES.GenKey(keyS, GenkeysActivity.md5(keyS));
+                    AES.Decrypt(Storage.ReadFile(getApplicationContext(), "notes.json"), key);
 
-                    Config.aesKey = key;
+                    Config.aesKey = Base64.encodeToString(key, Base64.DEFAULT);
 
                     AccessActivity.operation = AccessActivity.CREATE_PIN;
                     StartAccessActivity();

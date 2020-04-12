@@ -8,8 +8,8 @@
 
     <EditText
         android:id="@+id/keyText"
-        android:layout_width="296dp"
-        android:layout_height="336dp"
+        android:layout_width="350dp"
+        android:layout_height="575dp"
         android:ems="10"
         android:gravity="top|left"
         android:hint="@string/paste_your_private_key"
@@ -24,22 +24,22 @@
         android:textColorLink="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.545"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.437" />
+        app:layout_constraintVertical_bias="0.346" />
 
     <Button
         android:id="@+id/decryptButton"
-        android:layout_width="296dp"
+        android:layout_width="350dp"
         android:layout_height="52dp"
         android:background="#3A3A39"
         android:text="@string/decrypt"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintHorizontal_bias="0.557"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.759" />
+        app:layout_constraintVertical_bias="0.976" />
 </androidx.constraintlayout.widget.ConstraintLayout>

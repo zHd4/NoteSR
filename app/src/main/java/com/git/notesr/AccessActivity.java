@@ -352,7 +352,7 @@ public class AccessActivity extends AppCompatActivity {
                     ShowTextMessage("Try again, you have " + attempts + " attempts");
                 }
             } else {
-                File dir = new File(getFilesDir(), "data");
+                File dir = new File(getFilesDir(), "storage");
                 File file = new File(dir, "key.bin");
                 file.delete();
 

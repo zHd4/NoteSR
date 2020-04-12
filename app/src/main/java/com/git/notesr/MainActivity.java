@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         //requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE}, 1);
 
         //Remove data directory
-        /*File dir = new File(getApplicationContext().getFilesDir(), "data");
+        /*File dir = new File(getApplicationContext().getFilesDir(), "storage");
         if (dir.isDirectory())
         {
             String[] children = dir.list();
@@ -40,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
                 new File(dir, children[i]).delete();
             }
         }*/
+
+        File dir = new File(getApplicationContext().getFilesDir(), "data");
+        if (dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++)
+            {
+                new File(dir, children[i]).delete();
+            }
+        }
 
         try {
             ConfigureForm();
