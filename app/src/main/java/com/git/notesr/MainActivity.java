@@ -1,6 +1,9 @@
 package com.git.notesr;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -56,11 +60,20 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         FloatingActionButton add_note_button = findViewById(R.id.add_note_button);
         add_note_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 StartChangeActivity(ChangeActivity.CREATE_NOTE);
+            }
+        });
+
+        Button settingsButton = findViewById(R.id.settingsButton);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StartSettingsActivity();
             }
         });
     }
@@ -86,7 +99,9 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("RestrictedApi")
     public void ConfigureForm() throws Exception {
+        Button settingsButton = findViewById(R.id.settingsButton);
         FloatingActionButton add_note_button = findViewById(R.id.add_note_button);
+
         String keys = Storage.ReadFile(getApplicationContext(), "key.bin");
         String notes = Storage.ReadFile(getApplicationContext(), "notes.json");
 
@@ -96,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(saIntent);
             }else{
                 add_note_button.setVisibility(View.VISIBLE);
+                settingsButton.setVisibility(View.VISIBLE);
+
                 FillTable();
             }
         }
@@ -169,6 +186,11 @@ public class MainActivity extends AppCompatActivity {
         ChangeActivity.arg = arg;
 
         Intent saIntent = new Intent(this, ChangeActivity.class);
+        startActivity(saIntent);
+    }
+
+    private void StartSettingsActivity() {
+        Intent saIntent = new Intent(this, SettingsActivity.class);
         startActivity(saIntent);
     }
 }

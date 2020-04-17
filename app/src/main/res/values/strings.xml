@@ -30,4 +30,8 @@
     <string name="_2">2</string>
     <string name="paste_your_private_key">Paste your private key</string>
     <string name="decrypt">Decrypt</string>
+    <string name="import_export">IMPORT/EXPORT</string>
+    <string name="export_data">EXPORT DATA</string>
+    <string name="paste_your_encrypted_data">Paste your encrypted data</string>
+    <string name="import_data">IMPORT DATA</string>
 </resources>
