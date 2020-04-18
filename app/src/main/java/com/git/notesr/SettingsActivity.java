@@ -38,20 +38,23 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String newNotesData = importDataText.getText().toString();
-                String notesData = Storage.ReadFile(getApplicationContext(), "notes.json");
 
-                Storage.WriteFile(getApplicationContext(), "notes.json", newNotesData);
+                if(!newNotesData.equals("")){
+                    String notesData = Storage.ReadFile(getApplicationContext(), "notes.json");
 
-                try {
-                    String[][] data = Notes.GetNotes(getApplicationContext());
+                    Storage.WriteFile(getApplicationContext(), "notes.json", newNotesData);
 
-                    if(data == new String[0][0]){
+                    try {
+                        String[][] data = Notes.GetNotes(getApplicationContext());
+
+                        if(data == new String[0][0]){
+                            Storage.WriteFile(getApplicationContext(), "notes.json", notesData);
+                        }else{
+                            StartMainActivity();
+                        }
+                    } catch (Exception e) {
                         Storage.WriteFile(getApplicationContext(), "notes.json", notesData);
-                    }else{
-                        StartMainActivity();
                     }
-                } catch (Exception e) {
-                    Storage.WriteFile(getApplicationContext(), "notes.json", notesData);
                 }
             }
         });
