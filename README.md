@@ -1,2 +1,2 @@
 # notesr
-Designed by: https://tlgg.ga/Qfinel
+Designed by: https://t.me/Qfinel
