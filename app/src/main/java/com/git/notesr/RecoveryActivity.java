@@ -1,6 +1,5 @@
 package com.git.notesr;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
@@ -11,6 +10,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class RecoveryActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,17 +31,13 @@ public class RecoveryActivity extends AppCompatActivity {
                     Config.aesKey = Base64.encodeToString(key, Base64.DEFAULT);
 
                     AccessActivity.operation = AccessActivity.CREATE_PIN;
-                    StartAccessActivity();
+
+                    startActivity(MainActivity.GetIntent(getApplicationContext(), AccessActivity.class));
                 }catch (Exception e){
                     e.printStackTrace();
                 }
             }
         });
-    }
-
-    private void StartAccessActivity() {
-        Intent saIntent = new Intent(this, AccessActivity.class);
-        startActivity(saIntent);
     }
 
     public static String hexToKey(String hex) {

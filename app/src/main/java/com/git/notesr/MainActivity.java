@@ -1,8 +1,6 @@
 package com.git.notesr;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -22,33 +20,22 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 
-//import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-//import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
 public class MainActivity extends AppCompatActivity {
+
+    public static String[][] notes_arr = new String[0][0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-        //requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE}, 1);
-
-        //Remove data directory
-        /*File dir = new File(getApplicationContext().getFilesDir(), "storage");
-        if (dir.isDirectory())
-        {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++)
-            {
-                new File(dir, children[i]).delete();
-            }
-        }*/
 
         File dir = new File(getApplicationContext().getFilesDir(), "data");
+
         if (dir.isDirectory())
         {
             String[] children = dir.list();
+
             for (int i = 0; i < children.length; i++)
             {
                 new File(dir, children[i]).delete();
@@ -62,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         FloatingActionButton add_note_button = findViewById(R.id.add_note_button);
+
         add_note_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,12 +61,10 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                StartSettingsActivity();
+                startActivity(GetIntent(getApplicationContext(), SettingsActivity.class));
             }
         });
     }
-
-    public static String[][] notes_arr = new String[0][0];
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -105,11 +91,11 @@ public class MainActivity extends AppCompatActivity {
         String keys = Storage.ReadFile(getApplicationContext(), "key.bin");
         String notes = Storage.ReadFile(getApplicationContext(), "notes.json");
 
-        if((!keys.equals("") && !notes.equals("")) || (!keys.equals("") && notes.equals(""))){
+        if((!keys.equals("") && !notes.equals("")) || (!keys.equals("") && notes.equals(""))) {
             if(Config.pinCode.equals("")){
                 Intent saIntent = new Intent(this, AccessActivity.class);
                 startActivity(saIntent);
-            }else{
+            } else {
                 add_note_button.setVisibility(View.VISIBLE);
                 settingsButton.setVisibility(View.VISIBLE);
 
@@ -130,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void FillTable() throws Exception {
         TableLayout notes_table = findViewById(R.id.notes_table);
+
         notes_arr = Notes.GetNotes(getApplicationContext());
+
         int colorLight = Color.rgb(68,68,67);
         int colorDark = Color.rgb(58,58,57);
 
@@ -152,11 +140,12 @@ public class MainActivity extends AppCompatActivity {
                         TableLayout.LayoutParams.WRAP_CONTENT));
 
                 final TextView n_element = new TextView(this);
+
                 n_element.setId(i);
                 n_element.setText(notes_arr[i][0]);
                 n_element.setTextColor(Color.WHITE);
                 n_element.setTextSize(24);
-                n_element.setPadding(15, 35, 15, 65);
+                n_element.setPadding(15, 35, 15, 35);
                 tr_data.addView(n_element);
 
 
@@ -165,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
                         TableLayout.LayoutParams.WRAP_CONTENT));
 
                 final int finalI = i;
+
                 tr_data.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -182,15 +172,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static Intent GetIntent(Context context, Class<?> _class) {
+        Intent intent = new Intent(context, _class);
+        return intent;
+    }
+
     private void StartChangeActivity(int arg) {
         ChangeActivity.arg = arg;
 
-        Intent saIntent = new Intent(this, ChangeActivity.class);
-        startActivity(saIntent);
-    }
-
-    private void StartSettingsActivity() {
-        Intent saIntent = new Intent(this, SettingsActivity.class);
-        startActivity(saIntent);
+        Intent intent = new Intent(this, ChangeActivity.class);
+        startActivity(intent);
     }
 }

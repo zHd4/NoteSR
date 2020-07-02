@@ -13,19 +13,13 @@ public class Storage extends Application {
     public static boolean isExternalStorageReadOnly()
     {
         String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState);
     }
 
     public static boolean isExternalStorageAvailable()
     {
         String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(extStorageState);
     }
 
     public static String ReadFile(Context mcoContext,String sFileName)
@@ -69,12 +63,5 @@ public class Storage extends Application {
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    public static String CombinePaths(String path1, String path2)
-    {
-        File file1 = new File(path1);
-        File file2 = new File(file1, path2);
-        return file2.getPath();
     }
 }

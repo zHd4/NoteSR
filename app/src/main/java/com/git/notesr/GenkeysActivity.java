@@ -1,5 +1,6 @@
 package com.git.notesr;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -20,12 +21,21 @@ import java.util.Random;
 
 public class GenkeysActivity extends AppCompatActivity {
 
+    @SuppressLint("StaticFieldLeak") // may be error
+    public static Context context;
     private static String visualKey = "";
+    public static ClipboardManager clipboard;
+
+    public static Context getAppContext() {
+        return context;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         context = getApplicationContext();
+
         setContentView(R.layout.genkeys_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
@@ -58,18 +68,11 @@ public class GenkeysActivity extends AppCompatActivity {
 
             visualKey = keyToHex(randKey);
 
-            pKey.setText(visualKey.substring(0, 100) + "...");
+            pKey.setText(String.format("%s...", visualKey.substring(0, 100)));
         } catch (Exception e) {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
         }
-    }
-
-    public static Context context;
-    public static ClipboardManager clipboard;
-
-    public static Context getAppContext() {
-        return context;
     }
 
     public static void SaveKey() throws Exception {
@@ -96,15 +99,13 @@ public class GenkeysActivity extends AppCompatActivity {
                 Config.pinCode = pin;
 
                 return true;
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
 
-                return false;
             } catch (Exception e) {
                 e.printStackTrace();
 
                 return false;
             }
+
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
@@ -116,11 +117,14 @@ public class GenkeysActivity extends AppCompatActivity {
     public static String md5(String s) {
         try {
             MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+
             digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
+
+            byte[] messageDigest = digest.digest();
 
             StringBuffer hexString = new StringBuffer();
-            for (int i=0; i < messageDigest.length; i++)
+
+            for (int i = 0; i < messageDigest.length; i++)
                 hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
 
             return hexString.toString();
@@ -136,45 +140,49 @@ public class GenkeysActivity extends AppCompatActivity {
     }
 
     public void ShowTextMessage(String text) {
-        Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
 
+        Context context = getApplicationContext();
         Toast toast = Toast.makeText(context, text, duration);
+
         toast.show();
     }
 
     public static String randomString(int len) {
         Random generator = new Random();
         StringBuilder randomStringBuilder = new StringBuilder();
+
         int randomLength = generator.nextInt(len);
         char tempChar;
-        for (int i = 0; i < randomLength; i++){
+
+        for (int i = 0; i < randomLength; i++) {
             tempChar = (char) (generator.nextInt(96) + 32);
             randomStringBuilder.append(tempChar);
         }
+
         return randomStringBuilder.toString();
     }
 
     public static String keyToHex(String key) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         byte[] keyBytes = key.getBytes();
         int buff = 4;
 
         for(int i=0; i<keyBytes.length; i++) {
-            result += Integer.toHexString(keyBytes[i]);
+            result.append(Integer.toHexString(keyBytes[i]));
 
             if(i != keyBytes.length - 1){
-                result += " ";
+                result.append(" ");
             }
 
             buff--;
 
             if(buff == 0){
-                result += "\n";
+                result.append("\n");
                 buff = 4;
             }
         }
 
-        return result;
+        return result.toString();
     }
 }

@@ -1,6 +1,5 @@
 package com.git.notesr;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,8 +19,10 @@ public class ChangeActivity extends AppCompatActivity {
 
     public static int n_id = 0;
     public static String n_label = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
@@ -54,7 +55,7 @@ public class ChangeActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    StartMainActivity();
+                    startActivity(MainActivity.GetIntent(getApplicationContext(), MainActivity.class));
                 }
             }
         });
@@ -63,11 +64,7 @@ public class ChangeActivity extends AppCompatActivity {
     public static <T> T[] concat(T[] first, T[] second) {
         T[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
-        return result;
-    }
 
-    private void StartMainActivity() {
-        Intent saIntent = new Intent(this, MainActivity.class);
-        startActivity(saIntent);
+        return result;
     }
 }

@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Notes {
+
     public static String[][] GetNotes(Context context) throws Exception {
         String encryptedJson = Storage.ReadFile(context, "notes.json");
-        //Log.e("notes.json", encryptedJson);
-        if(encryptedJson == ""){
+
+        if(encryptedJson.equals("")) {
             return new String[0][0];
-        }else{
+        } else {
             String jsonString = AES.Decrypt(encryptedJson, Base64.decode(Config.aesKey, Base64.DEFAULT));
-            //Log.e("Decrypted notes.json", jsonString);
             JSONArray json = new JSONArray(jsonString);
 
             List<String> labels = new ArrayList<>();
@@ -57,9 +57,7 @@ public class Notes {
             jsonNotes.put(noteObj);
         }
 
-        //Log.e("Decoded json", jsonNotes.toString());
         String result = AES.Encrypt(jsonNotes.toString(), Base64.decode(Config.aesKey, Base64.DEFAULT));
-        //Log.e("Encoded json", result);
 
         Storage.WriteFile(context, "notes.json", result);
     }
