@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#30302F">
+    android:background="@color/activity_background">
 
     <TextView
         android:id="@+id/textView4"
@@ -50,7 +50,7 @@
         android:id="@+id/copyToClipboardButton"
         android:layout_width="317dp"
         android:layout_height="52dp"
-        android:background="#30302F"
+        android:background="@color/button_background"
         android:text="@string/copy_to_clipboard"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -63,7 +63,7 @@
         android:id="@+id/nextGenkeysButton"
         android:layout_width="317dp"
         android:layout_height="52dp"
-        android:background="#30302F"
+        android:background="@color/button_background"
         android:text="@string/next"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

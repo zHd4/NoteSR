@@ -28,7 +28,7 @@ public class AccessActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.access_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-        GenkeysActivity.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         final TextView pinSector1 = findViewById(R.id.pinSector1);
         final TextView pinSector2 = findViewById(R.id.pinSector2);
@@ -322,15 +322,15 @@ public class AccessActivity extends AppCompatActivity {
             final TextView formLabel = findViewById(R.id.acTextView);
 
             Config.pinCode = enteredPin;
-            formLabel.setText("Repeat access code");
+            formLabel.setText(R.string.repeat_access_code);
             operation = REPEAT_PIN;
 
             enteredPin = "";
         }else if(operation == REPEAT_PIN){
             if(enteredPin.equals(Config.pinCode)){
-                GenkeysActivity.context = getApplicationContext();
+                ActivityTools.context = getApplicationContext();
                 try {
-                    GenkeysActivity.SaveKey();
+                    ActivityTools.SaveKey(ActivityTools.getAppContext());
                     StartMainActivity();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -341,8 +341,8 @@ public class AccessActivity extends AppCompatActivity {
             }
         }else{
             if (attempts != 1) {
-                GenkeysActivity.context = getApplicationContext();
-                if (GenkeysActivity.GetKeys(enteredPin)) {
+                ActivityTools.context = getApplicationContext();
+                if (ActivityTools.GetKeys(enteredPin, getApplicationContext())) {
                     Intent saIntent = new Intent(this, MainActivity.class);
                     startActivity(saIntent);
                 } else {

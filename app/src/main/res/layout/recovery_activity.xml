@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#30302F">
+    android:background="@color/activity_background">
 
     <EditText
         android:id="@+id/keyText"
@@ -33,7 +33,7 @@
         android:id="@+id/decryptButton"
         android:layout_width="350dp"
         android:layout_height="52dp"
-        android:background="#3A3A39"
+        android:background="@color/button_background"
         android:text="@string/decrypt"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -13,12 +13,13 @@ import java.util.List;
 public class Notes {
 
     public static String[][] GetNotes(Context context) throws Exception {
-        String encryptedJson = Storage.ReadFile(context, "notes.json");
+        String encryptedJson = Storage.ReadFile(context, Config.notesJsonFileName);
 
         if(encryptedJson.equals("")) {
             return new String[0][0];
         } else {
-            String jsonString = AES.Decrypt(encryptedJson, Base64.decode(Config.aesKey, Base64.DEFAULT));
+            String jsonString =
+                    AES.Decrypt(encryptedJson, Base64.decode(Config.aesKey, Base64.DEFAULT));
             JSONArray json = new JSONArray(jsonString);
 
             List<String> labels = new ArrayList<>();
@@ -27,8 +28,10 @@ public class Notes {
             for (int i=0; i<json.length(); i++) {
                 JSONObject note = json.getJSONObject(i);
 
-                String label = new String(Base64.decode(note.getString("label"), Base64.DEFAULT));
-                String text = new String(Base64.decode(note.getString("text"), Base64.DEFAULT));
+                String label =
+                        new String(Base64.decode(note.getString("label"), Base64.DEFAULT));
+                String text =
+                        new String(Base64.decode(note.getString("text"), Base64.DEFAULT));
 
                 labels.add(label);
                 notesTexts.add(text);
@@ -51,13 +54,16 @@ public class Notes {
         for(int i=0; i<notes.length; i++) {
             JSONObject noteObj = new JSONObject();
 
-            noteObj.put("label", Base64.encodeToString(notes[i][0].getBytes(), Base64.DEFAULT));
-            noteObj.put("text", Base64.encodeToString(notes[i][1].getBytes(), Base64.DEFAULT));
+            noteObj.put("label", Base64.encodeToString(notes[i][0].getBytes(),
+                    Base64.DEFAULT));
+            noteObj.put("text", Base64.encodeToString(notes[i][1].getBytes(),
+                    Base64.DEFAULT));
 
             jsonNotes.put(noteObj);
         }
 
-        String result = AES.Encrypt(jsonNotes.toString(), Base64.decode(Config.aesKey, Base64.DEFAULT));
+        String result = AES.Encrypt(jsonNotes.toString(), Base64.decode(Config.aesKey,
+                Base64.DEFAULT));
 
         Storage.WriteFile(context, "notes.json", result);
     }

@@ -25,7 +25,8 @@ public class ChangeActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_activity);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
 
         final TextView titleText = findViewById(R.id.titleText);
         final TextView textText = findViewById(R.id.textText);
@@ -40,9 +41,11 @@ public class ChangeActivity extends AppCompatActivity {
         apply_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!titleText.getText().toString().equals("") && !textText.getText().toString().equals("")) {
+                if(!titleText.getText().toString().equals("") &&
+                        !textText.getText().toString().equals("")) {
                     if(arg == CREATE_NOTE) {
-                        String[][] note = { { titleText.getText().toString(), textText.getText().toString() } };
+                        String[][] note = { { titleText.getText().toString(),
+                                textText.getText().toString() } };
                         MainActivity.notes_arr = concat(MainActivity.notes_arr, note);
                     }else{
                         MainActivity.notes_arr[n_id][0] = titleText.getText().toString();
@@ -55,7 +58,8 @@ public class ChangeActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    startActivity(MainActivity.GetIntent(getApplicationContext(), MainActivity.class));
+                    startActivity(ActivityTools.GetIntent(getApplicationContext(),
+                            MainActivity.class));
                 }
             }
         });

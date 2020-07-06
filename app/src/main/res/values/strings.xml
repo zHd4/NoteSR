@@ -32,6 +32,8 @@
     <string name="decrypt">Decrypt</string>
     <string name="import_export">IMPORT/EXPORT</string>
     <string name="export_data">EXPORT DATA</string>
+    <string name="exportbin_data">EXPORT TO FILE</string>
     <string name="paste_your_encrypted_data">Paste your encrypted data</string>
     <string name="import_data">IMPORT DATA</string>
+    <string name="importbin_data">IMPORT FROM FILE</string>
 </resources>

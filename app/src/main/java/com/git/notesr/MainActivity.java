@@ -1,7 +1,6 @@
 package com.git.notesr;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -28,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
 
         File dir = new File(getApplicationContext().getFilesDir(), "data");
 
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(GetIntent(getApplicationContext(), SettingsActivity.class));
+                startActivity(ActivityTools.GetIntent(getApplicationContext(), SettingsActivity.class));
             }
         });
     }
@@ -104,13 +104,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(keys.equals("") && notes.equals("")){
-            Intent saIntent = new Intent(this, SetupActivity.class);
-            startActivity(saIntent);
+            startActivity(ActivityTools.GetIntent(getApplicationContext(), SetupActivity.class));
         }
 
         if(keys.equals("") && !notes.equals("")){
-            Intent saIntent = new Intent(this, RecoveryActivity.class);
-            startActivity(saIntent);
+            startActivity(ActivityTools.GetIntent(getApplicationContext(), RecoveryActivity.class));
         }
     }
 
@@ -119,22 +117,14 @@ public class MainActivity extends AppCompatActivity {
 
         notes_arr = Notes.GetNotes(getApplicationContext());
 
-        int colorLight = Color.rgb(68,68,67);
-        int colorDark = Color.rgb(58,58,57);
-
-        int lastColor = colorDark;
+        int noteColor = Color.rgb(25, 28, 33);
+        int beforeLineColor = Color.rgb(9, 10, 13);
 
         if (!notes_arr.equals(new String[0][0])) {
             for (int i = 0; i < notes_arr.length; i++) {
                 TableRow tr_data = new TableRow(this);
 
-                if(lastColor == colorLight){
-                    lastColor = colorDark;
-                }else{
-                    lastColor = colorLight;
-                }
-
-                tr_data.setBackgroundColor(lastColor);
+                tr_data.setBackgroundColor(noteColor);
                 tr_data.setLayoutParams(new TableLayout.LayoutParams(
                         TableLayout.LayoutParams.FILL_PARENT,
                         TableLayout.LayoutParams.WRAP_CONTENT));
@@ -148,8 +138,16 @@ public class MainActivity extends AppCompatActivity {
                 n_element.setPadding(15, 35, 15, 35);
                 tr_data.addView(n_element);
 
+                TableRow before_line = new TableRow(this);
+
+                before_line.setBackgroundColor(beforeLineColor);
+                before_line.setPadding(15, 2, 15, 2);
 
                 notes_table.addView(tr_data, new TableLayout.LayoutParams(
+                        TableLayout.LayoutParams.FILL_PARENT,
+                        TableLayout.LayoutParams.WRAP_CONTENT));
+
+                notes_table.addView(before_line, new TableLayout.LayoutParams(
                         TableLayout.LayoutParams.FILL_PARENT,
                         TableLayout.LayoutParams.WRAP_CONTENT));
 
@@ -170,11 +168,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }
-    }
-
-    public static Intent GetIntent(Context context, Class<?> _class) {
-        Intent intent = new Intent(context, _class);
-        return intent;
     }
 
     private void StartChangeActivity(int arg) {

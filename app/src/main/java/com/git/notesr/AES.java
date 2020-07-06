@@ -24,7 +24,8 @@ public class AES {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(cypherInstance);
 
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new IvParameterSpec(initializationVector.getBytes()));
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec,
+                new IvParameterSpec(initializationVector.getBytes()));
 
         byte[] encrypted = cipher.doFinal(textToEncrypt.getBytes());
 
@@ -38,7 +39,8 @@ public class AES {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(cypherInstance);
 
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(initializationVector.getBytes()));
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec,
+                new IvParameterSpec(initializationVector.getBytes()));
 
         byte[] decrypted = cipher.doFinal(encryted_bytes);
 
@@ -48,7 +50,8 @@ public class AES {
     public static byte[] GenKey(String plainText, String salt) {
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance(secretKeyInstance);
-            KeySpec spec = new PBEKeySpec(plainText.toCharArray(), salt.getBytes(), plainText.length(), keySize);
+            KeySpec spec = new PBEKeySpec(plainText.toCharArray(), salt.getBytes(),
+                    plainText.length(), keySize);
 
             return factory.generateSecret(spec).getEncoded();
 

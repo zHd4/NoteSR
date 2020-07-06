@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#30302F"
+    android:background="#090a0d"
     tools:context=".MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -14,7 +14,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:background="@drawable/ic_launcher_background"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="#191c21"
         android:visibility="invisible"
         app:srcCompat="@android:drawable/ic_menu_add" />
 
@@ -32,7 +32,7 @@
                 android:id="@+id/settingsButton"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:background="#30302F"
+                android:background="#090a0d"
                 android:text="@string/import_export"
                 android:textColor="#FFFFFF"
                 android:visibility="invisible"
