@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:background="@drawable/ic_launcher_background"
-        android:backgroundTint="#191c21"
+        android:background="@color/ripple_button_background"
+        android:backgroundTint="@color/ripple_button_background"
         android:visibility="invisible"
         app:srcCompat="@android:drawable/ic_menu_add" />
 

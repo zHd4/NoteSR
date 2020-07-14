@@ -24,17 +24,17 @@ public class ActivityTools extends AppCompatActivity {
         return context;
     }
 
-    public static Intent GetIntent(Context context, Class<?> _class) {
+    public static Intent getIntent(Context context, Class<?> _class) {
         Intent intent = new Intent(context, _class);
         return intent;
     }
 
-    public static void ShowTextMessage(String text, int duration, Context context) {
+    public static void showTextMessage(String text, int duration, Context context) {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
 
-    public static void RequirePermission(Activity activity, String permission) {
+    public static void requirePermission(Activity activity, String permission) {
         ActivityCompat.requestPermissions(activity, new String[]{ permission }, 23);
     }
 
@@ -72,11 +72,11 @@ public class ActivityTools extends AppCompatActivity {
         return new String(keyBytes);
     }
 
-    public static void SaveKey(Context context) throws Exception {
+    public static void saveKey(Context context) throws Exception {
         if (Storage.isExternalStorageAvailable() && !Storage.isExternalStorageReadOnly()) {
             String aesPassword = md5(Config.pinCode);
 
-            Storage.WriteFile(context,Config.keyBinFileName, AES.Encrypt(Config.aesKey, //getAppContext()
+            Storage.writeFile(context,Config.keyBinFileName, AES.Encrypt(Config.aesKey, //getAppContext()
                     AES.GenKey(aesPassword, md5(aesPassword))));
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -84,10 +84,10 @@ public class ActivityTools extends AppCompatActivity {
         }
     }
 
-    public static boolean GetKeys(String pin, Context context) {
+    public static boolean getKeys(String pin, Context context) {
 
         if (Storage.isExternalStorageAvailable() && !Storage.isExternalStorageReadOnly()) {
-            String encryptedKey = Storage.ReadFile(context,Config.keyBinFileName);
+            String encryptedKey = Storage.readFile(context,Config.keyBinFileName);
 
             try{
                 String aesPassword = md5(pin);

@@ -40,7 +40,7 @@ public class GenkeysActivity extends AppCompatActivity {
                 ClipData clip = ClipData.newPlainText("", visualKey);
                 ActivityTools.clipboard.setPrimaryClip(clip);
 
-                ActivityTools.ShowTextMessage("Copied!", Toast.LENGTH_SHORT,
+                ActivityTools.showTextMessage("Copied!", Toast.LENGTH_SHORT,
                         getApplicationContext());
             }
         });
@@ -49,7 +49,7 @@ public class GenkeysActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AccessActivity.operation = AccessActivity.CREATE_PIN;
-                startActivity(ActivityTools.GetIntent(getApplicationContext(),
+                startActivity(ActivityTools.getIntent(getApplicationContext(),
                         AccessActivity.class));
             }
         });

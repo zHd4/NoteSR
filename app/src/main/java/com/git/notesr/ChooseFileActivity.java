@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,7 +20,7 @@ public class ChooseFileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choosefile_activity);
 
-        ActivityTools.RequirePermission(ChooseFileActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        ActivityTools.requirePermission(ChooseFileActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
 
         if (safeCalled) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -34,52 +35,36 @@ public class ChooseFileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         safeCalled = false;
 
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                try {
-                    String src = getPath(data.getData());
+        if (resultCode == RESULT_OK) {
+            try {
+                String src = getPath(data.getData());
 
-                    if (src.contains("msf")) {
-                        Uri uri = data.getData();
-                        src = uri.getPath();
-                    }
-
-                    src = src.replace("/document/raw:", "");
-
-                    File file = new File(src);
-
-                    String newNotesData = Storage.ExternalReadFile(file);
-
-                    if (!newNotesData.equals("")) {
-                        String notesData = null;
-
-                        if (Storage.IsFileExists(getApplicationContext(),
-                                Config.notesJsonFileName)) {
-                            notesData = Storage.ReadFile(getApplicationContext(),
-                                    Config.notesJsonFileName);
-                        }
-
-                        Storage.WriteFile(getApplicationContext(),
-                                Config.notesJsonFileName, newNotesData);
-
-                        try {
-                            String[][] dataString = Notes.GetNotes(getApplicationContext());
-
-                            if (dataString.equals(new String[0][0]) && notesData != null){
-                                Storage.WriteFile(getApplicationContext(), Config.notesJsonFileName,
-                                        notesData);
-                            } else {
-                                startActivity(ActivityTools.GetIntent(getApplicationContext(),
-                                        MainActivity.class));
-                            }
-                        } catch (Exception e) {
-                            Storage.WriteFile(getApplicationContext(), Config.notesJsonFileName,
-                                    notesData);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (src.contains("msf")) {
+                    Uri uri = data.getData();
+                    src = uri.getPath();
                 }
+
+                src = src.replace("/document/raw:", "");
+
+                File file = new File(src);
+                String notesData = Storage.externalReadFile(file);
+
+                if (notesData.length() > 0) {
+                    try {
+                        String decryptedNotes = AES.Decrypt(
+                                notesData,
+                                Base64.decode(Config.aesKey, Base64.DEFAULT)
+                        );
+
+                        Database db = new Database(getApplicationContext());
+
+                        db.importFromJsonString(decryptedNotes);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

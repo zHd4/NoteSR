@@ -12,26 +12,22 @@ import java.io.FileWriter;
 
 public class Storage extends Application {
 
-    public static boolean isExternalStorageReadOnly()
-    {
+    public static boolean isExternalStorageReadOnly() {
         String extStorageState = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState);
     }
 
-    public static boolean isExternalStorageAvailable()
-    {
+    public static boolean isExternalStorageAvailable() {
         String extStorageState = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(extStorageState);
     }
 
-    public static boolean IsFileExists(Context context, String filename)
-    {
+    public static boolean isFileExists(Context context, String filename) {
         File file = new File(context.getFilesDir(), filename);
         return file.exists();
     }
 
-    public static String ReadFile(Context context, String filename)
-    {
+    public static String readFile(Context context, String filename) {
         String result = "";
 
         File file = new File(context.getFilesDir(),"storage");
@@ -57,8 +53,7 @@ public class Storage extends Application {
         return result;
     }
 
-    public static void WriteFile(Context context, String filename, String data)
-    {
+    public static void writeFile(Context context, String filename, String data) {
         File file = new File(context.getFilesDir(),"storage");
 
         if(!file.exists()) {
@@ -78,8 +73,7 @@ public class Storage extends Application {
         }
     }
 
-    public static String ExternalReadFile(File file)
-    {
+    public static String externalReadFile(File file) {
         try {
             FileInputStream fstream = new FileInputStream(file);
 
@@ -96,8 +90,7 @@ public class Storage extends Application {
         }
     }
 
-    public static boolean ExternalWriteFile(File file, String filedata)
-    {
+    public static boolean externalWriteFile(File file, String filedata) {
         try {
             FileOutputStream fstream = new FileOutputStream(file);
 

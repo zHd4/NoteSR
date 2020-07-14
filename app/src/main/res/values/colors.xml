@@ -5,4 +5,5 @@
     <color name="colorAccent">#191c21</color>
     <color name="activity_background">#090a0d</color>
     <color name="button_background">#191c21</color>
+    <color name="ripple_button_background">#23262b</color>
 </resources>

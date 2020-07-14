@@ -30,276 +30,53 @@ public class AccessActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-        final TextView pinSector1 = findViewById(R.id.pinSector1);
-        final TextView pinSector2 = findViewById(R.id.pinSector2);
-        final TextView pinSector3 = findViewById(R.id.pinSector3);
-        final TextView pinSector4 = findViewById(R.id.pinSector4);
-
-        final Button pinButton1 = findViewById(R.id.pinButton1);
-        final Button pinButton2 = findViewById(R.id.pinButton2);
-        final Button pinButton3 = findViewById(R.id.pinButton3);
-        final Button pinButton4 = findViewById(R.id.pinButton4);
-        final Button pinButton5 = findViewById(R.id.pinButton5);
-        final Button pinButton6 = findViewById(R.id.pinButton6);
-        final Button pinButton7 = findViewById(R.id.pinButton7);
-        final Button pinButton8 = findViewById(R.id.pinButton8);
-        final Button pinButton9 = findViewById(R.id.pinButton9);
-
-        final Button pinButton0 = findViewById(R.id.pinButton0);
         final Button pinButtonBackspace = findViewById(R.id.pinButtonBackspace);
 
-        pinButton1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "1";
+        final int[] sectors = { 0, R.id.pinSector1, R.id.pinSector2, R.id.pinSector3, R.id.pinSector4 };
+        int[] pinButtons = { R.id.pinButton0, R.id.pinButton1, R.id.pinButton2, R.id.pinButton3,
+                R.id.pinButton4, R.id.pinButton5, R.id.pinButton6, R.id.pinButton7,
+                R.id.pinButton8, R.id.pinButton9};
 
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    AcceptPin();
-                }
-            }
-        });
-
-        pinButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "2";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-            }
-        });
-
-        pinButton3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "3";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-            }
-        });
-
-        pinButton4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "4";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-            }
-        });
-
-        pinButton5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "5";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-            }
-        });
-
-        pinButton6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "6";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-            }
-        });
-
-        pinButton7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "7";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-
-            }
-        });
-
-        pinButton8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "8";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-            }
-        });
-
-        pinButton9.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "9";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-            }
-        });
-
-        pinButton0.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String bNum = "0";
-
-                if (enteredPin.length() == 0) {
-                    pinSector1.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 1) {
-                    pinSector2.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 2) {
-                    pinSector3.setText("  •  ");
-                    enteredPin += bNum;
-                } else if (enteredPin.length() == 3) {
-                    pinSector4.setText("  •  ");
-                    enteredPin += bNum;
-
-                    ClearSectors();
-                    AcceptPin();
-                }
-            }
-        });
+        for (int i = 0; i < pinButtons.length; i++) {
+            setOnClick((Button) findViewById(pinButtons[i]), sectors, i);
+        }
 
         pinButtonBackspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(enteredPin.length() == 3){
                     enteredPin = enteredPin.substring(0, 2);
-                    pinSector3.setText("     ");
+                    ((TextView) findViewById(sectors[3])).setText("     ");
                 } else if(enteredPin.length() == 2) {
                     enteredPin = enteredPin.substring(0, 1);
-                    pinSector2.setText("     ");
+                    ((TextView) findViewById(sectors[2])).setText("     ");
                 }  else if(enteredPin.length() == 1) {
                     enteredPin = "";
-                    pinSector1.setText("     ");
+                    ((TextView) findViewById(sectors[1])).setText("     ");
+                }
+            }
+        });
+    }
+
+    private void setOnClick(final Button btn, final int[] sectors, final int num) {
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (enteredPin.length() == 0) {
+                    ((TextView) findViewById(sectors[1])).setText("  •  ");
+                    enteredPin += String.valueOf(num);
+                } else if (enteredPin.length() == 1) {
+                    ((TextView) findViewById(sectors[2])).setText("  •  ");
+                    enteredPin += String.valueOf(num);
+                } else if (enteredPin.length() == 2) {
+                    ((TextView) findViewById(sectors[3])).setText("  •  ");
+                    enteredPin += String.valueOf(num);
+                } else if (enteredPin.length() == 3) {
+                    ((TextView) findViewById(sectors[4])).setText("  •  ");
+                    enteredPin += String.valueOf(num);
+
+                    ClearSectors();
+                    AcceptPin();
                 }
             }
         });
@@ -317,7 +94,7 @@ public class AccessActivity extends AppCompatActivity {
         pinSector4.setText("     ");
     }
 
-    public void AcceptPin(){
+    public void AcceptPin() {
         if (operation == CREATE_PIN) {
             final TextView formLabel = findViewById(R.id.acTextView);
 
@@ -326,23 +103,23 @@ public class AccessActivity extends AppCompatActivity {
             operation = REPEAT_PIN;
 
             enteredPin = "";
-        }else if(operation == REPEAT_PIN){
+        } else if(operation == REPEAT_PIN) {
             if(enteredPin.equals(Config.pinCode)){
                 ActivityTools.context = getApplicationContext();
                 try {
-                    ActivityTools.SaveKey(ActivityTools.getAppContext());
+                    ActivityTools.saveKey(ActivityTools.getAppContext());
                     StartMainActivity();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }else{
+            } else {
                 enteredPin = "";
                 ShowTextMessage("Try again");
             }
-        }else{
+        } else {
             if (attempts != 1) {
                 ActivityTools.context = getApplicationContext();
-                if (ActivityTools.GetKeys(enteredPin, getApplicationContext())) {
+                if (ActivityTools.getKeys(enteredPin, getApplicationContext())) {
                     Intent saIntent = new Intent(this, MainActivity.class);
                     startActivity(saIntent);
                 } else {
@@ -364,8 +141,7 @@ public class AccessActivity extends AppCompatActivity {
         ClearSectors();
     }
 
-    public void ShowTextMessage(String text)
-    {
+    public void ShowTextMessage(String text) {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
 
@@ -373,8 +149,7 @@ public class AccessActivity extends AppCompatActivity {
         toast.show();
     }
 
-    public void StartMainActivity()
-    {
+    public void StartMainActivity() {
         Intent saIntent = new Intent(this, MainActivity.class);
         startActivity(saIntent);
     }

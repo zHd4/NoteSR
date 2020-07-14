@@ -17,8 +17,8 @@ public class ChangeActivity extends AppCompatActivity {
     public static int CREATE_NOTE = 0;
     public static int EDIT_NOTE = 1;
 
-    public static int n_id = 0;
-    public static String n_label = "";
+    public static int noteId;
+    public static String noteTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +34,8 @@ public class ChangeActivity extends AppCompatActivity {
         final FloatingActionButton apply_button = findViewById(R.id.apply_button);
 
         if(arg == EDIT_NOTE){
-            titleText.setText(n_label);
-            textText.setText(MainActivity.notes_arr[n_id][1]);
+            titleText.setText(noteTitle);
+            textText.setText(MainActivity.notes[noteId][1]);
         }
 
         apply_button.setOnClickListener(new View.OnClickListener() {
@@ -44,28 +44,30 @@ public class ChangeActivity extends AppCompatActivity {
                 if(!titleText.getText().toString().equals("") &&
                         !textText.getText().toString().equals("")) {
                     if(arg == CREATE_NOTE) {
-                        String[][] note = { { titleText.getText().toString(),
-                                textText.getText().toString() } };
-                        MainActivity.notes_arr = concat(MainActivity.notes_arr, note);
-                    }else{
-                        MainActivity.notes_arr[n_id][0] = titleText.getText().toString();
-                        MainActivity.notes_arr[n_id][1] = textText.getText().toString();
+                        String[][] note =
+                                { {
+                                    titleText.getText().toString(), textText.getText().toString()
+                                } };
+                        MainActivity.notes = concat(MainActivity.notes, note);
+                    } else {
+                        MainActivity.notes[noteId][0] = titleText.getText().toString();
+                        MainActivity.notes[noteId][1] = textText.getText().toString();
                     }
 
                     try {
-                        Notes.SetNotes(getApplicationContext(), MainActivity.notes_arr);
+                        Notes.setNotes(getApplicationContext(), MainActivity.notes);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    startActivity(ActivityTools.GetIntent(getApplicationContext(),
+                    startActivity(ActivityTools.getIntent(getApplicationContext(),
                             MainActivity.class));
                 }
             }
         });
     }
 
-    public static <T> T[] concat(T[] first, T[] second) {
+    private static <T> T[] concat(T[] first, T[] second) {
         T[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
 

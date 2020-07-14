@@ -1,9 +1,10 @@
 package com.git.notesr;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +22,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String[][] notes_arr = new String[0][0];
+    public static String[][] notes = new String[0][0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         try {
-            ConfigureForm();
+            configureForm();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,7 +54,12 @@ public class MainActivity extends AppCompatActivity {
         add_note_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                StartChangeActivity(ChangeActivity.CREATE_NOTE);
+                ChangeActivity.arg = ChangeActivity.CREATE_NOTE;
+
+                startActivity(ActivityTools.getIntent(
+                        getApplicationContext(),
+                        ChangeActivity.class
+                ));
             }
         });
 
@@ -61,7 +67,9 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(ActivityTools.GetIntent(getApplicationContext(), SettingsActivity.class));
+                startActivity(
+                        ActivityTools.getIntent(getApplicationContext(), SettingsActivity.class)
+                );
             }
         });
     }
@@ -84,96 +92,109 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("RestrictedApi")
-    public void ConfigureForm() throws Exception {
+    public void configureForm() throws Exception {
         Button settingsButton = findViewById(R.id.settingsButton);
         FloatingActionButton add_note_button = findViewById(R.id.add_note_button);
 
-        String keys = Storage.ReadFile(getApplicationContext(), "key.bin");
-        String notes = Storage.ReadFile(getApplicationContext(), "notes.json");
+        boolean notesExists = Notes.getNotes(getApplicationContext()).equals(new String[0][0]);
+        boolean keyExists = Storage.readFile(
+                getApplicationContext(),
+                Config.keyBinFileName
+        ).length() > 0;
 
-        if((!keys.equals("") && !notes.equals("")) || (!keys.equals("") && notes.equals(""))) {
-            if(Config.pinCode.equals("")){
-                Intent saIntent = new Intent(this, AccessActivity.class);
-                startActivity(saIntent);
-            } else {
+        if(!notesExists && !keyExists) {
+            startActivity(ActivityTools.getIntent(getApplicationContext(), SetupActivity.class));
+        } else if((notesExists && keyExists) || (!notesExists && keyExists)) {
+            if(Config.pinCode.length() > 0){
+                if(Storage.isFileExists(getApplicationContext(), Config.notesJsonFilename)) {
+                    convertJsonToDatabase();
+                }
+
                 add_note_button.setVisibility(View.VISIBLE);
                 settingsButton.setVisibility(View.VISIBLE);
 
-                FillTable();
+                fillTable();
+            } else {
+                startActivity(ActivityTools.getIntent(this, AccessActivity.class));
             }
-        }
-
-        if(keys.equals("") && notes.equals("")){
-            startActivity(ActivityTools.GetIntent(getApplicationContext(), SetupActivity.class));
-        }
-
-        if(keys.equals("") && !notes.equals("")){
-            startActivity(ActivityTools.GetIntent(getApplicationContext(), RecoveryActivity.class));
+        } else {
+            startActivity(ActivityTools.getIntent(getApplicationContext(), RecoveryActivity.class));
         }
     }
 
-    public void FillTable() throws Exception {
-        TableLayout notes_table = findViewById(R.id.notes_table);
+    public void fillTable() throws Exception {
+        TableLayout notesTable = findViewById(R.id.notes_table);
 
-        notes_arr = Notes.GetNotes(getApplicationContext());
+        notes = Notes.getNotes(getApplicationContext());
+        Log.e("Notes Length", String.valueOf(notes.length));
 
         int noteColor = Color.rgb(25, 28, 33);
         int beforeLineColor = Color.rgb(9, 10, 13);
 
-        if (!notes_arr.equals(new String[0][0])) {
-            for (int i = 0; i < notes_arr.length; i++) {
-                TableRow tr_data = new TableRow(this);
+        if (!notes.equals(new String[0][0])) {
+            for (int i = 0; i < notes.length; i++) {
+                TableRow trData = new TableRow(this);
 
-                tr_data.setBackgroundColor(noteColor);
-                tr_data.setLayoutParams(new TableLayout.LayoutParams(
+                trData.setBackgroundColor(noteColor);
+                trData.setLayoutParams(new TableLayout.LayoutParams(
                         TableLayout.LayoutParams.FILL_PARENT,
                         TableLayout.LayoutParams.WRAP_CONTENT));
 
-                final TextView n_element = new TextView(this);
+                final TextView notesElement = new TextView(this);
 
-                n_element.setId(i);
-                n_element.setText(notes_arr[i][0]);
-                n_element.setTextColor(Color.WHITE);
-                n_element.setTextSize(24);
-                n_element.setPadding(15, 35, 15, 35);
-                tr_data.addView(n_element);
+                notesElement.setId(i);
+                notesElement.setText(notes[i][0]);
+                notesElement.setTextColor(Color.WHITE);
+                notesElement.setTextSize(24);
+                notesElement.setPadding(15, 35, 15, 35);
+                trData.addView(notesElement);
 
-                TableRow before_line = new TableRow(this);
+                TableRow beforeLine = new TableRow(this);
 
-                before_line.setBackgroundColor(beforeLineColor);
-                before_line.setPadding(15, 2, 15, 2);
+                beforeLine.setBackgroundColor(beforeLineColor);
+                beforeLine.setPadding(15, 2, 15, 2);
 
-                notes_table.addView(tr_data, new TableLayout.LayoutParams(
+                notesTable.addView(trData, new TableLayout.LayoutParams(
                         TableLayout.LayoutParams.FILL_PARENT,
                         TableLayout.LayoutParams.WRAP_CONTENT));
 
-                notes_table.addView(before_line, new TableLayout.LayoutParams(
+                notesTable.addView(beforeLine, new TableLayout.LayoutParams(
                         TableLayout.LayoutParams.FILL_PARENT,
                         TableLayout.LayoutParams.WRAP_CONTENT));
 
-                final int finalI = i;
+                final int finalIndex = i;
 
-                tr_data.setOnClickListener(new View.OnClickListener() {
+                trData.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        int id = finalI;
-                        String n_label = n_element.getText().toString();
+                        int id = finalIndex;
+                        String noteTitle = notesElement.getText().toString();
 
-                        ChangeActivity.n_id = id;
-                        ChangeActivity.n_label = n_label;
+                        ChangeActivity.noteId = id;
+                        ChangeActivity.noteTitle = noteTitle;
 
-                        StartChangeActivity(ChangeActivity.EDIT_NOTE);
+                        ChangeActivity.arg = ChangeActivity.EDIT_NOTE;
+
+                        startActivity(ActivityTools.getIntent(
+                                getApplicationContext(),
+                                ChangeActivity.class
+                        ));
                     }
                 });
             }
         }
     }
 
-    private void StartChangeActivity(int arg) {
-        ChangeActivity.arg = arg;
+    private void convertJsonToDatabase() throws Exception {
+        String notesData = Storage.readFile(getApplicationContext(), Config.notesJsonFilename);
+        String decryptedNotes = AES.Decrypt(
+                notesData,
+                Base64.decode(Config.aesKey, Base64.DEFAULT)
+        );
 
-        Intent intent = new Intent(this, ChangeActivity.class);
-        startActivity(intent);
+        Database db = new Database(getApplicationContext());
+
+        db.importFromJsonString(decryptedNotes);
     }
 }

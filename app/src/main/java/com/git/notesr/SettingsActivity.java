@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,8 +26,15 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.settings_activity);
 
         if (!Storage.isExternalStorageAvailable() || !Storage.isExternalStorageReadOnly()) {
-            ActivityTools.RequirePermission(SettingsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
-            ActivityTools.RequirePermission(SettingsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            ActivityTools.requirePermission(
+                    SettingsActivity.this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            );
+
+            ActivityTools.requirePermission(
+                    SettingsActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            );
         }
 
         Button exportButton = findViewById(R.id.exportButton);
@@ -36,46 +44,69 @@ public class SettingsActivity extends AppCompatActivity {
         Button importBinButton = findViewById(R.id.importBinButton);
 
         final EditText importDataText = findViewById(R.id.importDataText);
+        final Database db = new Database(getApplicationContext());
 
         exportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String notesData = Storage.ReadFile(getApplicationContext(),
-                        Config.notesJsonFileName);
+                try {
+                    String notesData = AES.Encrypt(
+                            db.exportToJsonString(),
+                            Base64.decode(Config.aesKey, Base64.DEFAULT)
+                    );
 
-                ActivityTools.clipboard =
-                        (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("", notesData);
-                ActivityTools.clipboard.setPrimaryClip(clip);
+                    ActivityTools.clipboard = (ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
 
-                ActivityTools.ShowTextMessage("Copied!", Toast.LENGTH_SHORT,
-                        getApplicationContext());
+                    ClipData clip = ClipData.newPlainText("", notesData);
+                    ActivityTools.clipboard.setPrimaryClip(clip);
+
+                    ActivityTools.showTextMessage(
+                            "Copied!",
+                            Toast.LENGTH_SHORT,
+                            getApplicationContext()
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         exportBinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                @SuppressLint("SimpleDateFormat")
-                String datetime =
-                        new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
-                                .format(Calendar.getInstance().getTime());
+                try {
+                    @SuppressLint("SimpleDateFormat")
+                    String datetime =
+                            new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+                                    .format(Calendar.getInstance().getTime());
 
-                File path = new File(
-                        Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DOWNLOADS),
-                        String.format("notesr_export_" + datetime + ".nsrbak"));
+                    File path = new File(
+                            Environment.getExternalStoragePublicDirectory(
+                                    Environment.DIRECTORY_DOWNLOADS),
+                            String.format("notesr_export_" + datetime + ".nsrbak"));
 
-                String notesData = Storage.ReadFile(getApplicationContext(),
-                        Config.notesJsonFileName);
+                    String notesData = AES.Encrypt(
+                            db.exportToJsonString(),
+                            Base64.decode(Config.aesKey, Base64.DEFAULT)
+                    );
 
-                if (Storage.ExternalWriteFile(path, notesData)) {
-                    ActivityTools.ShowTextMessage("Saved to " + path.getAbsolutePath(),
-                            Toast.LENGTH_SHORT, getApplicationContext());
-                } else {
-                    ActivityTools.RequirePermission(SettingsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                    ActivityTools.ShowTextMessage("Please allow storage access and try again",
-                            Toast.LENGTH_SHORT, getApplicationContext());
+                    if (Storage.externalWriteFile(path, notesData)) {
+                        ActivityTools.showTextMessage("Saved to " + path.getAbsolutePath(),
+                                Toast.LENGTH_SHORT, getApplicationContext());
+                    } else {
+                        ActivityTools.requirePermission(
+                                SettingsActivity.this,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        );
+
+                        ActivityTools.showTextMessage(
+                                "Please allow storage access and try again",
+                                Toast.LENGTH_SHORT, getApplicationContext()
+                        );
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -83,28 +114,20 @@ public class SettingsActivity extends AppCompatActivity {
         importButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String newNotesData = importDataText.getText().toString();
+                String notesData = importDataText.getText().toString();
 
-                if(!newNotesData.equals("")){
-                    String notesData = Storage.ReadFile(getApplicationContext(),
-                            Config.notesJsonFileName);
-
-                    Storage.WriteFile(getApplicationContext(),
-                            Config.notesJsonFileName, newNotesData);
-
+                if (notesData.length() > 0) {
                     try {
-                        String[][] data = Notes.GetNotes(getApplicationContext());
+                        String decryptedNotes = AES.Decrypt(
+                                notesData,
+                                Base64.decode(Config.aesKey, Base64.DEFAULT)
+                        );
 
-                        if(data.equals(new String[0][0])){
-                            Storage.WriteFile(getApplicationContext(), Config.notesJsonFileName,
-                                    notesData);
-                        }else{
-                            startActivity(ActivityTools.GetIntent(getApplicationContext(),
-                                    MainActivity.class));
-                        }
+                        Database db = new Database(getApplicationContext());
+
+                        db.importFromJsonString(decryptedNotes);
                     } catch (Exception e) {
-                        Storage.WriteFile(getApplicationContext(), Config.notesJsonFileName,
-                                notesData);
+                        e.printStackTrace();
                     }
                 }
             }
@@ -114,7 +137,10 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ChooseFileActivity.safeCalled = true;
-                startActivity(ActivityTools.GetIntent(getApplicationContext(), ChooseFileActivity.class));
+                startActivity(ActivityTools.getIntent(
+                        getApplicationContext(),
+                        ChooseFileActivity.class
+                ));
             }
         });
     }

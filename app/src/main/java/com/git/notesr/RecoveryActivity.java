@@ -24,19 +24,21 @@ public class RecoveryActivity extends AppCompatActivity {
         decryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try{
-                    String keyS = ActivityTools.hexToKey(keyText.getText().toString());
-                    byte[] key = AES.GenKey(keyS, ActivityTools.md5(keyS));
-                    AES.Decrypt(Storage.ReadFile(getApplicationContext(), "notes.json"),
-                            key);
+                try {
+                    String keyString = ActivityTools.hexToKey(keyText.getText().toString());
+                    byte[] key = AES.GenKey(keyString, ActivityTools.md5(keyString));
+                    Database db = new Database(getApplicationContext());
+
+                    AES.Decrypt(db.getAllNotes()[0][0], key);
 
                     Config.aesKey = Base64.encodeToString(key, Base64.DEFAULT);
-
                     AccessActivity.operation = AccessActivity.CREATE_PIN;
 
-                    startActivity(ActivityTools.GetIntent(getApplicationContext(),
-                            AccessActivity.class));
-                }catch (Exception e){
+                    startActivity(ActivityTools.getIntent(
+                            getApplicationContext(),
+                            AccessActivity.class
+                    ));
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
