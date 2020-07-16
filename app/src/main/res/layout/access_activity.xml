@@ -35,21 +35,6 @@
         app:layout_constraintVertical_bias="0.161" />
 
     <TextView
-        android:id="@+id/pinSector2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/activity_background"
-        android:text="     "
-        android:textColor="#FFFFFF"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.413"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.243" />
-
-    <TextView
         android:id="@+id/pinSector4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,13 +44,13 @@
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.775"
+        app:layout_constraintHorizontal_bias="0.731"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.243" />
 
     <TextView
-        android:id="@+id/pinSector3"
+        android:id="@+id/pinSector2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/activity_background"
@@ -74,7 +59,7 @@
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.597"
+        app:layout_constraintHorizontal_bias="0.435"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.243" />
@@ -89,7 +74,22 @@
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.23"
+        app:layout_constraintHorizontal_bias="0.282"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.243" />
+
+    <TextView
+        android:id="@+id/pinSector3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/activity_background"
+        android:text="     "
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.583"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.243" />

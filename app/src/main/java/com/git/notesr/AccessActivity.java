@@ -2,17 +2,13 @@ package com.git.notesr;
 
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.io.File;
 
 public class AccessActivity extends AppCompatActivity {
     public static String enteredPin = "";
@@ -27,16 +23,34 @@ public class AccessActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.access_activity);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE
+        );
 
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         final Button pinButtonBackspace = findViewById(R.id.pinButtonBackspace);
 
-        final int[] sectors = { 0, R.id.pinSector1, R.id.pinSector2, R.id.pinSector3, R.id.pinSector4 };
-        int[] pinButtons = { R.id.pinButton0, R.id.pinButton1, R.id.pinButton2, R.id.pinButton3,
-                R.id.pinButton4, R.id.pinButton5, R.id.pinButton6, R.id.pinButton7,
-                R.id.pinButton8, R.id.pinButton9};
+        final int[] sectors = {
+                R.id.pinSector1,
+                R.id.pinSector2,
+                R.id.pinSector3,
+                R.id.pinSector4
+        };
+
+        int[] pinButtons = {
+                R.id.pinButton0,
+                R.id.pinButton1,
+                R.id.pinButton2,
+                R.id.pinButton3,
+                R.id.pinButton4,
+                R.id.pinButton5,
+                R.id.pinButton6,
+                R.id.pinButton7,
+                R.id.pinButton8,
+                R.id.pinButton9
+        };
 
         for (int i = 0; i < pinButtons.length; i++) {
             setOnClick((Button) findViewById(pinButtons[i]), sectors, i);
@@ -47,13 +61,13 @@ public class AccessActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(enteredPin.length() == 3){
                     enteredPin = enteredPin.substring(0, 2);
-                    ((TextView) findViewById(sectors[3])).setText("     ");
+                    ((TextView) findViewById(sectors[2])).setText(generateSector(false));
                 } else if(enteredPin.length() == 2) {
                     enteredPin = enteredPin.substring(0, 1);
-                    ((TextView) findViewById(sectors[2])).setText("     ");
+                    ((TextView) findViewById(sectors[1])).setText(generateSector(false));
                 }  else if(enteredPin.length() == 1) {
-                    enteredPin = "";
-                    ((TextView) findViewById(sectors[1])).setText("     ");
+                    resetEnteredPin();
+                    ((TextView) findViewById(sectors[0])).setText(generateSector(false));
                 }
             }
         });
@@ -64,38 +78,53 @@ public class AccessActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (enteredPin.length() == 0) {
-                    ((TextView) findViewById(sectors[1])).setText("  •  ");
-                    enteredPin += String.valueOf(num);
-                } else if (enteredPin.length() == 1) {
-                    ((TextView) findViewById(sectors[2])).setText("  •  ");
-                    enteredPin += String.valueOf(num);
-                } else if (enteredPin.length() == 2) {
-                    ((TextView) findViewById(sectors[3])).setText("  •  ");
-                    enteredPin += String.valueOf(num);
-                } else if (enteredPin.length() == 3) {
-                    ((TextView) findViewById(sectors[4])).setText("  •  ");
+                    ((TextView) findViewById(sectors[0])).setText(generateSector(true));
                     enteredPin += String.valueOf(num);
 
-                    ClearSectors();
-                    AcceptPin();
+                } else if (enteredPin.length() == 1) {
+                    ((TextView) findViewById(sectors[1])).setText(generateSector(true));
+                    enteredPin += String.valueOf(num);
+
+                } else if (enteredPin.length() == 2) {
+                    ((TextView) findViewById(sectors[2])).setText(generateSector(true));
+                    enteredPin += String.valueOf(num);
+
+                } else if (enteredPin.length() == 3) {
+                    ((TextView) findViewById(sectors[3])).setText(generateSector(true));
+                    enteredPin += String.valueOf(num);
+
+                    clearSectors(sectors);
+                    AcceptPin(sectors);
                 }
             }
         });
     }
 
-    private void ClearSectors() {
-        final TextView pinSector1 = findViewById(R.id.pinSector1);
-        final TextView pinSector2 = findViewById(R.id.pinSector2);
-        final TextView pinSector3 = findViewById(R.id.pinSector3);
-        final TextView pinSector4 = findViewById(R.id.pinSector4);
-
-        pinSector1.setText("     ");
-        pinSector2.setText("     ");
-        pinSector3.setText("     ");
-        pinSector4.setText("     ");
+    private void clearSectors(final int[] sectors) {
+        for(int i = 0; i < 4; i++) {
+            ((TextView) findViewById(sectors[i])).setText(generateSector(false));
+        }
     }
 
-    public void AcceptPin() {
+    private String generateSector(boolean usingDot) {
+        StringBuilder result = new StringBuilder();
+        
+        for(int i = 0; i < 5; i++) {
+            if(i == 2 && usingDot) {
+                result.append("•");
+            } else {
+                result.append(" ");
+            }
+        }
+        
+        return result.toString();
+    }
+    
+    private void resetEnteredPin() {
+        enteredPin = "";
+    }
+
+    public void AcceptPin(final int[] sectors) {
         if (operation == CREATE_PIN) {
             final TextView formLabel = findViewById(R.id.acTextView);
 
@@ -103,55 +132,54 @@ public class AccessActivity extends AppCompatActivity {
             formLabel.setText(R.string.repeat_access_code);
             operation = REPEAT_PIN;
 
-            enteredPin = "";
+            resetEnteredPin();
         } else if(operation == REPEAT_PIN) {
             if(enteredPin.equals(Config.pinCode)){
                 ActivityTools.context = getApplicationContext();
                 try {
                     ActivityTools.saveKey(ActivityTools.getAppContext());
-                    StartMainActivity();
+                    startActivity(ActivityTools.getIntent(
+                            getApplicationContext(),
+                            MainActivity.class
+                    ));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
-                enteredPin = "";
-                ShowTextMessage("Try again");
+                resetEnteredPin();
+
+                ActivityTools.showTextMessage("Try again",
+                        Toast.LENGTH_SHORT,
+                        getApplicationContext()
+                );
             }
         } else {
-            if (attempts != 1) {
-                ActivityTools.context = getApplicationContext();
-                if (ActivityTools.getKeys(enteredPin, getApplicationContext())) {
-                    Intent saIntent = new Intent(this, MainActivity.class);
-                    startActivity(saIntent);
+            boolean pinValid = ActivityTools.getKeys(enteredPin, getApplicationContext());
+            ActivityTools.context = getApplicationContext();
+
+            if (!pinValid) {
+                if(attempts == 1) {
+                    resetEnteredPin();
+                    Storage.deleteFile(getApplicationContext(), Config.keyBinFileName);
+                    startActivity(ActivityTools.getIntent(getApplicationContext(), RecoveryActivity.class));
                 } else {
-                    enteredPin = "";
+                    resetEnteredPin();
                     attempts--;
 
-                    ShowTextMessage("Try again, you have " + attempts + " attempts");
+                    ActivityTools.showTextMessage(
+                            "Try again, you have " + attempts + " attempts",
+                            Toast.LENGTH_SHORT,
+                            getApplicationContext()
+                    );
                 }
             } else {
-                File dir = new File(getFilesDir(), "storage");
-                File file = new File(dir, Config.keyBinFileName);
-                file.delete();
-
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(1);
+                startActivity(ActivityTools.getIntent(
+                        getApplicationContext(),
+                        MainActivity.class
+                ));
             }
         }
 
-        ClearSectors();
-    }
-
-    public void ShowTextMessage(String text) {
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-    }
-
-    public void StartMainActivity() {
-        Intent saIntent = new Intent(this, MainActivity.class);
-        startActivity(saIntent);
+        clearSectors(sectors);
     }
 }

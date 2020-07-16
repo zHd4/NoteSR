@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;

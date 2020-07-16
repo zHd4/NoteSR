@@ -12,12 +12,8 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,27 +26,15 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE);
 
-        File dir = new File(getApplicationContext().getFilesDir(), "data");
-
-        if (dir.isDirectory())
-        {
-            String[] children = dir.list();
-
-            for (int i = 0; i < children.length; i++)
-            {
-                new File(dir, children[i]).delete();
-            }
-        }
-
         try {
             configureForm();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        FloatingActionButton add_note_button = findViewById(R.id.add_note_button);
+        FloatingActionButton addNoteButton = findViewById(R.id.add_note_button);
 
-        add_note_button.setOnClickListener(new View.OnClickListener() {
+        addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ChangeActivity.arg = ChangeActivity.CREATE_NOTE;
@@ -91,37 +75,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("RestrictedApi")
-    public void configureForm() throws Exception {
+    private void configureForm() throws Exception {
+        Database db = new Database(getApplicationContext());
         Button settingsButton = findViewById(R.id.settingsButton);
-        FloatingActionButton add_note_button = findViewById(R.id.add_note_button);
+        FloatingActionButton addNoteButton = findViewById(R.id.add_note_button);
 
-        boolean notesExists = Notes.getNotes(getApplicationContext()).equals(new String[0][0]);
+        boolean isNotesExists = db.getAllNotes().length > 0;
         boolean keyExists = Storage.readFile(
                 getApplicationContext(),
                 Config.keyBinFileName
         ).length() > 0;
 
-        if(!notesExists && !keyExists) {
-            startActivity(ActivityTools.getIntent(getApplicationContext(), SetupActivity.class));
-        } else if((notesExists && keyExists) || (!notesExists && keyExists)) {
+        if((isNotesExists && keyExists) || (!isNotesExists && keyExists)) {
             if(Config.pinCode != null){
                 if(Storage.isFileExists(getApplicationContext(), Config.notesJsonFilename)) {
                     convertJsonToDatabase();
                 }
 
-                add_note_button.setVisibility(View.VISIBLE);
+                addNoteButton.setVisibility(View.VISIBLE);
                 settingsButton.setVisibility(View.VISIBLE);
 
                 fillTable();
             } else {
-                startActivity(ActivityTools.getIntent(this, AccessActivity.class));
+                startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
             }
-        } else {
+        }
+
+        if(isNotesExists && !keyExists) {
             startActivity(ActivityTools.getIntent(getApplicationContext(), RecoveryActivity.class));
+        }
+
+        if(!isNotesExists && !keyExists) {
+            startActivity(ActivityTools.getIntent(getApplicationContext(), SetupActivity.class));
         }
     }
 
-    public void fillTable() throws Exception {
+    private void fillTable() throws Exception {
         TableLayout notesTable = findViewById(R.id.notes_table);
 
         notes = Notes.getNotes(getApplicationContext());

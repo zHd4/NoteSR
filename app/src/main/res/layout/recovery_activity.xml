@@ -31,15 +31,14 @@
 
     <Button
         android:id="@+id/decryptButton"
-        android:layout_width="350dp"
+        android:layout_width="360dp"
         android:layout_height="52dp"
         android:background="@color/button_background"
         android:text="@string/decrypt"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.557"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.991" />
+        app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

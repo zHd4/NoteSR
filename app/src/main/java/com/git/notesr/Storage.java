@@ -23,14 +23,16 @@ public class Storage extends Application {
     }
 
     public static boolean isFileExists(Context context, String filename) {
-        File file = new File(context.getFilesDir(), filename);
+        File internalStorage = new File(context.getFilesDir(), Config.internalStoragePath);
+        File file = new File(internalStorage, filename);
+
         return file.exists();
     }
 
     public static String readFile(Context context, String filename) {
         String result = "";
 
-        File file = new File(context.getFilesDir(),"storage");
+        File file = new File(context.getFilesDir(), Config.internalStoragePath);
 
         if(!file.exists()) {
             file.mkdir();
@@ -54,15 +56,15 @@ public class Storage extends Application {
     }
 
     public static void writeFile(Context context, String filename, String data) {
-        File file = new File(context.getFilesDir(),"storage");
+        File internalStorage = new File(context.getFilesDir(), Config.internalStoragePath);
 
-        if(!file.exists()) {
-            file.mkdir();
+        if(!internalStorage.exists()) {
+            internalStorage.mkdir();
         }
 
         try {
-            File gpxfile = new File(file, filename);
-            FileWriter writer = new FileWriter(gpxfile);
+            File file = new File(internalStorage, filename);
+            FileWriter writer = new FileWriter(file);
 
             writer.write(data.replace("\n", "@###@~@###@"));
             writer.flush();
@@ -71,6 +73,13 @@ public class Storage extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void deleteFile(Context context, String filename) {
+        File internalStorage = new File(context.getFilesDir(), Config.internalStoragePath);
+        File file = new File(internalStorage, filename);
+
+        file.delete();
     }
 
     public static String externalReadFile(File file) {
