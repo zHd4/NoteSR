@@ -76,8 +76,8 @@ public class ActivityTools extends AppCompatActivity {
         if (Storage.isExternalStorageAvailable() && !Storage.isExternalStorageReadOnly()) {
             String aesPassword = md5(Config.pinCode);
 
-            Storage.writeFile(context,Config.keyBinFileName, AES.Encrypt(Config.aesKey, //getAppContext()
-                    AES.GenKey(aesPassword, md5(aesPassword))));
+            Storage.writeFile(context,Config.keyBinFileName, AES.encrypt(Config.aesKey, //getAppContext()
+                    AES.genKey(aesPassword, md5(aesPassword))));
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
@@ -91,7 +91,7 @@ public class ActivityTools extends AppCompatActivity {
 
             try{
                 String aesPassword = md5(pin);
-                String aesKey = AES.Decrypt(encryptedKey, AES.GenKey(aesPassword,
+                String aesKey = AES.decrypt(encryptedKey, AES.genKey(aesPassword,
                         md5(aesPassword)));
 
                 Config.aesKey = aesKey;

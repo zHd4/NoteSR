@@ -9,12 +9,12 @@ public class Notes {
         Database db = new Database(context);
         String[][] notes = db.getAllNotes();
 
-        if(!notes.equals(new String[0][0])) {
+        if(!notes.equals(new String[0][0]) && Config.aesKey != null) {
             byte[] key = Base64.decode(Config.aesKey, Base64.DEFAULT);
 
             for(int i = 0; i < notes.length; i++) {
-                notes[i][0] = AES.Decrypt(notes[i][0], key);
-                notes[i][1] = AES.Decrypt(notes[i][1], key);
+                notes[i][0] = AES.decrypt(notes[i][0], key);
+                notes[i][1] = AES.decrypt(notes[i][1], key);
             }
 
             return notes;
@@ -28,8 +28,8 @@ public class Notes {
         byte[] key = Base64.decode(Config.aesKey, Base64.DEFAULT);
 
         for(int i = 0; i < notes.length; i++) {
-            notes[i][0] = AES.Encrypt(notes[i][0], key);
-            notes[i][1] = AES.Encrypt(notes[i][1], key);
+            notes[i][0] = AES.encrypt(notes[i][0], key);
+            notes[i][1] = AES.encrypt(notes[i][1], key);
         }
 
         db.setAllNotes(notes);

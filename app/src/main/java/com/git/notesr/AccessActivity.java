@@ -28,6 +28,7 @@ public class AccessActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.access_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         final Button pinButtonBackspace = findViewById(R.id.pinButtonBackspace);
@@ -130,7 +131,7 @@ public class AccessActivity extends AppCompatActivity {
                 }
             } else {
                 File dir = new File(getFilesDir(), "storage");
-                File file = new File(dir, "key.bin");
+                File file = new File(dir, Config.keyBinFileName);
                 file.delete();
 
                 android.os.Process.killProcess(android.os.Process.myPid());

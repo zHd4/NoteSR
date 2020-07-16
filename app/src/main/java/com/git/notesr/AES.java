@@ -20,41 +20,50 @@ public class AES {
     private static final String secretKeyInstance = "PBKDF2WithHmacSHA1";
     private static final String initializationVector = "8119745113154120";
 
-    public static String Encrypt(String textToEncrypt, byte[] key) throws Exception {
+    public static String encrypt(String textToEncrypt, byte[] key) throws Exception {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(cypherInstance);
 
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec,
-                new IvParameterSpec(initializationVector.getBytes()));
+        cipher.init(
+                Cipher.ENCRYPT_MODE,
+                skeySpec,
+                new IvParameterSpec(initializationVector.getBytes())
+        );
 
         byte[] encrypted = cipher.doFinal(textToEncrypt.getBytes());
 
         return Base64.encodeToString(encrypted, Base64.DEFAULT);
     }
 
-    public static String Decrypt(String textToDecrypt, byte[] key) throws Exception {
+    public static String decrypt(String textToDecrypt, byte[] key) throws Exception {
 
         byte[] encryted_bytes = Base64.decode(textToDecrypt, Base64.DEFAULT);
 
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(cypherInstance);
 
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec,
-                new IvParameterSpec(initializationVector.getBytes()));
+        cipher.init(
+                Cipher.DECRYPT_MODE,
+                skeySpec,
+                new IvParameterSpec(initializationVector.getBytes())
+        );
 
         byte[] decrypted = cipher.doFinal(encryted_bytes);
 
         return new String(decrypted, StandardCharsets.UTF_8);
     }
 
-    public static byte[] GenKey(String plainText, String salt) {
+    public static byte[] genKey(String plainText, String salt) {
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance(secretKeyInstance);
-            KeySpec spec = new PBEKeySpec(plainText.toCharArray(), salt.getBytes(),
-                    plainText.length(), keySize);
+            KeySpec spec = new PBEKeySpec(
+                    plainText.toCharArray(),
+                    salt.getBytes(),
+                    plainText.length(),
+                    keySize
+            );
 
             return factory.generateSecret(spec).getEncoded();
-
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }

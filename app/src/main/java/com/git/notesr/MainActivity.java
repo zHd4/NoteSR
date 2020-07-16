@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -105,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         if(!notesExists && !keyExists) {
             startActivity(ActivityTools.getIntent(getApplicationContext(), SetupActivity.class));
         } else if((notesExists && keyExists) || (!notesExists && keyExists)) {
-            if(Config.pinCode.length() > 0){
+            if(Config.pinCode != null){
                 if(Storage.isFileExists(getApplicationContext(), Config.notesJsonFilename)) {
                     convertJsonToDatabase();
                 }
@@ -126,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
         TableLayout notesTable = findViewById(R.id.notes_table);
 
         notes = Notes.getNotes(getApplicationContext());
-        Log.e("Notes Length", String.valueOf(notes.length));
 
         int noteColor = Color.rgb(25, 28, 33);
         int beforeLineColor = Color.rgb(9, 10, 13);
@@ -188,13 +186,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void convertJsonToDatabase() throws Exception {
         String notesData = Storage.readFile(getApplicationContext(), Config.notesJsonFilename);
-        String decryptedNotes = AES.Decrypt(
+        String decryptedNotes = AES.decrypt(
                 notesData,
                 Base64.decode(Config.aesKey, Base64.DEFAULT)
         );
 
         Database db = new Database(getApplicationContext());
 
-        db.importFromJsonString(decryptedNotes);
+        db.importFromJsonString(getApplicationContext(), decryptedNotes);
     }
 }

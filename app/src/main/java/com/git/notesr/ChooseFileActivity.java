@@ -51,14 +51,16 @@ public class ChooseFileActivity extends AppCompatActivity {
 
                 if (notesData.length() > 0) {
                     try {
-                        String decryptedNotes = AES.Decrypt(
+                        String decryptedNotes = AES.decrypt(
                                 notesData,
                                 Base64.decode(Config.aesKey, Base64.DEFAULT)
                         );
 
                         Database db = new Database(getApplicationContext());
 
-                        db.importFromJsonString(decryptedNotes);
+                        db.importFromJsonString(getApplicationContext(), decryptedNotes);
+                        startActivity(ActivityTools.getIntent(getApplicationContext(),
+                                MainActivity.class));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

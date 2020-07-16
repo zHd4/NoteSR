@@ -56,7 +56,7 @@ public class GenkeysActivity extends AppCompatActivity {
 
         try {
             String randKey = ActivityTools.randomString(2048);
-            Config.aesKey = Base64.encodeToString(AES.GenKey(randKey, ActivityTools.md5(randKey)),
+            Config.aesKey = Base64.encodeToString(AES.genKey(randKey, ActivityTools.md5(randKey)),
                     Base64.DEFAULT);
 
             visualKey = ActivityTools.keyToHex(randKey);

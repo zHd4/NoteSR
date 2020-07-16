@@ -50,8 +50,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    String notesData = AES.Encrypt(
-                            db.exportToJsonString(),
+                    String notesData = AES.encrypt(
+                            db.exportToJsonString(getApplicationContext()),
                             Base64.decode(Config.aesKey, Base64.DEFAULT)
                     );
 
@@ -86,8 +86,8 @@ public class SettingsActivity extends AppCompatActivity {
                                     Environment.DIRECTORY_DOWNLOADS),
                             String.format("notesr_export_" + datetime + ".nsrbak"));
 
-                    String notesData = AES.Encrypt(
-                            db.exportToJsonString(),
+                    String notesData = AES.encrypt(
+                            db.exportToJsonString(getApplicationContext()),
                             Base64.decode(Config.aesKey, Base64.DEFAULT)
                     );
 
@@ -102,7 +102,8 @@ public class SettingsActivity extends AppCompatActivity {
 
                         ActivityTools.showTextMessage(
                                 "Please allow storage access and try again",
-                                Toast.LENGTH_SHORT, getApplicationContext()
+                                Toast.LENGTH_SHORT,
+                                getApplicationContext()
                         );
                     }
                 } catch (Exception e) {
@@ -118,14 +119,15 @@ public class SettingsActivity extends AppCompatActivity {
 
                 if (notesData.length() > 0) {
                     try {
-                        String decryptedNotes = AES.Decrypt(
+                        Database db = new Database(getApplicationContext());
+                        String decryptedNotes = AES.decrypt(
                                 notesData,
                                 Base64.decode(Config.aesKey, Base64.DEFAULT)
-                        );
+                        ).replace("\\n", "");
 
-                        Database db = new Database(getApplicationContext());
-
-                        db.importFromJsonString(decryptedNotes);
+                        db.importFromJsonString(getApplicationContext(), decryptedNotes);
+                        startActivity(ActivityTools.getIntent(getApplicationContext(),
+                                MainActivity.class));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

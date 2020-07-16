@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -85,9 +84,9 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public String exportToJsonString() throws JSONException {
+    public String exportToJsonString(Context context) throws Exception {
         JSONArray jsonNotes = new JSONArray();
-        String[][] notes = getAllNotes();
+        String[][] notes = Notes.getNotes(context);
 
         for(int i = 0; i < notes.length; i++) {
             JSONObject note = new JSONObject();
@@ -101,7 +100,7 @@ public class Database extends SQLiteOpenHelper {
         return jsonNotes.toString();
     }
 
-    public void importFromJsonString(String jsonString) throws JSONException {
+    public void importFromJsonString(Context context, String jsonString) throws Exception {
         String[][] notes = new String[0][0];
         JSONArray jsonNotes = new JSONArray(jsonString);
 
@@ -115,7 +114,7 @@ public class Database extends SQLiteOpenHelper {
             };
         }
 
-        setAllNotes(notes);
+        Notes.setNotes(context, notes);
     }
 
     @Override
