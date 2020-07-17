@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activity_background">
+    android:background="@color/activityBackground">
 
     <Button
         android:id="@+id/getStartedButton"
         android:layout_width="411dp"
         android:layout_height="50dp"
-        android:background="@color/button_background"
+        android:background="@color/buttonBackground"
         android:freezesText="false"
         android:text="@string/get_started"
         android:textColor="#FFFFFF"

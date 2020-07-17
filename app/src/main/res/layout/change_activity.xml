@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activity_background">
+    android:background="@color/activityBackground">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/apply_button"
@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:background="@color/ripple_button_background"
-        android:backgroundTint="@color/ripple_button_background"
+        android:background="@color/buttonBackground"
+        android:backgroundTint="@color/buttonBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -30,7 +30,7 @@
         android:hint="@string/title"
         android:inputType="textPersonName"
         android:textColor="#FFFFFF"
-        android:textColorHighlight="@color/colorPrimaryDark"
+        android:textColorHighlight="@color/selectText"
         android:textColorHint="#8F8F8F"
         android:textColorLink="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -49,7 +49,7 @@
         android:lines="25"
         android:minLines="6"
         android:textColor="#FFFFFF"
-        android:textColorHighlight="@color/colorPrimaryDark"
+        android:textColorHighlight="@color/selectText"
         android:textColorHint="#8F8F8F"
         android:textColorLink="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

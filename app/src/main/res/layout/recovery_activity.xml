@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activity_background">
+    android:background="@color/activityBackground">
 
     <EditText
         android:id="@+id/keyText"
@@ -19,7 +19,7 @@
         android:scrollbarThumbHorizontal="@android:color/background_light"
         android:scrollbarThumbVertical="@android:color/background_light"
         android:textColor="#FFFFFF"
-        android:textColorHighlight="@color/colorPrimaryDark"
+        android:textColorHighlight="@color/selectText"
         android:textColorHint="#8F8F8F"
         android:textColorLink="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -33,7 +33,7 @@
         android:id="@+id/decryptButton"
         android:layout_width="360dp"
         android:layout_height="52dp"
-        android:background="@color/button_background"
+        android:background="@color/buttonBackground"
         android:text="@string/decrypt"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

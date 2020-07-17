@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
 
         notes = Notes.getNotes(getApplicationContext());
 
-        int noteColor = Color.rgb(25, 28, 33);
-        int beforeLineColor = Color.rgb(9, 10, 13);
+        int noteColor = Color.rgb(37, 40, 47);
+        int beforeLineColor = Color.rgb(25, 28, 33);
 
         if (!notes.equals(new String[0][0])) {
             for (int i = 0; i < notes.length; i++) {
