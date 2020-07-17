@@ -174,14 +174,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void convertJsonToDatabase() throws Exception {
+        Database db = new Database(getApplicationContext());
         String notesData = Storage.readFile(getApplicationContext(), Config.notesJsonFilename);
         String decryptedNotes = AES.decrypt(
                 notesData,
                 Base64.decode(Config.aesKey, Base64.DEFAULT)
         );
 
-        Database db = new Database(getApplicationContext());
-
         db.importFromJsonString(getApplicationContext(), decryptedNotes);
+        Storage.deleteFile(getApplicationContext(), Config.notesJsonFilename);
     }
 }
