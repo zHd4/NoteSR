@@ -1,6 +1,11 @@
 package com.git.notesr;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -18,25 +23,52 @@ public class ChangeActivity extends AppCompatActivity {
     public static int noteId;
     public static String noteTitle;
 
+    private Context activityContext;
+
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE);
 
+        this.activityContext = this;
+
         final TextView titleText = findViewById(R.id.titleText);
         final TextView textText = findViewById(R.id.textText);
 
-        final FloatingActionButton apply_button = findViewById(R.id.apply_button);
+        final FloatingActionButton applyButton = findViewById(R.id.applyButton);
+        final FloatingActionButton deleteButton = findViewById(R.id.deleteButton);
+
+        final DialogInterface.OnClickListener deleteDialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(which == DialogInterface.BUTTON_POSITIVE) {
+                    try {
+                        Database db = new Database(getApplicationContext());
+                        byte[] key = Base64.decode(Config.aesKey, Base64.DEFAULT);
+
+                        db.deleteNote(AES.encrypt(noteTitle, key));
+
+                        startActivity(ActivityTools.getIntent(
+                                getApplicationContext(),
+                                MainActivity.class
+                        ));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
 
         if(arg == EDIT_NOTE){
             titleText.setText(noteTitle);
             textText.setText(MainActivity.notes[noteId][1]);
+            deleteButton.setVisibility(View.VISIBLE);
         }
 
-        apply_button.setOnClickListener(new View.OnClickListener() {
+        applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!titleText.getText().toString().equals("") &&
@@ -60,6 +92,21 @@ public class ChangeActivity extends AppCompatActivity {
 
                     startActivity(ActivityTools.getIntent(getApplicationContext(),
                             MainActivity.class));
+                }
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(arg == EDIT_NOTE) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+
+                    builder.setMessage("If you press 'Yes', you cannot undo this action.\n" +
+                            "Are you sure?")
+                            .setPositiveButton("Yes", deleteDialogClickListener)
+                            .setNegativeButton("No", deleteDialogClickListener)
+                            .show();
                 }
             }
         });

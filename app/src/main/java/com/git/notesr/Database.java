@@ -82,6 +82,11 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    public void deleteNote(String title) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(String.format("DELETE FROM %s WHERE %s='%s'", TABLE_NOTES, KEY_TITLE, title));
+    }
+
     public String exportToJsonString(Context context) throws Exception {
         JSONArray jsonNotes = new JSONArray();
         String[][] notes = Notes.getNotes(context);
