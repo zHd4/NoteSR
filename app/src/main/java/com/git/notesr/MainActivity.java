@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
         int noteColor = Color.rgb(37, 40, 47);
         int beforeLineColor = Color.rgb(25, 28, 33);
 
+        final int maxTitleVisualSize = 24;
+
         if (!notes.equals(new String[0][0])) {
             for (int i = 0; i < notes.length; i++) {
                 TableRow trData = new TableRow(this);
@@ -112,8 +114,18 @@ public class MainActivity extends AppCompatActivity {
 
                 final TextView notesElement = new TextView(this);
 
+                String title = notes[i][0];
+
+                if(title.length() > maxTitleVisualSize) {
+                    title = title.substring(0, maxTitleVisualSize) + "...";
+                }
+
                 notesElement.setId(i);
-                notesElement.setText(notes[i][0]);
+
+                notesElement.setText(notes[i][0].length() > maxTitleVisualSize
+                        ? notes[i][0].substring(0, maxTitleVisualSize) + "..."
+                        : notes[i][0]);
+
                 notesElement.setTextColor(Color.WHITE);
                 notesElement.setTextSize(24);
                 notesElement.setPadding(15, 35, 15, 35);
@@ -139,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         int id = finalIndex;
-                        String noteTitle = notesElement.getText().toString();
+                        String noteTitle = notes[id][0];
 
                         ChangeActivity.noteId = id;
                         ChangeActivity.noteTitle = noteTitle;
