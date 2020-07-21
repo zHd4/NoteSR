@@ -36,7 +36,7 @@ public class AES {
 
     public static String decrypt(String textToDecrypt, byte[] key) throws Exception {
 
-        byte[] encryted_bytes = Base64.decode(textToDecrypt, Base64.DEFAULT);
+        byte[] encrytedBytes = Base64.decode(textToDecrypt, Base64.DEFAULT);
 
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(cypherInstance);
@@ -47,7 +47,7 @@ public class AES {
                 new IvParameterSpec(initializationVector.getBytes())
         );
 
-        byte[] decrypted = cipher.doFinal(encryted_bytes);
+        byte[] decrypted = cipher.doFinal(encrytedBytes);
 
         return new String(decrypted, StandardCharsets.UTF_8);
     }
