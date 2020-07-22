@@ -9,12 +9,12 @@ public class Notes {
         Database db = new Database(context);
         String[][] notes = db.getAllNotes();
 
-        if(!notes.equals(new String[0][0]) && Config.aesKey != null) {
-            byte[] key = Base64.decode(Config.aesKey, Base64.DEFAULT);
+        if(!notes.equals(new String[0][0]) && Config.cryptoKey != null) {
+            byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
             for(int i = 0; i < notes.length; i++) {
-                notes[i][0] = AES.decrypt(notes[i][0], key);
-                notes[i][1] = AES.decrypt(notes[i][1], key);
+                notes[i][0] = Crypto.decrypt(notes[i][0], ActivityTools.sha256(Config.cryptoKey), key);
+                notes[i][1] = Crypto.decrypt(notes[i][1], ActivityTools.sha256(Config.cryptoKey), key);
             }
 
             return notes;
@@ -25,11 +25,11 @@ public class Notes {
 
     public static void setNotes(Context context, String[][] notes) throws Exception {
         Database db = new Database(context);
-        byte[] key = Base64.decode(Config.aesKey, Base64.DEFAULT);
+        byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
         for(int i = 0; i < notes.length; i++) {
-            notes[i][0] = AES.encrypt(notes[i][0], key);
-            notes[i][1] = AES.encrypt(notes[i][1], key);
+            notes[i][0] = Crypto.encrypt(notes[i][0], ActivityTools.sha256(Config.cryptoKey), key);
+            notes[i][1] = Crypto.encrypt(notes[i][1], ActivityTools.sha256(Config.cryptoKey), key);
         }
 
         db.setAllNotes(notes);

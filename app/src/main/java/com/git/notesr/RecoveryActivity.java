@@ -26,12 +26,12 @@ public class RecoveryActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try {
                     String keyString = ActivityTools.hexToKey(keyText.getText().toString());
-                    byte[] key = AES.genKey(keyString, ActivityTools.md5(keyString));
+                    byte[] key = Base64.decode(keyString, Base64.DEFAULT);
                     Database db = new Database(getApplicationContext());
 
-                    AES.decrypt(db.getAllNotes()[0][0], key);
+                    Crypto.decrypt(db.getAllNotes()[0][0], ActivityTools.sha256(keyString), key);
 
-                    Config.aesKey = Base64.encodeToString(key, Base64.DEFAULT);
+                    Config.cryptoKey = Base64.encodeToString(key, Base64.DEFAULT);
                     AccessActivity.operation = AccessActivity.CREATE_PIN;
 
                     startActivity(ActivityTools.getIntent(

@@ -8,10 +8,13 @@ import android.content.Intent;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
+@SuppressLint("Registered")
 public class ActivityTools extends AppCompatActivity {
 
     @SuppressLint("StaticFieldLeak")
@@ -72,10 +75,13 @@ public class ActivityTools extends AppCompatActivity {
 
     public static void saveKey(Context context) throws Exception {
         if (Storage.isExternalStorageAvailable() && !Storage.isExternalStorageReadOnly()) {
-            String aesPassword = md5(Config.pinCode);
+            String cryptoPassword = md5(Config.pinCode);
 
-            Storage.writeFile(context,Config.keyBinFileName, AES.encrypt(Config.aesKey, //getAppContext()
-                    AES.genKey(aesPassword, md5(aesPassword))));
+            Storage.writeFile(context,Config.keyBinFileName, Crypto.encrypt(
+                    Config.cryptoKey,
+                    md5(cryptoPassword),
+                    Crypto.genKey(cryptoPassword, Crypto.NEW_KEY_SIZE)
+            ));
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
@@ -88,11 +94,15 @@ public class ActivityTools extends AppCompatActivity {
             String encryptedKey = Storage.readFile(context,Config.keyBinFileName);
 
             try{
-                String aesPassword = md5(pin);
-                String aesKey = AES.decrypt(encryptedKey, AES.genKey(aesPassword,
-                        md5(aesPassword)));
+                String cryptoPassword = md5(pin);
+                
+                String cryptoKey = Crypto.decrypt(
+                        encryptedKey, 
+                        md5(cryptoPassword), 
+                        Crypto.genKey(cryptoPassword, Crypto.NEW_KEY_SIZE)
+                );
 
-                Config.aesKey = aesKey;
+                Config.cryptoKey = cryptoKey;
                 Config.pinCode = pin;
 
                 return true;
@@ -108,6 +118,26 @@ public class ActivityTools extends AppCompatActivity {
             System.exit(1);
 
             return false;
+        }
+    }
+
+    public static String sha256(String text) {
+        try {
+            StringBuffer hexString = new StringBuffer();
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(text.getBytes(StandardCharsets.UTF_8));
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 

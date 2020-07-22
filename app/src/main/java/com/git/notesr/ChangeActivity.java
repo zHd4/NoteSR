@@ -47,9 +47,9 @@ public class ChangeActivity extends AppCompatActivity {
                 if(which == DialogInterface.BUTTON_POSITIVE) {
                     try {
                         Database db = new Database(getApplicationContext());
-                        byte[] key = Base64.decode(Config.aesKey, Base64.DEFAULT);
+                        byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
-                        db.deleteNote(AES.encrypt(noteTitle, key));
+                        db.deleteNote(Crypto.encrypt(noteTitle, ActivityTools.sha256(Config.cryptoKey), key));
 
                         startActivity(ActivityTools.getIntent(
                                 getApplicationContext(),

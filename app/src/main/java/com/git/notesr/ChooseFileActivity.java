@@ -48,9 +48,10 @@ public class ChooseFileActivity extends AppCompatActivity {
 
                 if (notesData.length() > 0) {
                     try {
-                        String decryptedNotes = AES.decrypt(
+                        String decryptedNotes = Crypto.decrypt(
                                 notesData,
-                                Base64.decode(Config.aesKey, Base64.DEFAULT)
+                                ActivityTools.sha256(Config.cryptoKey),
+                                Base64.decode(Config.cryptoKey, Base64.DEFAULT)
                         );
 
                         Database db = new Database(getApplicationContext());

@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if((isNotesExists && keyExists) || (!isNotesExists && keyExists)) {
             if(Config.pinCode != null){
                 if(Storage.isFileExists(getApplicationContext(), Config.notesJsonFilename)) {
-                    convertJsonToDatabase();
+                    convertJsonToDatabaseCrypto();
                 }
 
                 addNoteButton.setVisibility(View.VISIBLE);
@@ -168,12 +168,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void convertJsonToDatabase() throws Exception {
+    private void convertJsonToDatabaseCrypto() throws Exception {
         Database db = new Database(getApplicationContext());
         String notesData = Storage.readFile(getApplicationContext(), Config.notesJsonFilename);
-        String decryptedNotes = AES.decrypt(
+
+        String decryptedNotes = Crypto.decrypt(
                 notesData,
-                Base64.decode(Config.aesKey, Base64.DEFAULT)
+                ActivityTools.sha256(Config.cryptoKey),
+                Base64.decode(Config.cryptoKey, Base64.DEFAULT)
         );
 
         db.importFromJsonString(getApplicationContext(), decryptedNotes);

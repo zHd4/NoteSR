@@ -1,7 +1,7 @@
 package com.git.notesr;
 
 public class Config {
-    public static String aesKey;
+    public static String cryptoKey;
     public static String pinCode;
 
     public static final String internalStoragePath = "storage";

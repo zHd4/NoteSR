@@ -12,6 +12,17 @@ public class Crypto {
     public static int OLD_KEY_SIZE = 128;
     public static int NEW_KEY_SIZE = 2048;
 
+    public static byte[] genKey(int keySize) {
+        try {
+            KeyGenerator keyGenerator = new KeyGenerator(keySize);
+            return keyGenerator.createKey();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return new byte[0];
+    }
+
     public static byte[] genKey(String passphrase, int keySize) {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(keySize);

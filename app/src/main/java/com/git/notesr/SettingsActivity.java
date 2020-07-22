@@ -48,9 +48,10 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    String notesData = AES.encrypt(
+                    String notesData = Crypto.encrypt(
                             db.exportToJsonString(getApplicationContext()),
-                            Base64.decode(Config.aesKey, Base64.DEFAULT)
+                            ActivityTools.sha256(Config.cryptoKey),
+                            Base64.decode(Config.cryptoKey, Base64.DEFAULT)
                     );
 
                     ActivityTools.clipboard = (ClipboardManager)
@@ -84,9 +85,10 @@ public class SettingsActivity extends AppCompatActivity {
                                     Environment.DIRECTORY_DOWNLOADS),
                             String.format("notesr_export_" + datetime + ".nsrbak"));
 
-                    String notesData = AES.encrypt(
+                    String notesData = Crypto.encrypt(
                             db.exportToJsonString(getApplicationContext()),
-                            Base64.decode(Config.aesKey, Base64.DEFAULT)
+                            ActivityTools.sha256(Config.cryptoKey),
+                            Base64.decode(Config.cryptoKey, Base64.DEFAULT)
                     );
 
                     if (Storage.externalWriteFile(path, notesData)) {
@@ -118,9 +120,10 @@ public class SettingsActivity extends AppCompatActivity {
                 if (notesData.length() > 0) {
                     try {
                         Database db = new Database(getApplicationContext());
-                        String decryptedNotes = AES.decrypt(
+                        String decryptedNotes = Crypto.decrypt(
                                 notesData,
-                                Base64.decode(Config.aesKey, Base64.DEFAULT)
+                                ActivityTools.sha256(Config.cryptoKey),
+                                Base64.decode(Config.cryptoKey, Base64.DEFAULT)
                         ).replace("\\n", "");
 
                         db.importFromJsonString(getApplicationContext(), decryptedNotes);
