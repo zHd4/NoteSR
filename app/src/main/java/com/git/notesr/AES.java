@@ -35,7 +35,6 @@ public class AES {
     }
 
     public static String decrypt(String textToDecrypt, byte[] key) throws Exception {
-
         byte[] encrytedBytes = Base64.decode(textToDecrypt, Base64.DEFAULT);
 
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
