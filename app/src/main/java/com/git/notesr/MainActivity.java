@@ -71,10 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
         if((isNotesExists && keyExists) || (!isNotesExists && keyExists)) {
             if(Config.pinCode != null){
-                if(Storage.isFileExists(getApplicationContext(), Config.notesJsonFilename)) {
-                    convertJsonToDatabaseCrypto();
-                }
-
                 addNoteButton.setVisibility(View.VISIBLE);
                 settingsButton.setVisibility(View.VISIBLE);
 
@@ -101,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         int noteColor = Color.rgb(37, 40, 47);
         int beforeLineColor = Color.rgb(25, 28, 33);
 
-        final int maxTitleVisualSize = 24;
+        final int maxTitleVisualSize = 28;
 
         if (!notes.equals(new String[0][0])) {
             for (int i = 0; i < notes.length; i++) {
@@ -166,19 +162,5 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }
-    }
-
-    private void convertJsonToDatabaseCrypto() throws Exception {
-        Database db = new Database(getApplicationContext());
-        String notesData = Storage.readFile(getApplicationContext(), Config.notesJsonFilename);
-
-        String decryptedNotes = Crypto.decrypt(
-                notesData,
-                ActivityTools.sha256(Config.cryptoKey),
-                Base64.decode(Config.cryptoKey, Base64.DEFAULT)
-        );
-
-        db.importFromJsonString(getApplicationContext(), decryptedNotes);
-        Storage.deleteFile(getApplicationContext(), Config.notesJsonFilename);
     }
 }

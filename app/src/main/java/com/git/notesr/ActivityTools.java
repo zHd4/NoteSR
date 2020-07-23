@@ -80,7 +80,7 @@ public class ActivityTools extends AppCompatActivity {
             Storage.writeFile(context,Config.keyBinFileName, Crypto.encrypt(
                     Config.cryptoKey,
                     md5(cryptoPassword),
-                    Crypto.genKey(cryptoPassword, Crypto.NEW_KEY_SIZE)
+                    Crypto.genKey(cryptoPassword)
             ));
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -99,7 +99,7 @@ public class ActivityTools extends AppCompatActivity {
                 String cryptoKey = Crypto.decrypt(
                         encryptedKey, 
                         md5(cryptoPassword), 
-                        Crypto.genKey(cryptoPassword, Crypto.NEW_KEY_SIZE)
+                        Crypto.genKey(cryptoPassword)
                 );
 
                 Config.cryptoKey = cryptoKey;

@@ -55,13 +55,12 @@ public class GenkeysActivity extends AppCompatActivity {
         });
 
         try {
-            Config.cryptoKey = Base64.encodeToString(Crypto.genKey(Crypto.NEW_KEY_SIZE), Base64.DEFAULT);
+            Config.cryptoKey = Base64.encodeToString(Crypto.genKey(), Base64.DEFAULT);
             visualKey = ActivityTools.keyToHex(Config.cryptoKey);
 
-            pKey.setText(String.format("%s...", visualKey.substring(0, 100)));
+            pKey.setText(visualKey);
         } catch (Exception e) {
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
+            e.printStackTrace();
         }
     }
 }
