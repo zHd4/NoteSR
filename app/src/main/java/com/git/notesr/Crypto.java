@@ -38,10 +38,14 @@ public class Crypto {
 
     public static String encrypt(String text, String salt, byte[] key) throws Exception {
         try {
-            CryptoProvider cryptoProvider = new CryptoProvider(key);
-            cryptoProvider.initializeVector(salt, IV_SIZE);
+            KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
+            CryptoProvider cryptoProvider = new CryptoProvider(keyGenerator.createKey(ActivityTools.sha256(
+                    Base64.encodeToString(key, Base64.DEFAULT)
+            )));
 
+            cryptoProvider.initializeVector(salt, IV_SIZE);
             text = AES.encrypt(text, key);
+
             return Base64.encodeToString(cryptoProvider.encrypt(text.getBytes()), Base64.DEFAULT);
         } catch (Exception e) {
             throw e;
@@ -50,9 +54,12 @@ public class Crypto {
 
     public static String decrypt(String encrypted, String salt, byte[] key) throws Exception {
         try {
-            CryptoProvider cryptoProvider = new CryptoProvider(key);
-            cryptoProvider.initializeVector(salt, IV_SIZE);
+            KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
+            CryptoProvider cryptoProvider = new CryptoProvider(keyGenerator.createKey(ActivityTools.sha256(
+                    Base64.encodeToString(key, Base64.DEFAULT)
+            )));
 
+            cryptoProvider.initializeVector(salt, IV_SIZE);
             encrypted = new String(
                     cryptoProvider.decrypt(Base64.decode(encrypted, Base64.DEFAULT)),
                     StandardCharsets.UTF_8
