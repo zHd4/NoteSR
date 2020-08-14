@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.git.notesr.models.ActivityTools;
+import com.git.notesr.models.Config;
+import com.git.notesr.models.Storage;
 
 public class AccessActivity extends AppCompatActivity {
     public static String enteredPin = "";

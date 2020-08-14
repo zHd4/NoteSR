@@ -1,4 +1,4 @@
-package com.git.notesr;
+package com.git.notesr.models;
 
 public class Config {
     public static String cryptoKey;

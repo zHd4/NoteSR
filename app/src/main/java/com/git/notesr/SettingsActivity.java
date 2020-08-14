@@ -13,6 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.git.notesr.controllers.Crypto;
+import com.git.notesr.controllers.Database;
+import com.git.notesr.models.ActivityTools;
+import com.git.notesr.models.Config;
+import com.git.notesr.models.Storage;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

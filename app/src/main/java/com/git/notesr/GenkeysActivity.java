@@ -13,6 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.git.notesr.controllers.Crypto;
+import com.git.notesr.models.ActivityTools;
+import com.git.notesr.models.Config;
 
 public class GenkeysActivity extends AppCompatActivity {
 

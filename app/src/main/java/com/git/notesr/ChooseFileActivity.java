@@ -7,6 +7,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
 import androidx.appcompat.app.AppCompatActivity;
+import com.git.notesr.controllers.Crypto;
+import com.git.notesr.controllers.Database;
+import com.git.notesr.models.ActivityTools;
+import com.git.notesr.models.Config;
+import com.git.notesr.models.Storage;
+
 import java.io.File;
 
 public class ChooseFileActivity extends AppCompatActivity {

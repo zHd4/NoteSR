@@ -1,4 +1,4 @@
-package com.git.notesr;
+package com.git.notesr.controllers;
 
 import android.util.Base64;
 

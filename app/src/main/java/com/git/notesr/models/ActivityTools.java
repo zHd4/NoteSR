@@ -1,4 +1,4 @@
-package com.git.notesr;
+package com.git.notesr.models;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import com.git.notesr.controllers.Crypto;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

@@ -12,6 +12,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.git.notesr.controllers.Database;
+import com.git.notesr.controllers.Notes;
+import com.git.notesr.models.ActivityTools;
+import com.git.notesr.models.Config;
+import com.git.notesr.models.Storage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {

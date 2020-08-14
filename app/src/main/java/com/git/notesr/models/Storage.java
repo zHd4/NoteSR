@@ -1,8 +1,9 @@
-package com.git.notesr;
+package com.git.notesr.models;
 
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

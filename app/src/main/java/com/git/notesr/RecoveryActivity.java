@@ -8,6 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.git.notesr.controllers.Crypto;
+import com.git.notesr.controllers.Database;
+import com.git.notesr.models.ActivityTools;
+import com.git.notesr.models.Config;
 
 public class RecoveryActivity extends AppCompatActivity {
 

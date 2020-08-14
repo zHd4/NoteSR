@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
+import com.git.notesr.models.ActivityTools;
 
 public class SetupActivity extends AppCompatActivity {
     @Override
