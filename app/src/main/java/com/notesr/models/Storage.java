@@ -1,4 +1,4 @@
-package com.git.notesr.models;
+package com.notesr.models;
 
 import android.app.Application;
 import android.content.Context;

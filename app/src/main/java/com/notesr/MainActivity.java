@@ -1,4 +1,4 @@
-package com.git.notesr;
+package com.notesr;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -9,14 +9,12 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.git.notesr.controllers.Database;
-import com.git.notesr.controllers.Notes;
-import com.git.notesr.models.ActivityTools;
-import com.git.notesr.models.Config;
-import com.git.notesr.models.Storage;
+import com.notesr.controllers.Database;
+import com.notesr.controllers.Notes;
+import com.notesr.models.ActivityTools;
+import com.notesr.models.Config;
+import com.notesr.models.Storage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {

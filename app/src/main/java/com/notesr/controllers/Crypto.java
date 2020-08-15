@@ -1,7 +1,7 @@
-package com.git.notesr.controllers;
+package com.notesr.controllers;
 
 import android.util.Base64;
-import com.git.notesr.models.ActivityTools;
+import com.notesr.models.ActivityTools;
 import com.git.notesr.encryption.provider.CryptoProvider;
 import com.git.notesr.encryption.provider.KeyGenerator;
 import com.git.notesr.encryption.provider.exceptions.CryptoKeyException;

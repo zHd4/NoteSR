@@ -1,4 +1,4 @@
-package com.git.notesr;
+package com.notesr;
 import android.Manifest;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,11 +7,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
 import androidx.appcompat.app.AppCompatActivity;
-import com.git.notesr.controllers.Crypto;
-import com.git.notesr.controllers.Database;
-import com.git.notesr.models.ActivityTools;
-import com.git.notesr.models.Config;
-import com.git.notesr.models.Storage;
+import com.notesr.controllers.Crypto;
+import com.notesr.controllers.Database;
+import com.notesr.models.ActivityTools;
+import com.notesr.models.Config;
+import com.notesr.models.Storage;
 
 import java.io.File;
 

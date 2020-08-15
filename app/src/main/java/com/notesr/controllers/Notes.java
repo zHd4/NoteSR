@@ -1,9 +1,9 @@
-package com.git.notesr.controllers;
+package com.notesr.controllers;
 
 import android.content.Context;
 import android.util.Base64;
-import com.git.notesr.models.ActivityTools;
-import com.git.notesr.models.Config;
+import com.notesr.models.ActivityTools;
+import com.notesr.models.Config;
 
 public class Notes {
 

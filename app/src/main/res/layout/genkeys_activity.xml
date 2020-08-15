@@ -6,6 +6,22 @@
     android:layout_height="match_parent"
     android:background="@color/activityBackground">
 
+    <EditText
+            android:id="@+id/importKeyField"
+            android:layout_width="300dp"
+            android:layout_height="53dp"
+            android:ems="10"
+            android:hint="@string/importKeyHere"
+            android:inputType="textPersonName"
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="@color/selectText"
+            android:textColorHint="#8F8F8F"
+            android:textColorLink="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.72"/>
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
@@ -33,17 +49,17 @@
         app:layout_constraintVertical_bias="0.07" />
 
     <TextView
-        android:id="@+id/pkeyView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/begin_rsa_private_key"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.386" />
+            android:id="@+id/labelKeyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/begin_rsa_private_key"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3"/>
 
     <Button
         android:id="@+id/copyToClipboardButton"

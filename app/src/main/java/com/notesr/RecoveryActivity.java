@@ -1,4 +1,4 @@
-package com.git.notesr;
+package com.notesr;
 
 import android.os.Bundle;
 import android.util.Base64;
@@ -6,12 +6,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.appcompat.app.AppCompatActivity;
-import com.git.notesr.controllers.Crypto;
-import com.git.notesr.controllers.Database;
-import com.git.notesr.models.ActivityTools;
-import com.git.notesr.models.Config;
+import com.notesr.controllers.Crypto;
+import com.notesr.controllers.Database;
+import com.notesr.models.ActivityTools;
+import com.notesr.models.Config;
 
 public class RecoveryActivity extends AppCompatActivity {
 
@@ -19,8 +18,7 @@ public class RecoveryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recovery_activity);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         final EditText keyText = findViewById(R.id.keyText);
         final Button decryptButton =  findViewById(R.id.decryptButton);

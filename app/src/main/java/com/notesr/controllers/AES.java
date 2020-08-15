@@ -1,7 +1,6 @@
-package com.git.notesr.controllers;
+package com.notesr.controllers;
 
 import android.util.Base64;
-
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;

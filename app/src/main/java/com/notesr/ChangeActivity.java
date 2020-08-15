@@ -1,4 +1,4 @@
-package com.git.notesr;
+package com.notesr;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -10,12 +10,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import com.git.notesr.controllers.Crypto;
-import com.git.notesr.controllers.Database;
-import com.git.notesr.controllers.Notes;
-import com.git.notesr.models.ActivityTools;
-import com.git.notesr.models.Config;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.notesr.controllers.Crypto;
+import com.notesr.controllers.Database;
+import com.notesr.controllers.Notes;
+import com.notesr.models.ActivityTools;
+import com.notesr.models.Config;
 
 import java.util.Arrays;
 
