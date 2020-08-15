@@ -1,2 +1,2 @@
-# com.notesr
+# NoteSR
 Designed by: https://t.me/Qfinel
