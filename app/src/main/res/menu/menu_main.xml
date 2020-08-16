@@ -3,19 +3,19 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.github.zhd4.fgps.MainActivity">
     <item android:id="@+id/exportToFile"
-          android:title="@string/exportbin_data"
+          android:title="@string/exportToFile"
           android:orderInCategory="100"
           app:showAsAction="never"/>
     <item android:id="@+id/importFromFile"
-          android:title="@string/importbin_data"
+          android:title="@string/importFromFile"
           android:orderInCategory="100"
           app:showAsAction="never"/>
     <item android:id="@+id/exportToClipoard"
-          android:title="@string/export_data"
+          android:title="@string/exportDataToClipboard"
           android:orderInCategory="100"
           app:showAsAction="never"/>
     <item android:id="@+id/importFromClipoard"
-          android:title="@string/import_data"
+          android:title="@string/importFromClipboard"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 </menu>

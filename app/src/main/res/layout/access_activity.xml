@@ -24,7 +24,7 @@
         android:id="@+id/acTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/enter_access_code"
+        android:text="@string/enterAccessCode"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -133,7 +133,7 @@ public class AccessActivity extends AppCompatActivity {
             final TextView formLabel = findViewById(R.id.acTextView);
 
             Config.pinCode = enteredPin;
-            formLabel.setText(R.string.repeat_access_code);
+            formLabel.setText(R.string.repeatAccessCode);
             operation = REPEAT_PIN;
 
             resetEnteredPin();

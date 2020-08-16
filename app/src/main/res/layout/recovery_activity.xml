@@ -12,7 +12,7 @@
         android:layout_height="575dp"
         android:ems="10"
         android:gravity="top|left"
-        android:hint="@string/paste_your_private_key"
+        android:hint="@string/pasteYourPrivateKey"
         android:inputType="textPersonName"
         android:lines="8"
         android:minLines="6"

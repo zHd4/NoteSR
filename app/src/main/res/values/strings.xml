@@ -1,42 +1,34 @@
 <resources>
-    <string name="app_name">NoteSR</string>
-    <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-
+    <string name="appName">NoteSR</string>
+    <string name="getStarted">GET STARTED</string>
     <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="get_started">GET STARTED</string>
-    <string name="backup_this_private_key_to_safe_place">Backup this private key to safe place</string>
-    <string name="begin_rsa_private_key">----- AES KEY -----</string>
+    <string name="backupPrivateKey">Backup this private key to safe place</string>
+    <string name="aesKey">----- AES KEY -----</string>
     <string name="importKeyHere">Or import key here</string>
-    <string name="copy_to_clipboard">COPY TO CLIPBOARD</string>
+    <string name="copyToClipboard">COPY TO CLIPBOARD</string>
     <string name="copied">Copied!</string>
-    <string name="without_key_you_cannot_restore_your_information">Without key you cannot restore your information</string>
-    <string name="enter_access_code">Enter access code</string>
-    <string name="repeat_access_code">Repeat access code</string>
-    <string name="no_notes">No Notes</string>
+    <string name="withoutKey">Without key you cannot restore your information</string>
+    <string name="enterAccessCode">Enter access code</string>
+    <string name="repeatAccessCode">Repeat access code</string>
     <string name="title">Title</string>
     <string name="text">Text</string>
-    <string name="five_spaces" />
     <string name="_1">1</string>
+    <string name="_2">2</string>
     <string name="_3">3</string>
-    <string name="_5">5</string>
-    <string name="_8">8</string>
     <string name="_4">4</string>
-    <string name="_7">7</string>
-    <string name="_9">9</string>
+    <string name="_5">5</string>
     <string name="_6">6</string>
+    <string name="_7">7</string>
+    <string name="_8">8</string>
+    <string name="_9">9</string>
     <string name="_0">0</string>
     <string name="backspace">⌫</string>
-    <string name="_2">2</string>
-    <string name="paste_your_private_key">Paste your private key</string>
+    <string name="pasteYourPrivateKey">Paste your private key</string>
     <string name="decrypt">Decrypt</string>
-    <string name="import_export">Import/Export</string>
-    <string name="export_data">Export to clipboard</string>
-    <string name="exportbin_data">Export to file</string>
-    <string name="paste_your_encrypted_data">Paste your encrypted data</string>
-    <string name="import_data">Import from clipboard</string>
+    <string name="exportDataToClipboard">Export to clipboard</string>
+    <string name="exportToFile">Export to file</string>
+    <string name="pasteYourEncryptedData">Paste your encrypted data</string>
+    <string name="importFromClipboard">Import from clipboard</string>
     <string name="importData">IMPORT DATA</string>
-    <string name="importbin_data">Import from file</string>
+    <string name="importFromFile">Import from file</string>
 </resources>

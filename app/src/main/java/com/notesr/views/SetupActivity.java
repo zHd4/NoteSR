@@ -19,9 +19,9 @@ public class SetupActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SECURE
         );
 
-        Button get_started_button = findViewById(R.id.getStartedButton);
+        Button getStartedButton = findViewById(R.id.getStartedButton);
 
-        get_started_button.setOnClickListener(new View.OnClickListener() {
+        getStartedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(ActivityTools.getIntent(
