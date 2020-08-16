@@ -3,9 +3,10 @@ package com.notesr.views;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -48,22 +49,29 @@ public class MainActivity extends AppCompatActivity {
                 ));
             }
         });
+    }
 
-        Button settingsButton = findViewById(R.id.settingsButton);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(
-                        ActivityTools.getIntent(getApplicationContext(), SettingsActivity.class)
-                );
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.importExport) {
+            startActivity(ActivityTools.getIntent(getApplicationContext(), SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressLint("RestrictedApi")
     private void configureForm() throws Exception {
         Database db = new Database(getApplicationContext());
-        Button settingsButton = findViewById(R.id.settingsButton);
         FloatingActionButton addNoteButton = findViewById(R.id.add_note_button);
 
         boolean isNotesExists = db.getAllNotes().length > 0;
@@ -75,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         if((isNotesExists && keyExists) || (!isNotesExists && keyExists)) {
             if(Config.pinCode != null){
                 addNoteButton.setVisibility(View.VISIBLE);
-                settingsButton.setVisibility(View.VISIBLE);
 
                 fillTable();
             } else {

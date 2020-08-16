@@ -7,6 +7,23 @@
     android:background="@color/activityBackground"
     tools:context="com.notesr.views.MainActivity">
 
+    <!--com.google.android.material.appbar.AppBarLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:theme="@style/AppTheme.AppBarOverlay" android:id="@+id/appBarLayout"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
+            android:layout_marginBottom="675dp">
+
+        <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/buttonBackground"
+                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+    </com.google.android.material.appbar.AppBarLayout-->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_note_button"
         android:layout_width="wrap_content"
@@ -27,20 +44,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <Button
-                android:id="@+id/settingsButton"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:background="@color/activityBackground"
-                android:text="@string/import_export"
-                android:textColor="#FFFFFF"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.88" />
 
             <TableLayout
                 android:id="@+id/notes_table"
