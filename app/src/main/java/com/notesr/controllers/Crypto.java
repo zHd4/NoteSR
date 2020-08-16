@@ -2,9 +2,9 @@ package com.notesr.controllers;
 
 import android.util.Base64;
 import com.notesr.models.ActivityTools;
-import com.git.notesr.encryption.provider.CryptoProvider;
-import com.git.notesr.encryption.provider.KeyGenerator;
-import com.git.notesr.encryption.provider.exceptions.CryptoKeyException;
+import com.notesr.encryption.provider.CryptoProvider;
+import com.notesr.encryption.provider.KeyGenerator;
+import com.notesr.encryption.provider.exceptions.CryptoKeyException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 

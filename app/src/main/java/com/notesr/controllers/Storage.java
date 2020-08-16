@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
 import com.notesr.models.Config;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
