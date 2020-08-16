@@ -18,7 +18,7 @@ import com.notesr.controllers.Crypto;
 import com.notesr.controllers.Database;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
-import com.notesr.models.Storage;
+import com.notesr.controllers.Storage;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

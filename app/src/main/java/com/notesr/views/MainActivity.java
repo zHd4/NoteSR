@@ -15,7 +15,7 @@ import com.notesr.controllers.Database;
 import com.notesr.controllers.Notes;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
-import com.notesr.models.Storage;
+import com.notesr.controllers.Storage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {

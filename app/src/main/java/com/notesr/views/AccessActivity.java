@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
-import com.notesr.models.Storage;
+import com.notesr.controllers.Storage;
 
 public class AccessActivity extends AppCompatActivity {
     public static String enteredPin = "";

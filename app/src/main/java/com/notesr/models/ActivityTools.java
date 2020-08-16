@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import com.notesr.controllers.Crypto;
+import com.notesr.controllers.Storage;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

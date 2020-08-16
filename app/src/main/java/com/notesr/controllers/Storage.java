@@ -1,8 +1,9 @@
-package com.notesr.models;
+package com.notesr.controllers;
 
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
+import com.notesr.models.Config;
 
 import java.io.BufferedReader;
 import java.io.File;
