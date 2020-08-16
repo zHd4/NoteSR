@@ -1,16 +1,13 @@
 package com.notesr.models;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import com.notesr.controllers.Crypto;
 import com.notesr.controllers.Storage;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,10 +32,6 @@ public class ActivityTools extends AppCompatActivity {
     public static void showTextMessage(String text, int duration, Context context) {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
-    }
-
-    public static void requirePermission(Activity activity, String permission) {
-        ActivityCompat.requestPermissions(activity, new String[]{ permission }, 23);
     }
 
     public static String keyToHex(String key) {

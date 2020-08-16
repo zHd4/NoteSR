@@ -1,6 +1,5 @@
 package com.notesr.models;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
@@ -21,11 +20,6 @@ public class Exporter {
 
     public Exporter(Activity activity) {
         this.activity = activity;
-
-        if (!Storage.isExternalStorageAvailable() || !Storage.isExternalStorageReadOnly()) {
-            ActivityTools.requirePermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
-            ActivityTools.requirePermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
     }
 
     public void exportToClipboard(Context context, ClipboardManager clipboardManager) {
@@ -73,8 +67,6 @@ public class Exporter {
             if (Storage.externalWriteFile(path, notesData)) {
                 ActivityTools.showTextMessage("Saved to " + path.getAbsolutePath(), Toast.LENGTH_SHORT, context);
             } else {
-                ActivityTools.requirePermission(this.activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
                 ActivityTools.showTextMessage(
                         "Please allow storage access and try again",
                         Toast.LENGTH_SHORT,

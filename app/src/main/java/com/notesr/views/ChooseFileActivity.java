@@ -1,5 +1,4 @@
 package com.notesr.views;
-import android.Manifest;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,7 +12,6 @@ import com.notesr.controllers.Database;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 import com.notesr.controllers.Storage;
-
 import java.io.File;
 
 public class ChooseFileActivity extends AppCompatActivity {
@@ -23,8 +21,6 @@ public class ChooseFileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choosefile_activity);
-
-        ActivityTools.requirePermission(ChooseFileActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
 
         if (safeCalled) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
