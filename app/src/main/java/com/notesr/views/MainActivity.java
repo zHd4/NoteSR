@@ -1,6 +1,8 @@
 package com.notesr.views;
 
 import android.annotation.SuppressLint;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,6 +20,8 @@ import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 import com.notesr.controllers.Storage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.notesr.models.Exporter;
+import com.notesr.models.Importer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,12 +65,32 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.importExport) {
-            startActivity(ActivityTools.getIntent(getApplicationContext(), SettingsActivity.class));
-            return true;
-        }
+        switch (id) {
+            case R.id.exportToFile:
+                Exporter exporter = new Exporter(MainActivity.this);
+                exporter.exportToFile(getApplicationContext());
+                return true;
 
-        return super.onOptionsItemSelected(item);
+            case R.id.importFromFile:
+                Importer importer = new Importer();
+                importer.importFromFile(getApplicationContext(), MainActivity.this);
+                return true;
+
+            case R.id.exportToClipoard:
+                exporter = new Exporter(MainActivity.this);
+                exporter.exportToClipboard(
+                        getApplicationContext(),
+                        (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)
+                );
+                return true;
+
+            case R.id.importFromClipoard:
+                startActivity(ActivityTools.getIntent(getApplicationContext(), SettingsActivity.class));
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @SuppressLint("RestrictedApi")
