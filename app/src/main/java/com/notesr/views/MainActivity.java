@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.importFromClipoard:
-                startActivity(ActivityTools.getIntent(getApplicationContext(), SettingsActivity.class));
+                startActivity(ActivityTools.getIntent(getApplicationContext(), ImportActivity.class));
                 break;
 
             default:

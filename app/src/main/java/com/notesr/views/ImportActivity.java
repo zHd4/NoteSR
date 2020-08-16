@@ -12,11 +12,11 @@ import com.notesr.controllers.Database;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
-public class SettingsActivity extends AppCompatActivity {
+public class ImportActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_activity);
+        setContentView(R.layout.import_activity);
 
         Button importButton = findViewById(R.id.importButton);
 
