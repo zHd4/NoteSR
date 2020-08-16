@@ -7,28 +7,28 @@
     android:background="@color/activityBackground">
 
     <Button
-        android:id="@+id/getStartedButton"
-        android:layout_width="411dp"
-        android:layout_height="50dp"
-        android:background="@color/buttonBackground"
-        android:freezesText="false"
-        android:text="@string/getStarted"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+            android:id="@+id/getStartedButton"
+            android:layout_width="410dp"
+            android:layout_height="50dp"
+            android:background="@color/buttonBackground"
+            android:freezesText="false"
+            android:text="@string/getStarted"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"/>
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="391dp"
-        android:layout_height="638dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/bgstartscreen" />
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="638dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/bgstartscreen"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
