@@ -17,7 +17,7 @@
         tools:ignore="AllowBackup">
 
         <activity
-            android:name="com.notesr.MainActivity"
+            android:name="com.notesr.views.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
@@ -28,49 +28,49 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.notesr.SetupActivity"
+            android:name="com.notesr.views.SetupActivity"
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name="com.notesr.GenkeysActivity"
+            android:name="com.notesr.views.GenkeysActivity"
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name="com.notesr.AccessActivity"
+            android:name="com.notesr.views.AccessActivity"
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name="com.notesr.ChangeActivity"
+            android:name="com.notesr.views.ChangeActivity"
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name="com.notesr.RecoveryActivity"
+            android:name="com.notesr.views.RecoveryActivity"
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name="com.notesr.SettingsActivity"
+            android:name="com.notesr.views.SettingsActivity"
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name="com.notesr.ChooseFileActivity"
+            android:name="com.notesr.views.ChooseFileActivity"
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">

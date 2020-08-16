@@ -1,4 +1,4 @@
-package com.notesr;
+package com.notesr.views;
 
 import android.os.Bundle;
 import android.util.Base64;
@@ -7,6 +7,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
+import com.notesr.R;
 import com.notesr.controllers.Crypto;
 import com.notesr.controllers.Database;
 import com.notesr.models.ActivityTools;

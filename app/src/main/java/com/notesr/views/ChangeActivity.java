@@ -1,4 +1,4 @@
-package com.notesr;
+package com.notesr.views;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.notesr.R;
 import com.notesr.controllers.Crypto;
 import com.notesr.controllers.Database;
 import com.notesr.controllers.Notes;

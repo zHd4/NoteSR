@@ -1,4 +1,4 @@
-package com.notesr;
+package com.notesr.views;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -10,6 +10,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import com.notesr.R;
 import com.notesr.controllers.Database;
 import com.notesr.controllers.Notes;
 import com.notesr.models.ActivityTools;

@@ -1,4 +1,4 @@
-package com.notesr;
+package com.notesr.views;
 
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.notesr.R;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 import com.notesr.models.Storage;

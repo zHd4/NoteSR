@@ -1,10 +1,11 @@
-package com.notesr;
+package com.notesr.views;
 
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
+import com.notesr.R;
 import com.notesr.models.ActivityTools;
 
 public class SetupActivity extends AppCompatActivity {

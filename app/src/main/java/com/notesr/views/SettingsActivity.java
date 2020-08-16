@@ -1,4 +1,4 @@
-package com.notesr;
+package com.notesr.views;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.notesr.R;
 import com.notesr.controllers.Crypto;
 import com.notesr.controllers.Database;
 import com.notesr.models.ActivityTools;
