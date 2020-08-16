@@ -69,12 +69,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.exportToFile:
                 Exporter exporter = new Exporter(MainActivity.this);
                 exporter.exportToFile(getApplicationContext());
-                return true;
+                break;
 
             case R.id.importFromFile:
                 Importer importer = new Importer();
                 importer.importFromFile(getApplicationContext(), MainActivity.this);
-                return true;
+                break;
 
             case R.id.exportToClipoard:
                 exporter = new Exporter(MainActivity.this);
@@ -82,15 +82,17 @@ public class MainActivity extends AppCompatActivity {
                         getApplicationContext(),
                         (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)
                 );
-                return true;
+                break;
 
             case R.id.importFromClipoard:
                 startActivity(ActivityTools.getIntent(getApplicationContext(), SettingsActivity.class));
-                return true;
+                break;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+
+        return true;
     }
 
     @SuppressLint("RestrictedApi")
