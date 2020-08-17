@@ -31,4 +31,5 @@
     <string name="importFromClipboard">Import from clipboard</string>
     <string name="importData">IMPORT DATA</string>
     <string name="importFromFile">Import from file</string>
+    <string name="five_spaces">     </string>
 </resources>
