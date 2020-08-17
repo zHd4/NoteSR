@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
-import com.notesr.controllers.Crypto;
+import com.notesr.controllers.CryptoController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
@@ -67,7 +67,7 @@ public class SetupActivity extends AppCompatActivity {
         });
 
         try {
-            Config.cryptoKey = Base64.encodeToString(Crypto.genKey(), Base64.DEFAULT);
+            Config.cryptoKey = Base64.encodeToString(CryptoController.genKey(), Base64.DEFAULT);
             visualKey = ActivityTools.keyToHex(Config.cryptoKey);
 
             labelKeyView.setText(visualKey);
@@ -97,13 +97,13 @@ public class SetupActivity extends AppCompatActivity {
 
     private boolean testKey(final String keyBase64) {
         try {
-            byte[] testData = Crypto.genKey();
+            byte[] testData = CryptoController.genKey();
             byte[] key = Base64.decode(keyBase64, Base64.DEFAULT);
 
-            String encrypted = Crypto.encrypt(Base64.encodeToString(testData, Base64.DEFAULT),
+            String encrypted = CryptoController.encrypt(Base64.encodeToString(testData, Base64.DEFAULT),
                     ActivityTools.sha256(keyBase64), key);
 
-            Crypto.decrypt(encrypted, ActivityTools.sha256(keyBase64), key);
+            CryptoController.decrypt(encrypted, ActivityTools.sha256(keyBase64), key);
 
             return true;
         } catch (Exception e) {

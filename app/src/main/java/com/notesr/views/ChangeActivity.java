@@ -12,9 +12,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.R;
-import com.notesr.controllers.Crypto;
-import com.notesr.controllers.Database;
-import com.notesr.controllers.Notes;
+import com.notesr.controllers.CryptoController;
+import com.notesr.controllers.DatabaseController;
+import com.notesr.controllers.NotesController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
@@ -52,10 +52,10 @@ public class ChangeActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if(which == DialogInterface.BUTTON_POSITIVE) {
                     try {
-                        Database db = new Database(getApplicationContext());
+                        DatabaseController db = new DatabaseController(getApplicationContext());
                         byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
-                        db.deleteNote(Crypto.encrypt(noteTitle, ActivityTools.sha256(Config.cryptoKey), key));
+                        db.deleteNote(CryptoController.encrypt(noteTitle, ActivityTools.sha256(Config.cryptoKey), key));
 
                         startActivity(ActivityTools.getIntent(
                                 getApplicationContext(),
@@ -91,7 +91,7 @@ public class ChangeActivity extends AppCompatActivity {
                     }
 
                     try {
-                        Notes.setNotes(getApplicationContext(), MainActivity.notes);
+                        NotesController.setNotes(getApplicationContext(), MainActivity.notes);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

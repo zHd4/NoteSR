@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.notesr.controllers.Crypto;
-import com.notesr.controllers.Storage;
+import com.notesr.controllers.CryptoController;
+import com.notesr.controllers.StorageController;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -69,13 +69,13 @@ public class ActivityTools extends AppCompatActivity {
     }
 
     public static void saveKey(Context context) throws Exception {
-        if (Storage.isExternalStorageAvailable() && !Storage.isExternalStorageReadOnly()) {
+        if (StorageController.isExternalStorageAvailable() && !StorageController.isExternalStorageReadOnly()) {
             String cryptoPassword = md5(Config.pinCode);
 
-            Storage.writeFile(context,Config.keyBinFileName, Crypto.encrypt(
+            StorageController.writeFile(context,Config.keyBinFileName, CryptoController.encrypt(
                     Config.cryptoKey,
                     md5(cryptoPassword),
-                    Crypto.genKey(cryptoPassword)
+                    CryptoController.genKey(cryptoPassword)
             ));
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -85,16 +85,16 @@ public class ActivityTools extends AppCompatActivity {
 
     public static boolean getKeys(String pin, Context context) {
 
-        if (Storage.isExternalStorageAvailable() && !Storage.isExternalStorageReadOnly()) {
-            String encryptedKey = Storage.readFile(context,Config.keyBinFileName);
+        if (StorageController.isExternalStorageAvailable() && !StorageController.isExternalStorageReadOnly()) {
+            String encryptedKey = StorageController.readFile(context,Config.keyBinFileName);
 
             try{
                 String cryptoPassword = md5(pin);
                 
-                String cryptoKey = Crypto.decrypt(
+                String cryptoKey = CryptoController.decrypt(
                         encryptedKey, 
                         md5(cryptoPassword), 
-                        Crypto.genKey(cryptoPassword)
+                        CryptoController.genKey(cryptoPassword)
                 );
 
                 Config.cryptoKey = cryptoKey;

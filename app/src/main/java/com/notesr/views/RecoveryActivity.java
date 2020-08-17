@@ -8,8 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
-import com.notesr.controllers.Crypto;
-import com.notesr.controllers.Database;
+import com.notesr.controllers.CryptoController;
+import com.notesr.controllers.DatabaseController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
@@ -30,9 +30,9 @@ public class RecoveryActivity extends AppCompatActivity {
                 try {
                     String keyString = ActivityTools.hexToKey(keyText.getText().toString());
                     byte[] key = Base64.decode(keyString, Base64.DEFAULT);
-                    Database db = new Database(getApplicationContext());
+                    DatabaseController db = new DatabaseController(getApplicationContext());
 
-                    Crypto.decrypt(db.getAllNotes()[0][0], ActivityTools.sha256(keyString), key);
+                    CryptoController.decrypt(db.getAllNotes()[0][0], ActivityTools.sha256(keyString), key);
 
                     Config.cryptoKey = Base64.encodeToString(key, Base64.DEFAULT);
                     AccessActivity.operation = AccessActivity.CREATE_PIN;

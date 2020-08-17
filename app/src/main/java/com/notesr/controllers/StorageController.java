@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-public class Storage extends Application {
+public class StorageController extends Application {
 
     public static boolean isExternalStorageReadOnly() {
         String extStorageState = Environment.getExternalStorageState();

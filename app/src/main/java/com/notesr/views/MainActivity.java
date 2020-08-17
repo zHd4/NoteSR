@@ -16,11 +16,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import com.notesr.R;
-import com.notesr.controllers.Database;
-import com.notesr.controllers.Notes;
+import com.notesr.controllers.DatabaseController;
+import com.notesr.controllers.NotesController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
-import com.notesr.controllers.Storage;
+import com.notesr.controllers.StorageController;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.models.Exporter;
 import com.notesr.models.Importer;
@@ -103,11 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("RestrictedApi")
     private void configureForm() throws Exception {
-        Database db = new Database(getApplicationContext());
+        DatabaseController db = new DatabaseController(getApplicationContext());
         FloatingActionButton addNoteButton = findViewById(R.id.add_note_button);
 
         boolean isNotesExists = db.getAllNotes().length > 0;
-        boolean keyExists = Storage.readFile(
+        boolean keyExists = StorageController.readFile(
                 getApplicationContext(),
                 Config.keyBinFileName
         ).length() > 0;
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     private void fillTable() throws Exception {
         TableLayout notesTable = findViewById(R.id.notes_table);
 
-        notes = Notes.getNotes(getApplicationContext());
+        notes = NotesController.getNotes(getApplicationContext());
 
         int noteColor = Color.rgb(37, 40, 47);
         int beforeLineColor = Color.rgb(25, 28, 33);

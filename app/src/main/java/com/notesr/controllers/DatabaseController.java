@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class Database extends SQLiteOpenHelper {
+public class DatabaseController extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = Config.databaseName;
@@ -22,7 +22,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String KEY_TITLE = "title";
     private static final String KEY_TEXT = "text";
 
-    public Database(Context context) {
+    public DatabaseController(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -91,7 +91,7 @@ public class Database extends SQLiteOpenHelper {
 
     public String exportToJsonString(Context context) throws Exception {
         JSONArray jsonNotes = new JSONArray();
-        String[][] notes = Notes.getNotes(context);
+        String[][] notes = NotesController.getNotes(context);
 
         for(int i = 0; i < notes.length; i++) {
             JSONObject note = new JSONObject();
@@ -119,7 +119,7 @@ public class Database extends SQLiteOpenHelper {
             };
         }
 
-        Notes.setNotes(context, notes);
+        NotesController.setNotes(context, notes);
     }
 
     @Override

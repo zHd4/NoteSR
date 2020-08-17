@@ -7,8 +7,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
-import com.notesr.controllers.Crypto;
-import com.notesr.controllers.Database;
+import com.notesr.controllers.CryptoController;
+import com.notesr.controllers.DatabaseController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
@@ -21,7 +21,7 @@ public class ImportActivity extends AppCompatActivity {
         Button importButton = findViewById(R.id.importButton);
 
         final EditText importDataText = findViewById(R.id.importDataText);
-        final Database db = new Database(getApplicationContext());
+        final DatabaseController db = new DatabaseController(getApplicationContext());
 
         importButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -30,8 +30,8 @@ public class ImportActivity extends AppCompatActivity {
 
                 if (notesData.length() > 0) {
                     try {
-                        Database db = new Database(getApplicationContext());
-                        String decryptedNotes = Crypto.decrypt(
+                        DatabaseController db = new DatabaseController(getApplicationContext());
+                        String decryptedNotes = CryptoController.decrypt(
                                 notesData,
                                 ActivityTools.sha256(Config.cryptoKey),
                                 Base64.decode(Config.cryptoKey, Base64.DEFAULT)

@@ -8,7 +8,7 @@ import com.notesr.encryption.provider.exceptions.CryptoKeyException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
-public class Crypto {
+public class CryptoController {
     private static final int KEY_SIZE = 128;
     private static final int IV_SIZE = 32;
 
@@ -16,7 +16,7 @@ public class Crypto {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
             String password = Base64.encodeToString(keyGenerator.createKey(), Base64.DEFAULT);
-            return AES.genKey(password, ActivityTools.sha256(password));
+            return AESController.genKey(password, ActivityTools.sha256(password));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class Crypto {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
             String password = Base64.encodeToString(keyGenerator.createKey(passphrase), Base64.DEFAULT);
-            return AES.genKey(password, ActivityTools.sha256(password));
+            return AESController.genKey(password, ActivityTools.sha256(password));
         } catch (NoSuchAlgorithmException | CryptoKeyException e) {
             e.printStackTrace();
         }
@@ -44,7 +44,7 @@ public class Crypto {
             )));
 
             cryptoProvider.initializeVector(salt, IV_SIZE);
-            text = AES.encrypt(text, key);
+            text = AESController.encrypt(text, key);
 
             return Base64.encodeToString(cryptoProvider.encrypt(text.getBytes()), Base64.DEFAULT);
         } catch (Exception e) {
@@ -65,7 +65,7 @@ public class Crypto {
                     StandardCharsets.UTF_8
             );
 
-            return AES.decrypt(encrypted, key);
+            return AESController.decrypt(encrypted, key);
         } catch (Exception e) {
             throw e;
         }

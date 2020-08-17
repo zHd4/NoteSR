@@ -11,7 +11,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class AES {
+public class AESController {
 
     private static final int keySize = 128;
     private static final String cypherInstance = "AES/CBC/PKCS5Padding";

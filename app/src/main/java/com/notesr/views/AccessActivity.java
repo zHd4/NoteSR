@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
-import com.notesr.controllers.Storage;
+import com.notesr.controllers.StorageController;
 
 public class AccessActivity extends AppCompatActivity {
     public static String enteredPin = "";
@@ -164,7 +164,7 @@ public class AccessActivity extends AppCompatActivity {
             if (!pinValid) {
                 if(attempts == 1) {
                     resetEnteredPin();
-                    Storage.deleteFile(getApplicationContext(), Config.keyBinFileName);
+                    StorageController.deleteFile(getApplicationContext(), Config.keyBinFileName);
                     startActivity(ActivityTools.getIntent(getApplicationContext(), RecoveryActivity.class));
                 } else {
                     resetEnteredPin();

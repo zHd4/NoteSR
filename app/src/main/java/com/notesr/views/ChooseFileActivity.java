@@ -7,11 +7,11 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
-import com.notesr.controllers.Crypto;
-import com.notesr.controllers.Database;
+import com.notesr.controllers.CryptoController;
+import com.notesr.controllers.DatabaseController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
-import com.notesr.controllers.Storage;
+import com.notesr.controllers.StorageController;
 import java.io.File;
 
 public class ChooseFileActivity extends AppCompatActivity {
@@ -47,17 +47,17 @@ public class ChooseFileActivity extends AppCompatActivity {
                 src = src.replace("/document/raw:", "");
 
                 File file = new File(src);
-                String notesData = Storage.externalReadFile(file);
+                String notesData = StorageController.externalReadFile(file);
 
                 if (notesData.length() > 0) {
                     try {
-                        String decryptedNotes = Crypto.decrypt(
+                        String decryptedNotes = CryptoController.decrypt(
                                 notesData,
                                 ActivityTools.sha256(Config.cryptoKey),
                                 Base64.decode(Config.cryptoKey, Base64.DEFAULT)
                         );
 
-                        Database db = new Database(getApplicationContext());
+                        DatabaseController db = new DatabaseController(getApplicationContext());
 
                         db.importFromJsonString(getApplicationContext(), decryptedNotes);
                         startActivity(ActivityTools.getIntent(getApplicationContext(),
