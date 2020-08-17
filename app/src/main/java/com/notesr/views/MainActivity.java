@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,WindowManager.LayoutParams.FLAG_SECURE);
 
         ActivityCompat.requestPermissions(MainActivity.this, new String[] {
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(!isNotesExists && !keyExists) {
-            startActivity(ActivityTools.getIntent(getApplicationContext(), SetupActivity.class));
+            startActivity(ActivityTools.getIntent(getApplicationContext(), StartActivity.class));
         }
     }
 

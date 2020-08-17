@@ -28,14 +28,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.notesr.views.SetupActivity"
+            android:name="com.notesr.views.StartActivity"
             android:label="@string/appName"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name="com.notesr.views.GenkeysActivity"
+            android:name="com.notesr.views.SetupActivity"
             android:label="@string/appName"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
