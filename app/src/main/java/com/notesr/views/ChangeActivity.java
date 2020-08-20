@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.R;
@@ -36,8 +37,14 @@ public class ChangeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_activity);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        assert actionBar != null;
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("");
 
         this.activityContext = this;
 
@@ -116,6 +123,12 @@ public class ChangeActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+        return true;
     }
 
     private static <T> T[] concat(T[] first, T[] second) {
