@@ -24,7 +24,7 @@ public class ImportActivity extends AppCompatActivity {
         assert actionBar != null;
 
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("");
+        actionBar.setTitle(getResources().getString(R.string.import_notes_title));
 
         Button importButton = findViewById(R.id.importButton);
 

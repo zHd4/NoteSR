@@ -21,7 +21,7 @@ import com.notesr.models.Config;
 
 import java.util.Arrays;
 
-public class ChangeActivity extends AppCompatActivity {
+public class NoteActivity extends AppCompatActivity {
     public static int arg = 0;
 
     public static int CREATE_NOTE = 0;
@@ -36,7 +36,7 @@ public class ChangeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.change_activity);
+        setContentView(R.layout.note_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         ActionBar actionBar = getSupportActionBar();
@@ -44,7 +44,7 @@ public class ChangeActivity extends AppCompatActivity {
         assert actionBar != null;
 
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("");
+        actionBar.setTitle(getResources().getString(R.string.new_note));
 
         this.activityContext = this;
 
@@ -76,6 +76,7 @@ public class ChangeActivity extends AppCompatActivity {
         };
 
         if(arg == EDIT_NOTE){
+            actionBar.setTitle(getResources().getString(R.string.edit_note));
             titleText.setText(noteTitle);
             textText.setText(MainActivity.notes[noteId][1]);
             deleteButton.setVisibility(View.VISIBLE);

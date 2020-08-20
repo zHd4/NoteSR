@@ -51,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ChangeActivity.arg = ChangeActivity.CREATE_NOTE;
+                NoteActivity.arg = NoteActivity.CREATE_NOTE;
 
                 startActivity(ActivityTools.getIntent(
                         getApplicationContext(),
-                        ChangeActivity.class
+                        NoteActivity.class
                 ));
             }
         });
@@ -191,14 +191,14 @@ public class MainActivity extends AppCompatActivity {
                         int id = finalIndex;
                         String noteTitle = notes[id][0];
 
-                        ChangeActivity.noteId = id;
-                        ChangeActivity.noteTitle = noteTitle;
+                        NoteActivity.noteId = id;
+                        NoteActivity.noteTitle = noteTitle;
 
-                        ChangeActivity.arg = ChangeActivity.EDIT_NOTE;
+                        NoteActivity.arg = NoteActivity.EDIT_NOTE;
 
                         startActivity(ActivityTools.getIntent(
                                 getApplicationContext(),
-                                ChangeActivity.class
+                                NoteActivity.class
                         ));
                     }
                 });

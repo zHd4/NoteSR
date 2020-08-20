@@ -60,7 +60,7 @@
     <EditText
             android:id="@+id/textText"
             android:layout_width="0dp"
-            android:layout_height="490dp"
+            android:layout_height="440dp"
             android:ems="10"
             android:gravity="top|left"
             android:hint="@string/text"

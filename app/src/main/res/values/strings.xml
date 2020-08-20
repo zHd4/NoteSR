@@ -32,4 +32,7 @@
     <string name="importData">IMPORT DATA</string>
     <string name="importFromFile">Import from file</string>
     <string name="five_spaces">     </string>
+    <string name="new_note">New</string>
+    <string name="edit_note">Edit</string>
+    <string name="import_notes_title">Import</string>
 </resources>

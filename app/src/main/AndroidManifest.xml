@@ -49,7 +49,7 @@
         </activity>
 
         <activity
-            android:name="com.notesr.views.ChangeActivity"
+            android:name="com.notesr.views.NoteActivity"
             android:label="@string/appName"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme">
