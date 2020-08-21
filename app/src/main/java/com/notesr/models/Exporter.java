@@ -1,7 +1,6 @@
 package com.notesr.models;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -16,12 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class Exporter {
-    private final Activity activity;
-
-    public Exporter(Activity activity) {
-        this.activity = activity;
-    }
-
     public void exportToClipboard(Context context, ClipboardManager clipboardManager) {
         try {
             DatabaseController db = new DatabaseController(context);
