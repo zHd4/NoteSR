@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.exportToFile:
-                Exporter exporter = new Exporter(MainActivity.this);
+                Exporter exporter = new Exporter();
                 exporter.exportToFile(getApplicationContext());
                 break;
 
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.exportToClipoard:
-                exporter = new Exporter(MainActivity.this);
+                exporter = new Exporter();
                 exporter.exportToClipboard(
                         getApplicationContext(),
                         (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)
