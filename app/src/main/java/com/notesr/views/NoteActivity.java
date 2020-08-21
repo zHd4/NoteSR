@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
+import android.widget.EditText;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -18,8 +18,9 @@ import com.notesr.controllers.DatabaseController;
 import com.notesr.controllers.NotesController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
-
 import java.util.Arrays;
+
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 public class NoteActivity extends AppCompatActivity {
     public static int arg = 0;
@@ -48,8 +49,11 @@ public class NoteActivity extends AppCompatActivity {
 
         this.activityContext = this;
 
-        final TextView titleText = findViewById(R.id.titleText);
-        final TextView textText = findViewById(R.id.textText);
+        final EditText titleText = findViewById(R.id.titleText);
+        final EditText textText = findViewById(R.id.textText);
+
+        titleText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
+        textText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
         final FloatingActionButton applyButton = findViewById(R.id.applyButton);
         final FloatingActionButton deleteButton = findViewById(R.id.deleteButton);

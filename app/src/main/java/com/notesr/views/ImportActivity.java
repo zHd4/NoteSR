@@ -13,6 +13,8 @@ import com.notesr.controllers.DatabaseController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
+
 public class ImportActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,8 @@ public class ImportActivity extends AppCompatActivity {
 
         final EditText importDataText = findViewById(R.id.importDataText);
         final DatabaseController db = new DatabaseController(getApplicationContext());
+
+        importDataText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
         importButton.setOnClickListener(new View.OnClickListener() {
             @Override

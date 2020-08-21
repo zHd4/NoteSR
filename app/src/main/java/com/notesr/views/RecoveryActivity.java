@@ -13,6 +13,8 @@ import com.notesr.controllers.DatabaseController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
+
 public class RecoveryActivity extends AppCompatActivity {
 
     @Override
@@ -23,6 +25,8 @@ public class RecoveryActivity extends AppCompatActivity {
 
         final EditText keyText = findViewById(R.id.keyText);
         final Button decryptButton =  findViewById(R.id.decryptButton);
+
+        keyText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
         decryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
