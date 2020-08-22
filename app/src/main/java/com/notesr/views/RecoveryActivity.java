@@ -24,7 +24,7 @@ public class RecoveryActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         final EditText keyText = findViewById(R.id.keyText);
-        final Button decryptButton =  findViewById(R.id.decryptButton);
+        final Button decryptButton = findViewById(R.id.decryptButton);
 
         keyText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
@@ -33,7 +33,9 @@ public class RecoveryActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try {
                     String keyString = ActivityTools.hexToKey(keyText.getText().toString());
+
                     byte[] key = Base64.decode(keyString, Base64.DEFAULT);
+
                     DatabaseController db = new DatabaseController(getApplicationContext());
 
                     CryptoController.decrypt(db.getAllNotes()[0][0], ActivityTools.sha256(keyString), key);
@@ -41,10 +43,7 @@ public class RecoveryActivity extends AppCompatActivity {
                     Config.cryptoKey = Base64.encodeToString(key, Base64.DEFAULT);
                     AccessActivity.operation = AccessActivity.CREATE_PIN;
 
-                    startActivity(ActivityTools.getIntent(
-                            getApplicationContext(),
-                            AccessActivity.class
-                    ));
+                    startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

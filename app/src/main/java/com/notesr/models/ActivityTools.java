@@ -11,6 +11,7 @@ import com.notesr.controllers.StorageController;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Random;
 
 @SuppressLint("Registered")
@@ -57,12 +58,25 @@ public class ActivityTools extends AppCompatActivity {
         return result.toString();
     }
 
-    public static String hexToKey(String hex) {
-        String[] hexArr = hex.replace("\n", "").split(" ");
-        byte[] keyBytes = new byte[hexArr.length];
+    public static String hexToKey(final String hex) {
+        byte[] keyBytes = new byte[0];
 
-        for (int i=0; i<hexArr.length; i++) {
-            keyBytes[i] = (byte)Integer.parseInt(hexArr[i], 16);
+        String hexString = hex.replace("\n", "").replace(" ", "");
+
+        for(int i = 0; i < hexString.length(); i++) {
+            StringBuilder element = new StringBuilder();
+
+            if(i < hexString.length() - 1) {
+                element.append(hexString.toCharArray()[i]);
+                element.append(hexString.toCharArray()[i + 1]);
+
+                i++;
+            } else {
+                element = new StringBuilder(String.valueOf(hexString.toCharArray()[i]));
+            }
+
+            keyBytes = Arrays.copyOf(keyBytes, keyBytes.length + 1);
+            keyBytes[keyBytes.length - 1] = (byte) Integer.parseInt(element.toString(), 16);
         }
 
         return new String(keyBytes);
