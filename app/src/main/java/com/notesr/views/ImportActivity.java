@@ -1,5 +1,6 @@
 package com.notesr.views;
 
+import android.view.WindowManager;
 import com.notesr.R;
 import android.os.Bundle;
 import android.util.Base64;
@@ -19,7 +20,12 @@ public class ImportActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.import_activity);
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE
+        );
 
         ActionBar actionBar = getSupportActionBar();
 

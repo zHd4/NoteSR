@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
 import com.notesr.controllers.CryptoController;
@@ -20,7 +21,12 @@ public class ChooseFileActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.choosefile_activity);
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE
+        );
 
         if (safeCalled) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
