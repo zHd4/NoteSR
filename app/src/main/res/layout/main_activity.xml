@@ -8,6 +8,19 @@
         tools:context="com.notesr.views.MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/lock_screen_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@color/buttonBackground"
+            android:backgroundTint="@color/buttonBackground"
+            android:visibility="invisible"
+            app:srcCompat="@android:drawable/ic_lock_idle_lock" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="0.9"
+            app:layout_constraintHorizontal_bias="1.0"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_note_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
