@@ -1,60 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/activityBackground"
-    tools:context="com.notesr.views.MainActivity">
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_note_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@color/buttonBackground"
-        android:backgroundTint="@color/buttonBackground"
-        android:visibility="invisible"
-        app:srcCompat="@android:drawable/ic_menu_add" />
-
-    <ScrollView
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:background="@color/activityBackground"
+        tools:context="com.notesr.views.MainActivity">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_note_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@color/buttonBackground"
+            android:backgroundTint="@color/buttonBackground"
+            android:visibility="invisible"
+            app:srcCompat="@android:drawable/ic_menu_add" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintHorizontal_bias="1.0"/>
 
-            <TableLayout
-                    android:id="@+id/notes_table"
+        <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+            <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:ignore="UselessParent">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                <TableRow
+                <TableLayout
+                        android:id="@+id/notes_table"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        tools:ignore="UselessLeaf"/>
+                        tools:ignore="UselessParent">
 
-                <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        tools:ignore="UselessLeaf"/>
+                    <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            tools:ignore="UselessLeaf"/>
 
-                <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        tools:ignore="UselessLeaf"/>
+                    <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            tools:ignore="UselessLeaf"/>
 
-                <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        tools:ignore="UselessLeaf"/>
-            </TableLayout>
-        </LinearLayout>
-    </ScrollView>
+                    <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            tools:ignore="UselessLeaf"/>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            tools:ignore="UselessLeaf"/>
+                </TableLayout>
+            </LinearLayout>
+        </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
