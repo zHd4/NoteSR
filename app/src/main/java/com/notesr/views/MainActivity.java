@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         FloatingActionButton addNoteButton = findViewById(R.id.add_note_button);
+        FloatingActionButton lockScreenButton = findViewById(R.id.lock_screen_button);
 
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +59,14 @@ public class MainActivity extends AppCompatActivity {
                         getApplicationContext(),
                         NoteActivity.class
                 ));
+            }
+        });
+
+        lockScreenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(1);
             }
         });
     }
@@ -106,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
     private void configureForm() throws Exception {
         DatabaseController db = new DatabaseController(getApplicationContext());
         FloatingActionButton addNoteButton = findViewById(R.id.add_note_button);
+        FloatingActionButton lockScreenButton = findViewById(R.id.lock_screen_button);
 
         boolean isNotesExists = db.getAllNotes().length > 0;
         boolean keyExists = StorageController.readFile(
@@ -116,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         if((isNotesExists && keyExists) || (!isNotesExists && keyExists)) {
             if(Config.pinCode != null){
                 addNoteButton.setVisibility(View.VISIBLE);
+                lockScreenButton.setVisibility(View.VISIBLE);
 
                 fillTable();
             } else {
