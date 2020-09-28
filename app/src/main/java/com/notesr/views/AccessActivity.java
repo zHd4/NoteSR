@@ -162,7 +162,7 @@ public class AccessActivity extends AppCompatActivity {
             if (!pinValid) {
                 if(attempts == 1) {
                     resetEnteredPin();
-                    StorageController.deleteFile(getApplicationContext(), Config.keyBinFileName);
+                    StorageController.eraseFile(getApplicationContext(), Config.keyBinFileName);
                     startActivity(ActivityTools.getIntent(getApplicationContext(), RecoveryActivity.class));
                 } else {
                     resetEnteredPin();

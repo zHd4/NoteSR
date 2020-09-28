@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Arrays;
 
 public class StorageController extends Application {
 
@@ -113,5 +114,18 @@ public class StorageController extends Application {
 
             return false;
         }
+    }
+
+    public static void eraseFile(Context context, String filename, int count) {
+        for(int i = 0; i <= count; i++) {
+            String emptyString = Arrays.toString(new char[1024]);
+            StorageController.writeFile(context, filename, emptyString);
+        }
+
+        StorageController.deleteFile(context, filename);
+    }
+
+    public static void eraseFile(Context context, String filename) {
+        eraseFile(context, filename, 15);
     }
 }
