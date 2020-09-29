@@ -27,6 +27,8 @@ public class ImportActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SECURE
         );
 
+        ActivityTools.checkReady(getApplicationContext(), this);
+
         ActionBar actionBar = getSupportActionBar();
 
         assert actionBar != null;

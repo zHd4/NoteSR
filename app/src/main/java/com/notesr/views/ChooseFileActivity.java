@@ -28,6 +28,8 @@ public class ChooseFileActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SECURE
         );
 
+        ActivityTools.checkReady(getApplicationContext(), this);
+
         if (safeCalled) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");

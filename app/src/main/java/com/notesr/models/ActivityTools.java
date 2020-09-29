@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.controllers.CryptoController;
 import com.notesr.controllers.StorageController;
+import com.notesr.views.AccessActivity;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,6 +34,10 @@ public class ActivityTools extends AppCompatActivity {
     public static void showTextMessage(String text, int duration, Context context) {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+    }
+
+    public static void checkReady(Context context, AppCompatActivity activity) {
+        new ReadyChecker().checkReady(context, activity);
     }
 
     public static String keyToHex(String key) {
@@ -183,5 +188,14 @@ public class ActivityTools extends AppCompatActivity {
         }
 
         return randomStringBuilder.toString();
+    }
+
+
+    private static class ReadyChecker {
+        public void checkReady(Context context, AppCompatActivity activity) {
+            if(Config.cryptoKey == null || Config.pinCode == null) {
+                activity.startActivity(ActivityTools.getIntent(context, AccessActivity.class));
+            }
+        }
     }
 }

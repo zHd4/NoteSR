@@ -41,9 +41,7 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.note_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
-        if(Config.cryptoKey == null || Config.pinCode == null) {
-            startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
-        }
+        ActivityTools.checkReady(getApplicationContext(), this);
 
         ActionBar actionBar = getSupportActionBar();
 

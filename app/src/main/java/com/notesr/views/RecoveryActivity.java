@@ -24,6 +24,8 @@ public class RecoveryActivity extends AppCompatActivity {
         setContentView(R.layout.recovery_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
+        ActivityTools.checkReady(getApplicationContext(), this);
+
         final EditText keyText = findViewById(R.id.keyText);
         final Button decryptButton = findViewById(R.id.decryptButton);
 
