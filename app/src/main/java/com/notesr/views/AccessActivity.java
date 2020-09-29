@@ -31,6 +31,7 @@ public class AccessActivity extends AppCompatActivity {
 
         setContentView(R.layout.access_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        resetEnteredPin();
 
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
@@ -98,7 +99,7 @@ public class AccessActivity extends AppCompatActivity {
                     enteredPin += String.valueOf(num);
 
                     clearSectors(sectors);
-                    AcceptPin(sectors);
+                    acceptPin(sectors);
                 }
             }
         });
@@ -128,7 +129,7 @@ public class AccessActivity extends AppCompatActivity {
         enteredPin = "";
     }
 
-    public void AcceptPin(final int[] sectors) {
+    public void acceptPin(final int[] sectors) {
         if (operation == CREATE_PIN) {
             final TextView formLabel = findViewById(R.id.acTextView);
 
