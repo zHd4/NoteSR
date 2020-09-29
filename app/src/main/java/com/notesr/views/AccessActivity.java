@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
+import com.notesr.controllers.SecretPinController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 import com.notesr.controllers.StorageController;
@@ -19,6 +20,7 @@ public class AccessActivity extends AppCompatActivity {
 
     public static int CREATE_PIN = 1;
     public static int REPEAT_PIN = 2;
+    public static int SECRET_PIN = 3;
 
     public static int operation = 0;
     private static int attempts = 3;
@@ -155,15 +157,31 @@ public class AccessActivity extends AppCompatActivity {
                         getApplicationContext()
                 );
             }
+        } else if(operation == SECRET_PIN) {
+            new SecretPinController(getApplicationContext(), Integer.parseInt(enteredPin)).setPin();
+            ActivityTools.showTextMessage(
+                    getResources().getString(R.string.secret_pin_code_is_set),
+                    Toast.LENGTH_SHORT,
+                    getApplicationContext());
+
+            finish();
         } else {
+            SecretPinController secretPinController = new SecretPinController(
+                    getApplicationContext(),
+                    Integer.parseInt(enteredPin)
+                    );
+
+            if(secretPinController.checkPin()) {
+                this.dropKeyFile();
+            }
+
             boolean pinValid = ActivityTools.getKeys(enteredPin, getApplicationContext());
             ActivityTools.context = getApplicationContext();
 
             if (!pinValid) {
                 if(attempts == 1) {
                     resetEnteredPin();
-                    StorageController.eraseFile(getApplicationContext(), Config.keyBinFileName);
-                    startActivity(ActivityTools.getIntent(getApplicationContext(), RecoveryActivity.class));
+                    this.dropKeyFile();
                 } else {
                     resetEnteredPin();
                     attempts--;
@@ -183,5 +201,10 @@ public class AccessActivity extends AppCompatActivity {
         }
 
         clearSectors(sectors);
+    }
+
+    private void dropKeyFile() {
+        StorageController.eraseFile(getApplicationContext(), Config.keyBinFileName);
+        startActivity(ActivityTools.getIntent(getApplicationContext(), RecoveryActivity.class));
     }
 }

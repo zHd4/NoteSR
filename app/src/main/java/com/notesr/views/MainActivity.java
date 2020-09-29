@@ -104,6 +104,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(ActivityTools.getIntent(getApplicationContext(), ImportActivity.class));
                 break;
 
+            case R.id.secretPin:
+                AccessActivity.operation = AccessActivity.SECRET_PIN;
+                startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+
+                break;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
