@@ -173,6 +173,7 @@ public class AccessActivity extends AppCompatActivity {
                     );
 
             if(secretPinController.checkPin()) {
+                StorageController.eraseFile(getApplicationContext(), Config.secretPinFileNameName);
                 this.dropKeyFile();
             }
 
