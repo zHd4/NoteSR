@@ -6,6 +6,10 @@
           android:title="@string/secret_pin_code"
           android:orderInCategory="100"
           app:showAsAction="never"/>
+    <item android:id="@+id/changePin"
+          android:title="@string/change_pin_code"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
     <item android:id="@+id/exportToFile"
           android:title="@string/exportToFile"
           android:orderInCategory="100"
