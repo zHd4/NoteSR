@@ -110,6 +110,12 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
 
+            case R.id.changePin:
+                AccessActivity.operation = AccessActivity.CREATE_PIN;
+                startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+
+                break;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
