@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
 import com.notesr.controllers.CryptoController;
 import com.notesr.controllers.NotesController;
+import com.notesr.controllers.onclick.NextGenkeysButtonController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
@@ -24,7 +25,7 @@ public class SetupActivity extends AppCompatActivity {
     public static final String regenerateKey = "regenerateKey";
 
     private String visualKey = "";
-    private String tempKey = "";
+    public String tempKey = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,51 +57,10 @@ public class SetupActivity extends AppCompatActivity {
             }
         });
 
-        nextGenkeysButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String impotedKey = checkKeyField(keyField.getText().toString());
-
-                if(impotedKey != null) {
-                    String[][] notes = null;
-
-                    Bundle extras = SetupActivity.this.getIntent().getExtras();
-                    boolean isRegeneratingKey = extras != null && extras.getBoolean(SetupActivity.regenerateKey);
-
-                    if(isRegeneratingKey) {
-                        try {
-                            NotesController.getNotes(getApplicationContext());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if(!impotedKey.equals("")) {
-                        Config.cryptoKey = impotedKey;
-                    } else {
-                        Config.cryptoKey = SetupActivity.this.tempKey;
-                    }
-
-                    if(isRegeneratingKey) {
-                        if(notes == null) {
-                            displayRegeneationFailedMessage();
-                        } else {
-                            try {
-                                NotesController.setNotes(getApplicationContext(), notes);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                displayRegeneationFailedMessage();
-                            }
-                        }
-
-                        startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
-                    } else {
-                        AccessActivity.operation = AccessActivity.CREATE_PIN;
-                        startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
-                    }
-                }
-            }
-        });
+        nextGenkeysButton.setOnClickListener(new NextGenkeysButtonController(
+                this,
+                keyField.getText().toString())
+        );
 
         try {
             this.tempKey = Base64.encodeToString(CryptoController.genKey(), Base64.DEFAULT);
@@ -112,7 +72,7 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
-    public String checkKeyField(final String keyHex) {
+    private String checkKeyField(final String keyHex) {
         try {
             if(keyHex.equals("")) {
                 return "";
@@ -148,7 +108,7 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
-    private void displayRegeneationFailedMessage() {
+    public void displayRegeneationFailedMessage() {
         ActivityTools.showTextMessage(
                 getResources().getString(R.string.regeneration_failed),
                 Toast.LENGTH_SHORT,
