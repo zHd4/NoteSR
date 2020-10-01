@@ -18,6 +18,10 @@
           android:title="@string/importFromFile"
           android:orderInCategory="100"
           app:showAsAction="never"/>
+    <item android:id="@+id/regenerateKey"
+          android:title="@string/regenerate_key"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
     <item android:id="@+id/exportToClipoard"
           android:title="@string/exportDataToClipboard"
           android:orderInCategory="100"

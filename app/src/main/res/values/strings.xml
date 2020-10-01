@@ -35,7 +35,8 @@
     <string name="new_note">New</string>
     <string name="edit_note">Edit</string>
     <string name="import_notes_title">Import</string>
-    <string name="secret_pin_code">Secret Pin</string>
+    <string name="secret_pin_code">Secret pin</string>
     <string name="secret_pin_code_is_set">Secret pin set successfully</string>
-    <string name="change_pin_code">Change Pin</string>
+    <string name="change_pin_code">Change pin</string>
+    <string name="regenerate_key">Regenerate key</string>
 </resources>
