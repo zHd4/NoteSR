@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
 import com.notesr.controllers.CryptoController;
+import com.notesr.controllers.NotesController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
@@ -62,15 +63,37 @@ public class SetupActivity extends AppCompatActivity {
                 String impotedKey = checkKeyField(keyField.getText().toString());
 
                 if(impotedKey != null) {
+                    String[][] notes = null;
+
+                    Bundle extras = SetupActivity.this.getIntent().getExtras();
+                    boolean isRegeneratingKey = extras != null && extras.getBoolean(SetupActivity.regenerateKey);
+
+                    if(isRegeneratingKey) {
+                        try {
+                            NotesController.getNotes(getApplicationContext());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     if(!impotedKey.equals(EMPTY)) {
                         Config.cryptoKey = impotedKey;
                     } else {
                         Config.cryptoKey = SetupActivity.this.tempKey;
                     }
 
-                    Bundle extras = SetupActivity.this.getIntent().getExtras();
+                    if(isRegeneratingKey) {
+                        if(notes == null) {
+                            displayRegeneationFailedMessage();
+                        } else {
+                            try {
+                                NotesController.setNotes(getApplicationContext(), notes);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                displayRegeneationFailedMessage();
+                            }
+                        }
 
-                    if(extras != null && extras.getBoolean(SetupActivity.regenerateKey)) {
                         startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
                     } else {
                         AccessActivity.operation = AccessActivity.CREATE_PIN;
@@ -124,5 +147,13 @@ public class SetupActivity extends AppCompatActivity {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private void displayRegeneationFailedMessage() {
+        ActivityTools.showTextMessage(
+                getResources().getString(R.string.regeneration_failed),
+                Toast.LENGTH_SHORT,
+                getApplicationContext()
+        );
     }
 }
