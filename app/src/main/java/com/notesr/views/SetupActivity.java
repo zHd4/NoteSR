@@ -21,11 +21,10 @@ import com.notesr.models.Config;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 public class SetupActivity extends AppCompatActivity {
-    private static final String EMPTY = "";
     public static final String regenerateKey = "regenerateKey";
 
-    private String visualKey = EMPTY;
-    private String tempKey = EMPTY;
+    private String visualKey = "";
+    private String tempKey = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +48,7 @@ public class SetupActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-                ClipData clip = ClipData.newPlainText(EMPTY, visualKey);
+                ClipData clip = ClipData.newPlainText("", visualKey);
 
                 ActivityTools.clipboard.setPrimaryClip(clip);
                 ActivityTools.showTextMessage(getResources().getString(R.string.copied),
@@ -76,7 +75,7 @@ public class SetupActivity extends AppCompatActivity {
                         }
                     }
 
-                    if(!impotedKey.equals(EMPTY)) {
+                    if(!impotedKey.equals("")) {
                         Config.cryptoKey = impotedKey;
                     } else {
                         Config.cryptoKey = SetupActivity.this.tempKey;
@@ -113,10 +112,10 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
-    private String checkKeyField(final String keyHex) {
+    public String checkKeyField(final String keyHex) {
         try {
-            if(keyHex.equals(EMPTY)) {
-                return EMPTY;
+            if(keyHex.equals("")) {
+                return "";
             }
 
             final String key = ActivityTools.hexToKey(keyHex);
