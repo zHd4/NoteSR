@@ -21,8 +21,10 @@ import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARN
 
 public class SetupActivity extends AppCompatActivity {
     private static final String EMPTY = "";
+    public static final String regenerateKey = "regenerateKey";
 
     private String visualKey = EMPTY;
+    private String tempKey = EMPTY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,17 +64,25 @@ public class SetupActivity extends AppCompatActivity {
                 if(impotedKey != null) {
                     if(!impotedKey.equals(EMPTY)) {
                         Config.cryptoKey = impotedKey;
+                    } else {
+                        Config.cryptoKey = SetupActivity.this.tempKey;
                     }
 
-                    AccessActivity.operation = AccessActivity.CREATE_PIN;
-                    startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+                    Bundle extras = SetupActivity.this.getIntent().getExtras();
+
+                    if(extras != null && extras.getBoolean(SetupActivity.regenerateKey)) {
+                        startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+                    } else {
+                        AccessActivity.operation = AccessActivity.CREATE_PIN;
+                        startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+                    }
                 }
             }
         });
 
         try {
-            Config.cryptoKey = Base64.encodeToString(CryptoController.genKey(), Base64.DEFAULT);
-            visualKey = ActivityTools.keyToHex(Config.cryptoKey);
+            this.tempKey = Base64.encodeToString(CryptoController.genKey(), Base64.DEFAULT);
+            visualKey = ActivityTools.keyToHex(this.tempKey);
 
             labelKeyView.setText(visualKey);
         } catch (Exception e) {
