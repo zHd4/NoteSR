@@ -37,6 +37,10 @@ public class AccessActivity extends AppCompatActivity {
             findViewById(R.id.infoTextView).setVisibility(View.VISIBLE);
         }
 
+        if(operation == CREATE_PIN) {
+            ((TextView)findViewById(R.id.acTextView)).setText(R.string.create_pin);
+        }
+
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         final Button pinButtonBackspace = findViewById(R.id.pinButtonBackspace);
