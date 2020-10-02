@@ -9,6 +9,7 @@
     <string name="copied">Copied!</string>
     <string name="withoutKey">Without key you cannot restore your information</string>
     <string name="enterAccessCode">Enter access code</string>
+    <string name="create_pin">Create access code</string>
     <string name="repeatAccessCode">Repeat access code</string>
     <string name="title">Title</string>
     <string name="text">Text</string>
