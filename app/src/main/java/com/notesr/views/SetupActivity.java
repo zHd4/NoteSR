@@ -14,10 +14,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
 import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.NotesController;
 import com.notesr.controllers.onclick.NextGenkeysButtonController;
 import com.notesr.models.ActivityTools;
-import com.notesr.models.Config;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
