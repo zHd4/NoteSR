@@ -6,7 +6,7 @@
     android:background="@color/activityBackground">
 
     <TextView
-            android:id="@+id/forceMajeureTextView"
+            android:id="@+id/infoTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/force_majeure_pin"

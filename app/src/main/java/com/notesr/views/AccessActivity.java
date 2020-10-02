@@ -34,7 +34,7 @@ public class AccessActivity extends AppCompatActivity {
         resetEnteredPin();
 
         if(operation == SECRET_PIN) {
-            findViewById(R.id.forceMajeureTextView).setVisibility(View.VISIBLE);
+            findViewById(R.id.infoTextView).setVisibility(View.VISIBLE);
         }
 
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
