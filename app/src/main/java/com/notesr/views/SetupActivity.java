@@ -34,6 +34,8 @@ public class SetupActivity extends AppCompatActivity {
         setContentView(R.layout.setup_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
+        ActivityTools.checkReady(getApplicationContext(), this);
+
         final TextView labelKeyView = findViewById(R.id.labelKeyView);
         final EditText keyField = findViewById(R.id.importKeyField);
 
