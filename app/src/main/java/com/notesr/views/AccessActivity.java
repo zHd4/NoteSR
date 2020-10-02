@@ -33,6 +33,10 @@ public class AccessActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         resetEnteredPin();
 
+        if(operation == SECRET_PIN) {
+            findViewById(R.id.forceMajeureTextView).setVisibility(View.VISIBLE);
+        }
+
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         final Button pinButtonBackspace = findViewById(R.id.pinButtonBackspace);
