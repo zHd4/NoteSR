@@ -12,7 +12,7 @@
             android:layout_height="660dp"
             android:ems="10"
             android:gravity="top|left"
-            android:hint="@string/pasteYourEncryptedData"
+            android:hint="@string/pasteYourPrivateKey"
             android:lines="25"
             android:minLines="6"
             android:textColor="#FFFFFF"
