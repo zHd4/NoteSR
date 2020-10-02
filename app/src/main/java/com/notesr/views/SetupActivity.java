@@ -14,8 +14,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
 import com.notesr.controllers.CryptoController;
+import com.notesr.controllers.StorageController;
 import com.notesr.controllers.onclick.NextGenkeysButtonController;
 import com.notesr.models.ActivityTools;
+import com.notesr.models.Config;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -34,7 +36,12 @@ public class SetupActivity extends AppCompatActivity {
         setContentView(R.layout.setup_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
-        ActivityTools.checkReady(getApplicationContext(), this);
+        if((Config.cryptoKey == null || Config.pinCode == null) && StorageController.isFileExists(
+                getApplicationContext(),
+                Config.keyBinFileName)
+        ) {
+            startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+        }
 
         final TextView labelKeyView = findViewById(R.id.labelKeyView);
         final EditText keyField = findViewById(R.id.importKeyField);
