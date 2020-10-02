@@ -116,6 +116,16 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
 
+            case R.id.regenerateKey:
+                Bundle setupBundle = new Bundle();
+                setupBundle.putBoolean(SetupActivity.regenerateKey, true);
+
+                startActivity(
+                        ActivityTools.getIntent(getApplicationContext(), SetupActivity.class).putExtras(setupBundle)
+                );
+
+                break;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
