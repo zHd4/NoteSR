@@ -1,2 +1,2 @@
 # NoteSR
-Designed by: https://t.me/Qfinel
+Icon by: https://t.me/Qfinel
