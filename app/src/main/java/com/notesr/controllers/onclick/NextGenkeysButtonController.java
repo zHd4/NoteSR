@@ -30,7 +30,7 @@ public class NextGenkeysButtonController implements View.OnClickListener {
 
             if(isRegeneratingKey) {
                 try {
-                    NotesController.getNotes(setupActivity.getApplicationContext());
+                    notes = NotesController.getNotes(setupActivity.getApplicationContext());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -48,13 +48,16 @@ public class NextGenkeysButtonController implements View.OnClickListener {
                 } else {
                     try {
                         NotesController.setNotes(setupActivity.getApplicationContext(), notes);
+                        ActivityTools.saveKey(setupActivity.getApplicationContext());
                     } catch (Exception e) {
                         e.printStackTrace();
                         setupActivity.displayRegeneationFailedMessage();
                     }
                 }
 
-                setupActivity.startActivity(ActivityTools.getIntent(setupActivity.getApplicationContext(), MainActivity.class));
+                setupActivity.startActivity(
+                        ActivityTools.getIntent(setupActivity.getApplicationContext(), MainActivity.class)
+                );
             } else {
                 AccessActivity.operation = AccessActivity.CREATE_PIN;
                 setupActivity.startActivity(
