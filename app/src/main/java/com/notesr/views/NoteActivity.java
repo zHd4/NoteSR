@@ -123,10 +123,9 @@ public class NoteActivity extends AppCompatActivity {
                 if(arg == EDIT_NOTE) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
 
-                    builder.setMessage("If you press 'Yes', you cannot undo this action.\n" +
-                            "Are you sure?")
-                            .setPositiveButton("Yes", deleteDialogClickListener)
-                            .setNegativeButton("No", deleteDialogClickListener)
+                    builder.setMessage(getResString(R.string.if_yes_cannot_undo))
+                            .setPositiveButton(getResString(R.string.yes), deleteDialogClickListener)
+                            .setNegativeButton(getResString(R.string.no), deleteDialogClickListener)
                             .show();
                 }
             }
@@ -144,5 +143,9 @@ public class NoteActivity extends AppCompatActivity {
         System.arraycopy(second, 0, result, first.length, second.length);
 
         return result;
+    }
+
+    private String getResString(int id) {
+        return getResources().getString(id);
     }
 }

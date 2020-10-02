@@ -40,4 +40,10 @@
     <string name="change_pin_code">Change pin</string>
     <string name="regenerate_key">Regenerate key</string>
     <string name="regeneration_failed">Regeneration failed</string>
+    <string name="if_yes_cannot_undo">If you press "Yes", you cannot undo this action.\nAre you sure?</string>
+    <string name="warning_of_losing_data">
+        You can lose your data while processing this action!\nIf you dont know what are you doing press "No".
+    </string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

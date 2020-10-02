@@ -2,8 +2,10 @@ package com.notesr.views;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,13 +17,13 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.R;
 import com.notesr.controllers.DatabaseController;
 import com.notesr.controllers.NotesController;
+import com.notesr.controllers.StorageController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
-import com.notesr.controllers.StorageController;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.models.Exporter;
 import com.notesr.models.Importer;
 
@@ -29,12 +31,16 @@ public class MainActivity extends AppCompatActivity {
 
     public static String[][] notes = new String[0][0];
 
+    private Context activityContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,WindowManager.LayoutParams.FLAG_SECURE);
+
+        this.activityContext = this;
 
         ActivityCompat.requestPermissions(MainActivity.this, new String[] {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -117,12 +123,28 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.regenerateKey:
-                Bundle setupBundle = new Bundle();
-                setupBundle.putBoolean(SetupActivity.regenerateKey, true);
+                final DialogInterface.OnClickListener warningDialogClickListener =
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(which == DialogInterface.BUTTON_POSITIVE) {
+                            Bundle setupBundle = new Bundle();
+                            setupBundle.putBoolean(SetupActivity.regenerateKey, true);
 
-                startActivity(
-                        ActivityTools.getIntent(getApplicationContext(), SetupActivity.class).putExtras(setupBundle)
-                );
+                            startActivity(ActivityTools.getIntent(
+                                    getApplicationContext(),
+                                    SetupActivity.class
+                            ).putExtras(setupBundle));
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+
+                builder.setMessage(getResources().getString(R.string.warning_of_losing_data))
+                        .setPositiveButton(getResources().getString(R.string.yes), warningDialogClickListener)
+                        .setNegativeButton(getResources().getString(R.string.no), warningDialogClickListener)
+                        .show();
 
                 break;
 
