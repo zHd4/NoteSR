@@ -2,6 +2,7 @@ package com.notesr.controllers.onclick;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import com.notesr.controllers.NotesController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
@@ -13,16 +14,18 @@ public class NextGenkeysButtonController implements View.OnClickListener {
     @SuppressWarnings("FieldMayBeFinal")
     private SetupActivity setupActivity;
 
-    private final String impotedKey;
+    private final EditText keyField;
 
-    public NextGenkeysButtonController(final SetupActivity setupActivity, String impotedKey) {
-        this.impotedKey = impotedKey;
+    public NextGenkeysButtonController(final SetupActivity setupActivity, EditText keyField) {
+        this.keyField = keyField;
         this.setupActivity = setupActivity;
     }
 
     @Override
     public void onClick(View v) {
-        if(impotedKey != null) {
+        String importedKey = setupActivity.checkKeyField(keyField.getText().toString());
+
+        if(importedKey != null) {
             String[][] notes = null;
 
             Bundle extras = setupActivity.getIntent().getExtras();
@@ -36,8 +39,8 @@ public class NextGenkeysButtonController implements View.OnClickListener {
                 }
             }
 
-            if(!impotedKey.equals("")) {
-                Config.cryptoKey = impotedKey;
+            if(!importedKey.equals("")) {
+                Config.cryptoKey = importedKey;
             } else {
                 Config.cryptoKey = setupActivity.tempKey;
             }

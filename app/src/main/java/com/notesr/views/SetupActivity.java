@@ -64,10 +64,7 @@ public class SetupActivity extends AppCompatActivity {
             }
         });
 
-        nextGenkeysButton.setOnClickListener(new NextGenkeysButtonController(
-                this,
-                keyField.getText().toString())
-        );
+        nextGenkeysButton.setOnClickListener(new NextGenkeysButtonController(this, keyField));
 
         try {
             this.tempKey = Base64.encodeToString(CryptoController.genKey(), Base64.DEFAULT);
@@ -79,7 +76,7 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
-    private String checkKeyField(final String keyHex) {
+    public String checkKeyField(final String keyHex) {
         try {
             if(keyHex.equals("")) {
                 return "";
