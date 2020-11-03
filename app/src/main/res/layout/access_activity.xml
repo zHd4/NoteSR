@@ -5,12 +5,24 @@
     android:layout_height="match_parent"
     android:background="@color/activityBackground">
 
+    <TextView
+            android:id="@+id/accessCodeSector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.235"/>
     <Button
-            android:id="@+id/pinButton10"
+            android:id="@+id/changeInputTypeButton"
             android:layout_width="170dp"
             android:layout_height="80dp"
             android:background="@color/activityBackground"
-            android:text="0"
+            android:text="@string/_0_"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -28,8 +40,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintVertical_bias="0.035" app:layout_constraintTop_toBottomOf="@+id/pinSector2"
-            android:visibility="invisible"/>
+            android:visibility="invisible" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.30"/>
     <Button
             android:layout_width="80dp"
             android:layout_height="173dp"
@@ -59,65 +71,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.161" />
-
-    <TextView
-        android:id="@+id/pinSector4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/activityBackground"
-        android:text="@string/five_spaces"
-        android:textColor="#FFFFFF"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.78"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.243" />
-
-    <TextView
-        android:id="@+id/pinSector1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/activityBackground"
-        android:text="@string/five_spaces"
-        android:textColor="#FFFFFF"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.36"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.243" />
-
-    <TextView
-        android:id="@+id/pinSector3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/activityBackground"
-        android:text="@string/five_spaces"
-        android:textColor="#FFFFFF"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.64"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.243" />
-
-    <TextView
-        android:id="@+id/pinSector2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/activityBackground"
-        android:text="@string/five_spaces"
-        android:textColor="#FFFFFF"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.243" />
 
     <Button
             android:id="@+id/pinButton1"

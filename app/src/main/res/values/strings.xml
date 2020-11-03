@@ -48,4 +48,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="force_majeure_pin">Pin-code setup for force-majeure situations.</string>
+    <string name="_0_">0</string>
 </resources>
