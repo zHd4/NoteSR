@@ -5,6 +5,19 @@
     android:layout_height="match_parent"
     android:background="@color/activityBackground">
 
+    <Button
+            android:id="@+id/pinButton10"
+            android:layout_width="170dp"
+            android:layout_height="80dp"
+            android:background="@color/activityBackground"
+            android:text="0"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.96" android:textSize="10sp"/>
     <TextView
             android:id="@+id/infoTextView"
             android:layout_width="wrap_content"
@@ -19,7 +32,7 @@
             android:visibility="invisible"/>
     <Button
             android:layout_width="80dp"
-            android:layout_height="79dp"
+            android:layout_height="173dp"
             android:background="@color/activityBackground"
             android:clickable="true"
             android:enabled="true"
@@ -29,7 +42,7 @@
             app:layout_constraintHorizontal_bias="0.77"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.82" android:focusable="true" android:id="@+id/pinAccessButton"
+            app:layout_constraintVertical_bias="0.96" android:focusable="true" android:id="@+id/pinAccessButton"
             tools:text=">" android:textSize="30sp" android:fontFamily="sans-serif"
     />
 
@@ -193,7 +206,7 @@
     <Button
             android:id="@+id/pinButtonBackspace"
             android:layout_width="80dp"
-            android:layout_height="79dp"
+            android:layout_height="80dp"
             android:background="@color/activityBackground"
             android:text="@string/backspace"
             android:textColor="#FFFFFF"
