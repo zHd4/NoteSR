@@ -14,9 +14,10 @@ import com.notesr.controllers.SecretPinController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 import com.notesr.controllers.StorageController;
+import com.notesr.models.NumericKeyboardInputStates;
 
 public class AccessActivity extends AppCompatActivity {
-    public static String enteredPin = "";
+    public static String enteredPassword = "";
 
     public static int CREATE_PIN = 1;
     public static int REPEAT_PIN = 2;
@@ -25,12 +26,21 @@ public class AccessActivity extends AppCompatActivity {
     public static int operation = 0;
     private static int attempts = 3;
 
+    private boolean capsEnabled;
+    private TextView passwordField;
+    private NumericKeyboardInputStates inputState;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.access_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+
+        this.capsEnabled = false;
+        this.passwordField = findViewById(R.id.accessCodeSector);
+        this.inputState = NumericKeyboardInputStates.NUMERIC;
+
         resetEnteredPin();
 
         if(operation == SECRET_PIN) {
@@ -45,13 +55,6 @@ public class AccessActivity extends AppCompatActivity {
 
         final Button pinButtonBackspace = findViewById(R.id.pinButtonBackspace);
 
-        final int[] sectors = {
-                R.id.pinSector1,
-                R.id.pinSector2,
-                R.id.pinSector3,
-                R.id.pinSector4
-        };
-
         int[] pinButtons = {
                 R.id.pinButton0,
                 R.id.pinButton1,
@@ -65,89 +68,72 @@ public class AccessActivity extends AppCompatActivity {
                 R.id.pinButton9
         };
 
-        for (int i = 0; i < pinButtons.length; i++) {
-            setOnClick((Button) findViewById(pinButtons[i]), sectors, i);
+        for (int buttonId : pinButtons) {
+            setOnClick((Button) findViewById(buttonId));
         }
 
         pinButtonBackspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(enteredPin.length() == 3){
-                    enteredPin = enteredPin.substring(0, 2);
-                    ((TextView) findViewById(sectors[2])).setText(generateSector(false));
-                } else if(enteredPin.length() == 2) {
-                    enteredPin = enteredPin.substring(0, 1);
-                    ((TextView) findViewById(sectors[1])).setText(generateSector(false));
-                }  else if(enteredPin.length() == 1) {
-                    resetEnteredPin();
-                    ((TextView) findViewById(sectors[0])).setText(generateSector(false));
+                String currentPassword = AccessActivity.this.passwordField.getText().toString();
+
+                if(currentPassword.length() > 0) {
+                    AccessActivity.this.passwordField.setText(
+                            currentPassword.substring(0, currentPassword.length() - 2)
+                    );
                 }
             }
         });
     }
 
-    private void setOnClick(final Button btn, final int[] sectors, final int num) {
+    private void setOnClick(final Button btn) {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (enteredPin.length() == 0) {
-                    ((TextView) findViewById(sectors[0])).setText(generateSector(true));
-                    enteredPin += String.valueOf(num);
+                if (enteredPassword.length() <= 6) {
+                    AccessActivity.this.passwordField.setText(
+                            "•" + " " + AccessActivity.this.passwordField.getText().toString()
+                    );
+                }
 
-                } else if (enteredPin.length() == 1) {
-                    ((TextView) findViewById(sectors[1])).setText(generateSector(true));
-                    enteredPin += String.valueOf(num);
+                char character = btn
+                        .getText()
+                        .toString()
+                        .replace("\n", "")
+                        .toCharArray()
+                        [AccessActivity.this.inputState.getState()];
 
-                } else if (enteredPin.length() == 2) {
-                    ((TextView) findViewById(sectors[2])).setText(generateSector(true));
-                    enteredPin += String.valueOf(num);
-
-                } else if (enteredPin.length() == 3) {
+                enteredPassword += capsEnabled ? String.valueOf(character).toUpperCase() : character;
+                /* else {
                     ((TextView) findViewById(sectors[3])).setText(generateSector(true));
                     enteredPin += String.valueOf(num);
 
                     clearSectors(sectors);
                     acceptPin(sectors);
-                }
+                } */
             }
         });
     }
 
-    private void clearSectors(final int[] sectors) {
-        for(int i = 0; i < 4; i++) {
-            ((TextView) findViewById(sectors[i])).setText(generateSector(false));
-        }
-    }
-
-    private String generateSector(boolean usingDot) {
-        StringBuilder result = new StringBuilder();
-        
-        for(int i = 0; i < 5; i++) {
-            if(i == 2 && usingDot) {
-                result.append("•");
-            } else {
-                result.append(" ");
-            }
-        }
-        
-        return result.toString();
+    private void clearPasswordField() {
+        this.passwordField.setText("");
     }
     
     private void resetEnteredPin() {
-        enteredPin = "";
+        enteredPassword = "";
     }
 
     public void acceptPin(final int[] sectors) {
         if (operation == CREATE_PIN) {
             final TextView formLabel = findViewById(R.id.acTextView);
 
-            Config.pinCode = enteredPin;
+            Config.pinCode = enteredPassword;
             formLabel.setText(R.string.repeatAccessCode);
             operation = REPEAT_PIN;
 
             resetEnteredPin();
         } else if(operation == REPEAT_PIN) {
-            if(enteredPin.equals(Config.pinCode)){
+            if(enteredPassword.equals(Config.pinCode)){
                 ActivityTools.context = getApplicationContext();
                 try {
                     ActivityTools.saveKey(ActivityTools.getAppContext());
@@ -167,7 +153,7 @@ public class AccessActivity extends AppCompatActivity {
                 );
             }
         } else if(operation == SECRET_PIN) {
-            new SecretPinController(getApplicationContext(), Integer.parseInt(enteredPin)).setPin();
+            new SecretPinController(getApplicationContext(), Integer.parseInt(enteredPassword)).setPin();
             ActivityTools.showTextMessage(
                     getResources().getString(R.string.secret_pin_code_is_set),
                     Toast.LENGTH_SHORT,
@@ -177,7 +163,7 @@ public class AccessActivity extends AppCompatActivity {
         } else {
             SecretPinController secretPinController = new SecretPinController(
                     getApplicationContext(),
-                    Integer.parseInt(enteredPin)
+                    Integer.parseInt(enteredPassword)
                     );
 
             if(secretPinController.checkPin()) {
@@ -185,7 +171,7 @@ public class AccessActivity extends AppCompatActivity {
                 this.dropKeyFile();
             }
 
-            boolean pinValid = ActivityTools.getKeys(enteredPin, getApplicationContext());
+            boolean pinValid = ActivityTools.getKeys(enteredPassword, getApplicationContext());
             ActivityTools.context = getApplicationContext();
 
             if (!pinValid) {
@@ -210,7 +196,7 @@ public class AccessActivity extends AppCompatActivity {
             }
         }
 
-        clearSectors(sectors);
+        this.clearPasswordField();
     }
 
     private void dropKeyFile() {
