@@ -53,7 +53,9 @@ public class AccessActivity extends AppCompatActivity {
 
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
+        final Button capsButton = findViewById(R.id.capsButton);
         final Button pinButtonBackspace = findViewById(R.id.pinButtonBackspace);
+        final Button changeInputTypeButton = findViewById(R.id.changeInputTypeButton);
 
         int[] pinButtons = {
                 R.id.pinButton0,
@@ -71,6 +73,33 @@ public class AccessActivity extends AppCompatActivity {
         for (int buttonId : pinButtons) {
             setOnClick((Button) findViewById(buttonId));
         }
+
+        capsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AccessActivity.this.capsEnabled = !capsEnabled;
+                capsButton.setTextSize(capsEnabled ? 30 : 40);
+            }
+        });
+
+        changeInputTypeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(AccessActivity.this.inputState == NumericKeyboardInputStates.NUMERIC) {
+                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL1;
+                    changeInputTypeButton.setText("1");
+                } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL1) {
+                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL2;
+                    changeInputTypeButton.setText("2");
+                } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL2) {
+                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL3;
+                    changeInputTypeButton.setText("3");
+                } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL3) {
+                    AccessActivity.this.inputState = NumericKeyboardInputStates.NUMERIC;
+                    changeInputTypeButton.setText("0");
+                }
+            }
+        });
 
         pinButtonBackspace.setOnClickListener(new View.OnClickListener() {
             @Override
