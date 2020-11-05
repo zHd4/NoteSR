@@ -36,7 +36,7 @@ public class SetupActivity extends AppCompatActivity {
         setContentView(R.layout.setup_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
-        if((Config.cryptoKey == null || Config.pinCode == null) && StorageController.isFileExists(
+        if((Config.cryptoKey == null || Config.passwordCode == null) && StorageController.isFileExists(
                 getApplicationContext(),
                 Config.keyBinFileName)
         ) {

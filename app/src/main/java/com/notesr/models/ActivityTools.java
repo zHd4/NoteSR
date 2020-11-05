@@ -89,7 +89,7 @@ public class ActivityTools extends AppCompatActivity {
 
     public static void saveKey(Context context) throws Exception {
         if (StorageController.isExternalStorageAvailable() && !StorageController.isExternalStorageReadOnly()) {
-            String cryptoPassword = md5(Config.pinCode);
+            String cryptoPassword = md5(Config.passwordCode);
 
             StorageController.writeFile(context,Config.keyBinFileName, CryptoController.encrypt(
                     Config.cryptoKey,
@@ -117,7 +117,7 @@ public class ActivityTools extends AppCompatActivity {
                 );
 
                 Config.cryptoKey = cryptoKey;
-                Config.pinCode = pin;
+                Config.passwordCode = pin;
 
                 return true;
 
@@ -193,7 +193,7 @@ public class ActivityTools extends AppCompatActivity {
 
     private static class ReadyChecker {
         public void checkReady(Context context, AppCompatActivity activity) {
-            if(Config.cryptoKey == null || Config.pinCode == null) {
+            if(Config.cryptoKey == null || Config.passwordCode == null) {
                 activity.startActivity(ActivityTools.getIntent(context, AccessActivity.class));
             }
         }

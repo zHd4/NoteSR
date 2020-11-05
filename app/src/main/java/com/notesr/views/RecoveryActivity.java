@@ -42,7 +42,7 @@ public class RecoveryActivity extends AppCompatActivity {
                     CryptoController.decrypt(db.getAllNotes()[0][0], ActivityTools.sha256(keyString), key);
 
                     Config.cryptoKey = Base64.encodeToString(key, Base64.DEFAULT);
-                    AccessActivity.operation = AccessActivity.CREATE_PIN;
+                    AccessActivity.operation = AccessActivity.CREATE_CODE;
 
                     startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
                 } catch (Exception e) {

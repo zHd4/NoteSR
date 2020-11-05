@@ -19,14 +19,15 @@ import com.notesr.models.NumericKeyboardInputStates;
 public class AccessActivity extends AppCompatActivity {
     public static String enteredPassword = "";
 
-    public static int CREATE_PIN = 1;
-    public static int REPEAT_PIN = 2;
-    public static int SECRET_PIN = 3;
+    public static int CREATE_CODE = 1;
+    public static int REPEAT_CODE = 2;
+    public static int SECRET_CODE = 3;
 
     public static int operation = 0;
     private static int attempts = 3;
 
     private boolean capsEnabled;
+
     private TextView passwordField;
     private NumericKeyboardInputStates inputState;
 
@@ -41,19 +42,21 @@ public class AccessActivity extends AppCompatActivity {
         this.passwordField = findViewById(R.id.accessCodeSector);
         this.inputState = NumericKeyboardInputStates.NUMERIC;
 
-        resetEnteredPin();
+        resetEnteredCode();
 
-        if(operation == SECRET_PIN) {
+        if(operation == SECRET_CODE) {
             findViewById(R.id.infoTextView).setVisibility(View.VISIBLE);
         }
 
-        if(operation == CREATE_PIN) {
+        if(operation == CREATE_CODE) {
             ((TextView)findViewById(R.id.acTextView)).setText(R.string.create_pin);
         }
 
         ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         final Button capsButton = findViewById(R.id.capsButton);
+        final Button accessButton = findViewById(R.id.accessButton);
+
         final Button pinButtonBackspace = findViewById(R.id.pinButtonBackspace);
         final Button changeInputTypeButton = findViewById(R.id.changeInputTypeButton);
 
@@ -113,6 +116,13 @@ public class AccessActivity extends AppCompatActivity {
                 }
             }
         });
+
+        accessButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                acceptPassword();
+            }
+        });
     }
 
     private void setOnClick(final Button btn) {
@@ -133,13 +143,6 @@ public class AccessActivity extends AppCompatActivity {
                         [AccessActivity.this.inputState.getState()];
 
                 enteredPassword += capsEnabled ? String.valueOf(character).toUpperCase() : character;
-                /* else {
-                    ((TextView) findViewById(sectors[3])).setText(generateSector(true));
-                    enteredPin += String.valueOf(num);
-
-                    clearSectors(sectors);
-                    acceptPin(sectors);
-                } */
             }
         });
     }
@@ -148,21 +151,21 @@ public class AccessActivity extends AppCompatActivity {
         this.passwordField.setText("");
     }
     
-    private void resetEnteredPin() {
+    private void resetEnteredCode() {
         enteredPassword = "";
     }
 
-    public void acceptPin(final int[] sectors) {
-        if (operation == CREATE_PIN) {
+    public void acceptPassword() {
+        if (operation == CREATE_CODE) {
             final TextView formLabel = findViewById(R.id.acTextView);
 
-            Config.pinCode = enteredPassword;
+            Config.passwordCode = enteredPassword;
             formLabel.setText(R.string.repeatAccessCode);
-            operation = REPEAT_PIN;
+            operation = REPEAT_CODE;
 
-            resetEnteredPin();
-        } else if(operation == REPEAT_PIN) {
-            if(enteredPassword.equals(Config.pinCode)){
+            resetEnteredCode();
+        } else if(operation == REPEAT_CODE) {
+            if(enteredPassword.equals(Config.passwordCode)){
                 ActivityTools.context = getApplicationContext();
                 try {
                     ActivityTools.saveKey(ActivityTools.getAppContext());
@@ -174,14 +177,14 @@ public class AccessActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else {
-                resetEnteredPin();
+                resetEnteredCode();
 
                 ActivityTools.showTextMessage("Try again",
                         Toast.LENGTH_SHORT,
                         getApplicationContext()
                 );
             }
-        } else if(operation == SECRET_PIN) {
+        } else if(operation == SECRET_CODE) {
             new SecretPinController(getApplicationContext(), Integer.parseInt(enteredPassword)).setPin();
             ActivityTools.showTextMessage(
                     getResources().getString(R.string.secret_pin_code_is_set),
@@ -205,10 +208,10 @@ public class AccessActivity extends AppCompatActivity {
 
             if (!pinValid) {
                 if(attempts == 1) {
-                    resetEnteredPin();
+                    resetEnteredCode();
                     this.dropKeyFile();
                 } else {
-                    resetEnteredPin();
+                    resetEnteredCode();
                     attempts--;
 
                     ActivityTools.showTextMessage(

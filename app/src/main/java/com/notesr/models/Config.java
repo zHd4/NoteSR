@@ -2,7 +2,7 @@ package com.notesr.models;
 
 public class Config {
     public static String cryptoKey;
-    public static String pinCode;
+    public static String passwordCode;
 
     public static final String internalStoragePath = "storage";
     public static final String databaseName = "notesr";

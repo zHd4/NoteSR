@@ -62,7 +62,7 @@ public class NextGenkeysButtonController implements View.OnClickListener {
                         ActivityTools.getIntent(setupActivity.getApplicationContext(), MainActivity.class)
                 );
             } else {
-                AccessActivity.operation = AccessActivity.CREATE_PIN;
+                AccessActivity.operation = AccessActivity.CREATE_CODE;
                 setupActivity.startActivity(
                         ActivityTools.getIntent(setupActivity.getApplicationContext(), AccessActivity.class)
                 );

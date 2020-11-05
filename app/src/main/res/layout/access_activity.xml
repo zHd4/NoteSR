@@ -66,7 +66,7 @@
             app:layout_constraintHorizontal_bias="0.77"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.96" android:focusable="true" android:id="@+id/pinAccessButton"
+            app:layout_constraintVertical_bias="0.96" android:focusable="true" android:id="@+id/accessButton"
             tools:text="√" android:textSize="30sp" android:fontFamily="sans-serif"
     />
 

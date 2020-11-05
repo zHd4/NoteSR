@@ -111,13 +111,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.secretPin:
-                AccessActivity.operation = AccessActivity.SECRET_PIN;
+                AccessActivity.operation = AccessActivity.SECRET_CODE;
                 startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
 
                 break;
 
             case R.id.changePin:
-                AccessActivity.operation = AccessActivity.CREATE_PIN;
+                AccessActivity.operation = AccessActivity.CREATE_CODE;
                 startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
 
                 break;
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         ).length() > 0;
 
         if((isNotesExists && keyExists) || (!isNotesExists && keyExists)) {
-            if(Config.pinCode != null){
+            if(Config.passwordCode != null){
                 addNoteButton.setVisibility(View.VISIBLE);
                 lockScreenButton.setVisibility(View.VISIBLE);
 
