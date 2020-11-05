@@ -36,9 +36,9 @@
     <string name="new_note">New</string>
     <string name="edit_note">Edit</string>
     <string name="import_notes_title">Import</string>
-    <string name="secret_pin_code">Secret pin</string>
-    <string name="secret_pin_code_is_set">Secret pin set successfully</string>
-    <string name="change_pin_code">Change pin</string>
+    <string name="secret_pin_code">Emergency code</string>
+    <string name="secret_pin_code_is_set">Emergency code set successfully</string>
+    <string name="change_pin_code">Change access code</string>
     <string name="regenerate_key">Regenerate key</string>
     <string name="regeneration_failed">Regeneration failed</string>
     <string name="if_yes_cannot_undo">If you press "Yes", you cannot undo this action.\nAre you sure?</string>
@@ -47,7 +47,7 @@
     </string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="force_majeure_pin">Pin-code setup for force-majeure situations.</string>
+    <string name="force_majeure_pin">Access code setup for force-majeure situations.</string>
     <string name="_0_">0</string>
     <string name="topPointer">↑</string>
 </resources>
