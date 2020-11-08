@@ -90,17 +90,15 @@ public class AccessActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(AccessActivity.this.inputState == NumericKeyboardInputStates.NUMERIC) {
                     AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL1;
-                    changeInputTypeButton.setText("1");
                 } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL1) {
                     AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL2;
-                    changeInputTypeButton.setText("2");
                 } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL2) {
                     AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL3;
-                    changeInputTypeButton.setText("3");
                 } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL3) {
                     AccessActivity.this.inputState = NumericKeyboardInputStates.NUMERIC;
-                    changeInputTypeButton.setText("0");
                 }
+
+                changeInputTypeButton.setText(String.valueOf(AccessActivity.this.inputState.getState()));
             }
         });
 
@@ -129,12 +127,19 @@ public class AccessActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                char[] inputTypes = new char[] {
+                    NumericKeyboardInputStates.NUMERIC.getState(),
+                    NumericKeyboardInputStates.SYMBOL1.getState(),
+                    NumericKeyboardInputStates.SYMBOL2.getState(),
+                    NumericKeyboardInputStates.SYMBOL3.getState()
+                };
+
                 char character = btn
                         .getText()
                         .toString()
                         .replace("\n", "")
                         .toCharArray()
-                        [AccessActivity.this.inputState.getState()];
+                        [new String(inputTypes).indexOf(AccessActivity.this.inputState.getState())];
 
                 character = capsEnabled ? String.valueOf(character).toUpperCase().toCharArray()[0] : character;
 

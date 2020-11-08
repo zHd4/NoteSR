@@ -1,15 +1,15 @@
 package com.notesr.models;
 
 public enum NumericKeyboardInputStates {
-    NUMERIC(0), SYMBOL1(1), SYMBOL2(2), SYMBOL3(3);
+    NUMERIC('1'), SYMBOL1('A'), SYMBOL2('B'), SYMBOL3('C');
 
-    private final int state;
+    private final char state;
 
-    NumericKeyboardInputStates(final int state) {
+    NumericKeyboardInputStates(final char state) {
         this.state = state;
     }
 
-    public int getState() {
+    public char getState() {
         return this.state;
     }
 }

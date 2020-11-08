@@ -47,7 +47,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:background="@color/activityBackground"
-            android:text="@string/_0_"
+            android:text="@string/_1_"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
