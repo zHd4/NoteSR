@@ -81,7 +81,7 @@ public class AccessActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AccessActivity.this.capsEnabled = !capsEnabled;
-                capsButton.setTextSize(capsEnabled ? 30 : 40);
+                capsButton.setTextSize(capsEnabled ? 40 : 30);
             }
         });
 
@@ -129,12 +129,6 @@ public class AccessActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (enteredPassword.length() <= 6) {
-                    AccessActivity.this.passwordField.setText(
-                            "•" + " " + AccessActivity.this.passwordField.getText().toString()
-                    );
-                }
-
                 char character = btn
                         .getText()
                         .toString()
@@ -142,7 +136,28 @@ public class AccessActivity extends AppCompatActivity {
                         .toCharArray()
                         [AccessActivity.this.inputState.getState()];
 
-                enteredPassword += capsEnabled ? String.valueOf(character).toUpperCase() : character;
+                character = capsEnabled ? String.valueOf(character).toUpperCase().toCharArray()[0] : character;
+
+                if (enteredPassword.length() <= 6) {
+                    String currentPassword = AccessActivity.this.passwordField.getText().toString();
+
+                    currentPassword = currentPassword + character + " ";
+
+                    AccessActivity.this.passwordField.setText(currentPassword);
+
+//                    try {
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    currentPassword = currentPassword.substring(0, currentPassword.length() - 1);
+//
+//                    AccessActivity.this.passwordField.setText(currentPassword);
+//                    AccessActivity.this.passwordField.setText(currentPassword + "•" + " ");
+                }
+
+                enteredPassword += character;
             }
         });
     }
