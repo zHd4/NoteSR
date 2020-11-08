@@ -20,9 +20,9 @@
     <string name="_5">5\nmno</string>
     <string name="_6">6\npqr</string>
     <string name="_7">7\nstu</string>
-    <string name="_8">8\nvmx</string>
-    <string name="_9">9\nyz#</string>
-    <string name="_0">0\n*+-</string>
+    <string name="_8">8\nvwm</string>
+    <string name="_9">9\nxyz</string>
+    <string name="_0">0\n#+-</string>
     <string name="backspace">⌫</string>
     <string name="pasteYourPrivateKey">Paste your private key</string>
     <string name="decrypt">Decrypt</string>

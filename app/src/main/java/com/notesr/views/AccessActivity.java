@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
-import com.notesr.controllers.SecretPinController;
+import com.notesr.controllers.EmergencyPasswordController;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 import com.notesr.controllers.StorageController;
@@ -191,7 +191,7 @@ public class AccessActivity extends AppCompatActivity {
                 );
             }
         } else if(operation == SECRET_CODE) {
-            new SecretPinController(getApplicationContext(), Integer.parseInt(enteredPassword)).setPin();
+            new EmergencyPasswordController(getApplicationContext(), enteredPassword).setPin();
             ActivityTools.showTextMessage(
                     getResources().getString(R.string.secret_pin_code_is_set),
                     Toast.LENGTH_SHORT,
@@ -199,9 +199,9 @@ public class AccessActivity extends AppCompatActivity {
 
             finish();
         } else {
-            SecretPinController secretPinController = new SecretPinController(
+            EmergencyPasswordController secretPinController = new EmergencyPasswordController(
                     getApplicationContext(),
-                    Integer.parseInt(enteredPassword)
+                    enteredPassword
                     );
 
             if(secretPinController.checkPin()) {
