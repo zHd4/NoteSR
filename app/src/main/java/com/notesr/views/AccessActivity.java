@@ -138,24 +138,10 @@ public class AccessActivity extends AppCompatActivity {
 
                 character = capsEnabled ? String.valueOf(character).toUpperCase().toCharArray()[0] : character;
 
-                if (enteredPassword.length() <= 6) {
-                    String currentPassword = AccessActivity.this.passwordField.getText().toString();
+                String currentPassword = AccessActivity.this.passwordField.getText().toString();
 
-                    currentPassword = currentPassword + character + " ";
-
-                    AccessActivity.this.passwordField.setText(currentPassword);
-
-//                    try {
-//                        Thread.sleep(100);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    currentPassword = currentPassword.substring(0, currentPassword.length() - 1);
-//
-//                    AccessActivity.this.passwordField.setText(currentPassword);
-//                    AccessActivity.this.passwordField.setText(currentPassword + "•" + " ");
-                }
+                AccessActivity.this.passwordField.setText(currentPassword);
+                AccessActivity.this.passwordField.setText(currentPassword + "•" + " ");
 
                 enteredPassword += character;
             }

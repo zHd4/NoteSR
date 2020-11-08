@@ -6,6 +6,19 @@
     android:background="@color/activityBackground">
 
     <Button
+            android:id="@+id/accessButton"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@color/activityBackground"
+            android:text="@string/successSymbol"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.769"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.961"/>
+    <Button
             android:id="@+id/capsButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
@@ -54,21 +67,6 @@
             app:layout_constraintStart_toStartOf="parent"
             android:visibility="invisible" app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.30"/>
-    <Button
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@color/activityBackground"
-            android:clickable="true"
-            android:enabled="true"
-            android:textColor="#00FF55"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.77"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.96" android:focusable="true" android:id="@+id/accessButton"
-            tools:text=">" android:textSize="30sp" android:fontFamily="sans-serif"
-    />
 
     <TextView
         android:id="@+id/acTextView"

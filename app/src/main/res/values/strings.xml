@@ -50,4 +50,5 @@
     <string name="force_majeure_pin">Access code setup for force-majeure situations.</string>
     <string name="_0_">0</string>
     <string name="topPointer">↑</string>
+    <string name="successSymbol">√</string>
 </resources>
