@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
         notes = NotesController.getNotes(getApplicationContext());
 
-        int noteColor = Color.rgb(37, 40, 47);
+        int noteColor = getResources().getColor(R.color.buttonBackground);
         int beforeLineColor = Color.rgb(25, 28, 33);
 
         final int maxTitleVisualSize = 28;
