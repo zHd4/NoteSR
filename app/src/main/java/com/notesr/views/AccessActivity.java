@@ -17,6 +17,8 @@ import com.notesr.controllers.StorageController;
 import com.notesr.models.NumericKeyboardInputStates;
 
 public class AccessActivity extends AppCompatActivity {
+    private static final int LATENCY = 1500;
+
     public static String enteredPassword = "";
 
     public static int CREATE_CODE = 1;
@@ -88,14 +90,19 @@ public class AccessActivity extends AppCompatActivity {
         changeInputTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(AccessActivity.this.inputState == NumericKeyboardInputStates.NUMERIC) {
-                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL1;
-                } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL1) {
-                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL2;
-                } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL2) {
-                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL3;
-                } else if(AccessActivity.this.inputState == NumericKeyboardInputStates.SYMBOL3) {
-                    AccessActivity.this.inputState = NumericKeyboardInputStates.NUMERIC;
+                switch (AccessActivity.this.inputState) {
+                    case NUMERIC:
+                        AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL1;
+                        break;
+                    case SYMBOL1:
+                        AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL2;
+                        break;
+                    case SYMBOL2:
+                        AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL3;
+                        break;
+                    case SYMBOL3:
+                        AccessActivity.this.inputState = NumericKeyboardInputStates.NUMERIC;
+                        break;
                 }
 
                 changeInputTypeButton.setText(String.valueOf(AccessActivity.this.inputState.getState()));
@@ -215,6 +222,12 @@ public class AccessActivity extends AppCompatActivity {
             ActivityTools.context = getApplicationContext();
 
             if (!pinValid) {
+                try {
+                    Thread.sleep(LATENCY);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 if(attempts == 1) {
                     resetEnteredCode();
                     this.dropKeyFile();
