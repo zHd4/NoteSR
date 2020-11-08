@@ -11,7 +11,7 @@
             android:layout_height="80dp"
             android:background="@color/activityBackground"
             android:text="@string/successSymbol"
-            android:textColor="#FFFFFF"
+            android:textColor="#00FFA6"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.769"
