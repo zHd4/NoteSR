@@ -108,6 +108,8 @@ public class AccessActivity extends AppCompatActivity {
                 String currentPassword = AccessActivity.this.passwordField.getText().toString();
 
                 if(currentPassword.length() > 0) {
+                    enteredPassword = enteredPassword.substring(0, enteredPassword.length() - 1);
+
                     AccessActivity.this.passwordField.setText(
                             currentPassword.substring(0, currentPassword.length() - 2)
                     );
