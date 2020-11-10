@@ -172,13 +172,15 @@ public class AccessActivity extends AppCompatActivity {
 
     public void acceptPassword() {
         if (operation == CREATE_CODE) {
-            final TextView formLabel = findViewById(R.id.acTextView);
+            if(enteredPassword.length() > 0) {
+                final TextView formLabel = findViewById(R.id.acTextView);
 
-            Config.passwordCode = enteredPassword;
-            formLabel.setText(R.string.repeatAccessCode);
-            operation = REPEAT_CODE;
+                Config.passwordCode = enteredPassword;
+                formLabel.setText(R.string.repeatAccessCode);
+                operation = REPEAT_CODE;
 
-            resetEnteredCode();
+                resetEnteredCode();
+            }
         } else if(operation == REPEAT_CODE) {
             if(enteredPassword.equals(Config.passwordCode)){
                 ActivityTools.context = getApplicationContext();
