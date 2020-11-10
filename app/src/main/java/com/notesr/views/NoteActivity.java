@@ -71,10 +71,16 @@ public class NoteActivity extends AppCompatActivity {
 
                         db.deleteNote(CryptoController.encrypt(noteTitle, ActivityTools.sha256(Config.cryptoKey), key));
 
-                        startActivity(ActivityTools.getIntent(
-                                getApplicationContext(),
-                                MainActivity.class
-                        ));
+                        if(MainActivity.notes[noteId][0].equals(titleText.getText().toString()) &&
+                        MainActivity.notes[noteId][1].equals(textText.getText().toString())) {
+                            finish();
+                        } else {
+                            startActivity(ActivityTools.getIntent(
+                                    getApplicationContext(),
+                                    MainActivity.class
+                            ));
+                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
