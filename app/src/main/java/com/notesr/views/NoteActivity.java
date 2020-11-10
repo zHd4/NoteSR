@@ -70,17 +70,7 @@ public class NoteActivity extends AppCompatActivity {
                         byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
                         db.deleteNote(CryptoController.encrypt(noteTitle, ActivityTools.sha256(Config.cryptoKey), key));
-
-                        if(MainActivity.notes[noteId][0].equals(titleText.getText().toString()) &&
-                        MainActivity.notes[noteId][1].equals(textText.getText().toString())) {
-                            finish();
-                        } else {
-                            startActivity(ActivityTools.getIntent(
-                                    getApplicationContext(),
-                                    MainActivity.class
-                            ));
-                        }
-
+                        startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -140,7 +130,16 @@ public class NoteActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+        final EditText titleText = findViewById(R.id.titleText);
+        final EditText textText = findViewById(R.id.textText);
+
+        if(MainActivity.notes[noteId][0].equals(titleText.getText().toString()) &&
+                MainActivity.notes[noteId][1].equals(textText.getText().toString())) {
+            finish();
+        } else {
+            startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+        }
+
         return true;
     }
 
