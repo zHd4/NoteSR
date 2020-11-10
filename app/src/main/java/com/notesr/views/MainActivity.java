@@ -8,10 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -195,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         int noteColor = getResources().getColor(R.color.buttonBackground);
         int beforeLineColor = Color.rgb(25, 28, 33);
 
-        final int maxTitleVisualSize = 28;
+        final int maxTitleVisualSize = getWindowManager().getDefaultDisplay().getWidth() / 49;
 
         if (!notes.equals(new String[0][0])) {
             for (int i = 0; i < notes.length; i++) {
