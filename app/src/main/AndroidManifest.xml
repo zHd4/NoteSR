@@ -76,6 +76,13 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
+        <activity
+                android:name="com.notesr.views.SearchActivity"
+                android:label="@string/appName"
+                android:screenOrientation="locked"
+                android:theme="@style/AppTheme">
+        </activity>
+
     </application>
 
 </manifest>
