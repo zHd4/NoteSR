@@ -20,8 +20,12 @@ public class TableGenerator {
     ) {
         int beforeLineColor = Color.rgb(25, 28, 33);
 
-        if (!notes.equals(new String[0][0])) {
+        if (notes.length > 0) {
             for (int i = 0; i < notes.length; i++) {
+                if(notes[i] == null) {
+                    continue;
+                }
+
                 String title = notes[i][0];
                 TableRow trData = new TableRow(context);
 
