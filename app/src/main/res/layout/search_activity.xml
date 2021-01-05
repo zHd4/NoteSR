@@ -3,6 +3,18 @@
                                                    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
                                                    android:background="@color/activityBackground">
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+        <TableLayout
+                android:id="@+id/searchResultsTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="UselessParent"/>
+    </ScrollView>
     <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -12,26 +24,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintHorizontal_bias="0.0" android:hint="@string/search" android:textColor="#FFFFFF"
+            app:layout_constraintHorizontal_bias="0.0" android:hint="@string/query" android:textColor="#FFFFFF"
             android:textColorHighlight="@color/selectText" android:textColorHint="#8F8F8F"
             android:textColorLink="#FFFFFF"/>
-    <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            <TableLayout
-                    android:id="@+id/search_results_table"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:ignore="UselessParent"/>
-        </LinearLayout>
-    </ScrollView>
+    <Button
+            android:id="@+id/searchButton"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:background="@color/buttonBackground"
+            android:freezesText="false"
+            android:text="@string/search"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.17000002"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

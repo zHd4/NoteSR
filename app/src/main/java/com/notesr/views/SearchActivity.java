@@ -20,7 +20,7 @@ public class SearchActivity extends AppCompatActivity {
         assert actionBar != null;
 
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(getResources().getString(R.string.search));
+        actionBar.setTitle("");
     }
 
     @Override

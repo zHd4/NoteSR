@@ -51,5 +51,6 @@
     <string name="_1_">1</string>
     <string name="topPointer">↑</string>
     <string name="successSymbol">√</string>
+    <string name="query">Query…</string>
     <string name="search">Search</string>
 </resources>
