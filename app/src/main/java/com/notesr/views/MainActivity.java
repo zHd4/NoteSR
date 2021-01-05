@@ -85,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.searchMenuItem:
+                startActivity(ActivityTools.getIntent(getApplicationContext(), SearchActivity.class));
+                break;
+
             case R.id.exportToFile:
                 Exporter exporter = new Exporter();
                 exporter.exportToFile(getApplicationContext());
