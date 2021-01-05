@@ -192,69 +192,13 @@ public class MainActivity extends AppCompatActivity {
         TableLayout notesTable = findViewById(R.id.notes_table);
 
         notes = NotesController.getNotes(getApplicationContext());
-
-        int noteColor = getResources().getColor(R.color.buttonBackground);
-        int beforeLineColor = Color.rgb(25, 28, 33);
-
-        final int maxTitleVisualSize = getWindowManager().getDefaultDisplay().getWidth() / 33;
-
-        if (!notes.equals(new String[0][0])) {
-            for (int i = 0; i < notes.length; i++) {
-                String title = notes[i][0];
-                TableRow trData = new TableRow(this);
-
-                trData.setBackgroundColor(noteColor);
-                trData.setLayoutParams(new TableLayout.LayoutParams(
-                        TableLayout.LayoutParams.FILL_PARENT,
-                        TableLayout.LayoutParams.WRAP_CONTENT));
-
-                final TextView notesElement = new TextView(this);
-
-                notesElement.setId(i);
-
-                notesElement.setText(notes[i][0].length() > maxTitleVisualSize
-                        ? notes[i][0].substring(0, maxTitleVisualSize) + "..."
-                        : notes[i][0]);
-
-                notesElement.setTextColor(Color.WHITE);
-                notesElement.setTextSize(24);
-                notesElement.setPadding(15, 35, 15, 35);
-                trData.addView(notesElement);
-
-                TableRow beforeLine = new TableRow(this);
-
-                beforeLine.setBackgroundColor(beforeLineColor);
-                beforeLine.setPadding(15, 2, 15, 2);
-
-                notesTable.addView(trData, new TableLayout.LayoutParams(
-                        TableLayout.LayoutParams.FILL_PARENT,
-                        TableLayout.LayoutParams.WRAP_CONTENT));
-
-                notesTable.addView(beforeLine, new TableLayout.LayoutParams(
-                        TableLayout.LayoutParams.FILL_PARENT,
-                        TableLayout.LayoutParams.WRAP_CONTENT));
-
-                final int finalIndex = i;
-
-                trData.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        int id = finalIndex;
-                        String noteTitle = notes[id][0];
-
-                        NoteActivity.noteId = id;
-                        NoteActivity.noteTitle = noteTitle;
-
-                        NoteActivity.arg = NoteActivity.EDIT_NOTE;
-
-                        startActivity(ActivityTools.getIntent(
-                                getApplicationContext(),
-                                NoteActivity.class
-                        ));
-                    }
-                });
-            }
-        }
+        new TableGenerator().fillTable(
+                this,
+                this,
+                notesTable,
+                notes,
+                getResources().getColor(R.color.buttonBackground),
+                getWindowManager().getDefaultDisplay().getWidth() / 33
+        );
     }
 }
