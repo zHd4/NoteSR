@@ -71,7 +71,7 @@ public class SearchActivity extends AppCompatActivity {
     private void loadDataToTable(String[][] data) {
         TableLayout table = findViewById(R.id.searchResultsTable);
 
-        table.requestLayout();
+        table.removeAllViews();
 
         new TableGenerator().fillTable(
                 this,
