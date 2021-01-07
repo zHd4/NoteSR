@@ -20,12 +20,12 @@ public class SearchActivity extends AppCompatActivity {
 
         ActivityTools.checkReady(getApplicationContext(), this);
 
-        ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
 
         assert actionBar != null;
 
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("");
+        actionBar.setTitle("Search");
 
         final EditText queryField = findViewById(R.id.searchField);
         Button searchButton = findViewById(R.id.searchButton);
@@ -41,6 +41,8 @@ public class SearchActivity extends AppCompatActivity {
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
+
+                    actionBar.setTitle("Search Results");
                 }
             }
         });
