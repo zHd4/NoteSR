@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/activityBackground">
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   android:background="@color/activityBackground">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/deleteButton"
@@ -57,10 +57,36 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"/>
 
+    <TableLayout
+            android:layout_width="411dp"
+            android:layout_height="152dp"
+            app:layout_constraintBottom_toTopOf="@+id/textText" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" android:id="@+id/filesTable">
+
+        <TableRow android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:id="@+id/filesStatusTableRow" android:gravity="center_horizontal"
+                  android:layout_margin="4sp">
+            <TextView
+                    android:text="@string/no_files"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/filesTableStatus"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"/>
+        </TableRow>
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+                  android:id="@+id/addFileTableRow" android:gravity="center_horizontal"
+                  android:layout_margin="4sp">
+            <Button
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent" android:id="@+id/addFileButton"
+                    android:background="@android:drawable/ic_input_add"
+                    android:backgroundTint="@android:color/darker_gray"/>
+        </TableRow>
+    </TableLayout>
     <EditText
             android:id="@+id/textText"
-            android:layout_width="0dp"
-            android:layout_height="620dp"
+            android:layout_width="393dp"
+            android:layout_height="515dp"
             android:ems="10"
             android:gravity="top|left"
             android:hint="@string/text"
@@ -75,7 +101,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.491"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintVertical_bias="0.37"
             tools:ignore="Autofill,RtlHardcoded,TextFields"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
