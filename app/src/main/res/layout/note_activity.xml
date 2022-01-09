@@ -57,11 +57,30 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"/>
 
+    <EditText
+            android:id="@+id/textText"
+            android:layout_width="393dp"
+            android:layout_height="515dp"
+            android:ems="10"
+            android:gravity="top|left"
+            android:hint="@string/text"
+            android:lines="25"
+            android:minLines="6"
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="@color/selectText"
+            android:textColorHint="#8F8F8F"
+            android:textColorLink="#FFFFFF"
+            android:background="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.491"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="Autofill,RtlHardcoded,TextFields" app:layout_constraintTop_toBottomOf="@+id/titleText"
+            app:layout_constraintBottom_toTopOf="@+id/filesTable"/>
     <TableLayout
             android:layout_width="411dp"
             android:layout_height="152dp"
-            app:layout_constraintBottom_toTopOf="@+id/textText" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" android:id="@+id/filesTable">
+            android:id="@+id/filesTable" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent">
 
         <TableRow android:layout_width="match_parent" android:layout_height="wrap_content"
                   android:id="@+id/filesStatusTableRow" android:gravity="center_horizontal"
@@ -83,24 +102,5 @@
                     android:backgroundTint="@android:color/darker_gray"/>
         </TableRow>
     </TableLayout>
-    <EditText
-            android:id="@+id/textText"
-            android:layout_width="393dp"
-            android:layout_height="515dp"
-            android:ems="10"
-            android:gravity="top|left"
-            android:hint="@string/text"
-            android:lines="25"
-            android:minLines="6"
-            android:textColor="#FFFFFF"
-            android:textColorHighlight="@color/selectText"
-            android:textColorHint="#8F8F8F"
-            android:textColorLink="#FFFFFF"
-            android:background="@null"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.491"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="Autofill,RtlHardcoded,TextFields"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
