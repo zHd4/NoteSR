@@ -54,4 +54,5 @@
     <string name="query">Query…</string>
     <string name="search">Search</string>
     <string name="no_files">No Files</string>
+    <string name="file_path">File path</string>
 </resources>

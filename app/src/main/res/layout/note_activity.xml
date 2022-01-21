@@ -87,6 +87,7 @@
                   android:layout_margin="4sp">
             <TextView
                     android:text="@string/no_files"
+                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/filesTableStatus"
                     android:textColor="@android:color/darker_gray"
@@ -95,11 +96,26 @@
         <TableRow android:layout_width="match_parent" android:layout_height="match_parent"
                   android:id="@+id/addFileTableRow" android:gravity="center_horizontal"
                   android:layout_margin="4sp">
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="53dp"
+                    android:ems="10"
+                    android:hint="@string/file_path"
+                    android:inputType="textPersonName"
+                    android:textColor="#FFFFFF"
+                    android:textColorHighlight="@color/selectText"
+                    android:textColorHint="#8F8F8F"
+                    android:textColorLink="#FFFFFF"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" android:id="@+id/filePathField"/>
             <Button
-                    android:layout_width="32dp"
-                    android:layout_height="match_parent" android:id="@+id/addFileButton"
-                    android:background="@android:drawable/ic_input_add"
-                    android:backgroundTint="@android:color/darker_gray"/>
+                    android:layout_width="34dp"
+                    android:layout_height="34dp" android:id="@+id/addFileButton"
+                    android:foreground="@android:drawable/ic_menu_add"
+                    android:background="@color/activityBackground"/>
         </TableRow>
     </TableLayout>
 

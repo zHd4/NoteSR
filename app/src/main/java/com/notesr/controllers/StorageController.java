@@ -86,18 +86,28 @@ public class StorageController extends Application {
 
     public static String externalReadFile(File file) {
         try {
-            FileInputStream fstream = new FileInputStream(file);
+            FileInputStream stream = new FileInputStream(file);
 
-            byte[] result = new byte[(int) file.length()];
-
-            fstream.read(result);
-            fstream.close();
-
-            return new String(result);
+            return new String(externalReadFile(file, stream));
         } catch (Exception e) {
             e.printStackTrace();
 
             return "";
+        }
+    }
+
+    public static byte[] externalReadFile(File file, FileInputStream stream) {
+        try {
+            byte[] result = new byte[(int) file.length()];
+
+            stream.read(result);
+            stream.close();
+
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return new byte[0];
         }
     }
 

@@ -4,20 +4,24 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.EditText;
+import android.widget.*;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.R;
-import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.DatabaseController;
-import com.notesr.controllers.NotesController;
+import com.notesr.controllers.*;
 import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
+import com.notesr.models.FileAttachment;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Arrays;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
@@ -58,6 +62,9 @@ public class NoteActivity extends AppCompatActivity {
         titleText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
+        final TextView filePathField = findViewById(R.id.filePathField);
+        final Button addFileButton = findViewById(R.id.addFileButton);
+
         final FloatingActionButton applyButton = findViewById(R.id.applyButton);
         final FloatingActionButton deleteButton = findViewById(R.id.deleteButton);
 
@@ -81,7 +88,7 @@ public class NoteActivity extends AppCompatActivity {
         if(arg == EDIT_NOTE){
             actionBar.setTitle(getResources().getString(R.string.edit_note));
             titleText.setText(noteTitle);
-            textText.setText(MainActivity.notes[noteId][1]);
+            textText.setText(parseNoteText(MainActivity.notes[noteId][1]));
             deleteButton.setVisibility(View.VISIBLE);
         }
 
@@ -126,6 +133,31 @@ public class NoteActivity extends AppCompatActivity {
                 }
             }
         });
+
+        addFileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String filePath = filePathField.getText().toString();
+
+                if(!filePath.equals("")) {
+                    try {
+                        File file = new File(filePath);
+                        String noteText = MainActivity.notes[noteId][1];
+
+                        byte[] filedata = StorageController.externalReadFile(file, new FileInputStream(file));
+
+                        int lastIndex = NoteFilesController.getLastIndex(noteText);
+                        String fileMarkup = NoteFilesController.generateMarkup(file.getName(), filedata, lastIndex);
+
+                        MainActivity.notes[noteId][1] = NoteFilesController.setLastIndex(noteText, lastIndex);
+                        MainActivity.notes[noteId][1] += fileMarkup;
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -141,6 +173,58 @@ public class NoteActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private String parseNoteText(final String raw) {
+        String result = raw;
+        TableLayout filesTable = findViewById(R.id.filesTable);
+
+        FileAttachment[] files = NoteFilesController.findMarkups(result);
+
+        if(files != null) {
+            filesTable.removeAllViews();
+            fillFilesTable(filesTable, files);
+        }
+
+        return result;
+    }
+
+    private void fillFilesTable(TableLayout filesTable, FileAttachment[] files) {
+        final Button addFileButton = findViewById(R.id.addFileButton);
+
+        final int beforeLineColor = Color.rgb(25, 28, 33);
+        final int maxFilenameVisualSize = getWindowManager().getDefaultDisplay().getWidth() / 33;
+
+        for(int i = 0; i < files.length; i++) {
+            final TextView filenameView = new TextView(this);
+
+            TableRow fileRow = new TableRow(this);
+            TableRow afterLine = new TableRow(this);
+
+            fileRow.setLayoutParams(new TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.FILL_PARENT,
+                    TableLayout.LayoutParams.WRAP_CONTENT));
+
+            filenameView.setId(i);
+            filenameView.setText(files[i].getName().length() > maxFilenameVisualSize
+                    ? files[i].getName().substring(0, maxFilenameVisualSize) + "..."
+                    : files[i].getName());
+
+            filenameView.setTextColor(Color.WHITE);
+            filenameView.setTextSize(24);
+            filenameView.setPadding(15, 35, 15, 35);
+
+            afterLine.setBackgroundColor(beforeLineColor);
+            afterLine.setPadding(15, 2, 15, 2);
+
+            filesTable.addView(fileRow, new TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.FILL_PARENT,
+                    TableLayout.LayoutParams.WRAP_CONTENT));
+
+            filesTable.addView(afterLine, new TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.FILL_PARENT,
+                    TableLayout.LayoutParams.WRAP_CONTENT));
+        }
     }
 
     private static <T> T[] concat(T[] first, T[] second) {
