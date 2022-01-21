@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/activityBackground</item>
         <item name="colorPrimaryDark">@color/activityBackground</item>
         <item name="colorAccent">@color/buttonBackground</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:itemBackground">#482f61</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
