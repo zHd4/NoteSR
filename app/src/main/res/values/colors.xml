@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="activityBackground">#210042</color>
-    <color name="lightButtonBackground">#541e8a</color>
-    <color name="buttonBackground">#4e009c</color>
-    <color name="selectText">#000000</color>
+    <color name="activityBackground">#050D1C</color>
+    <color name="lightButtonBackground">#102449</color>
+    <color name="buttonBackground">#0D1D3C</color>
+    <color name="selectText">#102449</color>
+    <color name="textColor">#FFFFFF</color>
 </resources>
