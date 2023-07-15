@@ -1,7 +1,6 @@
 package com.notesr.controllers;
 
 import android.content.Context;
-import com.notesr.models.ActivityTools;
 import com.notesr.models.Config;
 
 public class EmergencyPasswordController {

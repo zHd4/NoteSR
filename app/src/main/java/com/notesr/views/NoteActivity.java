@@ -16,17 +16,17 @@ import com.notesr.R;
 import com.notesr.controllers.CryptoController;
 import com.notesr.controllers.DatabaseController;
 import com.notesr.controllers.NotesController;
-import com.notesr.models.ActivityTools;
+import com.notesr.controllers.ActivityTools;
 import com.notesr.models.Config;
+import com.notesr.models.Note;
+import com.notesr.models.OpenNoteOperation;
+
 import java.util.Arrays;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 public class NoteActivity extends AppCompatActivity {
-    public static int arg = 0;
-
-    public static int CREATE_NOTE = 0;
-    public static int EDIT_NOTE = 1;
+    public static OpenNoteOperation operation = OpenNoteOperation.NONE;
 
     public static int noteId;
     public static String noteTitle;
@@ -78,45 +78,37 @@ public class NoteActivity extends AppCompatActivity {
             }
         };
 
-        if(arg == EDIT_NOTE){
+        if(operation == OpenNoteOperation.EDIT_NOTE){
             actionBar.setTitle(getResources().getString(R.string.edit_note));
             titleText.setText(noteTitle);
-            textText.setText(MainActivity.notes[noteId][1]);
+            textText.setText(MainActivity.notes[noteId].getText());
             deleteButton.setVisibility(View.VISIBLE);
         }
 
         applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!titleText.getText().toString().equals("") &&
-                        !textText.getText().toString().equals("")) {
-                    if(arg == CREATE_NOTE) {
-                        String[][] note =
-                                { {
-                                        titleText.getText().toString(), textText.getText().toString()
-                                } };
-                        MainActivity.notes = concat(MainActivity.notes, note);
-                    } else {
-                        MainActivity.notes[noteId][0] = titleText.getText().toString();
-                        MainActivity.notes[noteId][1] = textText.getText().toString();
-                    }
-
-                    try {
-                        NotesController.setNotes(getApplicationContext(), MainActivity.notes);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    startActivity(ActivityTools.getIntent(getApplicationContext(),
-                            MainActivity.class));
+                if(!titleText.getText().toString().equals("") && !textText.getText().toString().equals("")) {
+                        Note note = new Note(titleText.getText().toString(), textText.getText().toString());
+                        MainActivity.notes = addToNotesArray(MainActivity.notes, note);
+                } else {
+                    MainActivity.notes[noteId].setName(titleText.getText().toString());
+                    MainActivity.notes[noteId].setText(textText.getText().toString());
                 }
+
+                try {
+                    NotesController.setNotes(getApplicationContext(), MainActivity.notes);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
             }
         });
 
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(arg == EDIT_NOTE) {
+                if(operation == OpenNoteOperation.EDIT_NOTE) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
 
                     builder.setMessage(getResString(R.string.if_yes_cannot_undo))
@@ -133,8 +125,8 @@ public class NoteActivity extends AppCompatActivity {
         final EditText titleText = findViewById(R.id.titleText);
         final EditText textText = findViewById(R.id.textText);
 
-        if(MainActivity.notes[noteId][0].equals(titleText.getText().toString()) &&
-                MainActivity.notes[noteId][1].equals(textText.getText().toString())) {
+        if(MainActivity.notes[noteId].getName().equals(titleText.getText().toString()) &&
+                MainActivity.notes[noteId].getText().equals(textText.getText().toString())) {
             finish();
         } else {
             startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
@@ -143,9 +135,9 @@ public class NoteActivity extends AppCompatActivity {
         return true;
     }
 
-    private static <T> T[] concat(T[] first, T[] second) {
-        T[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+    private static Note[] addToNotesArray(final Note[] array, final Note note) {
+        Note[] result = Arrays.copyOf(array, array.length + 1);
+        result[result.length - 1] = note;
 
         return result;
     }

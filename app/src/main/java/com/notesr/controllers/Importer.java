@@ -1,4 +1,4 @@
-package com.notesr.models;
+package com.notesr.controllers;
 
 import android.app.Activity;
 import android.content.Context;

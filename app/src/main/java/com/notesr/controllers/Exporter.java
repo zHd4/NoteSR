@@ -1,4 +1,4 @@
-package com.notesr.models;
+package com.notesr.controllers;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -7,9 +7,8 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Base64;
 import android.widget.Toast;
-import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.DatabaseController;
-import com.notesr.controllers.StorageController;
+import com.notesr.models.Config;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

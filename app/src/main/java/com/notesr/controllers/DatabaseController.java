@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
 import com.notesr.models.Config;
+import com.notesr.models.Note;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -41,8 +42,8 @@ public class DatabaseController extends SQLiteOpenHelper {
         db.execSQL(String.format("DELETE FROM %s", TABLE_NOTES));
     }
 
-    public String[][] getAllNotes() {
-        String[][] notes = new String[0][0];
+    public Note[] getAllNotes() {
+        Note[] notes = new Note[0];
         SQLiteDatabase db = this.getReadableDatabase();
 
         try {
@@ -55,29 +56,26 @@ public class DatabaseController extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     notes = Arrays.copyOf(notes, notes.length + 1);
-                    notes[notes.length - 1] = new String[] {
-                            cursor.getString(0),
-                            cursor.getString(1)
-                    };
+                    notes[notes.length - 1] = new Note(cursor.getString(0), cursor.getString(1));
                 } while (cursor.moveToNext());
             }
 
             return notes;
         } catch (Exception e) {
             e.printStackTrace();
-            return new String[0][0];
+            return new Note[0];
         }
     }
 
-    public void setAllNotes(String[][] notes) {
+    public void setAllNotes(Note[] notes) {
         clearNotes();
 
         for (int i = 0; i < notes.length; i++) {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
 
-            values.put(KEY_TITLE, notes[i][0]);
-            values.put(KEY_TEXT, notes[i][1]);
+            values.put(KEY_TITLE, notes[i].getName());
+            values.put(KEY_TEXT, notes[i].getText());
 
             db.insert(TABLE_NOTES, null, values);
             db.close();
@@ -91,13 +89,13 @@ public class DatabaseController extends SQLiteOpenHelper {
 
     public String exportToJsonString(Context context) throws Exception {
         JSONArray jsonNotes = new JSONArray();
-        String[][] notes = NotesController.getNotes(context);
+        Note[] notes = NotesController.getNotes(context);
 
         for(int i = 0; i < notes.length; i++) {
             JSONObject note = new JSONObject();
 
-            note.put("label", Base64.encodeToString(notes[i][0].getBytes(), Base64.DEFAULT));
-            note.put("text", Base64.encodeToString(notes[i][1].getBytes(), Base64.DEFAULT));
+            note.put("label", Base64.encodeToString(notes[i].getName().getBytes(), Base64.DEFAULT));
+            note.put("text", Base64.encodeToString(notes[i].getText().getBytes(), Base64.DEFAULT));
 
             jsonNotes.put(note);
         }
@@ -106,17 +104,16 @@ public class DatabaseController extends SQLiteOpenHelper {
     }
 
     public void importFromJsonString(Context context, String jsonString) throws Exception {
-        String[][] notes = new String[0][0];
+        Note[] notes = new Note[0];
         JSONArray jsonNotes = new JSONArray(jsonString);
 
         for(int i = 0; i < jsonNotes.length(); i++) {
             JSONObject note = jsonNotes.getJSONObject(i);
 
             notes = Arrays.copyOf(notes, notes.length + 1);
-            notes[notes.length - 1] = new String[] {
+            notes[notes.length - 1] = new Note(
                     new String(Base64.decode(note.getString("label"), Base64.DEFAULT)),
-                    new String(Base64.decode(note.getString("text"), Base64.DEFAULT))
-            };
+                    new String(Base64.decode(note.getString("text"), Base64.DEFAULT)));
         }
 
         NotesController.setNotes(context, notes);

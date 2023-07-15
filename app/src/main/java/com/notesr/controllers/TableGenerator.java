@@ -1,4 +1,4 @@
-package com.notesr.views;
+package com.notesr.controllers;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,14 +7,16 @@ import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import com.notesr.models.ActivityTools;
+import com.notesr.models.Note;
+import com.notesr.models.OpenNoteOperation;
+import com.notesr.views.NoteActivity;
 
 public class TableGenerator {
     public void fillTable(
             final Context context,
             final Activity activity,
             TableLayout table,
-            final String[][] notes,
+            final Note[] notes,
             final int noteColor,
             final int maxTitleVisualSize
     ) {
@@ -26,7 +28,7 @@ public class TableGenerator {
                     continue;
                 }
 
-                String title = notes[i][0];
+                String title = notes[i].getName();
                 TableRow trData = new TableRow(context);
 
                 trData.setBackgroundColor(noteColor);
@@ -38,9 +40,9 @@ public class TableGenerator {
 
                 notesElement.setId(i);
 
-                notesElement.setText(notes[i][0].length() > maxTitleVisualSize
-                        ? notes[i][0].substring(0, maxTitleVisualSize) + "..."
-                        : notes[i][0]);
+                notesElement.setText(notes[i].getName().length() > maxTitleVisualSize
+                        ? notes[i].getName().substring(0, maxTitleVisualSize) + "..."
+                        : notes[i].getName());
 
                 notesElement.setTextColor(Color.WHITE);
                 notesElement.setTextSize(24);
@@ -67,12 +69,12 @@ public class TableGenerator {
                     @Override
                     public void onClick(View v) {
                         int id = finalIndex;
-                        String noteTitle = notes[id][0];
+                        String noteTitle = notes[id].getName();
 
                         NoteActivity.noteId = id;
                         NoteActivity.noteTitle = noteTitle;
 
-                        NoteActivity.arg = NoteActivity.EDIT_NOTE;
+                        NoteActivity.operation = OpenNoteOperation.EDIT_NOTE;
 
                         activity.startActivity(ActivityTools.getIntent(
                                 context,

@@ -6,7 +6,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
-import com.notesr.models.ActivityTools;
+import com.notesr.controllers.ActivityTools;
 
 public class StartActivity extends AppCompatActivity {
     @Override

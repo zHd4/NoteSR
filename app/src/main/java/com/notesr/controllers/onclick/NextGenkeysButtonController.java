@@ -4,8 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import com.notesr.controllers.NotesController;
-import com.notesr.models.ActivityTools;
+import com.notesr.controllers.ActivityTools;
 import com.notesr.models.Config;
+import com.notesr.models.Note;
 import com.notesr.views.AccessActivity;
 import com.notesr.views.MainActivity;
 import com.notesr.views.SetupActivity;
@@ -26,7 +27,7 @@ public class NextGenkeysButtonController implements View.OnClickListener {
         String importedKey = setupActivity.checkKeyField(keyField.getText().toString());
 
         if(importedKey != null) {
-            String[][] notes = null;
+            Note[] notes = null;
 
             Bundle extras = setupActivity.getIntent().getExtras();
             boolean isRegeneratingKey = extras != null && extras.getBoolean(SetupActivity.regenerateKey);

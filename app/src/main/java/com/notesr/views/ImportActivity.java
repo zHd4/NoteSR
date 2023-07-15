@@ -11,7 +11,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.controllers.CryptoController;
 import com.notesr.controllers.DatabaseController;
-import com.notesr.models.ActivityTools;
+import com.notesr.controllers.ActivityTools;
 import com.notesr.models.Config;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;

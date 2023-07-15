@@ -1,4 +1,4 @@
-package com.notesr.models;
+package com.notesr.controllers;
 
 import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
@@ -6,8 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.StorageController;
+import com.notesr.models.Config;
 import com.notesr.views.AccessActivity;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

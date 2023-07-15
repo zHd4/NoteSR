@@ -13,17 +13,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.R;
-import com.notesr.controllers.DatabaseController;
-import com.notesr.controllers.NotesController;
-import com.notesr.controllers.StorageController;
-import com.notesr.models.ActivityTools;
+import com.notesr.controllers.*;
 import com.notesr.models.Config;
-import com.notesr.models.Exporter;
-import com.notesr.models.Importer;
+import com.notesr.models.Note;
+import com.notesr.models.OpenNoteOperation;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String[][] notes = new String[0][0];
+    public static Note[] notes = new Note[0];
 
     private Context activityContext;
 
@@ -53,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NoteActivity.arg = NoteActivity.CREATE_NOTE;
+                NoteActivity.operation = OpenNoteOperation.CREATE_NOTE;
 
                 startActivity(ActivityTools.getIntent(
                         getApplicationContext(),
