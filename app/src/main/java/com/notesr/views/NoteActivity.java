@@ -28,10 +28,18 @@ import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARN
 public class NoteActivity extends AppCompatActivity {
     public static OpenNoteOperation operation = OpenNoteOperation.NONE;
 
-    public static int noteId;
-    public static String noteTitle;
+    private static int noteId;
+    private static String noteTitle;
 
     private Context activityContext;
+
+    public static void setNoteId(int id) {
+        noteId = id;
+    }
+
+    public static void setNoteTitle(String title) {
+        noteTitle = title;
+    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -81,7 +89,7 @@ public class NoteActivity extends AppCompatActivity {
         if(operation == OpenNoteOperation.EDIT_NOTE){
             actionBar.setTitle(getResources().getString(R.string.edit_note));
             titleText.setText(noteTitle);
-            textText.setText(MainActivity.notes[noteId].getText());
+            textText.setText(MainActivity.getNotes()[noteId].getText());
             deleteButton.setVisibility(View.VISIBLE);
         }
 
@@ -90,14 +98,14 @@ public class NoteActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(!titleText.getText().toString().equals("") && !textText.getText().toString().equals("")) {
                         Note note = new Note(titleText.getText().toString(), textText.getText().toString());
-                        MainActivity.notes = addToNotesArray(MainActivity.notes, note);
+                        MainActivity.setNotes(addToNotesArray(MainActivity.getNotes(), note));
                 } else {
-                    MainActivity.notes[noteId].setName(titleText.getText().toString());
-                    MainActivity.notes[noteId].setText(textText.getText().toString());
+                    MainActivity.getNotes()[noteId].setName(titleText.getText().toString());
+                    MainActivity.getNotes()[noteId].setText(textText.getText().toString());
                 }
 
                 try {
-                    NotesController.setNotes(getApplicationContext(), MainActivity.notes);
+                    NotesController.setNotes(getApplicationContext(), MainActivity.getNotes());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -125,8 +133,8 @@ public class NoteActivity extends AppCompatActivity {
         final EditText titleText = findViewById(R.id.titleText);
         final EditText textText = findViewById(R.id.textText);
 
-        if(MainActivity.notes[noteId].getName().equals(titleText.getText().toString()) &&
-                MainActivity.notes[noteId].getText().equals(textText.getText().toString())) {
+        if(MainActivity.getNotes()[noteId].getName().equals(titleText.getText().toString()) &&
+                MainActivity.getNotes()[noteId].getText().equals(textText.getText().toString())) {
             finish();
         } else {
             startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));

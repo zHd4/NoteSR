@@ -71,8 +71,8 @@ public class TableGenerator {
                         int id = finalIndex;
                         String noteTitle = notes[id].getName();
 
-                        NoteActivity.noteId = id;
-                        NoteActivity.noteTitle = noteTitle;
+                        NoteActivity.setNoteId(id);
+                        NoteActivity.setNoteTitle(noteTitle);
 
                         NoteActivity.operation = OpenNoteOperation.EDIT_NOTE;
 

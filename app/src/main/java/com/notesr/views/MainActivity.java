@@ -20,9 +20,17 @@ import com.notesr.models.OpenNoteOperation;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static Note[] notes = new Note[0];
+    private static Note[] notes = new Note[0];
 
     private Context activityContext;
+
+    public static Note[] getNotes() {
+        return notes;
+    }
+
+    public static void setNotes(final Note[] notesArray) {
+        notes = notesArray;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
