@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
 import com.notesr.models.Config;
+import com.notesr.models.FileAttachment;
 import com.notesr.models.Note;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +24,12 @@ public class DatabaseController extends SQLiteOpenHelper {
     private static final String KEY_TITLE = "title";
     private static final String KEY_TEXT = "text";
 
+    private static final String TABLE_FILES = "files";
+    private static final String KEY_FILE_ID = "id";
+    private static final String KEY_NOTE_ID = "note_id";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_DATA_BASE64 = "data_base64";
+
     public DatabaseController(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -34,6 +41,15 @@ public class DatabaseController extends SQLiteOpenHelper {
                 TABLE_NOTES,
                 KEY_TITLE,
                 KEY_TEXT)
+        );
+
+        db.execSQL(
+                String.format("CREATE TABLE IF NOT EXISTS %s(%s INTEGER, %s INTEGER, %s TEXT, %s TEXT)",
+                TABLE_FILES,
+                KEY_FILE_ID,
+                KEY_NOTE_ID,
+                KEY_NAME,
+                KEY_DATA_BASE64)
         );
     }
 
@@ -54,9 +70,13 @@ public class DatabaseController extends SQLiteOpenHelper {
             );
 
             if (cursor.moveToFirst()) {
+                int id = 0;
+
                 do {
                     notes = Arrays.copyOf(notes, notes.length + 1);
-                    notes[notes.length - 1] = new Note(cursor.getString(0), cursor.getString(1));
+                    notes[notes.length - 1] = new Note(id, cursor.getString(0), cursor.getString(1));
+
+                    id += 1;
                 } while (cursor.moveToNext());
             }
 
@@ -112,11 +132,29 @@ public class DatabaseController extends SQLiteOpenHelper {
 
             notes = Arrays.copyOf(notes, notes.length + 1);
             notes[notes.length - 1] = new Note(
-                    new String(Base64.decode(note.getString("label"), Base64.DEFAULT)),
+                    i, new String(Base64.decode(note.getString("label"), Base64.DEFAULT)),
                     new String(Base64.decode(note.getString("text"), Base64.DEFAULT)));
         }
 
         NotesController.setNotes(context, notes);
+    }
+
+    public void addFile(FileAttachment file) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_FILE_ID, file.getId());
+        values.put(KEY_NOTE_ID, file.getNoteId());
+        values.put(KEY_NAME, file.getName());
+        values.put(KEY_DATA_BASE64, Base64.encodeToString(file.getData(), Base64.DEFAULT));
+
+        db.insert(TABLE_FILES, null, values);
+        db.close();
+    }
+
+    public void deleteFile(FileAttachment file) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(String.format("DELETE FROM %s WHERE %s=%s", TABLE_FILES, KEY_NOTE_ID, file.getId()));
     }
 
     @Override

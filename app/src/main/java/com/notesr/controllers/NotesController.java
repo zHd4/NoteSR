@@ -39,7 +39,7 @@ public class NotesController {
             String name = CryptoController.encrypt(notes[i].getName(), ActivityTools.sha256(Config.cryptoKey), key);
             String text = CryptoController.encrypt(notes[i].getText(), ActivityTools.sha256(Config.cryptoKey), key);
 
-            notes[i] = new Note(name, text);
+            notes[i] = new Note(i, name, text);
         }
 
         db.setAllNotes(notes);

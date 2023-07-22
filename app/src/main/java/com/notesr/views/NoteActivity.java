@@ -97,7 +97,9 @@ public class NoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!titleText.getText().toString().equals("") && !textText.getText().toString().equals("")) {
-                        Note note = new Note(titleText.getText().toString(), textText.getText().toString());
+                        int newNoteId = MainActivity.getNotes().length;
+                        Note note = new Note(newNoteId, titleText.getText().toString(), textText.getText().toString());
+
                         MainActivity.setNotes(addToNotesArray(MainActivity.getNotes(), note));
                 } else {
                     MainActivity.getNotes()[noteId].setName(titleText.getText().toString());

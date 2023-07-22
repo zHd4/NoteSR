@@ -17,10 +17,16 @@ public class Note {
         this.text = text;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    private final int id;
     private String name;
     private String text;
 
-    public Note(String name, String text) {
+    public Note(int id, String name, String text) {
+        this.id = id;
         this.name = name;
         this.text = text;
     }
