@@ -204,6 +204,22 @@ public class DatabaseController extends SQLiteOpenHelper {
         return null;
     }
 
+    public String getFileNameById(int fileId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        @SuppressLint("Recycle")
+        Cursor cursor = db.rawQuery(
+                String.format("SELECT %s FROM %s WHERE %s=?", KEY_NAME, TABLE_FILES, KEY_FILE_ID),
+                new String[] {String.valueOf(fileId)}
+        );
+
+        if(cursor.moveToFirst()) {
+            return cursor.getString(0);
+        }
+
+        return null;
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
