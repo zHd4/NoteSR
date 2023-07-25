@@ -157,7 +157,7 @@ public class DatabaseController extends SQLiteOpenHelper {
         db.execSQL(String.format("DELETE FROM %s WHERE %s=%s", TABLE_FILES, KEY_NOTE_ID, file.getId()));
     }
 
-    public int[] getFilesIdByNoteId(int note_id) {
+    public int[] getFilesIdByNoteId(int noteId) {
         int[] files_id = new int[0];
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -165,7 +165,7 @@ public class DatabaseController extends SQLiteOpenHelper {
             @SuppressLint("Recycle")
             Cursor cursor = db.rawQuery(
                     String.format("SELECT %s FROM %s WHERE %s=?", KEY_FILE_ID, TABLE_FILES, KEY_NOTE_ID),
-                    new String[] {String.valueOf(note_id)}
+                    new String[] {String.valueOf(noteId)}
             );
 
             if (cursor.moveToFirst()) {
