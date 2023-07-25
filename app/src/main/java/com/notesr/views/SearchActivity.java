@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.controllers.TableGenerator;
 import com.notesr.models.Note;
 
+import java.util.Arrays;
+
 public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,11 +59,16 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private Note[] filter(final Note[] data, final String keyword) {
-        Note[] results = new Note[data.length];
+        Note[] results = new Note[0];
 
         for(int i = 0; i < data.length; i++) {
-            if(data[i].getName().contains(keyword) || data[i].getText().contains(keyword)) {
-                results[i] = data[i];
+
+            String name = data[i].getName().toLowerCase();
+            String text = data[i].getText().toLowerCase();
+
+            if(name.contains(keyword.toLowerCase()) || text.contains(keyword.toLowerCase())) {
+                results = Arrays.copyOf(results, results.length + 1);
+                results[results.length - 1] = data[i];
             }
         }
 
