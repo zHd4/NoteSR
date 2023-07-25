@@ -183,6 +183,27 @@ public class DatabaseController extends SQLiteOpenHelper {
         }
     }
 
+    public FileAttachment getFileById(int fileId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        @SuppressLint("Recycle")
+        Cursor cursor = db.rawQuery(
+                String.format("SELECT %s, %s, %s FROM %s WHERE %s=?",
+                        KEY_NOTE_ID, KEY_NAME, KEY_DATA_BASE64, TABLE_FILES, KEY_FILE_ID),
+                new String[] {String.valueOf(fileId)}
+        );
+
+        if(cursor.moveToFirst()) {
+            int noteId = cursor.getInt(0);
+            String name = cursor.getString(1);
+            byte[] data = Base64.decode(cursor.getString(2), Base64.DEFAULT);
+
+            return new FileAttachment(fileId, noteId, name, data);
+        }
+
+        return null;
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
