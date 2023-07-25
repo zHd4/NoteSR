@@ -4,7 +4,6 @@ import android.util.Base64;
 import com.notesr.encryption.provider.CryptoProvider;
 import com.notesr.encryption.provider.KeyGenerator;
 import com.notesr.encryption.provider.exceptions.CryptoKeyException;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
 public class CryptoController {
@@ -35,7 +34,7 @@ public class CryptoController {
         return new byte[0];
     }
 
-    public static String encrypt(String text, String salt, byte[] key) throws Exception {
+    public static byte[] encrypt(byte[] data, String salt, byte[] key) throws Exception {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
             CryptoProvider cryptoProvider = new CryptoProvider(keyGenerator.createKey(ActivityTools.sha256(
@@ -43,15 +42,15 @@ public class CryptoController {
             )));
 
             cryptoProvider.initializeVector(salt, IV_SIZE);
-            text = AESController.encrypt(text, key);
+            byte[] aesEncrypted = AESController.encrypt(data, key);
 
-            return Base64.encodeToString(cryptoProvider.encrypt(text.getBytes()), Base64.DEFAULT);
+            return cryptoProvider.encrypt(aesEncrypted);
         } catch (Exception e) {
             throw e;
         }
     }
 
-    public static String decrypt(String encrypted, String salt, byte[] key) throws Exception {
+    public static byte[] decrypt(byte[] encrypted, String salt, byte[] key) throws Exception {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
             CryptoProvider cryptoProvider = new CryptoProvider(keyGenerator.createKey(ActivityTools.sha256(
@@ -59,12 +58,8 @@ public class CryptoController {
             )));
 
             cryptoProvider.initializeVector(salt, IV_SIZE);
-            encrypted = new String(
-                    cryptoProvider.decrypt(Base64.decode(encrypted, Base64.DEFAULT)),
-                    StandardCharsets.UTF_8
-            );
 
-            return AESController.decrypt(encrypted, key);
+            return AESController.decrypt(cryptoProvider.decrypt(encrypted), key);
         } catch (Exception e) {
             throw e;
         }

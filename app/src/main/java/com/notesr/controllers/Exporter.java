@@ -18,11 +18,11 @@ public class Exporter {
         try {
             DatabaseController db = new DatabaseController(context);
 
-            String notesData = CryptoController.encrypt(
-                    db.exportToJsonString(context),
+            String notesData = Base64.encodeToString(CryptoController.encrypt(
+                    db.exportToJsonString(context).getBytes(),
                     ActivityTools.sha256(Config.cryptoKey),
                     Base64.decode(Config.cryptoKey, Base64.DEFAULT)
-            );
+            ), Base64.DEFAULT);
 
             ActivityTools.clipboard = clipboardManager;
 
@@ -50,11 +50,11 @@ public class Exporter {
                     String.format("notesr_export_" + datetime + ".nsrbak")
             );
 
-            String notesData = CryptoController.encrypt(
-                    db.exportToJsonString(context),
+            String notesData = Base64.encodeToString(CryptoController.encrypt(
+                    db.exportToJsonString(context).getBytes(),
                     ActivityTools.sha256(Config.cryptoKey),
                     Base64.decode(Config.cryptoKey, Base64.DEFAULT)
-            );
+            ), Base64.DEFAULT);
 
             if (StorageController.externalWriteFile(path, notesData)) {
                 ActivityTools.showTextMessage("Saved to " + path.getAbsolutePath(), Toast.LENGTH_SHORT, context);

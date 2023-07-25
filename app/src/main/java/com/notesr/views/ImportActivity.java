@@ -51,11 +51,11 @@ public class ImportActivity extends AppCompatActivity {
                 if (notesData.length() > 0) {
                     try {
                         DatabaseController db = new DatabaseController(getApplicationContext());
-                        String decryptedNotes = CryptoController.decrypt(
-                                notesData,
+                        String decryptedNotes = new String(CryptoController.decrypt(
+                                Base64.decode(notesData, Base64.DEFAULT),
                                 ActivityTools.sha256(Config.cryptoKey),
                                 Base64.decode(Config.cryptoKey, Base64.DEFAULT)
-                        ).replace("\\n", "");
+                        )).replace("\\n", "");
 
                         db.importFromJsonString(getApplicationContext(), decryptedNotes);
                         startActivity(ActivityTools.getIntent(getApplicationContext(),

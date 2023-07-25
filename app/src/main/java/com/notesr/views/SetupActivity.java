@@ -100,10 +100,14 @@ public class SetupActivity extends AppCompatActivity {
             byte[] testData = CryptoController.genKey();
             byte[] key = Base64.decode(keyBase64, Base64.DEFAULT);
 
-            String encrypted = CryptoController.encrypt(Base64.encodeToString(testData, Base64.DEFAULT),
-                    ActivityTools.sha256(keyBase64), key);
+            String encrypted = Base64.encodeToString(
+                    CryptoController.encrypt(
+                            Base64.encodeToString(testData, Base64.DEFAULT).getBytes(),
+                            ActivityTools.sha256(keyBase64),
+                            key),
+                    Base64.DEFAULT);
 
-            CryptoController.decrypt(encrypted, ActivityTools.sha256(keyBase64), key);
+            CryptoController.decrypt(encrypted.getBytes(), ActivityTools.sha256(keyBase64), key);
 
             return true;
         } catch (Exception e) {

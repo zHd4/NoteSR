@@ -15,11 +15,13 @@ public class NotesController {
             byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
             for(int i = 0; i < notes.length; i++) {
-                String decryptedName =
-                        CryptoController.decrypt(notes[i].getName(), ActivityTools.sha256(Config.cryptoKey), key);
+                String decryptedName = new String(
+                        CryptoController.decrypt(Base64.decode(notes[i].getName(), Base64.DEFAULT),
+                                ActivityTools.sha256(Config.cryptoKey), key));
 
-                String decryptedText =
-                        CryptoController.decrypt(notes[i].getText(), ActivityTools.sha256(Config.cryptoKey), key);
+                String decryptedText = new String(
+                        CryptoController.decrypt(Base64.decode(notes[i].getText(), Base64.DEFAULT),
+                                ActivityTools.sha256(Config.cryptoKey), key));
 
                 notes[i].setName(decryptedName);
                 notes[i].setText(decryptedText);
@@ -36,8 +38,19 @@ public class NotesController {
         byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
         for(int i = 0; i < notes.length; i++) {
-            String name = CryptoController.encrypt(notes[i].getName(), ActivityTools.sha256(Config.cryptoKey), key);
-            String text = CryptoController.encrypt(notes[i].getText(), ActivityTools.sha256(Config.cryptoKey), key);
+            String name = Base64.encodeToString(
+                    CryptoController.encrypt(
+                            notes[i].getName().getBytes(),
+                            ActivityTools.sha256(Config.cryptoKey),
+                            key),
+                    Base64.DEFAULT);
+
+            String text = Base64.encodeToString(
+                    CryptoController.encrypt(
+                            notes[i].getText().getBytes(),
+                            ActivityTools.sha256(Config.cryptoKey),
+                            key),
+                    Base64.DEFAULT);
 
             notes[i] = new Note(i, name, text);
         }

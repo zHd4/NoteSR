@@ -39,7 +39,9 @@ public class RecoveryActivity extends AppCompatActivity {
 
                     DatabaseController db = new DatabaseController(getApplicationContext());
 
-                    CryptoController.decrypt(db.getAllNotes()[0].getName(), ActivityTools.sha256(keyString), key);
+                    CryptoController.decrypt(
+                            Base64.decode(db.getAllNotes()[0].getName(), Base64.DEFAULT),
+                            ActivityTools.sha256(keyString), key);
 
                     Config.cryptoKey = Base64.encodeToString(key, Base64.DEFAULT);
                     AccessActivity.operation = AccessActivity.CREATE_CODE;

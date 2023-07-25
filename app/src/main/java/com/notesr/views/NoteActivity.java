@@ -77,7 +77,14 @@ public class NoteActivity extends AppCompatActivity {
                         DatabaseController db = new DatabaseController(getApplicationContext());
                         byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
-                        db.deleteNote(CryptoController.encrypt(noteTitle, ActivityTools.sha256(Config.cryptoKey), key));
+                        String encryptedNoteTitle = Base64.encodeToString(
+                                CryptoController.encrypt(
+                                        noteTitle.getBytes(),
+                                        ActivityTools.sha256(Config.cryptoKey),
+                                        key),
+                                Base64.DEFAULT);
+
+                        db.deleteNote(encryptedNoteTitle);
                         startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
                     } catch (Exception e) {
                         e.printStackTrace();

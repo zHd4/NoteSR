@@ -1,15 +1,13 @@
 package com.notesr.controllers;
 
-import android.util.Base64;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 
 public class AESController {
 
@@ -18,7 +16,7 @@ public class AESController {
     private static final String secretKeyInstance = "PBKDF2WithHmacSHA1";
     private static final String initializationVector = "8119745113154120";
 
-    public static String encrypt(String textToEncrypt, byte[] key) throws Exception {
+    public static byte[] encrypt(final byte[] data, final byte[] key) throws Exception {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(cypherInstance);
 
@@ -28,14 +26,10 @@ public class AESController {
                 new IvParameterSpec(initializationVector.getBytes())
         );
 
-        byte[] encrypted = cipher.doFinal(textToEncrypt.getBytes());
-
-        return Base64.encodeToString(encrypted, Base64.DEFAULT);
+        return cipher.doFinal(data);
     }
 
-    public static String decrypt(String textToDecrypt, byte[] key) throws Exception {
-        byte[] encrytedBytes = Base64.decode(textToDecrypt, Base64.DEFAULT);
-
+    public static byte[] decrypt(final byte[] encrypted, final byte[] key) throws Exception {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(cypherInstance);
 
@@ -45,9 +39,7 @@ public class AESController {
                 new IvParameterSpec(initializationVector.getBytes())
         );
 
-        byte[] decrypted = cipher.doFinal(encrytedBytes);
-
-        return new String(decrypted, StandardCharsets.UTF_8);
+        return cipher.doFinal(encrypted);
     }
 
     public static byte[] genKey(String plainText, String salt) {

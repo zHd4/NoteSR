@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Base64;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.models.Config;
@@ -90,11 +91,12 @@ public class ActivityTools extends AppCompatActivity {
         if (StorageController.isExternalStorageAvailable() && !StorageController.isExternalStorageReadOnly()) {
             String cryptoPassword = md5(Config.passwordCode);
 
-            StorageController.writeFile(context,Config.keyBinFileName, CryptoController.encrypt(
-                    Config.cryptoKey,
+            String encryptedKey = Base64.encodeToString(CryptoController.encrypt(
+                    Config.cryptoKey.getBytes(),
                     md5(cryptoPassword),
-                    CryptoController.genKey(cryptoPassword)
-            ));
+                    CryptoController.genKey(cryptoPassword)), Base64.DEFAULT);
+
+            StorageController.writeFile(context,Config.keyBinFileName, encryptedKey);
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
@@ -104,16 +106,17 @@ public class ActivityTools extends AppCompatActivity {
     public static boolean getKeys(String pin, Context context) {
 
         if (StorageController.isExternalStorageAvailable() && !StorageController.isExternalStorageReadOnly()) {
-            String encryptedKey = StorageController.readFile(context,Config.keyBinFileName);
+            byte[] encryptedKey = Base64.decode(StorageController.readFile(context,Config.keyBinFileName),
+                    Base64.DEFAULT);
 
             try{
                 String cryptoPassword = md5(pin);
                 
-                String cryptoKey = CryptoController.decrypt(
-                        encryptedKey, 
-                        md5(cryptoPassword), 
+                String cryptoKey = new String(CryptoController.decrypt(
+                        encryptedKey,
+                        md5(cryptoPassword),
                         CryptoController.genKey(cryptoPassword)
-                );
+                ));
 
                 Config.cryptoKey = cryptoKey;
                 Config.passwordCode = pin;
