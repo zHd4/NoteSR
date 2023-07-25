@@ -157,6 +157,32 @@ public class DatabaseController extends SQLiteOpenHelper {
         db.execSQL(String.format("DELETE FROM %s WHERE %s=%s", TABLE_FILES, KEY_NOTE_ID, file.getId()));
     }
 
+    public int[] getFilesIdByNoteId(int note_id) {
+        int[] files_id = new int[0];
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        try {
+            @SuppressLint("Recycle")
+            Cursor cursor = db.rawQuery(
+                    String.format("SELECT %s FROM %s WHERE %s=%s", KEY_FILE_ID, TABLE_FILES, KEY_NOTE_ID, note_id),
+                    null
+            );
+
+            if (cursor.moveToFirst()) {
+                do {
+                    files_id = Arrays.copyOf(files_id, files_id.length + 1);
+                    files_id[files_id.length - 1] = Integer.parseInt(cursor.getString(0));
+                } while (cursor.moveToNext());
+            }
+
+            return files_id;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return new int[0];
+        }
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
