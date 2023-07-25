@@ -164,8 +164,8 @@ public class DatabaseController extends SQLiteOpenHelper {
         try {
             @SuppressLint("Recycle")
             Cursor cursor = db.rawQuery(
-                    String.format("SELECT %s FROM %s WHERE %s=%s", KEY_FILE_ID, TABLE_FILES, KEY_NOTE_ID, note_id),
-                    null
+                    String.format("SELECT %s FROM %s WHERE %s=?", KEY_FILE_ID, TABLE_FILES, KEY_NOTE_ID),
+                    new String[] {String.valueOf(note_id)}
             );
 
             if (cursor.moveToFirst()) {
