@@ -65,6 +65,7 @@ public class ChooseFileActivity extends AppCompatActivity {
                                 Base64.decode(Config.cryptoKey, Base64.DEFAULT)
                         ));
 
+                        //noinspection resource
                         DatabaseController db = new DatabaseController(getApplicationContext());
 
                         db.importFromJsonString(getApplicationContext(), decryptedNotes);

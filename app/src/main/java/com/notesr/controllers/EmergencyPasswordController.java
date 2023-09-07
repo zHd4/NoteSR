@@ -6,8 +6,7 @@ import com.notesr.models.Config;
 public class EmergencyPasswordController {
     private final String password;
 
-    @SuppressWarnings("FieldMayBeFinal")
-    private Context context;
+    private final Context context;
 
     public EmergencyPasswordController(Context context, String password) {
         this.password = password;

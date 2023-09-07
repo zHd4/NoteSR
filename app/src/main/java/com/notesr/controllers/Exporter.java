@@ -13,6 +13,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+/** @noinspection resource*/
 public class Exporter {
     public void exportToClipboard(Context context, ClipboardManager clipboardManager) {
         try {

@@ -5,6 +5,7 @@ import android.util.Base64;
 import com.notesr.models.Config;
 import com.notesr.models.Note;
 
+/** @noinspection resource*/
 public class NotesController {
 
     public static Note[] getNotes(Context context) throws Exception {

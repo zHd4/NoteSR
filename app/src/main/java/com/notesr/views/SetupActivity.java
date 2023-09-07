@@ -1,25 +1,27 @@
 package com.notesr.views;
 
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
+
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.notesr.R;
+import com.notesr.controllers.ActivityTools;
 import com.notesr.controllers.CryptoController;
 import com.notesr.controllers.StorageController;
 import com.notesr.controllers.onclick.NextGenkeysButtonController;
-import com.notesr.controllers.ActivityTools;
 import com.notesr.models.Config;
-
-import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 public class SetupActivity extends AppCompatActivity {
     public static final String regenerateKey = "regenerateKey";
@@ -27,6 +29,7 @@ public class SetupActivity extends AppCompatActivity {
     private String visualKey = "";
     public String tempKey = "";
 
+    @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,17 +54,14 @@ public class SetupActivity extends AppCompatActivity {
 
         keyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
-        copyToClipboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        copyToClipboardButton.setOnClickListener(view -> {
+            ActivityTools.clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-                ClipData clip = ClipData.newPlainText("", visualKey);
+            ClipData clip = ClipData.newPlainText("", visualKey);
 
-                ActivityTools.clipboard.setPrimaryClip(clip);
-                ActivityTools.showTextMessage(getResources().getString(R.string.copied),
-                        Toast.LENGTH_SHORT, getApplicationContext());
-            }
+            ActivityTools.clipboard.setPrimaryClip(clip);
+            ActivityTools.showTextMessage(getResources().getString(R.string.copied),
+                    Toast.LENGTH_SHORT, getApplicationContext());
         });
 
         nextGenkeysButton.setOnClickListener(new NextGenkeysButtonController(this, keyField));

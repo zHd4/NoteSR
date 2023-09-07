@@ -1,23 +1,27 @@
 package com.notesr.views;
 
-import android.view.WindowManager;
-import com.notesr.R;
-import android.os.Bundle;
-import android.util.Base64;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.DatabaseController;
-import com.notesr.controllers.ActivityTools;
-import com.notesr.models.Config;
-
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.util.Base64;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.notesr.R;
+import com.notesr.controllers.ActivityTools;
+import com.notesr.controllers.CryptoController;
+import com.notesr.controllers.DatabaseController;
+import com.notesr.models.Config;
+
+/** @noinspection resource*/
 public class ImportActivity extends AppCompatActivity {
 
+    @SuppressLint("InlinedApi")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -43,26 +47,24 @@ public class ImportActivity extends AppCompatActivity {
 
         importDataText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
-        importButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String notesData = importDataText.getText().toString();
+        importButton.setOnClickListener(view -> {
+            String notesData = importDataText.getText().toString();
 
-                if (notesData.length() > 0) {
-                    try {
-                        DatabaseController db = new DatabaseController(getApplicationContext());
-                        String decryptedNotes = new String(CryptoController.decrypt(
-                                Base64.decode(notesData, Base64.DEFAULT),
-                                ActivityTools.sha256(Config.cryptoKey),
-                                Base64.decode(Config.cryptoKey, Base64.DEFAULT)
-                        )).replace("\\n", "");
+            if (notesData.length() > 0) {
+                try {
+                    //noinspection resource
+                    DatabaseController db1 = new DatabaseController(getApplicationContext());
+                    String decryptedNotes = new String(CryptoController.decrypt(
+                            Base64.decode(notesData, Base64.DEFAULT),
+                            ActivityTools.sha256(Config.cryptoKey),
+                            Base64.decode(Config.cryptoKey, Base64.DEFAULT)
+                    )).replace("\\n", "");
 
-                        db.importFromJsonString(getApplicationContext(), decryptedNotes);
-                        startActivity(ActivityTools.getIntent(getApplicationContext(),
-                                MainActivity.class));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    db1.importFromJsonString(getApplicationContext(), decryptedNotes);
+                    startActivity(ActivityTools.getIntent(getApplicationContext(),
+                            MainActivity.class));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });

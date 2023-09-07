@@ -18,6 +18,7 @@ import com.notesr.models.Config;
 import com.notesr.models.Note;
 import com.notesr.models.OpenNoteOperation;
 
+/** @noinspection resource*/
 public class MainActivity extends AppCompatActivity {
 
     private static Note[] notes = new Note[0];
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         notes = notesArray;
     }
 
+    @SuppressLint("UnsafeIntentLaunch")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,24 +57,18 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton addNoteButton = findViewById(R.id.add_note_button);
         FloatingActionButton lockScreenButton = findViewById(R.id.lock_screen_button);
 
-        addNoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NoteActivity.operation = OpenNoteOperation.CREATE_NOTE;
+        addNoteButton.setOnClickListener(view -> {
+            NoteActivity.operation = OpenNoteOperation.CREATE_NOTE;
 
-                startActivity(ActivityTools.getIntent(
-                        getApplicationContext(),
-                        NoteActivity.class
-                ));
-            }
+            startActivity(ActivityTools.getIntent(
+                    getApplicationContext(),
+                    NoteActivity.class
+            ));
         });
 
-        lockScreenButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(1);
-            }
+        lockScreenButton.setOnClickListener(v -> {
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
         });
     }
 
@@ -82,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint({"NonConstantResourceId", "UnsafeIntentLaunch"})
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -127,20 +124,17 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.regenerateKey:
                 final DialogInterface.OnClickListener warningDialogClickListener =
-                        new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(which == DialogInterface.BUTTON_POSITIVE) {
-                            Bundle setupBundle = new Bundle();
-                            setupBundle.putBoolean(SetupActivity.regenerateKey, true);
+                        (dialog, which) -> {
+                            if(which == DialogInterface.BUTTON_POSITIVE) {
+                                Bundle setupBundle = new Bundle();
+                                setupBundle.putBoolean(SetupActivity.regenerateKey, true);
 
-                            startActivity(ActivityTools.getIntent(
-                                    getApplicationContext(),
-                                    SetupActivity.class
-                            ).putExtras(setupBundle));
-                        }
-                    }
-                };
+                                startActivity(ActivityTools.getIntent(
+                                        getApplicationContext(),
+                                        SetupActivity.class
+                                ).putExtras(setupBundle));
+                            }
+                        };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
 
@@ -158,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @SuppressLint("RestrictedApi")
+    @SuppressLint({"RestrictedApi", "UnsafeIntentLaunch"})
     private void configureForm() throws Exception {
         DatabaseController db = new DatabaseController(getApplicationContext());
         FloatingActionButton addNoteButton = findViewById(R.id.add_note_button);
@@ -194,13 +188,11 @@ public class MainActivity extends AppCompatActivity {
         TableLayout notesTable = findViewById(R.id.notes_table);
 
         notes = NotesController.getNotes(getApplicationContext());
-        new TableGenerator().fillTable(
+        new TablesGenerator().fillNotesTable(
                 this,
                 this,
                 notesTable,
                 notes,
-                getResources().getColor(R.color.buttonBackground),
-                getWindowManager().getDefaultDisplay().getWidth() / 33
-        );
+                getResources().getColor(R.color.buttonBackground));
     }
 }

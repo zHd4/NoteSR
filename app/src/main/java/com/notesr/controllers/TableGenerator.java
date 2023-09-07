@@ -3,10 +3,10 @@ package com.notesr.controllers;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
 import com.notesr.models.Note;
 import com.notesr.models.OpenNoteOperation;
 import com.notesr.views.NoteActivity;
@@ -64,23 +64,19 @@ public class TableGenerator {
 
                 final int finalIndex = i;
 
-                trData.setOnClickListener(new View.OnClickListener() {
+                trData.setOnClickListener(v -> {
+                    int id = finalIndex;
+                    String noteTitle = notes[id].getName();
 
-                    @Override
-                    public void onClick(View v) {
-                        int id = finalIndex;
-                        String noteTitle = notes[id].getName();
+                    NoteActivity.setNoteId(id);
+                    NoteActivity.setNoteTitle(noteTitle);
 
-                        NoteActivity.setNoteId(id);
-                        NoteActivity.setNoteTitle(noteTitle);
+                    NoteActivity.operation = OpenNoteOperation.EDIT_NOTE;
 
-                        NoteActivity.operation = OpenNoteOperation.EDIT_NOTE;
-
-                        activity.startActivity(ActivityTools.getIntent(
-                                context,
-                                NoteActivity.class
-                        ));
-                    }
+                    activity.startActivity(ActivityTools.getIntent(
+                            context,
+                            NoteActivity.class
+                    ));
                 });
             }
         }

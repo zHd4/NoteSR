@@ -25,6 +25,7 @@ import java.util.Arrays;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
+/** @noinspection resource*/
 public class NoteActivity extends AppCompatActivity {
     public static OpenNoteOperation operation = OpenNoteOperation.NONE;
 
@@ -41,7 +42,7 @@ public class NoteActivity extends AppCompatActivity {
         noteTitle = title;
     }
 
-    @SuppressLint("RestrictedApi")
+    @SuppressLint({"RestrictedApi", "InlinedApi"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,28 +68,26 @@ public class NoteActivity extends AppCompatActivity {
         textText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
         final FloatingActionButton applyButton = findViewById(R.id.applyButton);
+        final FloatingActionButton showAttachmentsButton = findViewById(R.id.showAttachmentsButton);
         final FloatingActionButton deleteButton = findViewById(R.id.deleteButton);
 
-        final DialogInterface.OnClickListener deleteDialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(which == DialogInterface.BUTTON_POSITIVE) {
-                    try {
-                        DatabaseController db = new DatabaseController(getApplicationContext());
-                        byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
+        final DialogInterface.OnClickListener deleteDialogClickListener = (dialog, which) -> {
+            if(which == DialogInterface.BUTTON_POSITIVE) {
+                try {
+                    DatabaseController db = new DatabaseController(getApplicationContext());
+                    byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
 
-                        String encryptedNoteTitle = Base64.encodeToString(
-                                CryptoController.encrypt(
-                                        noteTitle.getBytes(),
-                                        ActivityTools.sha256(Config.cryptoKey),
-                                        key),
-                                Base64.DEFAULT);
+                    String encryptedNoteTitle = Base64.encodeToString(
+                            CryptoController.encrypt(
+                                    noteTitle.getBytes(),
+                                    ActivityTools.sha256(Config.cryptoKey),
+                                    key),
+                            Base64.DEFAULT);
 
-                        db.deleteNote(encryptedNoteTitle);
-                        startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    db.deleteNote(encryptedNoteTitle);
+                    startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         };
@@ -100,43 +99,40 @@ public class NoteActivity extends AppCompatActivity {
             deleteButton.setVisibility(View.VISIBLE);
         }
 
-        applyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!titleText.getText().toString().equals("") && !textText.getText().toString().equals("")) {
-                        int newNoteId = MainActivity.getNotes().length;
-                        Note note = new Note(newNoteId, titleText.getText().toString(), textText.getText().toString());
+        applyButton.setOnClickListener(view -> {
+            if(!titleText.getText().toString().equals("") && !textText.getText().toString().equals("")) {
+                    int newNoteId = MainActivity.getNotes().length;
+                    Note note = new Note(newNoteId, titleText.getText().toString(), textText.getText().toString());
 
-                        MainActivity.setNotes(addToNotesArray(MainActivity.getNotes(), note));
-                } else {
-                    MainActivity.getNotes()[noteId].setName(titleText.getText().toString());
-                    MainActivity.getNotes()[noteId].setText(textText.getText().toString());
-                }
-
-                try {
-                    NotesController.setNotes(getApplicationContext(), MainActivity.getNotes());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+                    MainActivity.setNotes(addToNotesArray(MainActivity.getNotes(), note));
+            } else {
+                MainActivity.getNotes()[noteId].setName(titleText.getText().toString());
+                MainActivity.getNotes()[noteId].setText(textText.getText().toString());
             }
+
+            try {
+                NotesController.setNotes(getApplicationContext(), MainActivity.getNotes());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
         });
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(operation == OpenNoteOperation.EDIT_NOTE) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+        showAttachmentsButton.setOnClickListener(v -> {
 
-                    builder.setMessage(getResString(R.string.if_yes_cannot_undo))
-                            .setPositiveButton(getResString(R.string.yes), deleteDialogClickListener)
-                            .setNegativeButton(getResString(R.string.no), deleteDialogClickListener)
-                            .show();
-                }
+        });
+
+        deleteButton.setOnClickListener(v -> {
+            if(operation == OpenNoteOperation.EDIT_NOTE) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+
+                builder.setMessage(getResString(R.string.if_yes_cannot_undo))
+                        .setPositiveButton(getResString(R.string.yes), deleteDialogClickListener)
+                        .setNegativeButton(getResString(R.string.no), deleteDialogClickListener)
+                        .show();
             }
         });
     }
-
     @Override
     public boolean onSupportNavigateUp() {
         final EditText titleText = findViewById(R.id.titleText);

@@ -1,22 +1,26 @@
 package com.notesr.views;
 
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
+
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.notesr.R;
+import com.notesr.controllers.ActivityTools;
 import com.notesr.controllers.CryptoController;
 import com.notesr.controllers.DatabaseController;
-import com.notesr.controllers.ActivityTools;
 import com.notesr.models.Config;
 
-import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
-
+/** @noinspection resource*/
 public class RecoveryActivity extends AppCompatActivity {
 
+    @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,27 +33,24 @@ public class RecoveryActivity extends AppCompatActivity {
 
         keyText.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
-        decryptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    String keyString = ActivityTools.hexToKey(keyText.getText().toString());
+        decryptButton.setOnClickListener(view -> {
+            try {
+                String keyString = ActivityTools.hexToKey(keyText.getText().toString());
 
-                    byte[] key = Base64.decode(keyString, Base64.DEFAULT);
+                byte[] key = Base64.decode(keyString, Base64.DEFAULT);
 
-                    DatabaseController db = new DatabaseController(getApplicationContext());
+                DatabaseController db = new DatabaseController(getApplicationContext());
 
-                    CryptoController.decrypt(
-                            Base64.decode(db.getAllNotes()[0].getName(), Base64.DEFAULT),
-                            ActivityTools.sha256(keyString), key);
+                CryptoController.decrypt(
+                        Base64.decode(db.getAllNotes()[0].getName(), Base64.DEFAULT),
+                        ActivityTools.sha256(keyString), key);
 
-                    Config.cryptoKey = Base64.encodeToString(key, Base64.DEFAULT);
-                    AccessActivity.operation = AccessActivity.CREATE_CODE;
+                Config.cryptoKey = Base64.encodeToString(key, Base64.DEFAULT);
+                AccessActivity.operation = AccessActivity.CREATE_CODE;
 
-                    startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

@@ -1,10 +1,11 @@
 package com.notesr.views;
 
 import android.os.Bundle;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.notesr.R;
 import com.notesr.controllers.ActivityTools;
 
@@ -18,14 +19,9 @@ public class StartActivity extends AppCompatActivity {
 
         Button getStartedButton = findViewById(R.id.getStartedButton);
 
-        getStartedButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(ActivityTools.getIntent(
-                        getApplicationContext(),
-                        SetupActivity.class
-                ));
-            }
-        });
+        getStartedButton.setOnClickListener(view -> startActivity(ActivityTools.getIntent(
+                getApplicationContext(),
+                SetupActivity.class
+        )));
     }
 }

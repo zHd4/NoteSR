@@ -8,6 +8,7 @@ import com.notesr.models.FileAttachment;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+/** @noinspection resource*/
 public class NoteFilesController {
     public static Dictionary<Integer, String> getAttachments(Context context, int noteId) {
         Dictionary<Integer, String> result = new Hashtable<>();

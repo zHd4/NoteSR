@@ -1,5 +1,6 @@
 package com.notesr.views;
 
+import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.notesr.models.Config;
 import com.notesr.controllers.StorageController;
 import com.notesr.models.NumericKeyboardInputStates;
 
+/** @noinspection ReassignedVariable*/
 public class AccessActivity extends AppCompatActivity {
     private static final int LATENCY = 1500;
 
@@ -76,89 +78,73 @@ public class AccessActivity extends AppCompatActivity {
         };
 
         for (int buttonId : pinButtons) {
-            setOnClick((Button) findViewById(buttonId));
+            setOnClick(findViewById(buttonId));
         }
 
-        capsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AccessActivity.this.capsEnabled = !capsEnabled;
-                capsButton.setTextSize(capsEnabled ? 40 : 30);
+        capsButton.setOnClickListener(view -> {
+            AccessActivity.this.capsEnabled = !capsEnabled;
+            capsButton.setTextSize(capsEnabled ? 40 : 30);
+        });
+
+        changeInputTypeButton.setOnClickListener(view -> {
+            switch (AccessActivity.this.inputState) {
+                case NUMERIC:
+                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL1;
+                    break;
+                case SYMBOL1:
+                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL2;
+                    break;
+                case SYMBOL2:
+                    AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL3;
+                    break;
+                case SYMBOL3:
+                    AccessActivity.this.inputState = NumericKeyboardInputStates.NUMERIC;
+                    break;
+            }
+
+            changeInputTypeButton.setText(String.valueOf(AccessActivity.this.inputState.getState()));
+        });
+
+        pinButtonBackspace.setOnClickListener(view -> {
+            String currentPassword = AccessActivity.this.passwordField.getText().toString();
+
+            if(currentPassword.length() > 0) {
+                enteredPassword = enteredPassword.substring(0, enteredPassword.length() - 1);
+
+                AccessActivity.this.passwordField.setText(
+                        currentPassword.substring(0, currentPassword.length() - 2)
+                );
             }
         });
 
-        changeInputTypeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (AccessActivity.this.inputState) {
-                    case NUMERIC:
-                        AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL1;
-                        break;
-                    case SYMBOL1:
-                        AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL2;
-                        break;
-                    case SYMBOL2:
-                        AccessActivity.this.inputState = NumericKeyboardInputStates.SYMBOL3;
-                        break;
-                    case SYMBOL3:
-                        AccessActivity.this.inputState = NumericKeyboardInputStates.NUMERIC;
-                        break;
-                }
-
-                changeInputTypeButton.setText(String.valueOf(AccessActivity.this.inputState.getState()));
-            }
-        });
-
-        pinButtonBackspace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String currentPassword = AccessActivity.this.passwordField.getText().toString();
-
-                if(currentPassword.length() > 0) {
-                    enteredPassword = enteredPassword.substring(0, enteredPassword.length() - 1);
-
-                    AccessActivity.this.passwordField.setText(
-                            currentPassword.substring(0, currentPassword.length() - 2)
-                    );
-                }
-            }
-        });
-
-        accessButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                acceptPassword();
-            }
-        });
+        accessButton.setOnClickListener(view -> acceptPassword());
     }
 
+    @SuppressLint("SetTextI18n")
     private void setOnClick(final Button btn) {
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                char[] inputTypes = new char[] {
-                    NumericKeyboardInputStates.NUMERIC.getState(),
-                    NumericKeyboardInputStates.SYMBOL1.getState(),
-                    NumericKeyboardInputStates.SYMBOL2.getState(),
-                    NumericKeyboardInputStates.SYMBOL3.getState()
-                };
+        btn.setOnClickListener(view -> {
+            char[] inputTypes = new char[] {
+                NumericKeyboardInputStates.NUMERIC.getState(),
+                NumericKeyboardInputStates.SYMBOL1.getState(),
+                NumericKeyboardInputStates.SYMBOL2.getState(),
+                NumericKeyboardInputStates.SYMBOL3.getState()
+            };
 
-                char character = btn
-                        .getText()
-                        .toString()
-                        .replace("\n", "")
-                        .toCharArray()
-                        [new String(inputTypes).indexOf(AccessActivity.this.inputState.getState())];
+            char character = btn
+                    .getText()
+                    .toString()
+                    .replace("\n", "")
+                    .toCharArray()
+                    [new String(inputTypes).indexOf(AccessActivity.this.inputState.getState())];
 
-                character = capsEnabled ? String.valueOf(character).toUpperCase().toCharArray()[0] : character;
+            character = capsEnabled ? String.valueOf(character).toUpperCase().toCharArray()[0] : character;
 
-                String currentPassword = AccessActivity.this.passwordField.getText().toString();
+            String currentPassword = AccessActivity.this.passwordField.getText().toString();
 
-                AccessActivity.this.passwordField.setText(currentPassword);
-                AccessActivity.this.passwordField.setText(currentPassword + "•" + " ");
+            AccessActivity.this.passwordField.setText(currentPassword);
+            AccessActivity.this.passwordField.setText(currentPassword + "•" + " ");
 
-                enteredPassword += character;
-            }
+            enteredPassword += character;
         });
     }
 
