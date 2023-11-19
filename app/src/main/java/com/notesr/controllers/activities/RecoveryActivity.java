@@ -1,4 +1,4 @@
-package com.notesr.views;
+package com.notesr.controllers.activities;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -12,9 +12,9 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.notesr.R;
-import com.notesr.controllers.ActivityTools;
-import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.DatabaseController;
+import com.notesr.controllers.ActivityHelper;
+import com.notesr.controllers.crypto.CryptoController;
+import com.notesr.controllers.db.DatabaseController;
 import com.notesr.models.Config;
 
 /** @noinspection resource*/
@@ -35,7 +35,7 @@ public class RecoveryActivity extends AppCompatActivity {
 
         decryptButton.setOnClickListener(view -> {
             try {
-                String keyString = ActivityTools.hexToKey(keyText.getText().toString());
+                String keyString = ActivityHelper.hexToKey(keyText.getText().toString());
 
                 byte[] key = Base64.decode(keyString, Base64.DEFAULT);
 
@@ -43,12 +43,12 @@ public class RecoveryActivity extends AppCompatActivity {
 
                 CryptoController.decrypt(
                         Base64.decode(db.getAllNotes()[0].getName(), Base64.DEFAULT),
-                        ActivityTools.sha256(keyString), key);
+                        ActivityHelper.sha256(keyString), key);
 
                 Config.cryptoKey = Base64.encodeToString(key, Base64.DEFAULT);
                 AccessActivity.operation = AccessActivity.CREATE_CODE;
 
-                startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+                startActivity(ActivityHelper.getIntent(getApplicationContext(), AccessActivity.class));
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -54,4 +54,6 @@
     <string name="query">Query…</string>
     <string name="search">Search</string>
     <string name="todo">TODO</string>
+    <string name="try_again">Try again</string>
+    <string name="try_again_you_have_n_attemps">Try again, you have %s attempts</string>
 </resources>

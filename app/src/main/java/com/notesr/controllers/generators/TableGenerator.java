@@ -1,4 +1,4 @@
-package com.notesr.controllers;
+package com.notesr.controllers.generators;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,11 +7,12 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.notesr.controllers.ActivityHelper;
 import com.notesr.models.Note;
 import com.notesr.models.OpenNoteOperation;
-import com.notesr.views.NoteActivity;
+import com.notesr.controllers.activities.NoteActivity;
 
-public class TableGenerator {
+public class TableGenerator extends ActivityHelper {
     public void fillTable(
             final Context context,
             final Activity activity,
@@ -73,7 +74,7 @@ public class TableGenerator {
 
                     NoteActivity.operation = OpenNoteOperation.EDIT_NOTE;
 
-                    activity.startActivity(ActivityTools.getIntent(
+                    activity.startActivity(getIntent(
                             context,
                             NoteActivity.class
                     ));

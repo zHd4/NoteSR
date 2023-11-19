@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.notesr"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "4.8"

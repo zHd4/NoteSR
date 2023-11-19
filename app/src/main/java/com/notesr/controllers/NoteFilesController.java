@@ -2,6 +2,10 @@ package com.notesr.controllers;
 
 import android.content.Context;
 import android.util.Base64;
+
+import com.notesr.controllers.crypto.CryptoController;
+import com.notesr.controllers.db.DatabaseController;
+import com.notesr.controllers.managers.HashManager;
 import com.notesr.models.Config;
 import com.notesr.models.FileAttachment;
 
@@ -28,7 +32,8 @@ public class NoteFilesController {
         DatabaseController db = new DatabaseController(context);
 
         byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
-        byte[] encryptedData = CryptoController.encrypt(file.getData(), ActivityTools.sha256(Config.cryptoKey), key);
+        byte[] encryptedData = CryptoController.encrypt(file.getData(),
+                HashManager.toSha256String(Config.cryptoKey), key);
 
         file.setData(encryptedData);
         db.addFile(file);
@@ -39,7 +44,8 @@ public class NoteFilesController {
         FileAttachment file = db.getFileById(fileId);
 
         byte[] key = Base64.decode(Config.cryptoKey, Base64.DEFAULT);
-        byte[] decryptedData = CryptoController.decrypt(file.getData(), ActivityTools.sha256(Config.cryptoKey), key);
+        byte[] decryptedData = CryptoController.decrypt(file.getData(),
+                HashManager.toSha256String(Config.cryptoKey), key);
 
         file.setData(decryptedData);
 

@@ -1,4 +1,4 @@
-package com.notesr.views;
+package com.notesr.controllers.activities;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -8,9 +8,9 @@ import android.util.Base64;
 import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 import com.notesr.R;
-import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.DatabaseController;
-import com.notesr.controllers.ActivityTools;
+import com.notesr.controllers.crypto.CryptoController;
+import com.notesr.controllers.db.DatabaseController;
+import com.notesr.controllers.ActivityHelper;
 import com.notesr.models.Config;
 import com.notesr.controllers.StorageController;
 import java.io.File;
@@ -28,7 +28,7 @@ public class ChooseFileActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SECURE
         );
 
-        ActivityTools.checkReady(getApplicationContext(), this);
+        ActivityHelper.checkReady(getApplicationContext(), this);
 
         if (safeCalled) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -61,7 +61,7 @@ public class ChooseFileActivity extends AppCompatActivity {
                     try {
                         String decryptedNotes = new String(CryptoController.decrypt(
                                 Base64.decode(notesData, Base64.DEFAULT),
-                                ActivityTools.sha256(Config.cryptoKey),
+                                ActivityHelper.sha256(Config.cryptoKey),
                                 Base64.decode(Config.cryptoKey, Base64.DEFAULT)
                         ));
 
@@ -69,7 +69,7 @@ public class ChooseFileActivity extends AppCompatActivity {
                         DatabaseController db = new DatabaseController(getApplicationContext());
 
                         db.importFromJsonString(getApplicationContext(), decryptedNotes);
-                        startActivity(ActivityTools.getIntent(getApplicationContext(),
+                        startActivity(ActivityHelper.getIntent(getApplicationContext(),
                                 MainActivity.class));
                     } catch (Exception e) {
                         e.printStackTrace();

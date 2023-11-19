@@ -1,4 +1,4 @@
-package com.notesr.controllers;
+package com.notesr.controllers.db;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
+
+import com.notesr.controllers.NotesController;
 import com.notesr.models.Config;
 import com.notesr.models.FileAttachment;
 import com.notesr.models.Note;

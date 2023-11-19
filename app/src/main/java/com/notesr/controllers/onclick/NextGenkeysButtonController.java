@@ -4,12 +4,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import com.notesr.controllers.NotesController;
-import com.notesr.controllers.ActivityTools;
+import com.notesr.controllers.ActivityHelper;
 import com.notesr.models.Config;
 import com.notesr.models.Note;
-import com.notesr.views.AccessActivity;
-import com.notesr.views.MainActivity;
-import com.notesr.views.SetupActivity;
+import com.notesr.controllers.activities.AccessActivity;
+import com.notesr.controllers.activities.MainActivity;
+import com.notesr.controllers.activities.SetupActivity;
 
 public class NextGenkeysButtonController implements View.OnClickListener {
     @SuppressWarnings("FieldMayBeFinal")
@@ -30,7 +30,7 @@ public class NextGenkeysButtonController implements View.OnClickListener {
             Note[] notes = null;
 
             Bundle extras = setupActivity.getIntent().getExtras();
-            boolean isRegeneratingKey = extras != null && extras.getBoolean(SetupActivity.regenerateKey);
+            boolean isRegeneratingKey = extras != null && extras.getBoolean("regenerateKey");
 
             if(isRegeneratingKey) {
                 try {
@@ -52,7 +52,7 @@ public class NextGenkeysButtonController implements View.OnClickListener {
                 } else {
                     try {
                         NotesController.setNotes(setupActivity.getApplicationContext(), notes);
-                        ActivityTools.saveKey(setupActivity.getApplicationContext());
+                        ActivityHelper.saveKey(setupActivity.getApplicationContext());
                     } catch (Exception e) {
                         e.printStackTrace();
                         setupActivity.displayRegeneationFailedMessage();
@@ -60,12 +60,12 @@ public class NextGenkeysButtonController implements View.OnClickListener {
                 }
 
                 setupActivity.startActivity(
-                        ActivityTools.getIntent(setupActivity.getApplicationContext(), MainActivity.class)
+                        ActivityHelper.getIntent(setupActivity.getApplicationContext(), MainActivity.class)
                 );
             } else {
                 AccessActivity.operation = AccessActivity.CREATE_CODE;
                 setupActivity.startActivity(
-                        ActivityTools.getIntent(setupActivity.getApplicationContext(), AccessActivity.class)
+                        ActivityHelper.getIntent(setupActivity.getApplicationContext(), AccessActivity.class)
                 );
             }
         }

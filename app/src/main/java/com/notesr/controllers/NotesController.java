@@ -2,6 +2,10 @@ package com.notesr.controllers;
 
 import android.content.Context;
 import android.util.Base64;
+
+import com.notesr.controllers.crypto.CryptoController;
+import com.notesr.controllers.db.DatabaseController;
+import com.notesr.controllers.managers.HashManager;
 import com.notesr.models.Config;
 import com.notesr.models.Note;
 
@@ -18,11 +22,11 @@ public class NotesController {
             for(int i = 0; i < notes.length; i++) {
                 String decryptedName = new String(
                         CryptoController.decrypt(Base64.decode(notes[i].getName(), Base64.DEFAULT),
-                                ActivityTools.sha256(Config.cryptoKey), key));
+                                HashManager.toSha256String(Config.cryptoKey), key));
 
                 String decryptedText = new String(
                         CryptoController.decrypt(Base64.decode(notes[i].getText(), Base64.DEFAULT),
-                                ActivityTools.sha256(Config.cryptoKey), key));
+                                HashManager.toSha256String(Config.cryptoKey), key));
 
                 notes[i].setName(decryptedName);
                 notes[i].setText(decryptedText);
@@ -42,14 +46,14 @@ public class NotesController {
             String name = Base64.encodeToString(
                     CryptoController.encrypt(
                             notes[i].getName().getBytes(),
-                            ActivityTools.sha256(Config.cryptoKey),
+                            HashManager.toSha256String(Config.cryptoKey),
                             key),
                     Base64.DEFAULT);
 
             String text = Base64.encodeToString(
                     CryptoController.encrypt(
                             notes[i].getText().getBytes(),
-                            ActivityTools.sha256(Config.cryptoKey),
+                            HashManager.toSha256String(Config.cryptoKey),
                             key),
                     Base64.DEFAULT);
 

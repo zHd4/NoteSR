@@ -1,4 +1,4 @@
-package com.notesr.views;
+package com.notesr.controllers.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -14,6 +14,8 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.R;
 import com.notesr.controllers.*;
+import com.notesr.controllers.db.DatabaseController;
+import com.notesr.controllers.generators.TablesGenerator;
 import com.notesr.models.Config;
 import com.notesr.models.Note;
 import com.notesr.models.OpenNoteOperation;
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         addNoteButton.setOnClickListener(view -> {
             NoteActivity.operation = OpenNoteOperation.CREATE_NOTE;
 
-            startActivity(ActivityTools.getIntent(
+            startActivity(ActivityHelper.getIntent(
                     getApplicationContext(),
                     NoteActivity.class
             ));
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.searchMenuItem:
-                startActivity(ActivityTools.getIntent(getApplicationContext(), SearchActivity.class));
+                startActivity(ActivityHelper.getIntent(getApplicationContext(), SearchActivity.class));
                 break;
 
             case R.id.exportToFile:
@@ -107,18 +109,18 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.importFromClipoard:
-                startActivity(ActivityTools.getIntent(getApplicationContext(), ImportActivity.class));
+                startActivity(ActivityHelper.getIntent(getApplicationContext(), ImportActivity.class));
                 break;
 
             case R.id.secretPin:
                 AccessActivity.operation = AccessActivity.SECRET_CODE;
-                startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+                startActivity(ActivityHelper.getIntent(getApplicationContext(), AccessActivity.class));
 
                 break;
 
             case R.id.changePin:
                 AccessActivity.operation = AccessActivity.CREATE_CODE;
-                startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+                startActivity(ActivityHelper.getIntent(getApplicationContext(), AccessActivity.class));
 
                 break;
 
@@ -127,9 +129,9 @@ public class MainActivity extends AppCompatActivity {
                         (dialog, which) -> {
                             if(which == DialogInterface.BUTTON_POSITIVE) {
                                 Bundle setupBundle = new Bundle();
-                                setupBundle.putBoolean(SetupActivity.regenerateKey, true);
+                                setupBundle.putBoolean("regenerateKey", true);
 
-                                startActivity(ActivityTools.getIntent(
+                                startActivity(ActivityHelper.getIntent(
                                         getApplicationContext(),
                                         SetupActivity.class
                                 ).putExtras(setupBundle));
@@ -171,16 +173,16 @@ public class MainActivity extends AppCompatActivity {
 
                 fillTable();
             } else {
-                startActivity(ActivityTools.getIntent(getApplicationContext(), AccessActivity.class));
+                startActivity(ActivityHelper.getIntent(getApplicationContext(), AccessActivity.class));
             }
         }
 
         if(isNotesExists && !keyExists) {
-            startActivity(ActivityTools.getIntent(getApplicationContext(), RecoveryActivity.class));
+            startActivity(ActivityHelper.getIntent(getApplicationContext(), RecoveryActivity.class));
         }
 
         if(!isNotesExists && !keyExists) {
-            startActivity(ActivityTools.getIntent(getApplicationContext(), StartActivity.class));
+            startActivity(ActivityHelper.getIntent(getApplicationContext(), StartActivity.class));
         }
     }
 

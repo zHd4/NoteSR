@@ -1,12 +1,15 @@
-package com.notesr.controllers;
+package com.notesr.controllers.crypto;
 
 import android.util.Base64;
+
+import com.notesr.controllers.ActivityHelper;
+import com.notesr.controllers.managers.HashManager;
 import com.notesr.encryption.provider.CryptoProvider;
 import com.notesr.encryption.provider.KeyGenerator;
 import com.notesr.encryption.provider.exceptions.CryptoKeyException;
 import java.security.NoSuchAlgorithmException;
 
-public class CryptoController {
+public class CryptoController extends ActivityHelper {
     private static final int KEY_SIZE = 128;
     private static final int IV_SIZE = 32;
 
@@ -14,7 +17,7 @@ public class CryptoController {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
             String password = Base64.encodeToString(keyGenerator.createKey(), Base64.DEFAULT);
-            return AESController.genKey(password, ActivityTools.sha256(password));
+            return AESController.genKey(password, HashManager.toSha256String(password));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -25,8 +28,10 @@ public class CryptoController {
     public static byte[] genKey(String passphrase) {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
-            String password = Base64.encodeToString(keyGenerator.createKey(passphrase), Base64.DEFAULT);
-            return AESController.genKey(password, ActivityTools.sha256(password));
+            byte[] key = keyGenerator.createKey(passphrase);
+
+            String password = Base64.encodeToString(key, Base64.DEFAULT);
+            return AESController.genKey(password, HashManager.toSha256String(password));
         } catch (NoSuchAlgorithmException | CryptoKeyException e) {
             e.printStackTrace();
         }
@@ -37,9 +42,9 @@ public class CryptoController {
     public static byte[] encrypt(byte[] data, String salt, byte[] key) throws Exception {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
-            CryptoProvider cryptoProvider = new CryptoProvider(keyGenerator.createKey(ActivityTools.sha256(
-                    Base64.encodeToString(key, Base64.DEFAULT)
-            )));
+
+            String keyHash = HashManager.toSha256String(Base64.encodeToString(key, Base64.DEFAULT));
+            CryptoProvider cryptoProvider = new CryptoProvider(keyGenerator.createKey(keyHash));
 
             cryptoProvider.initializeVector(salt, IV_SIZE);
             byte[] aesEncrypted = AESController.encrypt(data, key);
@@ -53,9 +58,8 @@ public class CryptoController {
     public static byte[] decrypt(byte[] encrypted, String salt, byte[] key) throws Exception {
         try {
             KeyGenerator keyGenerator = new KeyGenerator(KEY_SIZE);
-            CryptoProvider cryptoProvider = new CryptoProvider(keyGenerator.createKey(ActivityTools.sha256(
-                    Base64.encodeToString(key, Base64.DEFAULT)
-            )));
+            String keyHash = HashManager.toSha256String(Base64.encodeToString(key, Base64.DEFAULT));
+            CryptoProvider cryptoProvider = new CryptoProvider(keyGenerator.createKey(keyHash));
 
             cryptoProvider.initializeVector(salt, IV_SIZE);
 

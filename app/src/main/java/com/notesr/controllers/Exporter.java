@@ -7,6 +7,10 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Base64;
 import android.widget.Toast;
+
+import com.notesr.controllers.crypto.CryptoController;
+import com.notesr.controllers.db.DatabaseController;
+import com.notesr.controllers.managers.HashManager;
 import com.notesr.models.Config;
 
 import java.io.File;
@@ -14,24 +18,21 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /** @noinspection resource*/
-public class Exporter {
+public class Exporter extends ActivityHelper {
     public void exportToClipboard(Context context, ClipboardManager clipboardManager) {
         try {
             DatabaseController db = new DatabaseController(context);
 
             String notesData = Base64.encodeToString(CryptoController.encrypt(
                     db.exportToJsonString(context).getBytes(),
-                    ActivityTools.sha256(Config.cryptoKey),
+                    HashManager.toSha256String(Config.cryptoKey),
                     Base64.decode(Config.cryptoKey, Base64.DEFAULT)
             ), Base64.DEFAULT);
 
-            ActivityTools.clipboard = clipboardManager;
-
             ClipData clip = ClipData.newPlainText("", notesData);
 
-            ActivityTools.clipboard.setPrimaryClip(clip);
-
-            ActivityTools.showTextMessage("Copied!", Toast.LENGTH_SHORT, context);
+            clipboardManager.setPrimaryClip(clip);
+            showTextMessage("Copied!", Toast.LENGTH_SHORT, context);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,14 +54,14 @@ public class Exporter {
 
             String notesData = Base64.encodeToString(CryptoController.encrypt(
                     db.exportToJsonString(context).getBytes(),
-                    ActivityTools.sha256(Config.cryptoKey),
+                    HashManager.toSha256String(Config.cryptoKey),
                     Base64.decode(Config.cryptoKey, Base64.DEFAULT)
             ), Base64.DEFAULT);
 
             if (StorageController.externalWriteFile(path, notesData)) {
-                ActivityTools.showTextMessage("Saved to " + path.getAbsolutePath(), Toast.LENGTH_SHORT, context);
+                showTextMessage("Saved to " + path.getAbsolutePath(), Toast.LENGTH_SHORT, context);
             } else {
-                ActivityTools.showTextMessage(
+                showTextMessage(
                         "Please allow storage access and try again",
                         Toast.LENGTH_SHORT,
                         context

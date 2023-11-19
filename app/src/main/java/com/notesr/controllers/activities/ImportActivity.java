@@ -1,4 +1,4 @@
-package com.notesr.views;
+package com.notesr.controllers.activities;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -13,9 +13,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.notesr.R;
-import com.notesr.controllers.ActivityTools;
-import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.DatabaseController;
+import com.notesr.controllers.ActivityHelper;
+import com.notesr.controllers.crypto.CryptoController;
+import com.notesr.controllers.db.DatabaseController;
 import com.notesr.models.Config;
 
 /** @noinspection resource*/
@@ -31,7 +31,7 @@ public class ImportActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SECURE
         );
 
-        ActivityTools.checkReady(getApplicationContext(), this);
+        ActivityHelper.checkReady(getApplicationContext(), this);
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -56,12 +56,12 @@ public class ImportActivity extends AppCompatActivity {
                     DatabaseController db1 = new DatabaseController(getApplicationContext());
                     String decryptedNotes = new String(CryptoController.decrypt(
                             Base64.decode(notesData, Base64.DEFAULT),
-                            ActivityTools.sha256(Config.cryptoKey),
+                            ActivityHelper.sha256(Config.cryptoKey),
                             Base64.decode(Config.cryptoKey, Base64.DEFAULT)
                     )).replace("\\n", "");
 
                     db1.importFromJsonString(getApplicationContext(), decryptedNotes);
-                    startActivity(ActivityTools.getIntent(getApplicationContext(),
+                    startActivity(ActivityHelper.getIntent(getApplicationContext(),
                             MainActivity.class));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -72,7 +72,7 @@ public class ImportActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+        startActivity(ActivityHelper.getIntent(getApplicationContext(), MainActivity.class));
         return true;
     }
 }

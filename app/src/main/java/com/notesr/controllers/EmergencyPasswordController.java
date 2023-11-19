@@ -1,6 +1,8 @@
 package com.notesr.controllers;
 
 import android.content.Context;
+
+import com.notesr.controllers.managers.HashManager;
 import com.notesr.models.Config;
 
 public class EmergencyPasswordController {
@@ -14,13 +16,13 @@ public class EmergencyPasswordController {
     }
 
     public void setPin() {
-        String pinHash = ActivityTools.sha256(password);
-        StorageController.writeFile(this.context, Config.secretPinFileNameName, pinHash);
+        String pinHash = HashManager.toSha256String(password);
+        StorageController.writeFile(this.context, Config.secretPinFileName, pinHash);
     }
 
     public boolean checkPin() {
-        String haystackHash = ActivityTools.sha256(password);
-        String needleHash = StorageController.readFile(context, Config.secretPinFileNameName);
+        String haystackHash = HashManager.toSha256String(password);
+        String needleHash = StorageController.readFile(context, Config.secretPinFileName);
 
         return haystackHash.equals(needleHash);
     }

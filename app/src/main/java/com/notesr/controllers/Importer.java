@@ -2,11 +2,11 @@ package com.notesr.controllers;
 
 import android.app.Activity;
 import android.content.Context;
-import com.notesr.views.ChooseFileActivity;
+import com.notesr.controllers.activities.ChooseFileActivity;
 
-public class Importer {
+public class Importer extends ActivityHelper {
     public void importFromFile(Context context, Activity activity) {
         ChooseFileActivity.safeCalled = true;
-        activity.startActivity(ActivityTools.getIntent(context, ChooseFileActivity.class));
+        activity.startActivity(getIntent(context, ChooseFileActivity.class));
     }
 }

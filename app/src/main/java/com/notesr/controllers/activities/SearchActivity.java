@@ -1,4 +1,4 @@
-package com.notesr.views;
+package com.notesr.controllers.activities;
 
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -10,9 +10,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.notesr.R;
-import com.notesr.controllers.ActivityTools;
+import com.notesr.controllers.ActivityHelper;
 import com.notesr.controllers.NotesController;
-import com.notesr.controllers.TablesGenerator;
+import com.notesr.controllers.generators.TablesGenerator;
 import com.notesr.models.Note;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.search_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
-        ActivityTools.checkReady(getApplicationContext(), this);
+        ActivityHelper.checkReady(getApplicationContext(), this);
 
         final ActionBar actionBar = getSupportActionBar();
 

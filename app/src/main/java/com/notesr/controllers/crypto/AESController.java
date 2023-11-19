@@ -1,4 +1,4 @@
-package com.notesr.controllers;
+package com.notesr.controllers.crypto;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;

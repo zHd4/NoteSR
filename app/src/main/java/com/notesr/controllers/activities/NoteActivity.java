@@ -1,4 +1,4 @@
-package com.notesr.views;
+package com.notesr.controllers.activities;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -13,10 +13,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.notesr.R;
-import com.notesr.controllers.CryptoController;
-import com.notesr.controllers.DatabaseController;
+import com.notesr.controllers.crypto.CryptoController;
+import com.notesr.controllers.db.DatabaseController;
 import com.notesr.controllers.NotesController;
-import com.notesr.controllers.ActivityTools;
+import com.notesr.controllers.ActivityHelper;
 import com.notesr.models.Config;
 import com.notesr.models.Note;
 import com.notesr.models.OpenNoteOperation;
@@ -50,7 +50,7 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.note_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
-        ActivityTools.checkReady(getApplicationContext(), this);
+        ActivityHelper.checkReady(getApplicationContext(), this);
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -80,12 +80,12 @@ public class NoteActivity extends AppCompatActivity {
                     String encryptedNoteTitle = Base64.encodeToString(
                             CryptoController.encrypt(
                                     noteTitle.getBytes(),
-                                    ActivityTools.sha256(Config.cryptoKey),
+                                    ActivityHelper.sha256(Config.cryptoKey),
                                     key),
                             Base64.DEFAULT);
 
                     db.deleteNote(encryptedNoteTitle);
-                    startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+                    startActivity(ActivityHelper.getIntent(getApplicationContext(), MainActivity.class));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -115,7 +115,7 @@ public class NoteActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+            startActivity(ActivityHelper.getIntent(getApplicationContext(), MainActivity.class));
         });
 
         showAttachmentsButton.setOnClickListener(v -> {
@@ -142,7 +142,7 @@ public class NoteActivity extends AppCompatActivity {
                 MainActivity.getNotes()[noteId].getText().equals(textText.getText().toString())) {
             finish();
         } else {
-            startActivity(ActivityTools.getIntent(getApplicationContext(), MainActivity.class));
+            startActivity(ActivityHelper.getIntent(getApplicationContext(), MainActivity.class));
         }
 
         return true;
