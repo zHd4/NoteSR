@@ -3,86 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.notesr">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <application android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
-        android:icon="@drawable/icon"
+        android:icon="@mipmap/icon"
         android:label="@string/appName"
-        android:roundIcon="@drawable/icon_round"
+        android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:targetApi="q"
         tools:ignore="AllowBackup">
 
         <activity
             android:name="com.notesr.controllers.activities.MainActivity"
-            android:label="@string/appName"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.notesr.controllers.activities.StartActivity"
-            android:label="@string/appName"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <activity
-            android:name="com.notesr.controllers.activities.SetupActivity"
-            android:label="@string/appName"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <activity
-            android:name="com.notesr.controllers.activities.AccessActivity"
-            android:label="@string/appName"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <activity
-            android:name="com.notesr.controllers.activities.NoteActivity"
-            android:label="@string/appName"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme">
-        </activity>
-
-        <activity
-            android:name="com.notesr.controllers.activities.RecoveryActivity"
-            android:label="@string/appName"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <activity
-            android:name="com.notesr.controllers.activities.ImportActivity"
-            android:label="@string/appName"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme">
-        </activity>
-
-        <activity
-            android:name="com.notesr.controllers.activities.ChooseFileActivity"
-            android:label="@string/appName"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <activity
-                android:name="com.notesr.controllers.activities.SearchActivity"
-                android:label="@string/appName"
-                android:screenOrientation="locked"
-                android:theme="@style/AppTheme">
-        </activity>
-
     </application>
 
 </manifest>
