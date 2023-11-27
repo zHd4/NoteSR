@@ -6,7 +6,7 @@
     <application android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:icon="@mipmap/icon"
-        android:label="@string/appName"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
@@ -22,6 +22,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.notesr.controllers.activities.StartActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 
