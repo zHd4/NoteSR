@@ -1,12 +1,9 @@
 package com.notesr.controllers.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-
 import com.notesr.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ExtendedAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
