@@ -1,4 +1,4 @@
-package com.notesr.controllers.db.notes;
+package com.peew.notesr.controllers.db.notes;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

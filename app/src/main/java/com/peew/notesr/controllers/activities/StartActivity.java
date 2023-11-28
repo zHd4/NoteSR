@@ -1,8 +1,8 @@
-package com.notesr.controllers.activities;
+package com.peew.notesr.controllers.activities;
 
 import android.os.Bundle;
 
-import com.notesr.R;
+import com.peew.notesr.R;
 
 public class StartActivity extends ExtendedAppCompatActivity {
     @Override

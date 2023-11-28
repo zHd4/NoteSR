@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.notesr">
+    package="com.peew.notesr">
 
     <application android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
@@ -13,7 +13,7 @@
         tools:ignore="AllowBackup">
 
         <activity
-            android:name="com.notesr.controllers.activities.MainActivity"
+            android:name="com.peew.notesr.controllers.activities.MainActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme"
             android:exported="true">
@@ -25,7 +25,7 @@
         </activity>
 
         <activity
-            android:name="com.notesr.controllers.activities.StartActivity"
+            android:name="com.peew.notesr.controllers.activities.StartActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme">
         </activity>

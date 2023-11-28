@@ -1,4 +1,4 @@
-package com.notesr.controllers.activities;
+package com.peew.notesr.controllers.activities;
 
 import android.os.Bundle;
 import android.view.WindowManager;
