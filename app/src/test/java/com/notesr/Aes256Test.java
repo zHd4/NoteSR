@@ -14,14 +14,14 @@ import javax.crypto.SecretKey;
 public class Aes256Test {
     private static final String AVAILABLE_SYMBOLS ="0123456789qwertyuiopasdfghjklzxcvbnm";
     private static final Integer PASSWORD_LENGTH = 20;
-    private static final byte[] plainData = new byte[4096];
+    private static final byte[] PLAIN_DATA = new byte[4096];
 
     private static String password;
 
     @BeforeAll
     public static void beforeAll() {
         Random random = new Random();
-        random.nextBytes(plainData);
+        random.nextBytes(PLAIN_DATA);
 
         StringBuilder passwordBuilder = new StringBuilder();
 
@@ -39,10 +39,10 @@ public class Aes256Test {
 
         Aes256 aesInstance = new Aes256(key, salt);
 
-        byte[] actualEncryptedData = aesInstance.encrypt(plainData);
+        byte[] actualEncryptedData = aesInstance.encrypt(PLAIN_DATA);
         byte[] actualDecryptedData = aesInstance.decrypt(actualEncryptedData);
 
-        Assert.assertArrayEquals(plainData, actualDecryptedData);
+        Assert.assertArrayEquals(PLAIN_DATA, actualDecryptedData);
     }
 
     @Test
@@ -50,9 +50,9 @@ public class Aes256Test {
         byte[] salt = Aes256.generateRandomSalt();
         Aes256 aesInstance = new Aes256(password, salt);
 
-        byte[] actualEncryptedData = aesInstance.encrypt(plainData);
+        byte[] actualEncryptedData = aesInstance.encrypt(PLAIN_DATA);
         byte[] actualDecryptedData = aesInstance.decrypt(actualEncryptedData);
 
-        Assert.assertArrayEquals(plainData, actualDecryptedData);
+        Assert.assertArrayEquals(PLAIN_DATA, actualDecryptedData);
     }
 }
