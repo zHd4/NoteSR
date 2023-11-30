@@ -3,31 +3,25 @@ package com.peew.notesr.crypto;
 import javax.crypto.SecretKey;
 
 public class CryptoKey {
-    private SecretKey key;
-    private byte[] salt;
-    private String password;
+    private final SecretKey key;
+    private final byte[] salt;
+    private final String password;
+
+    public CryptoKey(SecretKey key, byte[] salt, String password) {
+        this.key = key;
+        this.salt = salt;
+        this.password = password;
+    }
 
     public SecretKey getKey() {
         return key;
-    }
-
-    public void setKey(SecretKey key) {
-        this.key = key;
     }
 
     public byte[] getSalt() {
         return salt;
     }
 
-    public void setSalt(byte[] salt) {
-        this.salt = salt;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
