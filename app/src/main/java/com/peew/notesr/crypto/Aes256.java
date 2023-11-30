@@ -23,25 +23,11 @@ public class Aes256 {
     private static final int KEY_SIZE = 256;
     private static final int SALT_SIZE = 16;
     private static final int DEFAULT_ITERATION_COUNT = 65536;
-    private static final String KEY_GENERATOR_ALGORITHM = "AES";
+    public static final String KEY_GENERATOR_ALGORITHM = "AES";
     private static final String MAIN_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String PBE_ALGORITHM = "PBKDF2WithHmacSHA256";
-
-    private String password;
     private final SecretKey key;
     private final byte[] salt;
-
-    public String getPassword() {
-        return password;
-    }
-
-    public SecretKey getKey() {
-        return key;
-    }
-
-    public byte[] getSalt() {
-        return salt;
-    }
 
     public Aes256(SecretKey key, byte[] salt) {
         this.key = key;
@@ -50,7 +36,6 @@ public class Aes256 {
 
     public Aes256(String password, byte[] salt) throws
             NoSuchAlgorithmException, InvalidKeySpecException {
-        this.password = password;
         this.salt = salt;
         this.key = generatePasswordBasedKey(password, salt);
     }
@@ -64,8 +49,8 @@ public class Aes256 {
 
     private static SecretKey generatePasswordBasedKey(String password, byte[] salt) throws
             NoSuchAlgorithmException, InvalidKeySpecException {
-        PBEKeySpec keySpec =
-                new PBEKeySpec(password.toCharArray(), salt, DEFAULT_ITERATION_COUNT, KEY_SIZE);
+        PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(),
+                salt, DEFAULT_ITERATION_COUNT, KEY_SIZE);
         SecretKey pbeKey = SecretKeyFactory.getInstance(PBE_ALGORITHM).generateSecret(keySpec);
 
         return new SecretKeySpec(pbeKey.getEncoded(), MAIN_ALGORITHM);
