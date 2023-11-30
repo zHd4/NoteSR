@@ -2,27 +2,37 @@ package com.notesr;
 
 import com.peew.notesr.controllers.crypto.Aes256;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.Assert;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 public class Aes256Test {
     private static final String AVAILABLE_SYMBOLS = "0123456789qwertyuiopasdfghjklzxcvbnm";
-    private static final Integer PASSWORD_LENGTH = 20;
-    private static final byte[] PLAIN_DATA = new byte[4096];
-
+    private static final int PASSWORD_LENGTH = 20;
+    private static final int MIN_DATA_SIZE = 4096;
+    private static final int MAX_DATA_SIZE = 10240;
+    private static byte[] plainData;
     private static String password;
 
     @BeforeAll
     public static void beforeAll() {
         Random random = new Random();
-        random.nextBytes(PLAIN_DATA);
+        int plainDataSize = random.nextInt((MAX_DATA_SIZE - MIN_DATA_SIZE) + 1) +
+                MIN_DATA_SIZE;
+
+        plainData = new byte[plainDataSize];
+        random.nextBytes(plainData);
 
         StringBuilder passwordBuilder = new StringBuilder();
 
@@ -34,27 +44,32 @@ public class Aes256Test {
     }
 
     @Test
-    public void testEncryptionAndDecryptionWithKey() throws NoSuchAlgorithmException {
+    public void testEncryptionAndDecryptionWithKey() throws
+            NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+            NoSuchPaddingException, IllegalBlockSizeException,
+            BadPaddingException, InvalidKeyException {
         SecretKey key = Aes256.generateRandomKey();
         byte[] salt = Aes256.generateRandomSalt();
 
         Aes256 aesInstance = new Aes256(key, salt);
 
-        byte[] actualEncryptedData = aesInstance.encrypt(PLAIN_DATA);
+        byte[] actualEncryptedData = aesInstance.encrypt(plainData);
         byte[] actualDecryptedData = aesInstance.decrypt(actualEncryptedData);
 
-        Assert.assertArrayEquals(PLAIN_DATA, actualDecryptedData);
+        Assertions.assertArrayEquals(plainData, actualDecryptedData);
     }
 
     @Test
     public void testEncryptionAndDecryptionWithPassword() throws
-            NoSuchAlgorithmException, InvalidKeySpecException {
+            NoSuchAlgorithmException, InvalidKeySpecException,
+            InvalidAlgorithmParameterException, NoSuchPaddingException,
+            IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         byte[] salt = Aes256.generateRandomSalt();
         Aes256 aesInstance = new Aes256(password, salt);
 
-        byte[] actualEncryptedData = aesInstance.encrypt(PLAIN_DATA);
+        byte[] actualEncryptedData = aesInstance.encrypt(plainData);
         byte[] actualDecryptedData = aesInstance.decrypt(actualEncryptedData);
 
-        Assert.assertArrayEquals(PLAIN_DATA, actualDecryptedData);
+        Assertions.assertArrayEquals(plainData, actualDecryptedData);
     }
 }
