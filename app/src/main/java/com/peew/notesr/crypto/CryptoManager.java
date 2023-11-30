@@ -49,7 +49,7 @@ public class CryptoManager {
             cryptoKeyInstance = new CryptoKey(mainKey, mainSaltBytes, password);
 
             return true;
-        }catch (Exception e) {
+        } catch (Exception e) {
             Log.e("CryptoManager configuration error", e.toString());
             return false;
         }
