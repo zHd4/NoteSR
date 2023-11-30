@@ -1,12 +1,21 @@
 package com.peew.notesr.controllers.crypto;
 
+import android.annotation.SuppressLint;
+
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -14,12 +23,25 @@ public class Aes256 {
     private static final int KEY_SIZE = 256;
     private static final int SALT_SIZE = 16;
     private static final int DEFAULT_ITERATION_COUNT = 65536;
-    private static final String MAIN_ALGORITHM = "AES";
+    private static final String KEY_GENERATOR_ALGORITHM = "AES";
+    private static final String MAIN_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String PBE_ALGORITHM = "PBKDF2WithHmacSHA256";
 
     private String password;
     private final SecretKey key;
     private final byte[] salt;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public SecretKey getKey() {
+        return key;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
 
     public Aes256(SecretKey key, byte[] salt) {
         this.key = key;
@@ -34,7 +56,7 @@ public class Aes256 {
     }
 
     public static SecretKey generateRandomKey() throws NoSuchAlgorithmException {
-        KeyGenerator generator = KeyGenerator.getInstance(MAIN_ALGORITHM);
+        KeyGenerator generator = KeyGenerator.getInstance(KEY_GENERATOR_ALGORITHM);
         generator.init(KEY_SIZE);
 
         return generator.generateKey();
@@ -58,23 +80,31 @@ public class Aes256 {
         return result;
     }
 
-    public byte[] encrypt(byte[] plainData)  {
-        return new byte[0];
+    public byte[] encrypt(byte[] plainData) throws
+            NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException,
+            IllegalBlockSizeException, BadPaddingException {
+        return transformData(plainData, Cipher.ENCRYPT_MODE);
     }
 
-    public byte[] decrypt(byte[] encryptedData)  {
-        return new byte[0];
+    public byte[] decrypt(byte[] encryptedData) throws
+            NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, IllegalBlockSizeException,
+            BadPaddingException, InvalidKeyException {
+        return transformData(encryptedData, Cipher.DECRYPT_MODE);
     }
 
-    public String getPassword() {
-        return password;
-    }
+    @SuppressLint("GetInstance")
+    private byte[] transformData(byte[] data, int mode) throws
+            NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException,
+            IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance(MAIN_ALGORITHM);
+        SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(), KEY_GENERATOR_ALGORITHM);
 
-    public SecretKey getKey() {
-        return key;
-    }
+        IvParameterSpec ivSpec = new IvParameterSpec(salt);
+        cipher.init(mode, keySpec, ivSpec);
 
-    public byte[] getSalt() {
-        return salt;
+        return cipher.doFinal(data);
     }
 }
