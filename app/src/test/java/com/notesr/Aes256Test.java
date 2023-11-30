@@ -12,7 +12,7 @@ import java.util.Random;
 import javax.crypto.SecretKey;
 
 public class Aes256Test {
-    private static final String AVAILABLE_SYMBOLS ="0123456789qwertyuiopasdfghjklzxcvbnm";
+    private static final String AVAILABLE_SYMBOLS = "0123456789qwertyuiopasdfghjklzxcvbnm";
     private static final Integer PASSWORD_LENGTH = 20;
     private static final byte[] PLAIN_DATA = new byte[4096];
 
