@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.Assert;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
 
 import javax.crypto.SecretKey;
@@ -46,7 +47,8 @@ public class Aes256Test {
     }
 
     @Test
-    public void testEncryptionAndDecryptionWithPassword() {
+    public void testEncryptionAndDecryptionWithPassword() throws
+            NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] salt = Aes256.generateRandomSalt();
         Aes256 aesInstance = new Aes256(password, salt);
 
