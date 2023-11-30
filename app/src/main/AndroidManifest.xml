@@ -27,7 +27,7 @@
         <activity
             android:name="com.peew.notesr.activities.StartActivity"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 
