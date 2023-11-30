@@ -55,6 +55,18 @@ public class CryptoManager {
         }
     }
 
+    public boolean ready() {
+        return cryptoKeyInstance != null;
+    }
+
+    public boolean isFirstRun() {
+        Context context = App.getContext();
+        File encryptedKeyFile = new File(context.getFilesDir(), MAIN_KEY_FILENAME);
+        File encryptedSaltFile = new File(context.getFilesDir(), MAIN_SALT_FILENAME);
+
+        return !encryptedKeyFile.exists() || !encryptedSaltFile.exists();
+    }
+
     public static CryptoManager getInstance() {
         return INSTANCE;
     }
