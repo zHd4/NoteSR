@@ -1,11 +1,11 @@
-package com.peew.notesr.controllers.db.notes;
+package com.peew.notesr.db.notes;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.peew.notesr.controllers.tools.VersionFetcher;
+import com.peew.notesr.tools.VersionFetcher;
 
 public class NotesDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;

@@ -1,4 +1,4 @@
-package com.peew.notesr.controllers.crypto;
+package com.peew.notesr.crypto;
 
 import android.annotation.SuppressLint;
 

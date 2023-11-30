@@ -1,4 +1,4 @@
-package com.peew.notesr.models;
+package com.peew.notesr.crypto;
 
 public class CryptoKey {
     private byte[] key;

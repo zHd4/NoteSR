@@ -1,6 +1,6 @@
 package com.peew.notesr;
 
-import com.peew.notesr.models.CryptoKey;
+import com.peew.notesr.crypto.CryptoKey;
 
 public class State {
     private static final State INSTANCE = new State();

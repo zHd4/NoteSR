@@ -1,6 +1,6 @@
 package com.notesr;
 
-import com.peew.notesr.controllers.crypto.Aes256;
+import com.peew.notesr.crypto.Aes256;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

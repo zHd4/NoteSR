@@ -1,4 +1,4 @@
-package com.peew.notesr.controllers.tools;
+package com.peew.notesr.tools;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
