@@ -7,7 +7,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import com.peew.notesr.App;
 import com.peew.notesr.R;
 
 import java.util.Arrays;
@@ -44,7 +46,9 @@ public class AuthActivity extends AppCompatActivity {
 
     private void configure() {
         TextView topLabel = findViewById(R.id.auth_top_label);
+
         Button changeInputIndexButton = findViewById(R.id.change_input_index_button);
+        Button capsButton = findViewById(R.id.caps_button);
 
         switch (currentMode) {
             case AUTHORIZATION_MODE:
@@ -57,7 +61,9 @@ public class AuthActivity extends AppCompatActivity {
 
         Arrays.stream(PIN_BUTTONS_ID).forEach(id -> findViewById(id)
                 .setOnClickListener(getPinButtonOnClickListener()));
+
         changeInputIndexButton.setOnClickListener(getChangeInputIndexButtonOnClickListener());
+        capsButton.setOnClickListener(getCapsButtonOnClickListener());
     }
 
     private View.OnClickListener getChangeInputIndexButtonOnClickListener() {
@@ -103,6 +109,19 @@ public class AuthActivity extends AppCompatActivity {
             }
 
             censoredPasswordView.setText(censoredPasswordView.getText() + "•");
+        };
+    }
+
+    private View.OnClickListener getCapsButtonOnClickListener() {
+        return view -> {
+            Button self = ((Button)view);
+            capsLockEnabled = !capsLockEnabled;
+
+            int colorId = capsLockEnabled ?
+                    R.color.caps_button_pressed :
+                    R.color.caps_button_unpressed;
+
+            self.setTextColor(ContextCompat.getColor(App.getContext(), colorId));
         };
     }
 }

@@ -6,4 +6,5 @@
     <color name="select_text">#102449</color>
     <color name="text_color">#FFFFFF</color>
     <color name="caps_button_pressed">@android:color/holo_red_light</color>
+    <color name="caps_button_unpressed">#FFFFFF</color>
 </resources>
