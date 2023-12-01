@@ -75,20 +75,29 @@ public class CryptoManager {
         return cryptoKeyInstance;
     }
 
-    public void createNewKey(String password) throws
+    public CryptoKey generateNewKey(String password) throws
+            NoSuchAlgorithmException, InvalidKeySpecException {
+        SecretKey mainKey = Aes256.generateRandomKey();
+        byte[] mainSalt = Aes256.generateRandomSalt();
+
+        return new CryptoKey(mainKey, mainSalt, password);
+    }
+
+    public void applyNewKey(CryptoKey newKey) throws
             NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException,
             IllegalBlockSizeException, BadPaddingException,
             InvalidKeyException, IOException {
-        Context context = App.getContext();
-        SecretKey mainKey = Aes256.generateRandomKey();
+        String password = newKey.getPassword();
+        SecretKey mainKey = newKey.getKey();
 
-        byte[] mainSalt = Aes256.generateRandomSalt();
-
+        byte[] mainSalt = newKey.getSalt();
         byte[] secondarySalt = HashHelper.toSha256Bytes(password.getBytes());
+
+        Context context = App.getContext();
         Aes256 aesInstance = new Aes256(password, secondarySalt);
 
-        cryptoKeyInstance = new CryptoKey(mainKey, mainSalt, password);
+        cryptoKeyInstance = newKey;
 
         File encryptedKeyFile = new File(context.getFilesDir(), MAIN_KEY_FILENAME);
         File encryptedSaltFile = new File(context.getFilesDir(), MAIN_SALT_FILENAME);
