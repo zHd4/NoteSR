@@ -8,4 +8,18 @@
     <string name="backup_this_private_key_to_safe_place">Backup this private key to safe place</string>
     <string name="copy_to_clipboard">COPY TO CLIPBOARD</string>
     <string name="next">Next</string>
+    <string name="ok">OK</string>
+    <string name="caps">Caps</string>
+    <string name="number_1">1</string>
+    <string name="button_1_text">1\nabc</string>
+    <string name="button_3_text">3\nghi</string>
+    <string name="button_4_text">4\njkl</string>
+    <string name="button_5_text">5\nmno</string>
+    <string name="button_8_text">8\nvwm</string>
+    <string name="button_0_text">0\n#+-</string>
+    <string name="backspace">⌫</string>
+    <string name="button_9_text">9\nxyz</string>
+    <string name="button_6_text">6\npqr</string>
+    <string name="button_7_text">7\nstu</string>
+    <string name="button_2_text">2\ndef</string>
 </resources>
