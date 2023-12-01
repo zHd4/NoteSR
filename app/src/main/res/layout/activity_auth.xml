@@ -52,7 +52,7 @@
         app:layout_constraintVertical_bias="0.235"/>
 
     <Button
-        android:id="@+id/change_input_type_button"
+        android:id="@+id/change_input_index_button"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:background="@color/activity_background"
@@ -68,7 +68,7 @@
         tools:ignore="SmallSp"/>
 
     <TextView
-        android:id="@+id/auth_status_text_view"
+        android:id="@+id/auth_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@android:color/background_light"
