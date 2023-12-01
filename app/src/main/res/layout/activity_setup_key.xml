@@ -12,7 +12,7 @@
         android:layout_width="300dp"
         android:layout_height="53dp"
         android:ems="10"
-        android:hint="@string/or_enter_key_here"
+        android:hint="@string/or_enter_key_here_to_import"
         android:inputType="textPersonName"
         android:textColor="#FFFFFF"
         android:textColorHighlight="@color/selectText"
