@@ -22,4 +22,7 @@
     <string name="button_6_text">6\npqr</string>
     <string name="button_7_text">7\nstu</string>
     <string name="button_2_text">2\ndef</string>
+    <string name="enter_access_code">Enter access code</string>
+    <string name="create_access_code">Create access code</string>
+    <string name="repeat_access_code">Repeat access code</string>
 </resources>
