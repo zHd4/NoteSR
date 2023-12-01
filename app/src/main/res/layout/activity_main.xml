@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activityBackground"
+    android:background="@color/activity_background"
     tools:context="com.peew.notesr.activities.MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:background="@color/lightButtonBackground"
-        android:backgroundTint="@color/lightButtonBackground"
+        android:background="@color/light_button_background"
+        android:backgroundTint="@color/light_button_background"
         android:visibility="invisible"
         app:srcCompat="@android:drawable/ic_lock_idle_lock" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
@@ -27,8 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:background="@color/lightButtonBackground"
-        android:backgroundTint="@color/lightButtonBackground"
+        android:background="@color/light_button_background"
+        android:backgroundTint="@color/light_button_background"
         android:visibility="invisible"
         app:srcCompat="@android:drawable/ic_input_add" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"

@@ -4,11 +4,11 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/activityBackground</item>
-        <item name="colorPrimaryDark">@color/activityBackground</item>
-        <item name="colorAccent">@color/buttonBackground</item>
-        <item name="android:textColor">@color/textColor</item>
-        <item name="android:itemBackground">@color/buttonBackground</item>
+        <item name="colorPrimary">@color/activity_background</item>
+        <item name="colorPrimaryDark">@color/activity_background</item>
+        <item name="colorAccent">@color/button_background</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:itemBackground">@color/button_background</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
