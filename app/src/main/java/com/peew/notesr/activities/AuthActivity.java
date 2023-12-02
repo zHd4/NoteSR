@@ -49,6 +49,7 @@ public class AuthActivity extends AppCompatActivity {
 
         Button changeInputIndexButton = findViewById(R.id.change_input_index_button);
         Button capsButton = findViewById(R.id.caps_button);
+        Button backspaceButton = findViewById(R.id.pin_backspace_button);
 
         switch (currentMode) {
             case AUTHORIZATION_MODE:
@@ -64,6 +65,7 @@ public class AuthActivity extends AppCompatActivity {
 
         changeInputIndexButton.setOnClickListener(getChangeInputIndexButtonOnClickListener());
         capsButton.setOnClickListener(getCapsButtonOnClickListener());
+        backspaceButton.setOnClickListener(getPinBackspaceButtonOnClickListener());
     }
 
     private View.OnClickListener getChangeInputIndexButtonOnClickListener() {
@@ -122,6 +124,20 @@ public class AuthActivity extends AppCompatActivity {
                     R.color.caps_button_unpressed;
 
             self.setTextColor(ContextCompat.getColor(App.getContext(), colorId));
+        };
+    }
+
+    private View.OnClickListener getPinBackspaceButtonOnClickListener() {
+        return view -> {
+            TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
+
+            if (passwordBuilder.length() > 0) {
+                passwordBuilder.deleteCharAt(passwordBuilder.length() - 1);
+
+                String censoredPassword = censoredPasswordView.getText().toString();
+                censoredPasswordView.setText(censoredPassword
+                        .substring(0, censoredPassword.length() - 1));
+            }
         };
     }
 }
