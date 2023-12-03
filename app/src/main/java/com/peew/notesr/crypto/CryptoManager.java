@@ -39,13 +39,13 @@ public class CryptoManager {
             byte[] encryptedSalt = FileManager.readFileBytes(encryptedSaltFile);
 
             byte[] secondarySalt = HashHelper.toSha256Bytes(password.getBytes());
-            Aes256 aesInstance = new Aes256(password, secondarySalt);
+            Aes aesInstance = new Aes(password, secondarySalt);
 
             byte[] mainKeyBytes = aesInstance.decrypt(encryptedKey);
             byte[] mainSaltBytes = aesInstance.decrypt(encryptedSalt);
 
             SecretKey mainKey = new SecretKeySpec(mainKeyBytes, 0, mainSaltBytes.length,
-                    Aes256.KEY_GENERATOR_ALGORITHM);
+                    Aes.KEY_GENERATOR_ALGORITHM);
             cryptoKeyInstance = new CryptoKey(mainKey, mainSaltBytes, password);
 
             return true;
@@ -75,10 +75,9 @@ public class CryptoManager {
         return cryptoKeyInstance;
     }
 
-    public CryptoKey generateNewKey(String password) throws
-            NoSuchAlgorithmException, InvalidKeySpecException {
-        SecretKey mainKey = Aes256.generateRandomKey();
-        byte[] mainSalt = Aes256.generateRandomSalt();
+    public CryptoKey generateNewKey(String password) throws NoSuchAlgorithmException {
+        SecretKey mainKey = Aes.generateRandomKey();
+        byte[] mainSalt = Aes.generateRandomSalt();
 
         return new CryptoKey(mainKey, mainSalt, password);
     }
@@ -94,10 +93,10 @@ public class CryptoManager {
         byte[] mainSalt = newKey.getSalt();
         byte[] secondarySalt = HashHelper.toSha256Bytes(password.getBytes());
 
-        Context context = App.getContext();
-        Aes256 aesInstance = new Aes256(password, secondarySalt);
-
         cryptoKeyInstance = newKey;
+        Context context = App.getContext();
+
+        Aes aesInstance = new Aes(password, secondarySalt);
 
         File encryptedKeyFile = new File(context.getFilesDir(), MAIN_KEY_FILENAME);
         File encryptedSaltFile = new File(context.getFilesDir(), MAIN_SALT_FILENAME);

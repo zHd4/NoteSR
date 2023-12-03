@@ -19,7 +19,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class Aes256 {
+public class Aes {
     private static final int KEY_SIZE = 256;
     private static final int SALT_SIZE = 16;
     private static final int DEFAULT_ITERATION_COUNT = 65536;
@@ -29,12 +29,12 @@ public class Aes256 {
     private final SecretKey key;
     private final byte[] salt;
 
-    public Aes256(SecretKey key, byte[] salt) {
+    public Aes(SecretKey key, byte[] salt) {
         this.key = key;
         this.salt = salt;
     }
 
-    public Aes256(String password, byte[] salt) throws
+    public Aes(String password, byte[] salt) throws
             NoSuchAlgorithmException, InvalidKeySpecException {
         this.salt = salt;
         this.key = generatePasswordBasedKey(password, salt);
