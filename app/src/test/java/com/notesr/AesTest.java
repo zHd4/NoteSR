@@ -1,6 +1,6 @@
 package com.notesr;
 
-import com.peew.notesr.crypto.Aes256;
+import com.peew.notesr.crypto.Aes;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-public class Aes256Test {
+public class AesTest {
     private static final String AVAILABLE_SYMBOLS = "0123456789qwertyuiopasdfghjklzxcvbnm";
     private static final int PASSWORD_LENGTH = 20;
     private static final int MIN_DATA_SIZE = 4096;
@@ -48,10 +48,10 @@ public class Aes256Test {
             NoSuchAlgorithmException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException,
             BadPaddingException, InvalidKeyException {
-        SecretKey key = Aes256.generateRandomKey();
-        byte[] salt = Aes256.generateRandomSalt();
+        SecretKey key = Aes.generateRandomKey();
+        byte[] salt = Aes.generateRandomSalt();
 
-        Aes256 aesInstance = new Aes256(key, salt);
+        Aes aesInstance = new Aes(key, salt);
 
         byte[] actualEncryptedData = aesInstance.encrypt(plainData);
         byte[] actualDecryptedData = aesInstance.decrypt(actualEncryptedData);
@@ -64,8 +64,8 @@ public class Aes256Test {
             NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException,
             IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        byte[] salt = Aes256.generateRandomSalt();
-        Aes256 aesInstance = new Aes256(password, salt);
+        byte[] salt = Aes.generateRandomSalt();
+        Aes aesInstance = new Aes(password, salt);
 
         byte[] actualEncryptedData = aesInstance.encrypt(plainData);
         byte[] actualDecryptedData = aesInstance.decrypt(actualEncryptedData);
