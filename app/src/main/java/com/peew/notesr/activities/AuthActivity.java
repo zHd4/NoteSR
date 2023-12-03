@@ -1,12 +1,13 @@
 package com.peew.notesr.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.peew.notesr.App;
@@ -14,9 +15,10 @@ import com.peew.notesr.R;
 
 import java.util.Arrays;
 
-public class AuthActivity extends AppCompatActivity {
+public class AuthActivity extends ExtendedAppCompatActivity {
     public static final int AUTHORIZATION_MODE = 0;
     public static final int PASSWORD_SETUP_MODE = 1;
+    private static final int MIN_PASSWORD_LENGTH = 4;
     private static final Integer[] PIN_BUTTONS_ID = {
             R.id.pin_button_1,
             R.id.pin_button_2,
@@ -33,7 +35,8 @@ public class AuthActivity extends AppCompatActivity {
     private int currentMode;
     private int inputIndex = 0;
     private boolean capsLockEnabled = false;
-    private final StringBuilder passwordBuilder = new StringBuilder();
+    private StringBuilder passwordBuilder = new StringBuilder();
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +52,9 @@ public class AuthActivity extends AppCompatActivity {
 
         Button changeInputIndexButton = findViewById(R.id.change_input_index_button);
         Button capsButton = findViewById(R.id.caps_button);
+
         Button backspaceButton = findViewById(R.id.pin_backspace_button);
+        Button authButton = findViewById(R.id.auth_button);
 
         switch (currentMode) {
             case AUTHORIZATION_MODE:
@@ -65,7 +70,9 @@ public class AuthActivity extends AppCompatActivity {
 
         changeInputIndexButton.setOnClickListener(getChangeInputIndexButtonOnClickListener());
         capsButton.setOnClickListener(getCapsButtonOnClickListener());
+
         backspaceButton.setOnClickListener(getPinBackspaceButtonOnClickListener());
+        authButton.setOnClickListener(getAuthButtonOnClickListener());
     }
 
     private View.OnClickListener getChangeInputIndexButtonOnClickListener() {
@@ -139,5 +146,56 @@ public class AuthActivity extends AppCompatActivity {
                         .substring(0, censoredPassword.length() - 1));
             }
         };
+    }
+
+    private View.OnClickListener getAuthButtonOnClickListener() {
+        return view -> {
+            if (currentMode == AUTHORIZATION_MODE) {
+                processAuthorization();
+            } else if (currentMode == PASSWORD_SETUP_MODE) {
+                processPasswordSetup();
+            }
+        };
+    }
+
+    private void processPasswordSetup() {
+        TextView topLabel = findViewById(R.id.auth_top_label);
+        TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
+
+        String repeatCodeString = getString(R.string.repeat_access_code);
+
+        if (password != null && topLabel.getText().equals(repeatCodeString)) {
+            if (passwordBuilder.toString().equals(password)) {
+                Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
+                setupKeyActivityIntent.putExtra("password", password);
+
+                startActivity(setupKeyActivityIntent);
+            } else {
+                resetPassword(getString(R.string.code_not_match));
+            }
+        } else {
+            if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
+                password = passwordBuilder.toString();
+                passwordBuilder = new StringBuilder();
+
+                topLabel.setText(repeatCodeString);
+                censoredPasswordView.setText("");
+            } else {
+                String messageFormat = getString(R.string.minimum_password_length_is_n);
+                resetPassword(String.format(messageFormat, MIN_PASSWORD_LENGTH));
+            }
+        }
+    }
+
+    private void resetPassword(String toastMessage) {
+        TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
+        passwordBuilder = new StringBuilder();
+
+        censoredPasswordView.setText("");
+        showToastMessage(toastMessage, Toast.LENGTH_SHORT);
+    }
+
+    private void processAuthorization() {
+
     }
 }
