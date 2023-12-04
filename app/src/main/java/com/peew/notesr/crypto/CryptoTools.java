@@ -35,6 +35,7 @@ public class CryptoTools {
 
         return bytes;
     }
+
     private static String byteToHex(byte value) {
         char[] hexDigits = new char[2];
 
