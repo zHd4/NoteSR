@@ -66,16 +66,16 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         }
 
         Arrays.stream(PIN_BUTTONS_ID).forEach(id -> findViewById(id)
-                .setOnClickListener(getPinButtonOnClickListener()));
+                .setOnClickListener(pinButtonOnClick()));
 
-        changeInputIndexButton.setOnClickListener(getChangeInputIndexButtonOnClickListener());
-        capsButton.setOnClickListener(getCapsButtonOnClickListener());
+        changeInputIndexButton.setOnClickListener(changeInputIndexButtonOnClick());
+        capsButton.setOnClickListener(capsButtonOnClick());
 
-        backspaceButton.setOnClickListener(getPinBackspaceButtonOnClickListener());
-        authButton.setOnClickListener(getAuthButtonOnClickListener());
+        backspaceButton.setOnClickListener(pinBackspaceButtonOnClick());
+        authButton.setOnClickListener(authButtonOnClick());
     }
 
-    private View.OnClickListener getChangeInputIndexButtonOnClickListener() {
+    private View.OnClickListener changeInputIndexButtonOnClick() {
         return view -> {
             Button self = ((Button)view);
 
@@ -101,7 +101,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private View.OnClickListener getPinButtonOnClickListener() {
+    private View.OnClickListener pinButtonOnClick() {
         return view -> {
             Button self = ((Button)view);
             TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
@@ -121,7 +121,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    private View.OnClickListener getCapsButtonOnClickListener() {
+    private View.OnClickListener capsButtonOnClick() {
         return view -> {
             Button self = ((Button)view);
             capsLockEnabled = !capsLockEnabled;
@@ -134,7 +134,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    private View.OnClickListener getPinBackspaceButtonOnClickListener() {
+    private View.OnClickListener pinBackspaceButtonOnClick() {
         return view -> {
             TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
 
@@ -148,7 +148,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    private View.OnClickListener getAuthButtonOnClickListener() {
+    private View.OnClickListener authButtonOnClick() {
         return view -> {
             if (currentMode == AUTHORIZATION_MODE) {
                 processAuthorization();
