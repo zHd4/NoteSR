@@ -4,7 +4,7 @@
     <string name="add_note">Add note</string>
     <string name="get_started">GET STARTED</string>
     <string name="or_enter_key_here_to_import">Or enter key here to import</string>
-    <string name="without_key_you_cannot_restore_your_notes">Without key you cannot restore your notes</string>
+    <string name="without_key_you_cannot_restore_your_notes">Without the key you cannot restore your notes</string>
     <string name="backup_this_private_key_to_safe_place">Backup this private key to safe place</string>
     <string name="copy_to_clipboard">COPY TO CLIPBOARD</string>
     <string name="next">Next</string>
@@ -27,4 +27,5 @@
     <string name="repeat_access_code">Repeat access code</string>
     <string name="code_not_match">Code not match</string>
     <string name="minimum_password_length_is_n">Minimum password length is %o</string>
+    <string name="copied">Copied!</string>
 </resources>
