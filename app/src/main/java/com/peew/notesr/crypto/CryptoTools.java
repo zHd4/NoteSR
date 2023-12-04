@@ -33,7 +33,7 @@ public class CryptoTools {
             bytes[i] = (byte) Integer.parseInt(hexArray[i], 16);
         }
 
-        return new byte[0];
+        return bytes;
     }
     private static String byteToHex(byte value) {
         char[] hexDigits = new char[2];
