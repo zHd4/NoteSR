@@ -7,24 +7,24 @@ import org.junit.jupiter.api.Test;
 
 public class SetupKeyTest {
     private static final byte[] keyBytes = new byte[] {
-            -38, -111, 120, -87,
-            -28, -119, 126, 121,
-            43, -89, -112, -99,
-            -31, -30, 109, 53,
-            -101, -102, -82, 41,
-            21, -53, -96, -95,
-            -16, 104, -90, -122,
-            45, -13, -53, -115 };
+            28, -65, -106, -25,
+            -88, -127, 7, -32,
+            -47, 28, 95, -85,
+            89, -51, 37, 97,
+            -27, -5, -125, 68,
+            104, 39, -9, -22,
+            -79, -82, 4, -64,
+            -121, -59, -29, -62 };
 
-    private static final String keyHex =
-            "da 91 78 a9 \n" +
-            "e4 89 7e 79 \n" +
-            "2b a7 90 9d \n" +
-            "e1 e2 6d 35 \n" +
-            "9b 9a ae 29 \n" +
-            "15 cb a0 a1 \n" +
-            "f0 68 a6 86 \n" +
-            "2d f3 cb 8d";
+    private static final String keyHex = """
+            1C BF 96 E7\s
+            A8 81 07 E0\s
+            D1 1C 5F AB\s
+            59 CD 25 61\s
+            E5 FB 83 44\s
+            68 27 F7 EA\s
+            B1 AE 04 C0\s
+            87 C5 E3 C2""";
 
     @Test
     public void testKeyConvertation() {
