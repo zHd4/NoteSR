@@ -6,7 +6,6 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/activity_background</item>
         <item name="colorPrimaryDark">@color/activity_background</item>
-        <item name="colorAccent">@color/button_background</item>
         <item name="android:textColor">@color/text_color</item>
         <item name="android:itemBackground">@color/button_background</item>
     </style>
