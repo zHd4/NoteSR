@@ -82,6 +82,12 @@ public class CryptoManager {
         return new CryptoKey(mainKey, mainSalt, password);
     }
 
+    public CryptoKey createCryptoKey(byte[] keyBytes, byte[] salt, String password) {
+        SecretKey newKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
+                Aes.KEY_GENERATOR_ALGORITHM);
+        return new CryptoKey(newKey, salt, password);
+    }
+
     public void applyNewKey(CryptoKey newKey) throws
             NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException,
