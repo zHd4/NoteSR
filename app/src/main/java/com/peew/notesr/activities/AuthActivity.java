@@ -57,12 +57,8 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         Button authButton = findViewById(R.id.auth_button);
 
         switch (currentMode) {
-            case AUTHORIZATION_MODE:
-                topLabel.setText(R.string.enter_access_code);
-                break;
-            case PASSWORD_SETUP_MODE:
-                topLabel.setText(R.string.create_access_code);
-                break;
+            case AUTHORIZATION_MODE -> topLabel.setText(R.string.enter_access_code);
+            case PASSWORD_SETUP_MODE -> topLabel.setText(R.string.create_access_code);
         }
 
         Arrays.stream(PIN_BUTTONS_ID).forEach(id -> findViewById(id)
@@ -80,22 +76,22 @@ public class AuthActivity extends ExtendedAppCompatActivity {
             Button self = ((Button)view);
 
             switch (inputIndex) {
-                case 0:
+                case 0 -> {
                     self.setText("A");
                     inputIndex++;
-                    break;
-                case 1:
+                }
+                case 1 -> {
                     self.setText("B");
                     inputIndex++;
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     self.setText("C");
                     inputIndex++;
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     self.setText("1");
                     inputIndex = 0;
-                    break;
+                }
             }
         };
     }
