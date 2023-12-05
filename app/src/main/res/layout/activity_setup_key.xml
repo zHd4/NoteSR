@@ -78,7 +78,7 @@
         app:layout_constraintVertical_bias="0.87" />
 
     <Button
-        android:id="@+id/to_password_setup_next_button"
+        android:id="@+id/key_setup_next_button"
         android:layout_width="317dp"
         android:layout_height="52dp"
         android:background="@drawable/button"
