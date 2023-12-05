@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class SetupKeyTest {
-    private static final byte[] key2Bytes = new byte[] {
+    private static final byte[] keyBytes = new byte[] {
             -38, -111, 120, -87,
             -28, -119, 126, 121,
             43, -89, -112, -99,
@@ -16,7 +16,7 @@ public class SetupKeyTest {
             -16, 104, -90, -122,
             45, -13, -53, -115 };
 
-    private static final String key2Hex =
+    private static final String keyHex =
             "da 91 78 a9 \n" +
             "e4 89 7e 79 \n" +
             "2b a7 90 9d \n" +
@@ -28,10 +28,10 @@ public class SetupKeyTest {
 
     @Test
     public void testKeyConvertation() {
-        String actual = CryptoTools.keyBytesToHex(key2Bytes);
-        Assertions.assertEquals(key2Hex, actual);
+        String actual = CryptoTools.keyBytesToHex(keyBytes);
+        Assertions.assertEquals(keyHex, actual);
 
-        byte[] actualBytes = CryptoTools.hexKeyToBytes(key2Hex);
-        Assertions.assertArrayEquals(key2Bytes, actualBytes);
+        byte[] actualBytes = CryptoTools.hexKeyToBytes(keyHex);
+        Assertions.assertArrayEquals(keyBytes, actualBytes);
     }
 }
