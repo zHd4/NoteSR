@@ -3,12 +3,12 @@
     <item
         android:state_focused="true"
         android:state_pressed="true"
-        android:drawable="@drawable/pin_button_pressed_background" />
+        android:drawable="@color/pressed_button_background" />
 
     <item
         android:state_focused="false"
         android:state_pressed="true"
-        android:drawable="@drawable/pin_button_pressed_background" />
+        android:drawable="@color/pressed_button_background" />
 
-    <item android:drawable="@drawable/pin_button_normal_background" />
+    <item android:drawable="@color/activity_background" />
 </selector>
