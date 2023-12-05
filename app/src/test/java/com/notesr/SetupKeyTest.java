@@ -44,7 +44,7 @@ public class SetupKeyTest {
     private static final String password = "zxcvbnm";
 
     @Test
-    public void testKeyConvertation() {
+    public void testCryptoKeyConvertation() {
         SecretKey secretKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
                 Aes.KEY_GENERATOR_ALGORITHM);
         CryptoKey cryptoKey = new CryptoKey(secretKey, salt, password);
