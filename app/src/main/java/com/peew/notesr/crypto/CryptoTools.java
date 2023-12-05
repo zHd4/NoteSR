@@ -22,15 +22,21 @@ public class CryptoTools {
             }
         }
 
-        return result.toString();
+        return result.toString().toUpperCase();
     }
 
     public static byte[] hexKeyToBytes(String hex) {
-        String[] hexArray = hex.replace("\n", "").split(" ");
+        String[] hexArray = hex.toLowerCase()
+                .replace("\n", "")
+                .split(" ");
+
         byte[] bytes = new byte[hexArray.length];
 
         for (int i = 0; i < hexArray.length; i++) {
-            bytes[i] = (byte) Integer.parseInt(hexArray[i], 16);
+            String hexDigit = hexArray[i];
+            if (!hexDigit.isBlank()) {
+                bytes[i] = (byte) Integer.parseInt(hexDigit, 16);
+            }
         }
 
         return bytes;
