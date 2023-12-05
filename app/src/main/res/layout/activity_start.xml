@@ -11,7 +11,7 @@
         android:id="@+id/get_started_button"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="@color/button_background"
+        android:background="@drawable/button"
         android:freezesText="false"
         android:text="@string/get_started"
         android:textColor="#FFFFFF"
