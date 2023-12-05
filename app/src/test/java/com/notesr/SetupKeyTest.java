@@ -1,9 +1,14 @@
 package com.notesr;
 
+import com.peew.notesr.crypto.Aes;
+import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoTools;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class SetupKeyTest {
     private static final byte[] keyBytes = new byte[] {
@@ -16,7 +21,13 @@ public class SetupKeyTest {
             -79, -82, 4, -64,
             -121, -59, -29, -62 };
 
-    private static final String keyHex = """
+    private static final byte[] salt = new byte[] {
+            -4, -106, -91, -41,
+            -13, 24, 77, 85,
+            -100, -16, -116, -24,
+            -8, -48, 95, 85 };
+
+    private static final String cryptoKeyHex = """
             1C BF 96 E7\s
             A8 81 07 E0\s
             D1 1C 5F AB\s
@@ -24,14 +35,24 @@ public class SetupKeyTest {
             E5 FB 83 44\s
             68 27 F7 EA\s
             B1 AE 04 C0\s
-            87 C5 E3 C2""";
+            87 C5 E3 C2\s
+            FC 96 A5 D7\s
+            F3 18 4D 55\s
+            9C F0 8C E8\s
+            F8 D0 5F 55""";
+
+    private static final String password = "zxcvbnm";
 
     @Test
     public void testKeyConvertation() {
-        String actual = CryptoTools.keyBytesToHex(keyBytes);
-        Assertions.assertEquals(keyHex, actual);
+        SecretKey secretKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
+                Aes.KEY_GENERATOR_ALGORITHM);
+        CryptoKey cryptoKey = new CryptoKey(secretKey, salt, password);
 
-        byte[] actualBytes = CryptoTools.hexKeyToBytes(keyHex);
-        Assertions.assertArrayEquals(keyBytes, actualBytes);
+        String actual = CryptoTools.cryptoKeyToHex(cryptoKey);
+        Assertions.assertEquals(cryptoKeyHex, actual);
+
+        CryptoKey actualCryptoKey = CryptoTools.hexToCryptoKey(cryptoKeyHex, password);
+        Assertions.assertEquals(cryptoKey, actualCryptoKey);
     }
 }
