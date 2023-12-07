@@ -35,6 +35,10 @@
             android:name=".activities.AuthActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.KeyRecoveryActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
