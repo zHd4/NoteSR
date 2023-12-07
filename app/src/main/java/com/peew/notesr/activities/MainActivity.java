@@ -8,14 +8,20 @@ import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoManager;
 
 public class MainActivity extends ExtendedAppCompatActivity {
+    private final CryptoManager cryptoManager = CryptoManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(CryptoManager.getInstance().isFirstRun()) {
+        if(cryptoManager.isFirstRun()) {
             startActivity(new Intent(App.getContext(), StartActivity.class));
+        } else if (!cryptoManager.ready()) {
+            Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
+            authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
+
+            startActivity(authActivityIntent);
         }
     }
 }
