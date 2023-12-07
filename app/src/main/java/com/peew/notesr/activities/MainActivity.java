@@ -23,5 +23,9 @@ public class MainActivity extends ExtendedAppCompatActivity {
 
             startActivity(authActivityIntent);
         }
+
+        if (cryptoManager.isBlocked()) {
+            startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
+        }
     }
 }
