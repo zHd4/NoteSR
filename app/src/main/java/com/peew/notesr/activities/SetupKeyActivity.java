@@ -3,6 +3,9 @@ package com.peew.notesr.activities;
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 import android.content.Intent;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
+import android.graphics.ColorFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
@@ -66,6 +71,17 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
                     key = CryptoTools.hexToCryptoKey(hexKeyToImport, password);
                 } catch (Exception e) {
                     Log.e("hexToCryptoKey" , e.toString());
+
+                    int importFailedColor = ContextCompat.getColor(
+                            App.getContext(),
+                            R.color.key_import_failed_color);
+
+                    ColorFilter colorFilter = new BlendModeColorFilter(
+                            importFailedColor,
+                            BlendMode.SRC_ATOP);
+
+                    importKeyField.getBackground().setColorFilter(colorFilter);
+                    return;
                 }
             }
 
