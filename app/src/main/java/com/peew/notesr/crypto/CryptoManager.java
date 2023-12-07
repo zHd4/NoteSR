@@ -23,8 +23,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoManager {
     private static final CryptoManager INSTANCE = new CryptoManager();
-    private static final String MAIN_KEY_FILENAME = "key.enc";
-    private static final String MAIN_SALT_FILENAME = "iv.enc";
+    private static final String MAIN_KEY_FILENAME = "key.encrypted";
+    private static final String MAIN_SALT_FILENAME = "iv.encrypted";
     private CryptoKey cryptoKeyInstance;
 
     private CryptoManager() {}
