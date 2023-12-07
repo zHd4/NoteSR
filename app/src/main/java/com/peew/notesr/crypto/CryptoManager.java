@@ -1,9 +1,7 @@
 package com.peew.notesr.crypto;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.peew.notesr.App;
 import com.peew.notesr.tools.FileManager;
 import com.peew.notesr.tools.HashHelper;
 
@@ -25,19 +23,15 @@ public class CryptoManager {
     private static final CryptoManager INSTANCE = new CryptoManager();
     private static final String MAIN_KEY_FILENAME = "key.encrypted";
     private static final String MAIN_SALT_FILENAME = "iv.encrypted";
+    private static final String BLOCKED_FILENAME = "blocked";
     private CryptoKey cryptoKeyInstance;
 
     private CryptoManager() {}
 
     public boolean configure(String password) {
         try {
-            Context context = App.getContext();
-
-            File encryptedKeyFile = new File(context.getFilesDir(), MAIN_KEY_FILENAME);
-            File encryptedSaltFile = new File(context.getFilesDir(), MAIN_SALT_FILENAME);
-
-            byte[] encryptedKey = FileManager.readFileBytes(encryptedKeyFile);
-            byte[] encryptedSalt = FileManager.readFileBytes(encryptedSaltFile);
+            byte[] encryptedKey = FileManager.readFileBytes(getEncryptedKeyFile());
+            byte[] encryptedSalt = FileManager.readFileBytes(getEncryptedSaltFile());
 
             byte[] secondarySalt = HashHelper.toSha256Bytes(password.getBytes());
             Aes aesInstance = new Aes(password, secondarySalt);
@@ -61,11 +55,7 @@ public class CryptoManager {
     }
 
     public boolean isFirstRun() {
-        Context context = App.getContext();
-        File encryptedKeyFile = new File(context.getFilesDir(), MAIN_KEY_FILENAME);
-        File encryptedSaltFile = new File(context.getFilesDir(), MAIN_SALT_FILENAME);
-
-        return !encryptedKeyFile.exists() || !encryptedSaltFile.exists();
+        return !getEncryptedKeyFile().exists() || !getEncryptedSaltFile().exists();
     }
 
     public static CryptoManager getInstance() {
@@ -74,6 +64,18 @@ public class CryptoManager {
 
     public CryptoKey getCryptoKeyInstance() {
         return cryptoKeyInstance;
+    }
+
+    private File getEncryptedKeyFile() {
+        return FileManager.getInternalFile(MAIN_KEY_FILENAME);
+    }
+
+    private File getEncryptedSaltFile() {
+        return FileManager.getInternalFile(MAIN_SALT_FILENAME);
+    }
+
+    private File getBlockFile() {
+        return FileManager.getInternalFile(BLOCKED_FILENAME);
     }
 
     public CryptoKey generateNewKey(String password) throws NoSuchAlgorithmException {
@@ -103,14 +105,30 @@ public class CryptoManager {
         byte[] secondarySalt = Arrays.copyOfRange(passwordHash, 0, 16);
 
         cryptoKeyInstance = newKey;
-        Context context = App.getContext();
-
         Aes aesInstance = new Aes(password, secondarySalt);
 
-        File encryptedKeyFile = new File(context.getFilesDir(), MAIN_KEY_FILENAME);
-        File encryptedSaltFile = new File(context.getFilesDir(), MAIN_SALT_FILENAME);
+        File encryptedKeyFile = getEncryptedKeyFile();
+        File encryptedSaltFile = getEncryptedSaltFile();
 
         FileManager.writeFileBytes(encryptedKeyFile, aesInstance.encrypt(mainKey.getEncoded()));
         FileManager.writeFileBytes(encryptedSaltFile, aesInstance.encrypt(mainSalt));
+    }
+
+    public boolean isBlocked() {
+        return getBlockFile().exists() &&
+                !getEncryptedKeyFile().exists() &&
+                !getEncryptedSaltFile().exists();
+    }
+
+    /** @noinspection ResultOfMethodCallIgnored*/
+    public void block() {
+        try {
+            getEncryptedKeyFile().delete();
+            getEncryptedSaltFile().delete();
+
+            FileManager.writeFileBytes(getBlockFile(), new byte[0]);
+        } catch (IOException e) {
+            Log.e("CryptoManager.block error", e.toString());
+        }
     }
 }
