@@ -3,7 +3,6 @@ package com.peew.notesr.crypto;
 import android.util.Log;
 
 import com.peew.notesr.tools.FileManager;
-import com.peew.notesr.tools.HashHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -33,7 +31,7 @@ public class CryptoManager {
             byte[] encryptedKey = FileManager.readFileBytes(getEncryptedKeyFile());
             byte[] encryptedSalt = FileManager.readFileBytes(getEncryptedSaltFile());
 
-            byte[] secondarySalt = HashHelper.toSha256Bytes(password.getBytes());
+            byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
             Aes aesInstance = new Aes(password, secondarySalt);
 
             byte[] mainKeyBytes = aesInstance.decrypt(encryptedKey);
@@ -55,7 +53,8 @@ public class CryptoManager {
     }
 
     public boolean isFirstRun() {
-        return !getEncryptedKeyFile().exists() || !getEncryptedSaltFile().exists();
+        return (!getEncryptedKeyFile().exists() || !getEncryptedSaltFile().exists()) &&
+                !getBlockFile().exists();
     }
 
     public static CryptoManager getInstance() {
@@ -100,9 +99,7 @@ public class CryptoManager {
         SecretKey mainKey = newKey.getKey();
 
         byte[] mainSalt = newKey.getSalt();
-
-        byte[] passwordHash = HashHelper.toSha256Bytes(password.getBytes());
-        byte[] secondarySalt = Arrays.copyOfRange(passwordHash, 0, 16);
+        byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
 
         cryptoKeyInstance = newKey;
         Aes aesInstance = new Aes(password, secondarySalt);

@@ -2,11 +2,14 @@ package com.peew.notesr.crypto;
 
 import android.annotation.SuppressLint;
 
+import com.peew.notesr.tools.HashHelper;
+
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -45,6 +48,12 @@ public class Aes {
         generator.init(KEY_SIZE);
 
         return generator.generateKey();
+    }
+
+    public static byte[] generatePasswordBasedSalt(String password) throws
+            NoSuchAlgorithmException {
+        byte[] passwordHash = HashHelper.toSha256Bytes(password.getBytes());
+        return Arrays.copyOfRange(passwordHash, 0, 16);
     }
 
     private static SecretKey generatePasswordBasedKey(String password, byte[] salt) throws
