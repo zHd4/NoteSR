@@ -197,7 +197,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
 
             if (attempts == 0) {
                 cryptoManager.block();
-                //startActivity();
+                startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
             }
         } else {
             startActivity(new Intent(App.getContext(), MainActivity.class));
