@@ -1,5 +1,7 @@
 package com.peew.notesr.tools;
 
+import com.peew.notesr.App;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,5 +24,9 @@ public class FileManager {
 
         stream.write(data);
         stream.close();
+    }
+
+    public static File getInternalFile(String path) {
+        return new File(App.getContext().getFilesDir(), path);
     }
 }
