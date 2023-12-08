@@ -9,15 +9,16 @@
 
     <EditText
         android:id="@+id/import_key_field"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="254dp"
+        android:layout_height="277dp"
         android:backgroundTint="@color/activity_background"
         android:ems="10"
-        android:gravity="start"
+        android:gravity="center|top"
         android:hint="@string/paste_or_enter_your_key_here"
         android:inputType="textMultiLine"
-        android:minLines="12"
         android:maxLines="12"
+        android:minLines="12"
+        android:scrollbars="vertical"
         android:textColor="#FFFFFF"
         android:textColorHighlight="@color/select_text"
         android:textColorHint="#8F8F8F"
@@ -27,21 +28,21 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.498"
-        tools:ignore="Autofill"
-        android:scrollbars="vertical"/>
+        app:layout_constraintVertical_bias="0.497"
+        tools:ignore="Autofill" />
 
     <Button
-        android:id="@+id/decryptButton"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
+        android:id="@+id/check_recovery_key_button"
+        android:layout_width="254dp"
+        android:layout_height="64dp"
         android:background="@drawable/button"
-        android:text="@string/decrypt"
+        android:text="@string/apply"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintVertical_bias="0.776" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
