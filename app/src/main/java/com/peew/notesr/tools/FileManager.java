@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Random;
 
 public class FileManager {
     /** @noinspection ResultOfMethodCallIgnored*/
@@ -32,14 +31,11 @@ public class FileManager {
 
     /** @noinspection UnusedReturnValue*/
     public static boolean wipeFile(File file) throws IOException {
-        Random random = new Random();
-        int l = (int) file.length();
+        int size = (int) file.length();
+        byte[] nulls = new byte[size];
 
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            byte[] randomBytes = new byte[l];
-
-            random.nextBytes(randomBytes);
-            stream.write(randomBytes);
+            stream.write(nulls);
         }
 
         return file.delete();
