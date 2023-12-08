@@ -117,11 +117,10 @@ public class CryptoManager {
                 !getEncryptedSaltFile().exists();
     }
 
-    /** @noinspection ResultOfMethodCallIgnored*/
     public void block() {
         try {
-            getEncryptedKeyFile().delete();
-            getEncryptedSaltFile().delete();
+            FileManager.wipeFile(getEncryptedKeyFile());
+            FileManager.wipeFile(getEncryptedSaltFile());
 
             FileManager.writeFileBytes(getBlockFile(), new byte[0]);
         } catch (IOException e) {
