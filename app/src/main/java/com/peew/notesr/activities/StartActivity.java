@@ -18,5 +18,7 @@ public class StartActivity extends ExtendedAppCompatActivity {
 
         View.OnClickListener onGetStartedButtonClick = view -> startActivity(authActivityIntent);
         findViewById(R.id.get_started_button).setOnClickListener(onGetStartedButtonClick);
+
+        disableBackButton();
     }
 }
