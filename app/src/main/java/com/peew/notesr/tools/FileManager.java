@@ -32,10 +32,11 @@ public class FileManager {
     /** @noinspection UnusedReturnValue*/
     public static boolean wipeFile(File file) throws IOException {
         int size = (int) file.length();
-        byte[] nulls = new byte[size];
 
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            stream.write(nulls);
+            for (int i = 0; i < size; i++) {
+                stream.write(0);
+            }
         }
 
         return file.delete();
