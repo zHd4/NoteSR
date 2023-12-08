@@ -19,26 +19,33 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoManager {
     private static final CryptoManager INSTANCE = new CryptoManager();
-    private static final String MAIN_KEY_FILENAME = "key.encrypted";
-    private static final String MAIN_SALT_FILENAME = "iv.encrypted";
-    private static final String BLOCKED_FILENAME = "blocked";
+    private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
+    private static final String BLOCKED_FILENAME = ".blocked";
+    private static final int KEY_BYTES_COUNT = Aes.KEY_SIZE / 8;
     private CryptoKey cryptoKeyInstance;
 
     private CryptoManager() {}
 
     public boolean configure(String password) {
         try {
-            byte[] encryptedKey = FileManager.readFileBytes(getEncryptedKeyFile());
-            byte[] encryptedSalt = FileManager.readFileBytes(getEncryptedSaltFile());
-
             byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
             Aes aesInstance = new Aes(password, secondarySalt);
 
-            byte[] mainKeyBytes = aesInstance.decrypt(encryptedKey);
-            byte[] mainSaltBytes = aesInstance.decrypt(encryptedSalt);
+            byte[] encryptedKeyFileBytes = FileManager.readFileBytes(getEncryptedKeyFile());
+            byte[] keyFileBytes = aesInstance.decrypt(encryptedKeyFileBytes);
 
-            SecretKey mainKey = new SecretKeySpec(mainKeyBytes, 0, mainSaltBytes.length,
+            byte[] mainKeyBytes = new byte[KEY_BYTES_COUNT];
+            byte[] mainSaltBytes = new byte[Aes.SALT_SIZE];
+
+            System.arraycopy(keyFileBytes, 0, mainKeyBytes, 0,KEY_BYTES_COUNT);
+            System.arraycopy(keyFileBytes, KEY_BYTES_COUNT, mainSaltBytes, 0,Aes.SALT_SIZE);
+
+            SecretKey mainKey = new SecretKeySpec(
+                    mainKeyBytes,
+                    0,
+                    mainSaltBytes.length,
                     Aes.KEY_GENERATOR_ALGORITHM);
+
             cryptoKeyInstance = new CryptoKey(mainKey, mainSaltBytes, password);
 
             return true;
@@ -53,8 +60,7 @@ public class CryptoManager {
     }
 
     public boolean isFirstRun() {
-        return (!getEncryptedKeyFile().exists() || !getEncryptedSaltFile().exists()) &&
-                !getBlockFile().exists();
+        return !getEncryptedKeyFile().exists() && !getBlockFile().exists();
     }
 
     public static CryptoManager getInstance() {
@@ -66,11 +72,7 @@ public class CryptoManager {
     }
 
     private File getEncryptedKeyFile() {
-        return FileManager.getInternalFile(MAIN_KEY_FILENAME);
-    }
-
-    private File getEncryptedSaltFile() {
-        return FileManager.getInternalFile(MAIN_SALT_FILENAME);
+        return FileManager.getInternalFile(ENCRYPTED_KEY_FILENAME);
     }
 
     private File getBlockFile() {
@@ -96,32 +98,29 @@ public class CryptoManager {
             IllegalBlockSizeException, BadPaddingException,
             InvalidKeyException, IOException {
         String password = newKey.getPassword();
-        SecretKey mainKey = newKey.getKey();
 
+        byte[] mainKey = newKey.getKey().getEncoded();
         byte[] mainSalt = newKey.getSalt();
+
         byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
+        byte[] keyFileData = new byte[KEY_BYTES_COUNT + Aes.SALT_SIZE];
+
+        System.arraycopy(mainKey, 0, keyFileData, 0, mainKey.length);
+        System.arraycopy(mainSalt, 0, keyFileData, mainKey.length, mainSalt.length);
+
+        Aes aesInstance = new Aes(password, secondarySalt);
+        FileManager.writeFileBytes(getEncryptedKeyFile(), aesInstance.encrypt(keyFileData));
 
         cryptoKeyInstance = newKey;
-        Aes aesInstance = new Aes(password, secondarySalt);
-
-        File encryptedKeyFile = getEncryptedKeyFile();
-        File encryptedSaltFile = getEncryptedSaltFile();
-
-        FileManager.writeFileBytes(encryptedKeyFile, aesInstance.encrypt(mainKey.getEncoded()));
-        FileManager.writeFileBytes(encryptedSaltFile, aesInstance.encrypt(mainSalt));
     }
 
     public boolean isBlocked() {
-        return getBlockFile().exists() &&
-                !getEncryptedKeyFile().exists() &&
-                !getEncryptedSaltFile().exists();
+        return getBlockFile().exists() && !getEncryptedKeyFile().exists();
     }
 
     public void block() {
         try {
             FileManager.wipeFile(getEncryptedKeyFile());
-            FileManager.wipeFile(getEncryptedSaltFile());
-
             FileManager.writeFileBytes(getBlockFile(), new byte[0]);
         } catch (IOException e) {
             Log.e("CryptoManager.block error", e.toString());
