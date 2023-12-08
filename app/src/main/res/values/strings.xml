@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">NoteSR</string>
+    <string name="the_best_security_for_your_notes">The best security for your notes</string>
     <string name="lock">Lock</string>
     <string name="add_note">Add note</string>
     <string name="get_started">GET STARTED</string>
