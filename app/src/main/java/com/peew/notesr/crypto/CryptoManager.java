@@ -112,6 +112,12 @@ public class CryptoManager {
         FileManager.writeFileBytes(getEncryptedKeyFile(), aesInstance.encrypt(keyFileData));
 
         cryptoKeyInstance = newKey;
+        File blockFile = getBlockFile();
+
+        if (blockFile.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            blockFile.delete();
+        }
     }
 
     public boolean isBlocked() {
