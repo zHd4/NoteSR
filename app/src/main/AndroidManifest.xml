@@ -37,8 +37,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.KeyRecoveryActivity"
+            android:label="@string/key_recovery"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
