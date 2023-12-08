@@ -68,7 +68,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
                 disableBackButton();
             }
 
-            case PASSWORD_SETUP_MODE | RECOVERY_MODE -> topLabel.setText(R.string.create_access_code);
+            case PASSWORD_SETUP_MODE, RECOVERY_MODE -> topLabel.setText(R.string.create_access_code);
         }
 
         Arrays.stream(PIN_BUTTONS_ID).forEach(id -> findViewById(id)
