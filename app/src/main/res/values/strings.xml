@@ -30,7 +30,8 @@
     <string name="copied">Copied!</string>
     <string name="wrong_code_you_have_n_attempts">Wrong code, you have %o attempts</string>
     <string name="paste_or_enter_your_key_here">Paste or enter your key here…</string>
-    <string name="decrypt">Decrypt</string>
     <string name="blocked">Blocked!</string>
     <string name="key_recovery">Key Recovery</string>
+    <string name="apply">Apply</string>
+    <string name="wrong_key">Wrong key!</string>
 </resources>
