@@ -190,14 +190,16 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         CryptoManager cryptoManager = CryptoManager.getInstance();
 
         if (!cryptoManager.configure(passwordBuilder.toString())) {
-            String messageFormat = getString(R.string.wrong_code_you_have_n_attempts);
-
             attempts--;
-            resetPassword(String.format(messageFormat, attempts));
 
             if (attempts == 0) {
                 cryptoManager.block();
+
+                resetPassword(getString(R.string.blocked));
                 startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
+            } else {
+                String messageFormat = getString(R.string.wrong_code_you_have_n_attempts);
+                resetPassword(String.format(messageFormat, attempts));
             }
         } else {
             startActivity(new Intent(App.getContext(), MainActivity.class));
