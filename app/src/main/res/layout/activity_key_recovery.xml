@@ -15,8 +15,9 @@
         android:ems="10"
         android:gravity="start"
         android:hint="@string/paste_or_enter_your_key_here"
-        android:inputType="text"
-        android:lines="12"
+        android:inputType="textMultiLine"
+        android:minLines="12"
+        android:maxLines="12"
         android:textColor="#FFFFFF"
         android:textColorHighlight="@color/select_text"
         android:textColorHint="#8F8F8F"
@@ -27,7 +28,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.498"
-        tools:ignore="Autofill" />
+        tools:ignore="Autofill"
+        android:scrollbars="vertical"/>
 
     <Button
         android:id="@+id/decryptButton"
