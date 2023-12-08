@@ -60,7 +60,11 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         Button authButton = findViewById(R.id.auth_button);
 
         switch (currentMode) {
-            case AUTHORIZATION_MODE -> topLabel.setText(R.string.enter_access_code);
+            case AUTHORIZATION_MODE -> {
+                topLabel.setText(R.string.enter_access_code);
+                disableBackButton();
+            }
+
             case PASSWORD_SETUP_MODE -> topLabel.setText(R.string.create_access_code);
         }
 
