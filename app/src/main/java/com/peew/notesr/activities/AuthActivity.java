@@ -13,12 +13,14 @@ import androidx.core.content.ContextCompat;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoManager;
+import com.peew.notesr.crypto.CryptoTools;
 
 import java.util.Arrays;
 
 public class AuthActivity extends ExtendedAppCompatActivity {
     public static final int AUTHORIZATION_MODE = 0;
     public static final int PASSWORD_SETUP_MODE = 1;
+    public static final int RECOVERY_MODE = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int MAX_ATTEMPTS = 3;
     private static final Integer[] PIN_BUTTONS_ID = {
@@ -38,6 +40,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     private int inputIndex = 0;
     private boolean capsLockEnabled = false;
     private StringBuilder passwordBuilder = new StringBuilder();
+    private final CryptoManager cryptoManager = CryptoManager.getInstance();
     private String password;
     private int attempts = MAX_ATTEMPTS;
 
@@ -65,7 +68,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
                 disableBackButton();
             }
 
-            case PASSWORD_SETUP_MODE -> topLabel.setText(R.string.create_access_code);
+            case PASSWORD_SETUP_MODE | RECOVERY_MODE -> topLabel.setText(R.string.create_access_code);
         }
 
         Arrays.stream(PIN_BUTTONS_ID).forEach(id -> findViewById(id)
@@ -153,15 +156,15 @@ public class AuthActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener authButtonOnClick() {
         return view -> {
-            if (currentMode == AUTHORIZATION_MODE) {
-                proceedAuthorization();
-            } else if (currentMode == PASSWORD_SETUP_MODE) {
-                proceedPasswordSetup();
+            switch (currentMode) {
+                case AUTHORIZATION_MODE -> proceedAuthorization();
+                case RECOVERY_MODE -> proceedPasswordSetup(true);
+                case PASSWORD_SETUP_MODE -> proceedPasswordSetup(false);
             }
         };
     }
 
-    private void proceedPasswordSetup() {
+    private void proceedPasswordSetup(boolean recovery) {
         TextView topLabel = findViewById(R.id.auth_top_label);
         TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
 
@@ -169,10 +172,25 @@ public class AuthActivity extends ExtendedAppCompatActivity {
 
         if (password != null && topLabel.getText().equals(repeatCodeString)) {
             if (passwordBuilder.toString().equals(password)) {
-                Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
-                setupKeyActivityIntent.putExtra("password", password);
+                if (!recovery) {
+                    Intent setupKeyActivityIntent = new Intent(
+                            App.getContext(),
+                            SetupKeyActivity.class);
 
-                startActivity(setupKeyActivityIntent);
+                    setupKeyActivityIntent.putExtra("password", password);
+                    startActivity(setupKeyActivityIntent);
+                } else {
+                    String hexKey = getIntent().getStringExtra("hex-key");
+
+                    try {
+                        if (hexKey == null) throw new Exception("Missing hex-key");
+                        cryptoManager.applyNewKey(CryptoTools.hexToCryptoKey(hexKey, password));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    startActivity(new Intent(App.getContext(), MainActivity.class));
+                }
             } else {
                 resetPassword(getString(R.string.code_not_match));
             }
@@ -191,8 +209,6 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     }
 
     private void proceedAuthorization() {
-        CryptoManager cryptoManager = CryptoManager.getInstance();
-
         if (!cryptoManager.configure(passwordBuilder.toString())) {
             attempts--;
 
