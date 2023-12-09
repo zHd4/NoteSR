@@ -1,31 +1,33 @@
 package com.peew.notesr.db.notes;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import com.peew.notesr.App;
 import com.peew.notesr.tools.VersionFetcher;
 
 public class NotesDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
-
     private static final String NAME_FORMAT = "notes_v%s";
     private static final String KEY_TITLE = "title";
     private static final String KEY_TEXT = "text";
-
-    private final Context context;
-
     private final String databaseName;
 
-    public NotesDatabase(Context context) throws PackageManager.NameNotFoundException {
-        super(context,
-                String.format(NAME_FORMAT, VersionFetcher.fetchVersionName(context, true)),
-                null,
-                DATABASE_VERSION);
-        this.context = context;
-        this.databaseName = String.format(NAME_FORMAT, VersionFetcher
-                .fetchVersionName(context, true));
+    private static String fetchDatabaseName() {
+        try {
+            String version = VersionFetcher.fetchVersionName(App.getContext(), true);
+            return String.format(NAME_FORMAT, version);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("fetchDatabaseName", e.toString());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public NotesDatabase() {
+        super(App.getContext(), fetchDatabaseName(), null, DATABASE_VERSION);
+        this.databaseName = fetchDatabaseName();
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -34,8 +36,5 @@ public class NotesDatabase extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-        assert true;
-    }
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 }
