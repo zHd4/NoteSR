@@ -35,4 +35,5 @@
     <string name="key_recovery">Key Recovery</string>
     <string name="apply">Apply</string>
     <string name="wrong_key">Wrong key!</string>
+    <string name="lock_app">Lock app</string>
 </resources>
