@@ -8,33 +8,38 @@
     tools:context="com.peew.notesr.activities.MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/lock_screen_button"
+        android:id="@+id/lock_app_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@color/light_button_background"
-        android:backgroundTint="@color/light_button_background"
-        android:visibility="invisible"
-        app:srcCompat="@android:drawable/ic_lock_idle_lock" app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="0.86"
-        app:layout_constraintHorizontal_bias="1.0" android:tint="@android:color/holo_red_light"
-        android:contentDescription="@string/lock" />
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/lock_app"
+        android:src="@android:drawable/ic_lock_idle_lock"
+        app:backgroundTint="@color/button_background"
+        android:tint="@android:color/holo_red_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.862" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_note_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@color/light_button_background"
-        android:backgroundTint="@color/light_button_background"
-        android:visibility="invisible"
-        app:srcCompat="@android:drawable/ic_input_add" app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintHorizontal_bias="1.0" android:tint="@android:color/background_light"
-        android:contentDescription="@string/add_note" />
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/lock_app"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="@color/button_background"
+        android:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ScrollView
         android:layout_width="wrap_content"
