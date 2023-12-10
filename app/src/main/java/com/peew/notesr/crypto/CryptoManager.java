@@ -10,6 +10,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -20,7 +21,9 @@ import javax.crypto.spec.SecretKeySpec;
 public class CryptoManager {
     private static final CryptoManager INSTANCE = new CryptoManager();
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
+    private static final String ENCRYPTED_TEST_FILENAME = "test.encrypted";
     private static final String BLOCKED_FILENAME = ".blocked";
+    private static final int ENCRYPTED_TEST_FILE_SIZE = 1024;
     private static final int KEY_BYTES_COUNT = Aes.KEY_SIZE / 8;
     private CryptoKey cryptoKeyInstance;
 
@@ -79,6 +82,10 @@ public class CryptoManager {
         return FileManager.getInternalFile(BLOCKED_FILENAME);
     }
 
+    private File getEncryptedTestFile() {
+        return FileManager.getInternalFile(ENCRYPTED_TEST_FILENAME);
+    }
+
     public CryptoKey generateNewKey(String password) throws NoSuchAlgorithmException {
         SecretKey mainKey = Aes.generateRandomKey();
         byte[] mainSalt = Aes.generateRandomSalt();
@@ -86,10 +93,15 @@ public class CryptoManager {
         return new CryptoKey(mainKey, mainSalt, password);
     }
 
-    public CryptoKey createCryptoKey(byte[] keyBytes, byte[] salt, String password) {
+    public CryptoKey createCryptoKey(byte[] keyBytes, byte[] salt, String password) throws
+            Exception {
         SecretKey newKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
                 Aes.KEY_GENERATOR_ALGORITHM);
-        return new CryptoKey(newKey, salt, password);
+        if (verifyImportedKey(newKey, salt)) {
+            return new CryptoKey(newKey, salt, password);
+        }
+
+        throw new Exception("Wrong key");
     }
 
     public void applyNewKey(CryptoKey newKey) throws
@@ -118,6 +130,34 @@ public class CryptoManager {
             //noinspection ResultOfMethodCallIgnored
             blockFile.delete();
         }
+
+        createEncryptedTestFile(newKey.getKey(), mainSalt);
+    }
+
+    private void createEncryptedTestFile(SecretKey key, byte[] salt) throws
+            InvalidAlgorithmParameterException, NoSuchPaddingException,
+            IllegalBlockSizeException, NoSuchAlgorithmException,
+            BadPaddingException, InvalidKeyException, IOException {
+        byte[] randomBytes = new byte[ENCRYPTED_TEST_FILE_SIZE];
+
+        Random random = new Random();
+        Aes aesInstance = new Aes(key, salt);
+
+        random.nextBytes(randomBytes);
+        randomBytes = aesInstance.encrypt(randomBytes);
+
+        FileManager.writeFileBytes(getEncryptedTestFile(), randomBytes);
+    }
+
+    private boolean verifyImportedKey(SecretKey key, byte[] salt) {
+        try {
+            Aes aesInstance = new Aes(key, salt);
+            aesInstance.decrypt(FileManager.readFileBytes(getBlockFile()));
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean isBlocked() {
@@ -126,8 +166,13 @@ public class CryptoManager {
 
     public void block() {
         try {
+            File encryptedTestFile = getEncryptedTestFile();
+            byte[] testFileData = FileManager.readFileBytes(encryptedTestFile);
+
             FileManager.wipeFile(getEncryptedKeyFile());
-            FileManager.writeFileBytes(getBlockFile(), new byte[0]);
+            FileManager.writeFileBytes(getBlockFile(), testFileData);
+
+            FileManager.wipeFile(encryptedTestFile);
         } catch (IOException e) {
             Log.e("CryptoManager.block error", e.toString());
         }

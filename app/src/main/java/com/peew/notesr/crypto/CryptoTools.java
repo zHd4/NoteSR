@@ -36,7 +36,7 @@ public class CryptoTools {
         return result.toString().toUpperCase();
     }
 
-    public static CryptoKey hexToCryptoKey(String hex, String password) {
+    public static CryptoKey hexToCryptoKey(String hex, String password) throws Exception {
         String[] hexArray = hex.toLowerCase()
                 .replace("\n", "")
                 .split(" ");
