@@ -6,14 +6,22 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.peew.notesr.App;
+import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.db.notes.tables.Table;
 import com.peew.notesr.tools.VersionFetcher;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class NotesDatabase extends SQLiteOpenHelper {
+    private static final NotesDatabase INSTANCE = new NotesDatabase();
     private static final int DATABASE_VERSION = 1;
     private static final String NAME_FORMAT = "notes_v%s";
-    private static final String KEY_TITLE = "title";
-    private static final String KEY_TEXT = "text";
-    private final String databaseName;
+    private List<Table> tables;
+
+    public static NotesDatabase getInstance() {
+        return INSTANCE;
+    }
 
     private static String fetchDatabaseName() {
         try {
@@ -25,14 +33,28 @@ public class NotesDatabase extends SQLiteOpenHelper {
         }
     }
 
-    public NotesDatabase() {
+    private NotesDatabase() {
         super(App.getContext(), fetchDatabaseName(), null, DATABASE_VERSION);
-        this.databaseName = fetchDatabaseName();
+        onCreate(getWritableDatabase());
     }
+
+    public void configureTables() {
+        this.tables = List.of(new NotesTable(this));
+    }
+
     @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(String.format("CREATE TABLE IF NOT EXISTS %s(%s TEXT, %s TEXT)",
-                databaseName, KEY_TITLE, KEY_TEXT));
+    public void onCreate(SQLiteDatabase database) {
+        configureTables();
+
+        tables.forEach(table -> {
+            String queryPart = table.getFields().entrySet().stream()
+                    .map(field -> field.getKey() + " " + field.getValue())
+                    .collect(Collectors.joining(
+                            ", ",
+                            table.getName() + "(", ")"));
+
+            database.execSQL("CREATE TABLE IF NOT EXISTS " + queryPart);
+        });
     }
 
     @Override
