@@ -2,6 +2,7 @@ package com.peew.notesr.crypto;
 
 import android.util.Log;
 
+import com.peew.notesr.App;
 import com.peew.notesr.tools.FileManager;
 
 import java.io.File;
@@ -150,11 +151,13 @@ public class CryptoManager {
     }
 
     private boolean verifyImportedKey(SecretKey key, byte[] salt) {
-        try {
-            Aes aesInstance = new Aes(key, salt);
-            aesInstance.decrypt(FileManager.readFileBytes(getBlockFile()));
-        } catch (Exception e) {
-            return false;
+        if (App.onAndroid()) {
+            try {
+                Aes aesInstance = new Aes(key, salt);
+                aesInstance.decrypt(FileManager.readFileBytes(getBlockFile()));
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         return true;
