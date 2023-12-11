@@ -15,4 +15,8 @@ public class App extends Application {
     public static Context getContext() {
         return context;
     }
+
+    public static boolean onAndroid() {
+        return context != null;
+    }
 }
