@@ -3,6 +3,7 @@
     <color name="activity_background">#050D1C</color>
     <color name="light_button_background">#102449</color>
     <color name="button_background">#0D1D3C</color>
+    <color name="floating_action_button_background">#031332</color>
     <color name="pressed_button_background">#1B2A47</color>
     <color name="edit_text_background_tint">#1B2A47</color>
     <color name="select_text">#102449</color>
