@@ -9,8 +9,6 @@ import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public abstract class Table {
@@ -20,10 +18,6 @@ public abstract class Table {
 
     public Table(SQLiteOpenHelper helper) {
         this.helper = helper;
-    }
-
-    protected List<String> getFieldsNames() {
-        return new ArrayList<>(getFields().keySet());
     }
 
     protected String encrypt(String text) {
