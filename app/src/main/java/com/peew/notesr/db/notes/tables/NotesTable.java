@@ -33,7 +33,7 @@ public final class NotesTable extends Table {
         return fields;
     }
 
-    public List<Note> getAllNotes() {
+    public List<Note> getAll() {
         SQLiteDatabase db = helper.getReadableDatabase();
         List<Note> notes = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public final class NotesTable extends Table {
         return notes;
     }
 
-    public boolean noteExists(Note note) {
+    public boolean exists(Note note) {
         boolean exists;
 
         SQLiteDatabase db = helper.getReadableDatabase();
@@ -89,7 +89,7 @@ public final class NotesTable extends Table {
         return exists;
     }
 
-    public void addNote(Note note) {
+    public void add(Note note) {
         List<String> fieldsNames = getFieldsNames();
 
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
@@ -103,7 +103,7 @@ public final class NotesTable extends Table {
         }
     }
 
-    public void deleteNote(Note note) {
+    public void delete(Note note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             String idFieldName = getFieldsNames().get(0);
             String encryptedId = encrypt(String.valueOf(note.getId()));
