@@ -13,8 +13,12 @@ public class MainActivity extends ExtendedAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
+        configure();
+    }
+
+    private void configure() {
         if(cryptoManager.isFirstRun()) {
             startActivity(new Intent(App.getContext(), StartActivity.class));
         } else if (!cryptoManager.ready()) {
