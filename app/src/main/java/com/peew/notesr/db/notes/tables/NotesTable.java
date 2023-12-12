@@ -45,16 +45,18 @@ public final class NotesTable extends Table {
                 null,
                 null);
 
-        try (cursor) {
-            if (cursor.moveToFirst()) {
-                do {
-                    long id = Long.parseLong(decrypt(cursor.getString(0)));
+        try (db) {
+            try (cursor) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        long id = Long.parseLong(decrypt(cursor.getString(0)));
 
-                    String name = decrypt(cursor.getString(1));
-                    String text = decrypt(cursor.getString(2));
+                        String name = decrypt(cursor.getString(1));
+                        String text = decrypt(cursor.getString(2));
 
-                    notes.add(new Note(id, name, text));
-                } while (cursor.moveToNext());
+                        notes.add(new Note(id, name, text));
+                    } while (cursor.moveToNext());
+                }
             }
         }
 
