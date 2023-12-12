@@ -63,8 +63,8 @@ public final class NotesTable extends Table {
         return notes;
     }
 
-    public void setNote(Note note) {
-        List<String> fieldsNames = new ArrayList<>(fields.keySet());
+    public void addNote(Note note) {
+        List<String> fieldsNames = getFieldsNames();
 
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
@@ -74,6 +74,15 @@ public final class NotesTable extends Table {
             values.put(fieldsNames.get(2), encrypt(note.getText()));
 
             db.insert(name, null, values);
+        }
+    }
+
+    public void deleteNote(Note note) {
+        try (SQLiteDatabase db = helper.getWritableDatabase()) {
+            String field = getFieldsNames().get(0);
+            String encryptedId = encrypt(String.valueOf(note.getId()));
+
+            db.execSQL("DELETE FROM " + name + " WHERE " + field + "='" + encryptedId + "'");
         }
     }
 }
