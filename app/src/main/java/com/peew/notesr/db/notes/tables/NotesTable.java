@@ -1,5 +1,6 @@
 package com.peew.notesr.db.notes.tables;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -58,5 +59,19 @@ public final class NotesTable extends Table {
         }
 
         return notes;
+    }
+
+    public void setNote(Note note) {
+        List<String> fieldsNames = new ArrayList<>(fields.keySet());
+
+        try (SQLiteDatabase db = helper.getWritableDatabase()) {
+            ContentValues values = new ContentValues();
+
+            values.put(fieldsNames.get(0), encrypt(String.valueOf(note.getId())));
+            values.put(fieldsNames.get(1), encrypt(note.getName()));
+            values.put(fieldsNames.get(2), encrypt(note.getText()));
+
+            db.insert(name, null, values);
+        }
     }
 }
