@@ -8,16 +8,18 @@ import android.util.Log;
 import com.peew.notesr.App;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.db.notes.tables.Table;
+import com.peew.notesr.db.notes.tables.TableName;
 import com.peew.notesr.tools.VersionFetcher;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class NotesDatabase extends SQLiteOpenHelper {
     private static final NotesDatabase INSTANCE = new NotesDatabase();
     private static final int DATABASE_VERSION = 1;
     private static final String NAME_FORMAT = "notes_v%s";
-    private List<Table> tables;
+    private Map<TableName, Table> tables;
 
     public static NotesDatabase getInstance() {
         return INSTANCE;
@@ -39,24 +41,29 @@ public class NotesDatabase extends SQLiteOpenHelper {
     }
 
     public void configureTables() {
-        this.tables = List.of(new NotesTable(this));
+        this.tables = Map.of(TableName.NOTES_TABLE, new NotesTable(this));
     }
 
     @Override
     public void onCreate(SQLiteDatabase database) {
         configureTables();
 
-        tables.forEach(table -> {
-            String queryPart = table.getFields().entrySet().stream()
-                    .map(field -> field.getKey() + " " + field.getValue())
-                    .collect(Collectors.joining(
-                            ", ",
-                            table.getName() + "(", ")"));
+        tables.forEach((key, table) -> {
+            String name = table.getName();
 
-            database.execSQL("CREATE TABLE IF NOT EXISTS " + queryPart);
+            Set<Map.Entry<String, String>> fields = table.getFields().entrySet();
+            String signature = fields.stream()
+                    .map(field -> field.getKey() + " " + field.getValue())
+                    .collect(Collectors.joining(", ", name + "(", ")"));
+
+            database.execSQL("CREATE TABLE IF NOT EXISTS " + signature);
         });
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
+
+    public Table getTable(TableName name) {
+        return tables.get(name);
+    }
 }
