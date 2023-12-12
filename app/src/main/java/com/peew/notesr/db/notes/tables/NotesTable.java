@@ -14,9 +14,9 @@ import java.util.Map;
 public final class NotesTable extends Table {
     private final String name = "notes";
     private final Map<String, String> fields = Map.of(
-            "note_id", "TEXT",
-            "encrypted_name", "TEXT",
-            "encrypted_data", "TEXT"
+            NotesTableField.NOTE_ID.getName(), "TEXT",
+            NotesTableField.ENCRYPTED_NAME.getName(), "TEXT",
+            NotesTableField.ENCRYPTED_DATA.getName(), "TEXT"
             );
 
     public NotesTable(SQLiteOpenHelper helper) {
@@ -34,14 +34,12 @@ public final class NotesTable extends Table {
     }
 
     public void add(Note note) {
-        List<String> fieldsNames = getFieldsNames();
-
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
+            values.put(NotesTableField.NOTE_ID.getName(), encrypt(String.valueOf(note.getId())));
 
-            values.put(fieldsNames.get(0), encrypt(String.valueOf(note.getId())));
-            values.put(fieldsNames.get(1), encrypt(note.getName()));
-            values.put(fieldsNames.get(2), encrypt(note.getText()));
+            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(note.getName()));
+            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(note.getText()));
 
             db.insert(name, null, values);
         }
@@ -51,9 +49,8 @@ public final class NotesTable extends Table {
         boolean exists;
 
         SQLiteDatabase db = helper.getReadableDatabase();
-        List<String> fieldsNames = getFieldsNames();
 
-        String idFieldName = fieldsNames.get(0);
+        String idFieldName = NotesTableField.NOTE_ID.getName();
         String encryptedId = encrypt(String.valueOf(note.getId()));
 
         Cursor cursor = db.query(name,
@@ -108,28 +105,41 @@ public final class NotesTable extends Table {
             throw new RuntimeException("Old note id not equal new note id");
         }
 
-        List<String> fieldsNames = getFieldsNames();
-
-        String idFieldName = getFieldsNames().get(0);
         String encryptedId = encrypt(String.valueOf(oldNote.getId()));
 
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
-            values.put(fieldsNames.get(1), encrypt(newNote.getName()));
-            values.put(fieldsNames.get(2), encrypt(newNote.getText()));
+            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(newNote.getName()));
+            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(newNote.getText()));
 
-            String whereClause = idFieldName + "='" + encryptedId + "'";
+            String whereClause = NotesTableField.NOTE_ID.getName() + "='" + encryptedId + "'";
             db.update(name, values, whereClause, null);
         }
     }
 
     public void delete(Note note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
-            String idFieldName = getFieldsNames().get(0);
+            String idFieldName = NotesTableField.NOTE_ID.name();
             String encryptedId = encrypt(String.valueOf(note.getId()));
 
             db.execSQL("DELETE FROM " + name + " WHERE " + idFieldName + "='" + encryptedId + "'");
+        }
+    }
+
+    private enum NotesTableField {
+        NOTE_ID("note_id"),
+        ENCRYPTED_NAME("encrypted_name"),
+        ENCRYPTED_DATA("encrypted_data");
+
+        private final String name;
+
+        NotesTableField(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 }
