@@ -63,6 +63,32 @@ public final class NotesTable extends Table {
         return notes;
     }
 
+    public boolean noteExists(Note note) {
+        boolean exists;
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        List<String> fieldsNames = getFieldsNames();
+
+        String idFieldName = fieldsNames.get(0);
+        String encryptedId = encrypt(String.valueOf(note.getId()));
+
+        Cursor cursor = db.query(name,
+                new String[] { idFieldName },
+                idFieldName + "='" + encryptedId + "'",
+                null,
+                null,
+                null,
+                null);
+
+        try (db) {
+            try (cursor){
+                exists = cursor.moveToFirst();
+            }
+        }
+
+        return exists;
+    }
+
     public void addNote(Note note) {
         List<String> fieldsNames = getFieldsNames();
 
@@ -79,10 +105,10 @@ public final class NotesTable extends Table {
 
     public void deleteNote(Note note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
-            String field = getFieldsNames().get(0);
+            String idFieldName = getFieldsNames().get(0);
             String encryptedId = encrypt(String.valueOf(note.getId()));
 
-            db.execSQL("DELETE FROM " + name + " WHERE " + field + "='" + encryptedId + "'");
+            db.execSQL("DELETE FROM " + name + " WHERE " + idFieldName + "='" + encryptedId + "'");
         }
     }
 }
