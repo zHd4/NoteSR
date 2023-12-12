@@ -33,6 +33,46 @@ public final class NotesTable extends Table {
         return fields;
     }
 
+    public void add(Note note) {
+        List<String> fieldsNames = getFieldsNames();
+
+        try (SQLiteDatabase db = helper.getWritableDatabase()) {
+            ContentValues values = new ContentValues();
+
+            values.put(fieldsNames.get(0), encrypt(String.valueOf(note.getId())));
+            values.put(fieldsNames.get(1), encrypt(note.getName()));
+            values.put(fieldsNames.get(2), encrypt(note.getText()));
+
+            db.insert(name, null, values);
+        }
+    }
+
+    public boolean exists(Note note) {
+        boolean exists;
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        List<String> fieldsNames = getFieldsNames();
+
+        String idFieldName = fieldsNames.get(0);
+        String encryptedId = encrypt(String.valueOf(note.getId()));
+
+        Cursor cursor = db.query(name,
+                new String[] { idFieldName },
+                idFieldName + "='" + encryptedId + "'",
+                null,
+                null,
+                null,
+                null);
+
+        try (db) {
+            try (cursor){
+                exists = cursor.moveToFirst();
+            }
+        }
+
+        return exists;
+    }
+
     public List<Note> getAll() {
         SQLiteDatabase db = helper.getReadableDatabase();
         List<Note> notes = new ArrayList<>();
@@ -63,43 +103,24 @@ public final class NotesTable extends Table {
         return notes;
     }
 
-    public boolean exists(Note note) {
-        boolean exists;
-
-        SQLiteDatabase db = helper.getReadableDatabase();
-        List<String> fieldsNames = getFieldsNames();
-
-        String idFieldName = fieldsNames.get(0);
-        String encryptedId = encrypt(String.valueOf(note.getId()));
-
-        Cursor cursor = db.query(name,
-                new String[] { idFieldName },
-                idFieldName + "='" + encryptedId + "'",
-                null,
-                null,
-                null,
-                null);
-
-        try (db) {
-            try (cursor){
-                exists = cursor.moveToFirst();
-            }
+    public void update(Note oldNote, Note newNote) {
+        if (oldNote.getId() != newNote.getId()) {
+            throw new RuntimeException("Old note id not equal new note id");
         }
 
-        return exists;
-    }
-
-    public void add(Note note) {
         List<String> fieldsNames = getFieldsNames();
+
+        String idFieldName = getFieldsNames().get(0);
+        String encryptedId = encrypt(String.valueOf(oldNote.getId()));
 
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
-            values.put(fieldsNames.get(0), encrypt(String.valueOf(note.getId())));
-            values.put(fieldsNames.get(1), encrypt(note.getName()));
-            values.put(fieldsNames.get(2), encrypt(note.getText()));
+            values.put(fieldsNames.get(1), encrypt(newNote.getName()));
+            values.put(fieldsNames.get(2), encrypt(newNote.getText()));
 
-            db.insert(name, null, values);
+            String whereClause = idFieldName + "='" + encryptedId + "'";
+            db.update(name, values, whereClause, null);
         }
     }
 
