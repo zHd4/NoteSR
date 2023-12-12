@@ -1,27 +1,29 @@
 package com.peew.notesr.db.notes.tables;
 
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Base64;
+import android.util.Log;
 
 import com.peew.notesr.crypto.Aes;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
 
-import android.util.Base64;
-import android.util.Log;
-
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Table {
-    private final CryptoKey cryptoKey;
     protected SQLiteOpenHelper helper;
     public abstract String getName();
     public abstract Map<String, String> getFields();
 
     public Table(SQLiteOpenHelper helper) {
         this.helper = helper;
-        this.cryptoKey = CryptoManager.getInstance().getCryptoKeyInstance();
+    }
+
+    protected List<String> getFieldsNames() {
+        return new ArrayList<>(getFields().keySet());
     }
 
     protected String encrypt(String text) {
@@ -37,7 +39,7 @@ public abstract class Table {
     protected String decrypt(String encryptedText) {
         try {
             byte[] decoded = Base64.decode(encryptedText, Base64.DEFAULT);
-            return Arrays.toString(getAesInstance().decrypt(decoded));
+            return new String(getAesInstance().decrypt(decoded));
         } catch (Exception e) {
             Log.e("Table.decrypt error", e.toString());
             throw new RuntimeException(e);
@@ -45,6 +47,7 @@ public abstract class Table {
     }
 
     private Aes getAesInstance() {
+        CryptoKey cryptoKey = CryptoManager.getInstance().getCryptoKeyInstance();
         return new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
     }
 }
