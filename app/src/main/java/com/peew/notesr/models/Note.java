@@ -1,4 +1,4 @@
-package com.peew.notesr.db.notes.tables.models;
+package com.peew.notesr.models;
 
 public class Note {
     private long id;
