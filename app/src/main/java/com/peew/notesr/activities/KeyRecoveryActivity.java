@@ -1,9 +1,12 @@
 package com.peew.notesr.activities;
 
+import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -17,13 +20,17 @@ public class KeyRecoveryActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_key_recovery);
 
+        EditText hexKeyField = findViewById(R.id.import_key_field);
+        Button applyButton = findViewById(R.id.check_recovery_key_button);
+
         disableBackButton();
-        findViewById(R.id.check_recovery_key_button).setOnClickListener(recoveryKeyButtonOnClick());
+
+        hexKeyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
+        applyButton.setOnClickListener(recoveryKeyButtonOnClick(hexKeyField));
     }
 
-    private View.OnClickListener recoveryKeyButtonOnClick() {
+    private View.OnClickListener recoveryKeyButtonOnClick(EditText hexKeyField) {
         return view -> {
-            EditText hexKeyField = findViewById(R.id.import_key_field);
             String hexKey = hexKeyField.getText().toString();
 
             if (!hexKey.isBlank()) {
