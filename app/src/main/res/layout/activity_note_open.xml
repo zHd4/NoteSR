@@ -75,6 +75,7 @@
         android:textColorHighlight="@color/select_text"
         android:textColorHint="#8F8F8F"
         android:textColorLink="#FFFFFF"
+        android:paddingTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
