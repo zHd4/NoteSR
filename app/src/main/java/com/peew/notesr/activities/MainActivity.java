@@ -2,6 +2,7 @@ package com.peew.notesr.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -23,9 +24,12 @@ public class MainActivity extends ExtendedAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         configure();
-        fillNotes();
+
+        ListView notesView = findViewById(R.id.notes_list_view);
+
+        fillNotesList(notesView);
+        notesView.setOnItemClickListener(noteOnClick());
     }
 
     private void configure() {
@@ -46,7 +50,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
         }
     }
 
-    private void fillNotes() {
+    private void fillNotesList(ListView notesView) {
         if (cryptoManager.getCryptoKeyInstance() != null) {
             NotesTable notesTable = (NotesTable)
                     NotesDatabase.getInstance()
@@ -55,7 +59,6 @@ public class MainActivity extends ExtendedAppCompatActivity {
             List<Note> notes = notesTable.getAll();
             List<String> notesNames = notes.stream().map(Note::getName).collect(Collectors.toList());
 
-            ListView notesView = findViewById(R.id.notes_list_view);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
                     App.getContext(),
                     R.layout.notes_list_item,
@@ -64,5 +67,9 @@ public class MainActivity extends ExtendedAppCompatActivity {
 
             notesView.setAdapter(adapter);
         }
+    }
+
+    private AdapterView.OnItemClickListener noteOnClick() {
+        return (adapter, view, position, id) -> {};
     }
 }
