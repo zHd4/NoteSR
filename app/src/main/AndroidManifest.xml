@@ -40,6 +40,11 @@
             android:label="@string/key_recovery"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.NoteOpenActivity"
+            android:label="@string/key_recovery"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
