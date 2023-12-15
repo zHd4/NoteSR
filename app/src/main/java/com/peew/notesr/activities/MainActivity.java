@@ -70,6 +70,13 @@ public class MainActivity extends ExtendedAppCompatActivity {
     }
 
     private AdapterView.OnItemClickListener noteOnClick() {
-        return (adapter, view, position, id) -> {};
+        return (adapter, view, position, id) -> {
+            Intent noteOpenActivtyIntent = new Intent(App.getContext(), NoteOpenActivity.class);
+
+            noteOpenActivtyIntent.putExtra("mode", NoteOpenActivity.EDIT_NOTE_MODE);
+            noteOpenActivtyIntent.putExtra("note_id", id);
+
+            startActivity(noteOpenActivtyIntent);
+        };
     }
 }
