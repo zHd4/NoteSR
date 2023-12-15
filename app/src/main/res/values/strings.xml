@@ -40,4 +40,6 @@
     <string name="delete_note">Delete note</string>
     <string name="name">Name</string>
     <string name="start_typing">Start typing</string>
+    <string name="new_note">New</string>
+    <string name="edit_note">Edit</string>
 </resources>
