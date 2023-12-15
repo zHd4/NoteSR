@@ -36,4 +36,8 @@
     <string name="apply">Apply</string>
     <string name="wrong_key">Wrong key!</string>
     <string name="lock_app">Lock app</string>
+    <string name="save_note">Save note</string>
+    <string name="delete_note">Delete note</string>
+    <string name="name">Name</string>
+    <string name="start_typing">Start typing</string>
 </resources>
