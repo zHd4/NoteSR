@@ -2,10 +2,12 @@ package com.peew.notesr.activities;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import androidx.appcompat.app.ActionBar;
 
+import com.peew.notesr.App;
 import com.peew.notesr.R;
 
 public class NoteOpenActivity extends ExtendedAppCompatActivity {
@@ -34,5 +36,13 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         if (mode == EDIT_NOTE_MODE) {
             actionBar.setTitle(getResources().getString(R.string.edit_note));
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        startActivity(new Intent(App.getContext(), MainActivity.class));
+        finish();
+
+        return true;
     }
 }
