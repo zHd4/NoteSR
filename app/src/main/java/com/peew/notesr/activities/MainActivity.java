@@ -13,7 +13,6 @@ import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.db.notes.tables.TableName;
 import com.peew.notesr.models.Note;
 
 import java.util.List;
@@ -60,9 +59,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
 
     private void fillNotesList(ListView notesView) {
         if (cryptoManager.getCryptoKeyInstance() != null) {
-            NotesTable notesTable = (NotesTable)
-                    NotesDatabase.getInstance()
-                            .getTable(TableName.NOTES_TABLE);
+            NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
 
             List<Note> notes = notesTable.getAll();
             List<String> notesNames = notes.stream().map(Note::getName).collect(Collectors.toList());
@@ -89,7 +86,19 @@ public class MainActivity extends ExtendedAppCompatActivity {
     }
 
     private View.OnClickListener newNoteOnClick() {
-        return view -> startActivity(new Intent(App.getContext(), NoteOpenActivity.class));
+        return view -> {
+            if (cryptoManager.getCryptoKeyInstance() != null) {
+                NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+
+                long id = notesTable.getNewNoteId();
+                Intent noteOpenActivtyIntent = new Intent(App.getContext(), NoteOpenActivity.class);
+
+                noteOpenActivtyIntent.putExtra("mode", NoteOpenActivity.EDIT_NOTE_MODE);
+                noteOpenActivtyIntent.putExtra("note_id", id);
+
+                startActivity(noteOpenActivtyIntent);
+            }
+        };
     }
 
     private View.OnClickListener lockOnClick() {
