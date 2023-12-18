@@ -141,7 +141,7 @@ public final class NotesTable extends Table {
         try (db) {
             try (cursor) {
                 if (cursor.moveToFirst()) {
-                    newId = Long.parseLong(decrypt(cursor.getString(0))) + 1;
+                    newId = cursor.getLong(0) + 1;
                 }
             }
         }
@@ -149,18 +149,14 @@ public final class NotesTable extends Table {
         return newId;
     }
 
-    public void update(Note oldNote, Note newNote) {
-        if (oldNote.getId() != newNote.getId()) {
-            throw new RuntimeException("Old note id not equal new note id");
-        }
-
+    public void update(Note note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
-            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(newNote.getName()));
-            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(newNote.getText()));
+            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(note.getName()));
+            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(note.getText()));
 
-            String whereClause = NotesTableField.NOTE_ID.getName() + "=" + oldNote.getId();
+            String whereClause = NotesTableField.NOTE_ID.getName() + "=" + note.getId();
             db.update(name, values, whereClause, null);
         }
     }
