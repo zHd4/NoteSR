@@ -100,6 +100,34 @@ public final class NotesTable extends Table {
         return notes;
     }
 
+    public Note get(long id) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+
+        String idFieldName = NotesTableField.NOTE_ID.getName();
+        String encryptedId = encrypt(String.valueOf(id));
+
+        Cursor cursor = db.query(name,
+                null,
+                idFieldName + "='" + encryptedId + "'",
+                null,
+                null,
+                null,
+                null);
+
+        try (db) {
+            try (cursor) {
+                if (cursor.moveToFirst()) {
+                    String name = decrypt(cursor.getString(1));
+                    String text = decrypt(cursor.getString(2));
+
+                    return new Note(id, name, text);
+                } else {
+                    throw new RuntimeException("Wrong note id");
+                }
+            }
+        }
+    }
+
     public void update(Note oldNote, Note newNote) {
         if (oldNote.getId() != newNote.getId()) {
             throw new RuntimeException("Old note id not equal new note id");
