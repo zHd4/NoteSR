@@ -31,7 +31,7 @@
     <EditText
         android:id="@+id/note_text_field"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="473dp"
         android:backgroundTint="@color/activity_background"
         android:ems="10"
         android:gravity="start"
@@ -45,8 +45,10 @@
         android:paddingTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/note_name_field"
+        app:layout_constraintVertical_bias="0.0"
         tools:ignore="Autofill" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
