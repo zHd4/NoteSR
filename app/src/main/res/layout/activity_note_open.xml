@@ -28,6 +28,27 @@
         app:layout_constraintVertical_bias="0"
         tools:ignore="Autofill" />
 
+    <EditText
+        android:id="@+id/note_text_field"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:backgroundTint="@color/activity_background"
+        android:ems="10"
+        android:gravity="start"
+        android:hint="@string/start_typing"
+        android:inputType="textMultiLine"
+        android:scrollbars="vertical"
+        android:textColor="#FFFFFF"
+        android:textColorHighlight="@color/select_text"
+        android:textColorHint="#8F8F8F"
+        android:textColorLink="#FFFFFF"
+        android:paddingTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/note_name_field"
+        tools:ignore="Autofill" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/delete_note_button"
         android:layout_width="wrap_content"
@@ -60,27 +81,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
-
-    <EditText
-        android:id="@+id/note_text_field"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:backgroundTint="@color/activity_background"
-        android:ems="10"
-        android:gravity="start"
-        android:hint="@string/start_typing"
-        android:inputType="textMultiLine"
-        android:scrollbars="vertical"
-        android:textColor="#FFFFFF"
-        android:textColorHighlight="@color/select_text"
-        android:textColorHint="#8F8F8F"
-        android:textColorLink="#FFFFFF"
-        android:paddingTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/note_name_field"
-        tools:ignore="Autofill" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
