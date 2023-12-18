@@ -180,4 +180,8 @@ public class CryptoManager {
             Log.e("CryptoManager.block error", e.toString());
         }
     }
+
+    public void destroyKey() {
+        cryptoKeyInstance = null;
+    }
 }
