@@ -63,7 +63,12 @@ public class NotesDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
+    @Deprecated
     public Table getTable(TableName name) {
         return tables.get(name);
+    }
+
+    public NotesTable getNotesTable() {
+        return (NotesTable) tables.get(TableName.NOTES_TABLE);
     }
 }
