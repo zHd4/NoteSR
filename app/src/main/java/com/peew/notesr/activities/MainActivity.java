@@ -93,7 +93,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
                 long id = notesTable.getNewNoteId();
                 Intent noteOpenActivtyIntent = new Intent(App.getContext(), NoteOpenActivity.class);
 
-                noteOpenActivtyIntent.putExtra("mode", NoteOpenActivity.EDIT_NOTE_MODE);
+                noteOpenActivtyIntent.putExtra("mode", NoteOpenActivity.NEW_NOTE_MODE);
                 noteOpenActivtyIntent.putExtra("note_id", id);
 
                 startActivity(noteOpenActivtyIntent);
