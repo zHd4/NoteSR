@@ -128,6 +128,31 @@ public final class NotesTable extends Table {
         }
     }
 
+    public long getNewNoteId() {
+        long newId = 0;
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        String idFieldName = NotesTableField.NOTE_ID.getName();
+
+        Cursor cursor = db.query(name,
+                null,
+                null,
+                null,
+                null,
+                null,
+                idFieldName + " DESC LIMIT 1");
+
+        try (db) {
+            try (cursor) {
+                if (cursor.moveToFirst()) {
+                    newId = Long.parseLong(decrypt(cursor.getString(0))) + 1;
+                }
+            }
+        }
+
+        return newId;
+    }
+
     public void update(Note oldNote, Note newNote) {
         if (oldNote.getId() != newNote.getId()) {
             throw new RuntimeException("Old note id not equal new note id");
