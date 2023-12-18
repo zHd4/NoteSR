@@ -2,6 +2,7 @@ package com.peew.notesr.activities;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -9,6 +10,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
@@ -43,7 +45,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
-        saveButton.setOnClickListener(saveNoteOnClick());
+        saveButton.setOnClickListener(saveNoteOnClick(nameField, textField));
         deleteButton.setOnClickListener(deleteNoteOnClick());
 
         ActionBar actionBar = getSupportActionBar();
@@ -74,8 +76,24 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         }
     }
 
-    private View.OnClickListener saveNoteOnClick() {
-        return view -> {};
+    private View.OnClickListener saveNoteOnClick(EditText nameField, EditText textField) {
+        return view -> {
+            String name = nameField.getText().toString();
+            String text = textField.getText().toString();
+
+            if (!name.isBlank() && !text.isBlank()) {
+                Note note = new Note(noteId, name, text);
+                NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+
+                if (notesTable.exists(noteId)) {
+                    notesTable.update(note);
+                } else {
+                    notesTable.add(note);
+                }
+
+                startActivity(new Intent(App.getContext(), MainActivity.class));
+            }
+        };
     }
 
     private View.OnClickListener deleteNoteOnClick() {
