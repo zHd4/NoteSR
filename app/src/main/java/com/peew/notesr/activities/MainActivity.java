@@ -2,10 +2,12 @@ package com.peew.notesr.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoManager;
@@ -27,6 +29,12 @@ public class MainActivity extends ExtendedAppCompatActivity {
         configure();
 
         ListView notesView = findViewById(R.id.notes_list_view);
+
+        FloatingActionButton lockButton = findViewById(R.id.lock_app_button);
+        FloatingActionButton newNoteButton = findViewById(R.id.add_note_button);
+
+        newNoteButton.setOnClickListener(newNoteOnClick());
+        lockButton.setOnClickListener(lockOnClick());
 
         fillNotesList(notesView);
         notesView.setOnItemClickListener(noteOnClick());
@@ -77,6 +85,22 @@ public class MainActivity extends ExtendedAppCompatActivity {
             noteOpenActivtyIntent.putExtra("note_id", id);
 
             startActivity(noteOpenActivtyIntent);
+        };
+    }
+
+    private View.OnClickListener newNoteOnClick() {
+        return view -> startActivity(new Intent(App.getContext(), NoteOpenActivity.class));
+    }
+
+    private View.OnClickListener lockOnClick() {
+        return view -> {
+            Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
+            authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
+
+            cryptoManager.destroyKey();
+
+            startActivity(authActivityIntent);
+            finish();
         };
     }
 }
