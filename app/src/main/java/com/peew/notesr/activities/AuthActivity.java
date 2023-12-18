@@ -50,6 +50,11 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         setContentView(R.layout.activity_auth);
 
         currentMode = getIntent().getIntExtra("mode", -1);
+
+        if (currentMode < 0) {
+            throw new RuntimeException("Authorization mode didn't provided");
+        }
+
         configure();
     }
 
