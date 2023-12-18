@@ -164,8 +164,7 @@ public final class NotesTable extends Table {
     public void delete(Note note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             String idFieldName = NotesTableField.NOTE_ID.name();
-
-            db.execSQL("DELETE FROM " + name + " WHERE " + idFieldName + "='" + note.getId());
+            db.delete(name, idFieldName + "=" + note.getId(), null);
         }
     }
 
