@@ -45,13 +45,13 @@ public final class NotesTable extends Table {
         }
     }
 
-    public boolean exists(Note note) {
+    public boolean exists(long id) {
         boolean exists;
 
         SQLiteDatabase db = helper.getReadableDatabase();
 
         String idFieldName = NotesTableField.NOTE_ID.getName();
-        String encryptedId = encrypt(String.valueOf(note.getId()));
+        String encryptedId = encrypt(String.valueOf(id));
 
         Cursor cursor = db.query(name,
                 new String[] { idFieldName },
