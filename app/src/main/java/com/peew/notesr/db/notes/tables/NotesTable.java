@@ -161,10 +161,10 @@ public final class NotesTable extends Table {
         }
     }
 
-    public void delete(Note note) {
+    public void delete(long id) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             String idFieldName = NotesTableField.NOTE_ID.name();
-            db.delete(name, idFieldName + "=" + note.getId(), null);
+            db.delete(name, idFieldName + "=" + id, null);
         }
     }
 
