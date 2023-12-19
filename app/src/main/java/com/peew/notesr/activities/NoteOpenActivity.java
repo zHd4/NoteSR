@@ -5,14 +5,11 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
 import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
@@ -20,6 +17,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
+import com.peew.notesr.tools.AlertDialogHelper;
 
 public class NoteOpenActivity extends ExtendedAppCompatActivity {
     public static final Integer NEW_NOTE_MODE = 0;
@@ -104,25 +102,16 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener deleteNoteOnClick() {
         return view -> {
-            int textColor = ContextCompat.getColor(App.getContext(), R.color.text_color);
-            int dialogStyleId = R.style.AlertDialogTheme;
-
-            String dialogTextColor = toHexColor(textColor);
-            String messageHtmlFormat = "<font color='%s'>%s</font>";
-
             String messageText = getString(R.string.this_action_cannot_be_undo_are_you_sure);
-            String message = String.format(messageHtmlFormat, dialogTextColor, messageText);
+            String deleteButtonText = getString(R.string.delete);
 
-            Spanned messageSpanned = Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY);
-
+            String cancelButtonText = getString(R.string.no);
             DialogInterface.OnClickListener listener = deleteNoteDialogOnClick();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, dialogStyleId);
 
-            builder.setMessage(messageSpanned)
-                    .setPositiveButton(getString(R.string.delete), listener)
-                    .setNegativeButton(getString(R.string.no), listener);
+            AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(this,
+                    messageText, deleteButtonText, cancelButtonText, listener);
 
-            builder.create().show();
+            dialog.show();
         };
     }
 
@@ -133,9 +122,5 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
                 startActivity(new Intent(App.getContext(), MainActivity.class));
             }
         };
-    }
-
-    private String toHexColor(int color) {
-        return "#" + Integer.toHexString(color).substring(2);
     }
 }
