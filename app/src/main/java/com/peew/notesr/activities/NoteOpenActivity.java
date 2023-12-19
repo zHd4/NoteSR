@@ -22,7 +22,6 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
     public static final Integer NEW_NOTE_MODE = 0;
     public static final Integer EDIT_NOTE_MODE = 1;
 
-    private int mode;
     private long noteId;
 
     /** @noinspection DataFlowIssue*/
@@ -31,7 +30,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_open);
 
-        mode = getIntent().getIntExtra("mode", NEW_NOTE_MODE);
+        int mode = getIntent().getIntExtra("mode", NEW_NOTE_MODE);
         noteId = getIntent().getLongExtra("note_id", -1);
 
         if (noteId < 0) {
@@ -48,13 +47,15 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
         saveButton.setOnClickListener(saveNoteOnClick(nameField, textField));
-        deleteButton.setOnClickListener(deleteNoteOnClick());
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         if (mode == EDIT_NOTE_MODE) {
             actionBar.setTitle(getResources().getString(R.string.edit_note));
+            deleteButton.setOnClickListener(deleteNoteOnClick());
+        } else {
+            deleteButton.setVisibility(View.INVISIBLE);
         }
 
         configureForm(nameField, textField);
