@@ -5,11 +5,14 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
@@ -101,10 +104,21 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener deleteNoteOnClick() {
         return view -> {
-            DialogInterface.OnClickListener listener = deleteNoteDialogOnClick();
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            int textColor = ContextCompat.getColor(App.getContext(), R.color.text_color);
+            int dialogStyleId = R.style.AlertDialogTheme;
 
-            builder.setMessage(getString(R.string.this_action_cannot_be_undo_are_you_sure))
+            String dialogTextColor = toHexColor(textColor);
+            String messageHtmlFormat = "<font color='%s'>%s</font>";
+
+            String messageText = getString(R.string.this_action_cannot_be_undo_are_you_sure);
+            String message = String.format(messageHtmlFormat, dialogTextColor, messageText);
+
+            Spanned messageSpanned = Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY);
+
+            DialogInterface.OnClickListener listener = deleteNoteDialogOnClick();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, dialogStyleId);
+
+            builder.setMessage(messageSpanned)
                     .setPositiveButton(getString(R.string.delete), listener)
                     .setNegativeButton(getString(R.string.no), listener);
 
@@ -119,5 +133,9 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
                 startActivity(new Intent(App.getContext(), MainActivity.class));
             }
         };
+    }
+
+    private String toHexColor(int color) {
+        return "#" + Integer.toHexString(color).substring(2);
     }
 }
