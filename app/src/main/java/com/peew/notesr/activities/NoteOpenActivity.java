@@ -107,10 +107,10 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
 
             String cancelButtonText = getString(R.string.no);
             DialogInterface.OnClickListener listener = deleteNoteDialogOnClick();
-
-            AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(this,
+            AlertDialogHelper.Params params = new AlertDialogHelper.Params(this,
                     messageText, deleteButtonText, cancelButtonText, listener);
 
+            AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(params);
             dialog.show();
         };
     }
