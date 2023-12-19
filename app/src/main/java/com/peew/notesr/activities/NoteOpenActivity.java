@@ -2,12 +2,14 @@ package com.peew.notesr.activities;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
@@ -97,6 +99,24 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
     }
 
     private View.OnClickListener deleteNoteOnClick() {
-        return view -> {};
+        return view -> {
+            DialogInterface.OnClickListener listener = deleteNoteDialogOnClick();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setMessage(getString(R.string.this_action_cannot_be_undo_are_you_sure))
+                    .setPositiveButton(getString(R.string.delete), listener)
+                    .setNegativeButton(getString(R.string.no), listener);
+
+            builder.create().show();
+        };
+    }
+
+    private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
+        return (dialog, result) -> {
+            if (result == DialogInterface.BUTTON_POSITIVE) {
+                NotesDatabase.getInstance().getNotesTable().delete(noteId);
+                startActivity(new Intent(App.getContext(), MainActivity.class));
+            }
+        };
     }
 }
