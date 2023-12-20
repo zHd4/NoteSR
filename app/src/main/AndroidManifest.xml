@@ -37,17 +37,18 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.KeyRecoveryActivity"
-            android:label="@string/key_recovery"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.NoteOpenActivity"
-            android:label="@string/new_note"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.SearchNotesActivity"
-            android:label="@string/new_note"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.ViewNotesSearchResultsActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
     </application>
