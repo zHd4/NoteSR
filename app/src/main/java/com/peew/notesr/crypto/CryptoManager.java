@@ -47,7 +47,7 @@ public class CryptoManager {
             SecretKey mainKey = new SecretKeySpec(
                     mainKeyBytes,
                     0,
-                    mainSaltBytes.length,
+                    mainKeyBytes.length,
                     Aes.KEY_GENERATOR_ALGORITHM);
 
             cryptoKeyInstance = new CryptoKey(mainKey, mainSaltBytes, password);
