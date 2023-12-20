@@ -45,4 +45,5 @@
     <string name="this_action_cannot_be_undo_are_you_sure">This action cannot be undo.\nAre you sure?</string>
     <string name="no">NO</string>
     <string name="delete">DELETE</string>
+    <string name="enter_the_code">Enter the code!</string>
 </resources>

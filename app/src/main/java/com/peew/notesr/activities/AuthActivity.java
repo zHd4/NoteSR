@@ -23,6 +23,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     public static final int RECOVERY_MODE = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int MAX_ATTEMPTS = 3;
+    private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
     private static final Integer[] PIN_BUTTONS_ID = {
             R.id.pin_button_1,
             R.id.pin_button_2,
@@ -214,7 +215,14 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     }
 
     private void proceedAuthorization() {
-        if (!cryptoManager.configure(passwordBuilder.toString())) {
+        String accessCode = passwordBuilder.toString();
+
+        if (accessCode.isEmpty()) {
+            showToastMessage(getString(R.string.enter_the_code), Toast.LENGTH_SHORT);
+            return;
+        }
+
+        if (!cryptoManager.configure(accessCode)) {
             attempts--;
 
             if (attempts == 0) {
@@ -223,6 +231,12 @@ public class AuthActivity extends ExtendedAppCompatActivity {
                 resetPassword(getString(R.string.blocked));
                 startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
             } else {
+                try {
+                    Thread.sleep(ON_WRONG_PASSWORD_DELAY_MS);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
                 String messageFormat = getString(R.string.wrong_code_you_have_n_attempts);
                 resetPassword(String.format(messageFormat, attempts));
             }
