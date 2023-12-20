@@ -46,4 +46,5 @@
     <string name="no">NO</string>
     <string name="delete">DELETE</string>
     <string name="enter_the_code">Enter the code!</string>
+    <string name="note">Note</string>
 </resources>
