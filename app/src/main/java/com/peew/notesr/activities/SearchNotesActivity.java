@@ -68,7 +68,12 @@ public class SearchNotesActivity extends ExtendedAppCompatActivity {
             return foundInName || foundInText;
         };
 
-        return new SearchNotesResults(notes.stream().filter(check).collect(Collectors.toList()));
+        List<Long> notesIds = notes.stream()
+                .filter(check)
+                .map(Note::getId)
+                .collect(Collectors.toList());
+
+        return new SearchNotesResults(notesIds);
     }
 
     private String formatValue(String value) {
