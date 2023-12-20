@@ -1,9 +1,9 @@
 package com.peew.notesr.models;
 
 public class Note {
-    private long id;
-    private String name;
-    private String text;
+    private final long id;
+    private final String name;
+    private final String text;
 
     public Note(long id, String name, String text) {
         this.id = id;
