@@ -48,4 +48,5 @@
     <string name="enter_the_code">Enter the code!</string>
     <string name="note">Note</string>
     <string name="search">Search</string>
+    <string name="search_notes">Search notes</string>
 </resources>
