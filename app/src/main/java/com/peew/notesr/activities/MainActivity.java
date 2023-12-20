@@ -3,6 +3,7 @@ package com.peew.notesr.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,10 +17,15 @@ import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class MainActivity extends ExtendedAppCompatActivity {
+    private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
     private final CryptoManager cryptoManager = CryptoManager.getInstance();
 
     @Override
@@ -42,7 +48,19 @@ public class MainActivity extends ExtendedAppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Intent searchActivityIntent = new Intent(App.getContext(), SearchNotesActivity.class);
+
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Objects.requireNonNull(menuItemsMap.get(id)).accept(null);
+
         return true;
     }
 
