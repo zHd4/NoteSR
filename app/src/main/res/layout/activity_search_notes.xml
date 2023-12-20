@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SearchNotesActivity"
+    android:background="@color/activity_background">
+
+    <EditText
+        android:id="@+id/search_notes_query_field"
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:backgroundTint="@color/edit_text_background_tint"
+        android:ems="10"
+        android:hint="@string/search_notes"
+        android:inputType="textCapWords"
+        android:maxLines="1"
+        android:textColor="@color/text_color"
+        android:textColorHighlight="@color/select_text"
+        android:textColorHint="#8F8F8F"
+        android:textColorLink="@color/text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+        tools:ignore="Autofill" />
+
+    <Button
+        android:id="@+id/search_notes_button"
+        android:layout_width="403dp"
+        android:layout_height="52dp"
+        android:background="@drawable/button"
+        android:text="@string/search"
+        android:textColor="@color/text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.096" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

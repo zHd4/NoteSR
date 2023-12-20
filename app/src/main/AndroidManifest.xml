@@ -45,6 +45,11 @@
             android:label="@string/new_note"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.SearchNotesActivity"
+            android:label="@string/new_note"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
