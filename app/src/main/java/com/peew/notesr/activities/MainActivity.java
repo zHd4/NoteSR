@@ -94,7 +94,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
                 missingNotesLabel.setVisibility(View.INVISIBLE);
 
                 List<NoteItem> items = notes.stream()
-                        .map(note -> new NoteItem(note.getName(), note.getText()))
+                        .map(note -> new NoteItem(note.name(), note.text()))
                         .collect(Collectors.toList());
 
                 NotesListAdapter adapter = new NotesListAdapter(

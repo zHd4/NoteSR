@@ -36,10 +36,10 @@ public final class NotesTable extends Table {
     public void add(Note note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
-            values.put(NotesTableField.NOTE_ID.getName(), note.getId());
+            values.put(NotesTableField.NOTE_ID.getName(), note.id());
 
-            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(note.getName()));
-            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(note.getText()));
+            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(note.name()));
+            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(note.text()));
 
             db.insert(name, null, values);
         }
@@ -153,10 +153,10 @@ public final class NotesTable extends Table {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
-            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(note.getName()));
-            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(note.getText()));
+            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(note.name()));
+            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(note.text()));
 
-            String whereClause = NotesTableField.NOTE_ID.getName() + "=" + note.getId();
+            String whereClause = NotesTableField.NOTE_ID.getName() + "=" + note.id();
             db.update(name, values, whereClause, null);
         }
     }

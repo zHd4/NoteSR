@@ -75,8 +75,8 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         if (notesTable.exists(noteId)) {
             Note note = notesTable.get(noteId);
 
-            nameField.setText(note.getName());
-            textField.setText(note.getText());
+            nameField.setText(note.name());
+            textField.setText(note.text());
         }
     }
 

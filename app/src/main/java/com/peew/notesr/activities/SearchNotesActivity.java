@@ -62,15 +62,15 @@ public class SearchNotesActivity extends ExtendedAppCompatActivity {
         List<Note> notes = notesTable.getAll();
 
         Predicate<Note> check = note -> {
-            boolean foundInName = formatValue(note.getName()).contains(query);
-            boolean foundInText = formatValue(note.getText()).contains(query);
+            boolean foundInName = formatValue(note.name()).contains(query);
+            boolean foundInText = formatValue(note.text()).contains(query);
 
             return foundInName || foundInText;
         };
 
         List<Long> notesIds = notes.stream()
                 .filter(check)
-                .map(Note::getId)
+                .map(Note::id)
                 .collect(Collectors.toList());
 
         return new SearchNotesResults(notesIds);

@@ -54,7 +54,7 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
 
         List<NoteItem> items = results.results().stream()
                 .map(notesTable::get)
-                .map(note -> new NoteItem(note.getName(), note.getText()))
+                .map(note -> new NoteItem(note.name(), note.text()))
                 .collect(Collectors.toList());
 
         NotesListAdapter adapter = new NotesListAdapter(
