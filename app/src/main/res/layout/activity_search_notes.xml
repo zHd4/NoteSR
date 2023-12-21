@@ -30,7 +30,7 @@
 
     <Button
         android:id="@+id/search_notes_button"
-        android:layout_width="403dp"
+        android:layout_width="380dp"
         android:layout_height="52dp"
         android:background="@drawable/button"
         android:text="@string/search"
