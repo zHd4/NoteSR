@@ -42,13 +42,8 @@ public class NotesListAdapter extends ArrayAdapter<NoteItem> {
             TextView nameView = (TextView) view.findViewById(R.id.note_name_text_view);
             TextView textView = (TextView) view.findViewById(R.id.note_text_view);
 
-            if (nameView != null) {
-                nameView.setText(formatValue(item.name()));
-            }
-
-            if (textView != null) {
-                textView.setText(formatValue(item.text()));
-            }
+            nameView.setText(formatValue(item.name()));
+            textView.setText(formatValue(item.text()));
         }
 
         return view;
