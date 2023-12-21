@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
@@ -36,6 +37,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
         configure();
 
         ListView notesView = findViewById(R.id.notes_list_view);
+        TextView missingNotesLabel = findViewById(R.id.missing_notes_label);
 
         FloatingActionButton lockButton = findViewById(R.id.lock_app_button);
         FloatingActionButton newNoteButton = findViewById(R.id.add_note_button);
@@ -43,7 +45,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
         newNoteButton.setOnClickListener(newNoteOnClick());
         lockButton.setOnClickListener(lockOnClick());
 
-        fillNotesList(notesView);
+        fillNotesList(notesView, missingNotesLabel);
         notesView.setOnItemClickListener(noteOnClick());
     }
 
@@ -83,21 +85,25 @@ public class MainActivity extends ExtendedAppCompatActivity {
         }
     }
 
-    private void fillNotesList(ListView notesView) {
+    private void fillNotesList(ListView notesView, TextView missingNotesLabel) {
         if (cryptoManager.getCryptoKeyInstance() != null) {
             NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
             List<Note> notes = notesTable.getAll();
 
-            List<NoteItem> items = notes.stream()
-                    .map(note -> new NoteItem(note.getName(), note.getText()))
-                    .collect(Collectors.toList());
+            if (!notes.isEmpty()) {
+                missingNotesLabel.setVisibility(View.INVISIBLE);
 
-            NotesListAdapter adapter = new NotesListAdapter(
-                    App.getContext(),
-                    R.layout.notes_list_item,
-                    items);
+                List<NoteItem> items = notes.stream()
+                        .map(note -> new NoteItem(note.getName(), note.getText()))
+                        .collect(Collectors.toList());
 
-            notesView.setAdapter(adapter);
+                NotesListAdapter adapter = new NotesListAdapter(
+                        App.getContext(),
+                        R.layout.notes_list_item,
+                        items);
+
+                notesView.setAdapter(adapter);
+            }
         }
     }
 
