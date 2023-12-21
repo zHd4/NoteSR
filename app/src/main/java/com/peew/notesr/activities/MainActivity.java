@@ -6,16 +6,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.adapters.NotesListAdapter;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
+import com.peew.notesr.models.NoteItem;
 
 import java.util.HashMap;
 import java.util.List;
@@ -85,15 +86,16 @@ public class MainActivity extends ExtendedAppCompatActivity {
     private void fillNotesList(ListView notesView) {
         if (cryptoManager.getCryptoKeyInstance() != null) {
             NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
-
             List<Note> notes = notesTable.getAll();
-            List<String> notesNames = notes.stream().map(Note::getName).collect(Collectors.toList());
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+            List<NoteItem> items = notes.stream()
+                    .map(note -> new NoteItem(note.getName(), note.getText()))
+                    .collect(Collectors.toList());
+
+            NotesListAdapter adapter = new NotesListAdapter(
                     App.getContext(),
                     R.layout.notes_list_item,
-                    R.id.note_name_text_view,
-                    notesNames);
+                    items);
 
             notesView.setAdapter(adapter);
         }
