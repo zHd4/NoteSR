@@ -34,6 +34,8 @@ public class MainActivity extends ExtendedAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        disableBackButton();
         configure();
 
         ListView notesView = findViewById(R.id.notes_list_view);
