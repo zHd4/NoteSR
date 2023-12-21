@@ -15,6 +15,7 @@ import com.peew.notesr.models.NoteItem;
 import java.util.List;
 
 public class NotesListAdapter extends ArrayAdapter<NoteItem> {
+    private static final int MAX_VALUE_LENGTH = 25;
     private final int resourceLayout;
     private final Context context;
 
@@ -42,14 +43,20 @@ public class NotesListAdapter extends ArrayAdapter<NoteItem> {
             TextView textView = (TextView) view.findViewById(R.id.note_text_view);
 
             if (nameView != null) {
-                nameView.setText(item.name());
+                nameView.setText(formatValue(item.name()));
             }
 
             if (textView != null) {
-                textView.setText(item.text());
+                textView.setText(formatValue(item.text()));
             }
         }
 
         return view;
+    }
+
+    private String formatValue(String value) {
+        String formatted = value.replace("\n", "");
+        return formatted.length() > MAX_VALUE_LENGTH ?
+                formatted.substring(0, MAX_VALUE_LENGTH) + "…" : formatted;
     }
 }
