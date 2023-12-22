@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
@@ -28,7 +26,6 @@ import java.util.function.Consumer;
 public class NoteOpenActivity extends ExtendedAppCompatActivity {
     public static final int NEW_NOTE_MODE = 0;
     public static final int EDIT_NOTE_MODE = 1;
-
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
     private long noteId;
     private int mode;
@@ -74,9 +71,16 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         menuItemsMap.put(R.id.save_note_button, action -> saveNoteOnClick(nameField, textField));
 
         switch (mode) {
-            case NEW_NOTE_MODE -> removeView(findViewById(R.id.delete_note_button));
-            case EDIT_NOTE_MODE ->
-                    menuItemsMap.put(R.id.delete_note_button, action -> deleteNoteOnClick());
+            case NEW_NOTE_MODE -> {
+                MenuItem deleteButton = menu.findItem(R.id.delete_note_button);
+
+                deleteButton.setEnabled(false);
+                deleteButton.setVisible(false);
+            }
+            case EDIT_NOTE_MODE -> {
+                Consumer<?> deleteButtonOnClick = action -> deleteNoteOnClick();
+                menuItemsMap.put(R.id.delete_note_button, deleteButtonOnClick);
+            }
 
             default -> throw new RuntimeException("Unknown mode");
         }
@@ -148,9 +152,5 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
                 startActivity(new Intent(App.getContext(), MainActivity.class));
             }
         };
-    }
-
-    private void removeView(View view) {
-        ((ViewGroup) view.getParent()).removeView(view);
     }
 }
