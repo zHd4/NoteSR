@@ -40,12 +40,9 @@ public class MainActivity extends ExtendedAppCompatActivity {
 
         ListView notesView = findViewById(R.id.notes_list_view);
         TextView missingNotesLabel = findViewById(R.id.missing_notes_label);
-
-//        FloatingActionButton lockButton = findViewById(R.id.lock_app_button);
         FloatingActionButton newNoteButton = findViewById(R.id.add_note_button);
 
         newNoteButton.setOnClickListener(newNoteOnClick());
-//        lockButton.setOnClickListener(lockOnClick());
 
         fillNotesList(notesView, missingNotesLabel);
         notesView.setOnItemClickListener(noteOnClick());
