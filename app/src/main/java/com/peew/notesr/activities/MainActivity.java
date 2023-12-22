@@ -41,11 +41,11 @@ public class MainActivity extends ExtendedAppCompatActivity {
         ListView notesView = findViewById(R.id.notes_list_view);
         TextView missingNotesLabel = findViewById(R.id.missing_notes_label);
 
-        FloatingActionButton lockButton = findViewById(R.id.lock_app_button);
+//        FloatingActionButton lockButton = findViewById(R.id.lock_app_button);
         FloatingActionButton newNoteButton = findViewById(R.id.add_note_button);
 
         newNoteButton.setOnClickListener(newNoteOnClick());
-        lockButton.setOnClickListener(lockOnClick());
+//        lockButton.setOnClickListener(lockOnClick());
 
         fillNotesList(notesView, missingNotesLabel);
         notesView.setOnItemClickListener(noteOnClick());
@@ -56,6 +56,8 @@ public class MainActivity extends ExtendedAppCompatActivity {
         Intent searchActivityIntent = new Intent(App.getContext(), SearchNotesActivity.class);
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        menuItemsMap.put(R.id.lock_app_button, action -> lockOnClick());
         menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
 
         return true;
@@ -136,15 +138,13 @@ public class MainActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    private View.OnClickListener lockOnClick() {
-        return view -> {
-            Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-            authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
+    private void lockOnClick() {
+        Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
+        authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
 
-            cryptoManager.destroyKey();
+        cryptoManager.destroyKey();
 
-            startActivity(authActivityIntent);
-            finish();
-        };
+        startActivity(authActivityIntent);
+        finish();
     }
 }
