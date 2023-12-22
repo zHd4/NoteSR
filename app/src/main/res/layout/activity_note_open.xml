@@ -34,7 +34,7 @@
     <EditText
         android:id="@+id/note_text_field"
         android:layout_width="match_parent"
-        android:layout_height="473dp"
+        android:layout_height="match_parent"
         android:backgroundTint="@color/activity_background"
         android:ems="10"
         android:gravity="start"
@@ -45,6 +45,7 @@
         android:textColorHighlight="@color/select_text"
         android:textColorHint="#8F8F8F"
         android:textColorLink="@color/text_color"
+        android:layout_marginTop="53dp"
         android:paddingTop="20dp"
         android:paddingStart="10dp"
         android:paddingEnd="2dp"
@@ -54,40 +55,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/note_name_field"
         app:layout_constraintVertical_bias="0.0"
-        tools:ignore="Autofill" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/delete_note_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:contentDescription="@string/delete_note"
-        android:src="@android:drawable/ic_menu_delete"
-        app:backgroundTint="@color/floating_action_button_background"
-        android:tint="@android:color/holo_red_light"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/save_note_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:contentDescription="@string/save_note"
-        android:src="@android:drawable/ic_menu_save"
-        app:backgroundTint="@color/floating_action_button_background"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
+        android:autofillHints="" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
