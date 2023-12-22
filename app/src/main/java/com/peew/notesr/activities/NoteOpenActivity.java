@@ -5,13 +5,15 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.db.notes.NotesDatabase;
@@ -19,11 +21,17 @@ import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 import com.peew.notesr.tools.AlertDialogHelper;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
 public class NoteOpenActivity extends ExtendedAppCompatActivity {
     public static final int NEW_NOTE_MODE = 0;
     public static final int EDIT_NOTE_MODE = 1;
 
+    private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
     private long noteId;
+    private int mode;
 
     /** @noinspection DataFlowIssue*/
     @Override
@@ -31,7 +39,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_open);
 
-        int mode = getIntent().getIntExtra("mode", NEW_NOTE_MODE);
+        mode = getIntent().getIntExtra("mode", NEW_NOTE_MODE);
         noteId = getIntent().getLongExtra("note_id", -1);
 
         if (noteId < 0) {
@@ -41,38 +49,53 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         EditText nameField = findViewById(R.id.note_name_field);
         EditText textField = findViewById(R.id.note_text_field);
 
-        FloatingActionButton saveButton = findViewById(R.id.save_note_button);
-        FloatingActionButton deleteButton = findViewById(R.id.delete_note_button);
-
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
-
-        saveButton.setOnClickListener(saveNoteOnClick(nameField, textField));
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         switch (mode) {
-            case NEW_NOTE_MODE -> {
-                actionBar.setTitle(getResources().getString(R.string.new_note));
-                deleteButton.setVisibility(View.INVISIBLE);
-            }
-
-            case EDIT_NOTE_MODE -> {
-                actionBar.setTitle(getResources().getString(R.string.edit_note));
-                deleteButton.setOnClickListener(deleteNoteOnClick());
-            }
-
+            case NEW_NOTE_MODE -> actionBar.setTitle(getResources().getString(R.string.new_note));
+            case EDIT_NOTE_MODE -> actionBar.setTitle(getResources().getString(R.string.edit_note));
             default -> throw new RuntimeException("Unknown mode");
         }
 
         configureForm(nameField, textField);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        EditText nameField = findViewById(R.id.note_name_field);
+        EditText textField = findViewById(R.id.note_text_field);
+
+        getMenuInflater().inflate(R.menu.menu_note_open, menu);
+
+        menuItemsMap.put(R.id.save_note_button, action -> saveNoteOnClick(nameField, textField));
+
+        switch (mode) {
+            case NEW_NOTE_MODE -> removeView(findViewById(R.id.delete_note_button));
+            case EDIT_NOTE_MODE ->
+                    menuItemsMap.put(R.id.delete_note_button, action -> deleteNoteOnClick());
+
+            default -> throw new RuntimeException("Unknown mode");
+        }
+
+        return true;
+    }
+
     /** @noinspection deprecation*/
     @Override
-    public boolean onSupportNavigateUp() {
-        super.onBackPressed();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        Consumer<?> action = menuItemsMap.get(id);
+        if (action != null) {
+            action.accept(null);
+        } else {
+            super.onBackPressed();
+        }
+
         return true;
     }
 
@@ -87,39 +110,35 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         }
     }
 
-    private View.OnClickListener saveNoteOnClick(EditText nameField, EditText textField) {
-        return view -> {
-            String name = nameField.getText().toString();
-            String text = textField.getText().toString();
+    private void saveNoteOnClick(EditText nameField, EditText textField) {
+        String name = nameField.getText().toString();
+        String text = textField.getText().toString();
 
-            if (!name.isBlank() && !text.isBlank()) {
-                Note note = new Note(noteId, name, text);
-                NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+        if (!name.isBlank() && !text.isBlank()) {
+            Note note = new Note(noteId, name, text);
+            NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
 
-                if (notesTable.exists(noteId)) {
-                    notesTable.update(note);
-                } else {
-                    notesTable.add(note);
-                }
-
-                startActivity(new Intent(App.getContext(), MainActivity.class));
+            if (notesTable.exists(noteId)) {
+                notesTable.update(note);
+            } else {
+                notesTable.add(note);
             }
-        };
+
+            startActivity(new Intent(App.getContext(), MainActivity.class));
+        }
     }
 
-    private View.OnClickListener deleteNoteOnClick() {
-        return view -> {
-            String messageText = getString(R.string.this_action_cannot_be_undo_are_you_sure);
-            String deleteButtonText = getString(R.string.delete);
+    private void deleteNoteOnClick() {
+        String messageText = getString(R.string.this_action_cannot_be_undo_are_you_sure);
+        String deleteButtonText = getString(R.string.delete);
 
-            String cancelButtonText = getString(R.string.no);
-            DialogInterface.OnClickListener listener = deleteNoteDialogOnClick();
-            AlertDialogHelper.Params params = new AlertDialogHelper.Params(this,
-                    messageText, deleteButtonText, cancelButtonText, listener);
+        String cancelButtonText = getString(R.string.no);
+        DialogInterface.OnClickListener listener = deleteNoteDialogOnClick();
+        AlertDialogHelper.Params params = new AlertDialogHelper.Params(this,
+                messageText, deleteButtonText, cancelButtonText, listener);
 
-            AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(params);
-            dialog.show();
-        };
+        AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(params);
+        dialog.show();
     }
 
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
@@ -129,5 +148,9 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
                 startActivity(new Intent(App.getContext(), MainActivity.class));
             }
         };
+    }
+
+    private void removeView(View view) {
+        ((ViewGroup) view.getParent()).removeView(view);
     }
 }
