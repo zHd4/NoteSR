@@ -20,8 +20,8 @@ import com.peew.notesr.models.Note;
 import com.peew.notesr.tools.AlertDialogHelper;
 
 public class NoteOpenActivity extends ExtendedAppCompatActivity {
-    public static final Integer NEW_NOTE_MODE = 0;
-    public static final Integer EDIT_NOTE_MODE = 1;
+    public static final int NEW_NOTE_MODE = 0;
+    public static final int EDIT_NOTE_MODE = 1;
 
     private long noteId;
 
@@ -52,11 +52,18 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        if (mode == EDIT_NOTE_MODE) {
-            actionBar.setTitle(getResources().getString(R.string.edit_note));
-            deleteButton.setOnClickListener(deleteNoteOnClick());
-        } else {
-            deleteButton.setVisibility(View.INVISIBLE);
+        switch (mode) {
+            case NEW_NOTE_MODE -> {
+                actionBar.setTitle(getResources().getString(R.string.new_note));
+                deleteButton.setVisibility(View.INVISIBLE);
+            }
+
+            case EDIT_NOTE_MODE -> {
+                actionBar.setTitle(getResources().getString(R.string.edit_note));
+                deleteButton.setOnClickListener(deleteNoteOnClick());
+            }
+
+            default -> throw new RuntimeException("Unknown mode");
         }
 
         configureForm(nameField, textField);
