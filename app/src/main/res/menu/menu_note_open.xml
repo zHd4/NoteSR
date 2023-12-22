@@ -11,7 +11,6 @@
     <item
         android:id="@+id/delete_note_button"
         android:icon="@android:drawable/ic_menu_delete"
-        android:iconTint="@color/caps_button_pressed"
         android:title="@string/lock_app"
         app:showAsAction="ifRoom" />
 </menu>
