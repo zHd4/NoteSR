@@ -42,6 +42,6 @@ public abstract class Table {
 
     private Aes getAesInstance() {
         CryptoKey cryptoKey = CryptoManager.getInstance().getCryptoKeyInstance();
-        return new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
+        return new Aes(cryptoKey.key(), cryptoKey.salt());
     }
 }
