@@ -19,8 +19,9 @@ import java.util.Arrays;
 
 public class AuthActivity extends ExtendedAppCompatActivity {
     public static final int AUTHORIZATION_MODE = 0;
-    public static final int PASSWORD_SETUP_MODE = 1;
-    public static final int RECOVERY_MODE = 3;
+    public static final int CREATE_PASSWORD_MODE = 1;
+    public static final int KEY_RECOVERY_MODE = 2;
+    public static final int CHANGE_PASSWORD_MODE = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int MAX_ATTEMPTS = 3;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
@@ -68,13 +69,11 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         Button backspaceButton = findViewById(R.id.pin_backspace_button);
         Button authButton = findViewById(R.id.auth_button);
 
-        switch (currentMode) {
-            case AUTHORIZATION_MODE -> {
-                topLabel.setText(R.string.enter_access_code);
-                disableBackButton();
-            }
-
-            case PASSWORD_SETUP_MODE, RECOVERY_MODE -> topLabel.setText(R.string.create_access_code);
+        if (currentMode == AUTHORIZATION_MODE) {
+            topLabel.setText(R.string.enter_access_code);
+            disableBackButton();
+        } else {
+            topLabel.setText(R.string.create_access_code);
         }
 
         Arrays.stream(PIN_BUTTONS_ID).forEach(id -> findViewById(id)
@@ -164,42 +163,61 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         return view -> {
             switch (currentMode) {
                 case AUTHORIZATION_MODE -> proceedAuthorization();
-                case RECOVERY_MODE -> proceedPasswordSetup(true);
-                case PASSWORD_SETUP_MODE -> proceedPasswordSetup(false);
+                case CREATE_PASSWORD_MODE -> proceedPasswordCreation();
+                case KEY_RECOVERY_MODE -> proceedKeyRecovery();
+                case CHANGE_PASSWORD_MODE -> proceedPasswordChanging();
             }
         };
     }
 
-    private void proceedPasswordSetup(boolean recovery) {
+    private void proceedPasswordCreation() {
+        if (setPassword()) {
+            Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
+            setupKeyActivityIntent.putExtra("password", password);
+
+            startActivity(setupKeyActivityIntent);
+        }
+    }
+
+    private void proceedKeyRecovery() {
+        if (setPassword()) {
+            String hexKey = getIntent().getStringExtra("hex-key");
+
+            try {
+                if (hexKey == null) throw new Exception("Missing hex-key");
+                cryptoManager.applyNewKey(CryptoTools.hexToCryptoKey(hexKey, password));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            startActivity(new Intent(App.getContext(), MainActivity.class));
+        }
+    }
+
+    private void proceedPasswordChanging() {
+        if (setPassword()) {
+            try {
+                cryptoManager.changePassword(password);
+                startActivity(new Intent(App.getContext(), MainActivity.class));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private boolean setPassword() {
         TextView topLabel = findViewById(R.id.auth_top_label);
         TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
 
         String repeatCodeString = getString(R.string.repeat_access_code);
 
         if (password != null && topLabel.getText().equals(repeatCodeString)) {
-            if (passwordBuilder.toString().equals(password)) {
-                if (!recovery) {
-                    Intent setupKeyActivityIntent = new Intent(
-                            App.getContext(),
-                            SetupKeyActivity.class);
-
-                    setupKeyActivityIntent.putExtra("password", password);
-                    startActivity(setupKeyActivityIntent);
-                } else {
-                    String hexKey = getIntent().getStringExtra("hex-key");
-
-                    try {
-                        if (hexKey == null) throw new Exception("Missing hex-key");
-                        cryptoManager.applyNewKey(CryptoTools.hexToCryptoKey(hexKey, password));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    startActivity(new Intent(App.getContext(), MainActivity.class));
-                }
-            } else {
+            if (!passwordBuilder.toString().equals(password)) {
                 resetPassword(getString(R.string.code_not_match));
+                return false;
             }
+
+            return true;
         } else {
             if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
                 password = passwordBuilder.toString();
@@ -212,6 +230,8 @@ public class AuthActivity extends ExtendedAppCompatActivity {
                 resetPassword(String.format(messageFormat, MIN_PASSWORD_LENGTH));
             }
         }
+
+        return false;
     }
 
     private void proceedAuthorization() {
