@@ -110,10 +110,10 @@ public class CryptoManager {
             InvalidAlgorithmParameterException, NoSuchPaddingException,
             IllegalBlockSizeException, BadPaddingException,
             InvalidKeyException, IOException {
-        String password = newKey.getPassword();
+        String password = newKey.password();
 
-        byte[] mainKey = newKey.getKey().getEncoded();
-        byte[] mainSalt = newKey.getSalt();
+        byte[] mainKey = newKey.key().getEncoded();
+        byte[] mainSalt = newKey.salt();
 
         byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
         byte[] keyFileData = new byte[KEY_BYTES_COUNT + Aes.SALT_SIZE];
@@ -132,7 +132,29 @@ public class CryptoManager {
             blockFile.delete();
         }
 
-        createEncryptedTestFile(newKey.getKey(), mainSalt);
+        createEncryptedTestFile(newKey.key(), mainSalt);
+    }
+
+    public void changePassword(String newPassword) throws NoSuchAlgorithmException, IOException,
+            InvalidKeySpecException, InvalidAlgorithmParameterException,
+            NoSuchPaddingException, IllegalBlockSizeException,
+            BadPaddingException, InvalidKeyException {
+        File keyFile = getEncryptedKeyFile();
+        String currentPassword = cryptoKeyInstance.password();
+
+        byte[] currentSecondarySalt = Aes.generatePasswordBasedSalt(currentPassword);
+        byte[] newSecondarySalt = Aes.generatePasswordBasedSalt(newPassword);
+
+        Aes aesInstance = new Aes(currentPassword, currentSecondarySalt);
+        byte[] keyFileData = aesInstance.decrypt(FileManager.readFileBytes(keyFile));
+
+        aesInstance = new Aes(newPassword, newSecondarySalt);
+        FileManager.writeFileBytes(keyFile, aesInstance.encrypt(keyFileData));
+
+        cryptoKeyInstance = new CryptoKey(
+                cryptoKeyInstance.key(),
+                cryptoKeyInstance.salt(),
+                newPassword);
     }
 
     private void createEncryptedTestFile(SecretKey key, byte[] salt) throws
