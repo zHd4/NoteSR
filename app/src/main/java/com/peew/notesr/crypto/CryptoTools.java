@@ -6,8 +6,8 @@ public class CryptoTools {
     private static final int HEX_LINE_SIZE_LIMIT = 4;
 
     public static String cryptoKeyToHex(CryptoKey key) {
-        byte[] keyBytes = key.getKey().getEncoded();
-        byte[] salt = key.getSalt();
+        byte[] keyBytes = key.key().getEncoded();
+        byte[] salt = key.salt();
         byte[] bytes = new byte[keyBytes.length + salt.length];
 
         StringBuilder result = new StringBuilder();
