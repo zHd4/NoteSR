@@ -10,15 +10,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoTools;
+
+import java.util.Objects;
 
 public class KeyRecoveryActivity extends ExtendedAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_key_recovery);
+
+        ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setTitle(getResources().getString(R.string.key_recovery));
 
         EditText hexKeyField = findViewById(R.id.import_key_field);
         Button applyButton = findViewById(R.id.check_recovery_key_button);
