@@ -9,4 +9,7 @@
 
     <item android:id="@+id/search_menu_item"
         android:title="@string/search"/>
+
+    <item android:id="@+id/change_password_menu_item"
+        android:title="@string/change_access_code"/>
 </menu>
