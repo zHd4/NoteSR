@@ -53,7 +53,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
 
         currentMode = getIntent().getIntExtra("mode", -1);
 
-        if (currentMode < 0) {
+        if (currentMode == -1) {
             throw new RuntimeException("Authorization mode didn't provided");
         }
 
