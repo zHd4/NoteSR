@@ -77,6 +77,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
                 deleteButton.setEnabled(false);
                 deleteButton.setVisible(false);
             }
+            
             case EDIT_NOTE_MODE -> {
                 Consumer<?> deleteButtonOnClick = action -> deleteNoteOnClick();
                 menuItemsMap.put(R.id.delete_note_button, deleteButtonOnClick);
@@ -92,8 +93,8 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         Consumer<?> action = menuItemsMap.get(id);
+
         if (action != null) {
             action.accept(null);
         } else {
