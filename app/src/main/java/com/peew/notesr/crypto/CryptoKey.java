@@ -25,4 +25,8 @@ public record CryptoKey(SecretKey key, byte[] salt, String password) {
 
         return result;
     }
+
+    public CryptoKey copy() {
+        return new CryptoKey(key, salt, password);
+    }
 }
