@@ -1,5 +1,6 @@
 package com.peew.notesr.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,6 +9,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
@@ -18,6 +21,7 @@ import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 import com.peew.notesr.models.NoteItem;
+import com.peew.notesr.tools.AlertDialogHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -156,13 +160,30 @@ public class MainActivity extends ExtendedAppCompatActivity {
     }
 
     private void generateNewKeyOnClick() {
-        Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
-        String password = CryptoManager.getInstance().getCryptoKeyInstance().password();
+        String messageText = getString(R.string.key_regeneration_warning);
+        String applyButtonText = getString(R.string.yes);
 
-        setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.REGENERATION_MODE);
-        setupKeyActivityIntent.putExtra("password", password);
+        String cancelButtonText = getString(R.string.no);
+        DialogInterface.OnClickListener listener = regenerateKeyDialogOnClick();
+        AlertDialogHelper.YesNoDialogParams params = new AlertDialogHelper.YesNoDialogParams(
+                this, messageText, applyButtonText, cancelButtonText, listener);
 
-        startActivity(setupKeyActivityIntent);
-        finish();
+        AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(params);
+        dialog.show();
+    }
+
+    private DialogInterface.OnClickListener regenerateKeyDialogOnClick() {
+        return (dialog, result) -> {
+            if (result == DialogInterface.BUTTON_POSITIVE) {
+                Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
+                String password = CryptoManager.getInstance().getCryptoKeyInstance().password();
+
+                setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.REGENERATION_MODE);
+                setupKeyActivityIntent.putExtra("password", password);
+
+                startActivity(setupKeyActivityIntent);
+                finish();
+            }
+        };
     }
 }
