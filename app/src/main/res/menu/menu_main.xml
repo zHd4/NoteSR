@@ -5,11 +5,14 @@
         android:id="@+id/lock_app_button"
         android:icon="@android:drawable/ic_lock_lock"
         android:title="@string/lock_app"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item android:id="@+id/search_menu_item"
         android:title="@string/search"/>
 
     <item android:id="@+id/change_password_menu_item"
         android:title="@string/change_access_code"/>
+
+    <item android:id="@+id/generate_new_key_menu_item"
+        android:title="@string/generate_new_key"/>
 </menu>
