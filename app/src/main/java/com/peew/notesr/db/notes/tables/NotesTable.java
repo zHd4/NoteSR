@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.models.Note;
 
 import java.util.ArrayList;
@@ -31,6 +32,42 @@ public final class NotesTable extends Table {
     @Override
     public Map<String, String> getFields() {
         return fields;
+    }
+
+    @Override
+    public void reEncryptAll(CryptoKey oldCryptoKey) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        Cursor cursor = db.query(name,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        try (db) {
+            try (cursor) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        long id = cursor.getLong(0);
+
+                        String name = decrypt(cursor.getString(1));
+                        String text = decrypt(cursor.getString(2));
+
+                        String encryptedName = encrypt(name, oldCryptoKey);
+                        String encryptedText = encrypt(text, oldCryptoKey);
+
+                        ContentValues values = new ContentValues();
+
+                        values.put(NotesTableField.ENCRYPTED_NAME.getName(), encryptedName);
+                        values.put(NotesTableField.ENCRYPTED_DATA.getName(), encryptedText);
+
+                        String whereClause = NotesTableField.NOTE_ID.getName() + "=" + id;
+                        db.update(name, values, whereClause, null);
+                    } while (cursor.moveToNext());
+                }
+            }
+        }
     }
 
     public void add(Note note) {
