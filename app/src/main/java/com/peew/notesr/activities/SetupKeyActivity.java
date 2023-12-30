@@ -48,6 +48,8 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
 
         if (mode == -1) {
             throw new RuntimeException("Mode didn't provided");
+        } else if (mode == REGENERATION_MODE) {
+            disableBackButton();
         }
 
         if (password == null) {
