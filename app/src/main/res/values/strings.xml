@@ -54,4 +54,5 @@
     <string name="change_access_code">Change access code</string>
     <string name="create_new_access_code">Create new access code</string>
     <string name="updated">Updated!</string>
+    <string name="generate_new_key">Generate new key</string>
 </resources>
