@@ -21,10 +21,14 @@ import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
+import com.peew.notesr.db.notes.NotesDatabase;
 
 import java.security.NoSuchAlgorithmException;
 
 public class SetupKeyActivity extends ExtendedAppCompatActivity {
+    public static final int FIRST_RUN_MODE = 0;
+    public static final int REGENERATION_MODE = 1;
+    private int mode;
     private String password;
     private CryptoKey key;
     private final CryptoManager cryptoManager = CryptoManager.getInstance();
@@ -39,7 +43,17 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         Button copyToClipboardButton = findViewById(R.id.copy_aes_key_hex);
         Button nextButton = findViewById(R.id.key_setup_next_button);
 
+        mode = getIntent().getIntExtra("mode", -1);
         password = getIntent().getStringExtra("password");
+
+        if (mode == -1) {
+            throw new RuntimeException("Mode didn't provided");
+        }
+
+        if (password == null) {
+            throw new RuntimeException("Password didn't provided");
+        }
+
         importKeyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
         try {
@@ -71,27 +85,37 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
                     key = CryptoTools.hexToCryptoKey(hexKeyToImport, password);
                 } catch (Exception e) {
                     Log.e("hexToCryptoKey" , e.toString());
-
-                    int importFailedColor = ContextCompat.getColor(
-                            App.getContext(),
-                            R.color.key_import_failed_color);
-
-                    ColorFilter colorFilter = new BlendModeColorFilter(
-                            importFailedColor,
-                            BlendMode.SRC_ATOP);
-
-                    importKeyField.getBackground().setColorFilter(colorFilter);
+                    proceedKeyImportFail(importKeyField);
                     return;
                 }
             }
 
             try {
-                cryptoManager.applyNewKey(key);
+                if (mode == REGENERATION_MODE) {
+                    CryptoKey oldCryptoKey = cryptoManager.getCryptoKeyInstance().copy();
+                    cryptoManager.applyNewKey(key);
+
+                    NotesDatabase.getInstance().reEncryptAllTables(oldCryptoKey);
+                } else {
+                    cryptoManager.applyNewKey(key);
+                }
             } catch (Exception e) {
-                Log.e("applyNewKey" , e.toString());
+                throw new RuntimeException(e);
             }
 
             startActivity(new Intent(App.getContext(), MainActivity.class));
         };
+    }
+
+    private void proceedKeyImportFail(EditText importKeyField) {
+        int importFailedColor = ContextCompat.getColor(
+                App.getContext(),
+                R.color.key_import_failed_color);
+
+        ColorFilter colorFilter = new BlendModeColorFilter(
+                importFailedColor,
+                BlendMode.SRC_ATOP);
+
+        importKeyField.getBackground().setColorFilter(colorFilter);
     }
 }
