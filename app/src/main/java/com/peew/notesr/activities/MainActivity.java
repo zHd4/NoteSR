@@ -51,11 +51,12 @@ public class MainActivity extends ExtendedAppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Intent searchActivityIntent = new Intent(App.getContext(), SearchNotesActivity.class);
-
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         menuItemsMap.put(R.id.lock_app_button, action -> lockOnClick());
         menuItemsMap.put(R.id.change_password_menu_item, action -> changePasswordOnClick());
+
+        menuItemsMap.put(R.id.generate_new_key_menu_item, action -> generateNewKeyOnClick());
         menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
 
         return true;
@@ -151,6 +152,17 @@ public class MainActivity extends ExtendedAppCompatActivity {
         authActivityIntent.putExtra("mode", AuthActivity.CHANGE_PASSWORD_MODE);
 
         startActivity(authActivityIntent);
+        finish();
+    }
+
+    private void generateNewKeyOnClick() {
+        Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
+        String password = CryptoManager.getInstance().getCryptoKeyInstance().password();
+
+        setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.REGENERATION_MODE);
+        setupKeyActivityIntent.putExtra("password", password);
+
+        startActivity(setupKeyActivityIntent);
         finish();
     }
 }
