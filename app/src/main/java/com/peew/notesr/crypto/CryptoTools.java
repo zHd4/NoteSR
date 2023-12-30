@@ -5,9 +5,9 @@ import java.nio.ByteBuffer;
 public class CryptoTools {
     private static final int HEX_LINE_SIZE_LIMIT = 4;
 
-    public static String cryptoKeyToHex(CryptoKey key) {
-        byte[] keyBytes = key.key().getEncoded();
-        byte[] salt = key.salt();
+    public static String cryptoKeyToHex(CryptoKey cryptoKey) {
+        byte[] keyBytes = cryptoKey.key().getEncoded();
+        byte[] salt = cryptoKey.salt();
         byte[] bytes = new byte[keyBytes.length + salt.length];
 
         StringBuilder result = new StringBuilder();
