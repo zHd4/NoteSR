@@ -176,8 +176,9 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     private void proceedPasswordCreation() {
         if (setPassword()) {
             Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
-            setupKeyActivityIntent.putExtra("password", password);
+            setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.FIRST_RUN_MODE);
 
+            setupKeyActivityIntent.putExtra("password", password);
             startActivity(setupKeyActivityIntent);
         }
     }
