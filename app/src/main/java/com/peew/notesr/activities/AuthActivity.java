@@ -69,11 +69,14 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         Button backspaceButton = findViewById(R.id.pin_backspace_button);
         Button authButton = findViewById(R.id.auth_button);
 
-        if (currentMode == AUTHORIZATION_MODE) {
-            topLabel.setText(R.string.enter_access_code);
-            disableBackButton();
-        } else {
-            topLabel.setText(R.string.create_access_code);
+        switch (currentMode) {
+            case AUTHORIZATION_MODE -> {
+                topLabel.setText(R.string.enter_access_code);
+                disableBackButton();
+            }
+
+            case CHANGE_PASSWORD_MODE -> topLabel.setText(R.string.create_new_access_code);
+            default -> topLabel.setText(R.string.create_access_code);
         }
 
         Arrays.stream(PIN_BUTTONS_ID).forEach(id -> findViewById(id)
