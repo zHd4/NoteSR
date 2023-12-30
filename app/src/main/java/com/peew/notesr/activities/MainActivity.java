@@ -55,6 +55,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         menuItemsMap.put(R.id.lock_app_button, action -> lockOnClick());
+        menuItemsMap.put(R.id.change_password_menu_item, action -> changePasswordOnClick());
         menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
 
         return true;
@@ -140,6 +141,14 @@ public class MainActivity extends ExtendedAppCompatActivity {
         authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
 
         cryptoManager.destroyKey();
+
+        startActivity(authActivityIntent);
+        finish();
+    }
+
+    private void changePasswordOnClick() {
+        Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
+        authActivityIntent.putExtra("mode", AuthActivity.CHANGE_PASSWORD_MODE);
 
         startActivity(authActivityIntent);
         finish();
