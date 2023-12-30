@@ -198,6 +198,8 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         if (setPassword()) {
             try {
                 cryptoManager.changePassword(password);
+                resetPassword(getString(R.string.updated));
+
                 startActivity(new Intent(App.getContext(), MainActivity.class));
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -205,37 +207,9 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         }
     }
 
-    private boolean setPassword() {
-        TextView topLabel = findViewById(R.id.auth_top_label);
-        TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
-
-        String repeatCodeString = getString(R.string.repeat_access_code);
-
-        if (password != null && topLabel.getText().equals(repeatCodeString)) {
-            if (!passwordBuilder.toString().equals(password)) {
-                resetPassword(getString(R.string.code_not_match));
-                return false;
-            }
-
-            return true;
-        } else {
-            if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
-                password = passwordBuilder.toString();
-                passwordBuilder = new StringBuilder();
-
-                topLabel.setText(repeatCodeString);
-                censoredPasswordView.setText("");
-            } else {
-                String messageFormat = getString(R.string.minimum_password_length_is_n);
-                resetPassword(String.format(messageFormat, MIN_PASSWORD_LENGTH));
-            }
-        }
-
-        return false;
-    }
-
     private void proceedAuthorization() {
         String accessCode = passwordBuilder.toString();
+        TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
 
         if (accessCode.isEmpty()) {
             showToastMessage(getString(R.string.enter_the_code), Toast.LENGTH_SHORT);
@@ -261,8 +235,39 @@ public class AuthActivity extends ExtendedAppCompatActivity {
                 resetPassword(String.format(messageFormat, attempts));
             }
         } else {
+            censoredPasswordView.setText("");
             startActivity(new Intent(App.getContext(), MainActivity.class));
         }
+    }
+
+    private boolean setPassword() {
+        TextView topLabel = findViewById(R.id.auth_top_label);
+        TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
+
+        String repeatCodeString = getString(R.string.repeat_access_code);
+
+        if (password != null && topLabel.getText().equals(repeatCodeString)) {
+            if (!passwordBuilder.toString().equals(password)) {
+                resetPassword(getString(R.string.code_not_match));
+                return false;
+            }
+
+            censoredPasswordView.setText("");
+            return true;
+        } else {
+            if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
+                password = passwordBuilder.toString();
+                passwordBuilder = new StringBuilder();
+
+                topLabel.setText(repeatCodeString);
+                censoredPasswordView.setText("");
+            } else {
+                String messageFormat = getString(R.string.minimum_password_length_is_n);
+                resetPassword(String.format(messageFormat, MIN_PASSWORD_LENGTH));
+            }
+        }
+
+        return false;
     }
 
     private void resetPassword(String toastMessage) {
