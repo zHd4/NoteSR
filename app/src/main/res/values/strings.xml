@@ -52,5 +52,6 @@
     <string name="found_n">Found: %o</string>
     <string name="no_notes">No notes</string>
     <string name="change_access_code">Change access code</string>
+    <string name="create_new_access_code">Create new access code</string>
     <string name="updated">Updated!</string>
 </resources>
