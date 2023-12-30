@@ -51,11 +51,11 @@ public final class NotesTable extends Table {
                     do {
                         long id = cursor.getLong(0);
 
-                        String name = decrypt(cursor.getString(1));
-                        String text = decrypt(cursor.getString(2));
+                        String name = decrypt(cursor.getString(1), oldCryptoKey);
+                        String text = decrypt(cursor.getString(2), oldCryptoKey);
 
-                        String encryptedName = encrypt(name, oldCryptoKey);
-                        String encryptedText = encrypt(text, oldCryptoKey);
+                        String encryptedName = encrypt(name);
+                        String encryptedText = encrypt(text);
 
                         ContentValues values = new ContentValues();
 
@@ -63,7 +63,7 @@ public final class NotesTable extends Table {
                         values.put(NotesTableField.ENCRYPTED_DATA.getName(), encryptedText);
 
                         String whereClause = NotesTableField.NOTE_ID.getName() + "=" + id;
-                        db.update(name, values, whereClause, null);
+                        db.update(this.name, values, whereClause, null);
                     } while (cursor.moveToNext());
                 }
             }
