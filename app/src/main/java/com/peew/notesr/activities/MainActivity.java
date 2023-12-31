@@ -21,7 +21,6 @@ import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 import com.peew.notesr.models.NoteItem;
-import com.peew.notesr.tools.AlertDialogHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -160,16 +159,25 @@ public class MainActivity extends ExtendedAppCompatActivity {
     }
 
     private void generateNewKeyOnClick() {
-        String messageText = getString(R.string.key_regeneration_warning);
-        String applyButtonText = getString(R.string.yes);
+//        String messageText = getString(R.string.key_regeneration_warning);
+//        String applyButtonText = getString(R.string.yes);
+//
+//        String cancelButtonText = getString(R.string.no);
+//        DialogInterface.OnClickListener listener = regenerateKeyDialogOnClick();
+//        AlertDialogHelper.YesNoDialogParams params = new AlertDialogHelper.YesNoDialogParams(
+//                this, messageText, applyButtonText, cancelButtonText, listener);
+//
+//        AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(params);
+//        dialog.show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
-        String cancelButtonText = getString(R.string.no);
-        DialogInterface.OnClickListener listener = regenerateKeyDialogOnClick();
-        AlertDialogHelper.YesNoDialogParams params = new AlertDialogHelper.YesNoDialogParams(
-                this, messageText, applyButtonText, cancelButtonText, listener);
+        builder.setView(R.layout.dialog_re_encryption_warning);
+        builder.setTitle(R.string.warning);
 
-        AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(params);
-        dialog.show();
+        builder.setPositiveButton(R.string.yes, regenerateKeyDialogOnClick());
+        builder.setNegativeButton(R.string.no, regenerateKeyDialogOnClick());
+
+        builder.create().show();
     }
 
     private DialogInterface.OnClickListener regenerateKeyDialogOnClick() {
