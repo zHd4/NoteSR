@@ -20,7 +20,7 @@
     <style name="AppTheme.NoActionBar." parent="ThemeOverlay.AppCompat.Dark" tools:ignore="DuplicateDefinition" />
 
     <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:background">@color/activity_background</item>
+        <item name="android:background">@color/dialog_background</item>
     </style>
 
 </resources>

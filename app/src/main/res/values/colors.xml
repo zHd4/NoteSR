@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="activity_background">#050D1C</color>
-    <color name="alert_dialog_background">#0F1726</color>
+    <color name="dialog_background">#0F1726</color>
     <color name="light_button_background">#102449</color>
     <color name="button_background">#0D1D3C</color>
     <color name="floating_action_button_background">#031332</color>
