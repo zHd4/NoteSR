@@ -2,11 +2,14 @@ package com.peew.notesr.activities;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
 import android.graphics.ColorFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +27,8 @@ import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.db.notes.NotesDatabase;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SetupKeyActivity extends ExtendedAppCompatActivity {
     public static final int FIRST_RUN_MODE = 0;
@@ -92,21 +97,45 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
                 }
             }
 
-            try {
-                if (mode == REGENERATION_MODE) {
-                    CryptoKey oldCryptoKey = cryptoManager.getCryptoKeyInstance().copy();
+            if (mode == FIRST_RUN_MODE) {
+                try {
                     cryptoManager.applyNewKey(key);
-
-                    NotesDatabase.getInstance().reEncryptAllTables(oldCryptoKey);
-                } else {
-                    cryptoManager.applyNewKey(key);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
+
+                startActivity(new Intent(App.getContext(), MainActivity.class));
+            } else if (mode == REGENERATION_MODE) {
+                proceedRegeneration();
+            }
+        };
+    }
+
+    private void proceedRegeneration() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+
+        executor.execute(() -> {
+            handler.post(() -> {
+                builder.setView(R.layout.progress_dialog_re_encryption);
+                builder.setCancelable(false);
+                builder.create().show();
+            });
+
+            try {
+                CryptoKey oldCryptoKey = cryptoManager.getCryptoKeyInstance().copy();
+                cryptoManager.applyNewKey(key);
+
+                NotesDatabase.getInstance().reEncryptAllTables(oldCryptoKey);
+
+                startActivity(new Intent(App.getContext(), MainActivity.class));
+                finish();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
-            startActivity(new Intent(App.getContext(), MainActivity.class));
-        };
+        });
     }
 
     private void proceedKeyImportFail(EditText importKeyField) {
