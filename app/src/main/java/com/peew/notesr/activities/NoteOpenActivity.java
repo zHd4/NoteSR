@@ -17,7 +17,6 @@ import com.peew.notesr.R;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
-import com.peew.notesr.tools.AlertDialogHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -134,16 +133,15 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
     }
 
     private void deleteNoteOnClick() {
-        String messageText = getString(R.string.this_action_cannot_be_undo_are_you_sure);
-        String deleteButtonText = getString(R.string.delete);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
-        String cancelButtonText = getString(R.string.no);
-        DialogInterface.OnClickListener listener = deleteNoteDialogOnClick();
-        AlertDialogHelper.YesNoDialogParams params = new AlertDialogHelper.YesNoDialogParams(
-                this, messageText, deleteButtonText, cancelButtonText, listener);
+        builder.setView(R.layout.dialog_delete_note);
+        builder.setTitle(R.string.warning);
 
-        AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(params);
-        dialog.show();
+        builder.setPositiveButton(R.string.delete, deleteNoteDialogOnClick());
+        builder.setNegativeButton(R.string.no, deleteNoteDialogOnClick());
+
+        builder.create().show();
     }
 
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
