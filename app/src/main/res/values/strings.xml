@@ -59,4 +59,5 @@
     <string name="key_regeneration_warning">This action will cause all of your data to be re-encrypted.\nAre you sure?</string>
     <string name="re_encrypting_data">Re-encrypting data…</string>
     <string name="warning">Warning</string>
+    <string name="loading">Loading…</string>
 </resources>
