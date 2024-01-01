@@ -3,6 +3,8 @@ package com.peew.notesr.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -92,25 +96,38 @@ public class MainActivity extends ExtendedAppCompatActivity {
     }
 
     private void fillNotesList(ListView notesView, TextView missingNotesLabel) {
-        if (cryptoManager.getCryptoKeyInstance() != null) {
-            NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
-            List<Note> notes = notesTable.getAll();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
-            if (!notes.isEmpty()) {
-                missingNotesLabel.setVisibility(View.INVISIBLE);
+        AlertDialog progressDialog = builder.create();
 
-                List<NoteItem> items = notes.stream()
-                        .map(note -> new NoteItem(note.name(), note.text()))
-                        .collect(Collectors.toList());
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
 
-                NotesListAdapter adapter = new NotesListAdapter(
-                        App.getContext(),
-                        R.layout.notes_list_item,
-                        items);
+        executor.execute(() -> {
+            if (cryptoManager.getCryptoKeyInstance() != null) {
+                handler.post(progressDialog::show);
 
-                notesView.setAdapter(adapter);
+                NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+                List<Note> notes = notesTable.getAll();
+
+                if (!notes.isEmpty()) {
+                    missingNotesLabel.setVisibility(View.INVISIBLE);
+
+                    List<NoteItem> items = notes.stream()
+                            .map(note -> new NoteItem(note.name(), note.text()))
+                            .collect(Collectors.toList());
+
+                    NotesListAdapter adapter = new NotesListAdapter(
+                            App.getContext(),
+                            R.layout.notes_list_item,
+                            items);
+
+                    runOnUiThread(() -> notesView.setAdapter(adapter));
+                    progressDialog.dismiss();
+                }
             }
-        }
+        });
     }
 
     private AdapterView.OnItemClickListener noteOnClick() {
@@ -159,16 +176,6 @@ public class MainActivity extends ExtendedAppCompatActivity {
     }
 
     private void generateNewKeyOnClick() {
-//        String messageText = getString(R.string.key_regeneration_warning);
-//        String applyButtonText = getString(R.string.yes);
-//
-//        String cancelButtonText = getString(R.string.no);
-//        DialogInterface.OnClickListener listener = regenerateKeyDialogOnClick();
-//        AlertDialogHelper.YesNoDialogParams params = new AlertDialogHelper.YesNoDialogParams(
-//                this, messageText, applyButtonText, cancelButtonText, listener);
-//
-//        AlertDialog dialog = AlertDialogHelper.generateYesNoDialog(params);
-//        dialog.show();
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
         builder.setView(R.layout.dialog_re_encryption_warning);
