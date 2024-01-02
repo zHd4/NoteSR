@@ -1,6 +1,5 @@
 package com.peew.notesr.ui;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,7 +7,6 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,9 +22,12 @@ import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 import com.peew.notesr.ui.auth.AuthActivity;
 import com.peew.notesr.ui.manage.KeyRecoveryActivity;
-import com.peew.notesr.ui.manage.NoteOpenActivity;
 import com.peew.notesr.ui.manage.SearchNotesActivity;
-import com.peew.notesr.ui.setup.SetupKeyActivity;
+import com.peew.notesr.ui.onclick.ChangePasswordOnClick;
+import com.peew.notesr.ui.onclick.GenerateNewKeyOnClick;
+import com.peew.notesr.ui.onclick.LockOnClick;
+import com.peew.notesr.ui.onclick.NewNoteOnClick;
+import com.peew.notesr.ui.onclick.NoteOnClick;
 import com.peew.notesr.ui.setup.StartActivity;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class MainActivity extends ExtendedAppCompatActivity {
-    private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
+    private final Map<Integer, Consumer<MainActivity>> menuItemsMap = new HashMap<>();
     private final CryptoManager cryptoManager = CryptoManager.getInstance();
 
     @Override
@@ -53,10 +54,10 @@ public class MainActivity extends ExtendedAppCompatActivity {
         TextView missingNotesLabel = findViewById(R.id.missing_notes_label);
         FloatingActionButton newNoteButton = findViewById(R.id.add_note_button);
 
-        newNoteButton.setOnClickListener(newNoteOnClick());
+        newNoteButton.setOnClickListener(new NewNoteOnClick(this));
 
         fillNotesList(notesView, missingNotesLabel);
-        notesView.setOnItemClickListener(noteOnClick());
+        notesView.setOnItemClickListener(new NoteOnClick(this));
     }
 
     @Override
@@ -64,10 +65,10 @@ public class MainActivity extends ExtendedAppCompatActivity {
         Intent searchActivityIntent = new Intent(App.getContext(), SearchNotesActivity.class);
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        menuItemsMap.put(R.id.lock_app_button, action -> lockOnClick());
-        menuItemsMap.put(R.id.change_password_menu_item, action -> changePasswordOnClick());
+        menuItemsMap.put(R.id.lock_app_button, new LockOnClick());
+        menuItemsMap.put(R.id.change_password_menu_item, new ChangePasswordOnClick());
+        menuItemsMap.put(R.id.generate_new_key_menu_item, new GenerateNewKeyOnClick());
 
-        menuItemsMap.put(R.id.generate_new_key_menu_item, action -> generateNewKeyOnClick());
         menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
 
         return true;
@@ -76,7 +77,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Objects.requireNonNull(menuItemsMap.get(id)).accept(null);
+        Objects.requireNonNull(menuItemsMap.get(id)).accept(this);
 
         return true;
     }
@@ -128,77 +129,5 @@ public class MainActivity extends ExtendedAppCompatActivity {
                 progressDialog.dismiss();
             }
         });
-    }
-
-    private AdapterView.OnItemClickListener noteOnClick() {
-        return (adapter, view, position, id) -> {
-            Intent noteOpenActivtyIntent = new Intent(App.getContext(), NoteOpenActivity.class);
-
-            noteOpenActivtyIntent.putExtra("mode", NoteOpenActivity.EDIT_NOTE_MODE);
-            noteOpenActivtyIntent.putExtra("note_id", id);
-
-            startActivity(noteOpenActivtyIntent);
-        };
-    }
-
-    private View.OnClickListener newNoteOnClick() {
-        return view -> {
-            if (cryptoManager.getCryptoKeyInstance() != null) {
-                NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
-
-                long id = notesTable.getNewNoteId();
-                Intent noteOpenActivtyIntent = new Intent(App.getContext(), NoteOpenActivity.class);
-
-                noteOpenActivtyIntent.putExtra("mode", NoteOpenActivity.NEW_NOTE_MODE);
-                noteOpenActivtyIntent.putExtra("note_id", id);
-
-                startActivity(noteOpenActivtyIntent);
-            }
-        };
-    }
-
-    private void lockOnClick() {
-        Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-        authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
-
-        cryptoManager.destroyKey();
-
-        startActivity(authActivityIntent);
-        finish();
-    }
-
-    private void changePasswordOnClick() {
-        Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-        authActivityIntent.putExtra("mode", AuthActivity.CHANGE_PASSWORD_MODE);
-
-        startActivity(authActivityIntent);
-        finish();
-    }
-
-    private void generateNewKeyOnClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-
-        builder.setView(R.layout.dialog_re_encryption_warning);
-        builder.setTitle(R.string.warning);
-
-        builder.setPositiveButton(R.string.yes, regenerateKeyDialogOnClick());
-        builder.setNegativeButton(R.string.no, regenerateKeyDialogOnClick());
-
-        builder.create().show();
-    }
-
-    private DialogInterface.OnClickListener regenerateKeyDialogOnClick() {
-        return (dialog, result) -> {
-            if (result == DialogInterface.BUTTON_POSITIVE) {
-                Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
-                String password = CryptoManager.getInstance().getCryptoKeyInstance().password();
-
-                setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.REGENERATION_MODE);
-                setupKeyActivityIntent.putExtra("password", password);
-
-                startActivity(setupKeyActivityIntent);
-                finish();
-            }
-        };
     }
 }
