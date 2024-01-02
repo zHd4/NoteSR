@@ -12,7 +12,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.adapters.NotesListAdapter;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.models.NoteItem;
+import com.peew.notesr.models.Note;
 import com.peew.notesr.models.SearchNotesResults;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
 
@@ -53,15 +53,14 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
     private void fillResultsList(ListView resultsView) {
         NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
 
-        List<NoteItem> items = results.results().stream()
+        List<Note> notes = results.results().stream()
                 .map(notesTable::get)
-                .map(note -> new NoteItem(note.name(), note.text()))
                 .collect(Collectors.toList());
 
         NotesListAdapter adapter = new NotesListAdapter(
                 App.getContext(),
                 R.layout.notes_list_item,
-                items);
+                notes);
 
         resultsView.setAdapter(adapter);
     }
