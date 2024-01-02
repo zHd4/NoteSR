@@ -11,24 +11,21 @@ import com.peew.notesr.activities.MainActivity;
 import com.peew.notesr.crypto.CryptoManager;
 
 public class AuthorizationProcessor {
+    private static final int MAX_ATTEMPTS = 3;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
     private final AuthActivity activity;
     private final String password;
-    private final TextView censoredPasswordView;
-    private final CryptoManager cryptoManager;
-    private int attempts;
+    private int attempts = MAX_ATTEMPTS;
 
-    public AuthorizationProcessor(AuthActivity activity, String password,
-                                  TextView censoredPasswordView, CryptoManager cryptoManager,
-                                  int attempts) {
+    public AuthorizationProcessor(AuthActivity activity, String password) {
         this.activity = activity;
         this.password = password;
-        this.censoredPasswordView = censoredPasswordView;
-        this.cryptoManager = cryptoManager;
-        this.attempts = attempts;
     }
 
     public void proceed() {
+        CryptoManager cryptoManager = CryptoManager.getInstance();
+        TextView censoredPasswordView = activity.findViewById(R.id.censored_password_text_view);
+
         if (password.isEmpty()) {
             String enterCodeMessage = activity.getString(R.string.enter_the_code);
             activity.showToastMessage(enterCodeMessage, Toast.LENGTH_SHORT);
