@@ -21,8 +21,7 @@ public class ExtendedAppCompatActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SECURE);
     }
 
-    /** @noinspection SameParameterValue*/
-    protected void showToastMessage(String text, int duration) {
+    public void showToastMessage(String text, int duration) {
         Toast toast = Toast.makeText(App.getContext(), text, duration);
         toast.show();
     }

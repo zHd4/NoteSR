@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activities.auth.AuthActivity;
 
 public class StartActivity extends ExtendedAppCompatActivity {
     @Override

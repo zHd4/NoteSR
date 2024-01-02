@@ -14,6 +14,7 @@ import androidx.appcompat.app.ActionBar;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activities.auth.AuthActivity;
 import com.peew.notesr.crypto.CryptoTools;
 
 import java.util.Objects;

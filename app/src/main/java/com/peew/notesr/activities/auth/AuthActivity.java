@@ -1,4 +1,4 @@
-package com.peew.notesr.activities;
+package com.peew.notesr.activities.auth;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,6 +12,9 @@ import androidx.core.content.ContextCompat;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activities.ExtendedAppCompatActivity;
+import com.peew.notesr.activities.MainActivity;
+import com.peew.notesr.activities.SetupKeyActivity;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 
@@ -24,7 +27,6 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     public static final int CHANGE_PASSWORD_MODE = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int MAX_ATTEMPTS = 3;
-    private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
     private static final Integer[] PIN_BUTTONS_ID = {
             R.id.pin_button_1,
             R.id.pin_button_2,
@@ -44,7 +46,6 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     private StringBuilder passwordBuilder = new StringBuilder();
     private final CryptoManager cryptoManager = CryptoManager.getInstance();
     private String password;
-    private int attempts = MAX_ATTEMPTS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,36 +213,11 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     }
 
     private void proceedAuthorization() {
-        String accessCode = passwordBuilder.toString();
         TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
+        AuthorizationProcessor processor = new AuthorizationProcessor(this,
+                passwordBuilder.toString(), censoredPasswordView, cryptoManager, MAX_ATTEMPTS);
 
-        if (accessCode.isEmpty()) {
-            showToastMessage(getString(R.string.enter_the_code), Toast.LENGTH_SHORT);
-            return;
-        }
-
-        if (!cryptoManager.configure(accessCode)) {
-            attempts--;
-
-            if (attempts == 0) {
-                cryptoManager.block();
-
-                resetPassword(getString(R.string.blocked));
-                startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
-            } else {
-                try {
-                    Thread.sleep(ON_WRONG_PASSWORD_DELAY_MS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                String messageFormat = getString(R.string.wrong_code_you_have_n_attempts);
-                resetPassword(String.format(messageFormat, attempts));
-            }
-        } else {
-            censoredPasswordView.setText("");
-            startActivity(new Intent(App.getContext(), MainActivity.class));
-        }
+        processor.proceed();
     }
 
     private boolean setPassword() {
@@ -274,7 +250,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         return false;
     }
 
-    private void resetPassword(String toastMessage) {
+    void resetPassword(String toastMessage) {
         TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
         passwordBuilder = new StringBuilder();
 

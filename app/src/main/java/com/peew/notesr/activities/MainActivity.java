@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activities.auth.AuthActivity;
 import com.peew.notesr.adapters.NotesListAdapter;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.db.notes.NotesDatabase;
