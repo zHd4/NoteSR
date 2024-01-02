@@ -125,8 +125,9 @@ public class MainActivity extends ExtendedAppCompatActivity {
                             items);
 
                     runOnUiThread(() -> notesView.setAdapter(adapter));
-                    progressDialog.dismiss();
                 }
+
+                progressDialog.dismiss();
             }
         });
     }
