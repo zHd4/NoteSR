@@ -17,13 +17,12 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.ui.auth.AuthActivity;
 import com.peew.notesr.adapters.NotesListAdapter;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
-import com.peew.notesr.models.NoteItem;
+import com.peew.notesr.ui.auth.AuthActivity;
 import com.peew.notesr.ui.manage.KeyRecoveryActivity;
 import com.peew.notesr.ui.manage.NoteOpenActivity;
 import com.peew.notesr.ui.manage.SearchNotesActivity;
@@ -37,7 +36,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class MainActivity extends ExtendedAppCompatActivity {
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
@@ -119,15 +117,10 @@ public class MainActivity extends ExtendedAppCompatActivity {
 
                 if (!notes.isEmpty()) {
                     missingNotesLabel.setVisibility(View.INVISIBLE);
-
-                    List<NoteItem> items = notes.stream()
-                            .map(note -> new NoteItem(note.name(), note.text()))
-                            .collect(Collectors.toList());
-
                     NotesListAdapter adapter = new NotesListAdapter(
                             App.getContext(),
                             R.layout.notes_list_item,
-                            items);
+                            notes);
 
                     runOnUiThread(() -> notesView.setAdapter(adapter));
                 }
