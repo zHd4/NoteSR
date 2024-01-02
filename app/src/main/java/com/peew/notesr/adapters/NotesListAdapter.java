@@ -10,16 +10,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.peew.notesr.R;
-import com.peew.notesr.models.NoteItem;
+import com.peew.notesr.models.Note;
 
 import java.util.List;
+import java.util.Objects;
 
-public class NotesListAdapter extends ArrayAdapter<NoteItem> {
+public class NotesListAdapter extends ArrayAdapter<Note> {
     private static final int MAX_VALUE_LENGTH = 25;
     private final int resourceLayout;
     private final Context context;
 
-    public NotesListAdapter(Context context, int resource, List<NoteItem> items) {
+    public NotesListAdapter(Context context, int resource, List<Note> items) {
         super(context, resource, items);
         this.resourceLayout = resource;
         this.context = context;
@@ -36,17 +37,22 @@ public class NotesListAdapter extends ArrayAdapter<NoteItem> {
             view = inflater.inflate(resourceLayout, null);
         }
 
-        NoteItem item = getItem(position);
+        Note note = getItem(position);
 
-        if (item != null) {
+        if (note != null) {
             TextView nameView = (TextView) view.findViewById(R.id.note_name_text_view);
             TextView textView = (TextView) view.findViewById(R.id.note_text_view);
 
-            nameView.setText(formatValue(item.name()));
-            textView.setText(formatValue(item.text()));
+            nameView.setText(formatValue(note.name()));
+            textView.setText(formatValue(note.text()));
         }
 
         return view;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return Objects.requireNonNull(getItem(position)).id();
     }
 
     private String formatValue(String value) {
