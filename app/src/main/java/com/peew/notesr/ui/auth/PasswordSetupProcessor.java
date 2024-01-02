@@ -1,12 +1,12 @@
-package com.peew.notesr.activities.auth;
+package com.peew.notesr.ui.auth;
 
 import android.content.Intent;
 import android.widget.TextView;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activities.MainActivity;
-import com.peew.notesr.activities.SetupKeyActivity;
+import com.peew.notesr.ui.MainActivity;
+import com.peew.notesr.ui.SetupKeyActivity;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 

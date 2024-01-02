@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme">
@@ -24,31 +24,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.StartActivity"
+            android:name=".ui.StartActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.SetupKeyActivity"
+            android:name=".ui.SetupKeyActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.auth.AuthActivity"
+            android:name=".ui.auth.AuthActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.KeyRecoveryActivity"
+            android:name=".ui.KeyRecoveryActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activities.NoteOpenActivity"
+            android:name=".ui.NoteOpenActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activities.SearchNotesActivity"
+            android:name=".ui.SearchNotesActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activities.ViewNotesSearchResultsActivity"
+            android:name=".ui.ViewNotesSearchResultsActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
     </application>

@@ -1,4 +1,4 @@
-package com.peew.notesr.activities;
+package com.peew.notesr.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activities.auth.AuthActivity;
+import com.peew.notesr.ui.auth.AuthActivity;
 
 public class StartActivity extends ExtendedAppCompatActivity {
     @Override

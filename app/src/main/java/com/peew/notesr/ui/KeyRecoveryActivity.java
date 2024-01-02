@@ -1,4 +1,4 @@
-package com.peew.notesr.activities;
+package com.peew.notesr.ui;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -14,7 +14,7 @@ import androidx.appcompat.app.ActionBar;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activities.auth.AuthActivity;
+import com.peew.notesr.ui.auth.AuthActivity;
 import com.peew.notesr.crypto.CryptoTools;
 
 import java.util.Objects;

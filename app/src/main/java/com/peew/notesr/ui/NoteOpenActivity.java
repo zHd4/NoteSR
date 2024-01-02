@@ -1,4 +1,4 @@
-package com.peew.notesr.activities;
+package com.peew.notesr.ui;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
