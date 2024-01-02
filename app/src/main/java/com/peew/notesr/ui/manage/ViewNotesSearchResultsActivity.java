@@ -1,8 +1,6 @@
 package com.peew.notesr.ui.manage;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.appcompat.app.ActionBar;
@@ -15,6 +13,7 @@ import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 import com.peew.notesr.models.SearchNotesResults;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
+import com.peew.notesr.ui.onclick.NoteOnClick;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +39,7 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
 
         fillResultsList(resultsView);
 
-        resultsView.setOnItemClickListener(noteOnClick());
+        resultsView.setOnItemClickListener(new NoteOnClick(this));
     }
 
     /** @noinspection deprecation*/
@@ -63,16 +62,5 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
                 notes);
 
         resultsView.setAdapter(adapter);
-    }
-
-    private AdapterView.OnItemClickListener noteOnClick() {
-        return (adapter, view, position, id) -> {
-            Intent noteOpenActivtyIntent = new Intent(App.getContext(), NoteOpenActivity.class);
-
-            noteOpenActivtyIntent.putExtra("mode", NoteOpenActivity.EDIT_NOTE_MODE);
-            noteOpenActivtyIntent.putExtra("note_id", id);
-
-            startActivity(noteOpenActivtyIntent);
-        };
     }
 }
