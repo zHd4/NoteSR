@@ -1,4 +1,4 @@
-package com.peew.notesr.ui;
+package com.peew.notesr.ui.setup;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.ui.ExtendedAppCompatActivity;
 import com.peew.notesr.ui.auth.AuthActivity;
 
 public class StartActivity extends ExtendedAppCompatActivity {

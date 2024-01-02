@@ -24,11 +24,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.StartActivity"
+            android:name=".ui.setup.StartActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.SetupKeyActivity"
+            android:name=".ui.setup.SetupKeyActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -36,19 +36,19 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.KeyRecoveryActivity"
+            android:name=".ui.manage.KeyRecoveryActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.NoteOpenActivity"
+            android:name=".ui.manage.NoteOpenActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.SearchNotesActivity"
+            android:name=".ui.manage.SearchNotesActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.ViewNotesSearchResultsActivity"
+            android:name=".ui.manage.ViewNotesSearchResultsActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
     </application>

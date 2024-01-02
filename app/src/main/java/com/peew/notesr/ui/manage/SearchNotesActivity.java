@@ -1,4 +1,4 @@
-package com.peew.notesr.ui;
+package com.peew.notesr.ui.manage;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 import com.peew.notesr.models.SearchNotesResults;
+import com.peew.notesr.ui.ExtendedAppCompatActivity;
 
 import java.util.List;
 import java.util.function.Predicate;

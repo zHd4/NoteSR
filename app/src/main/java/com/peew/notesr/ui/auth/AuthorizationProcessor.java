@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.ui.KeyRecoveryActivity;
+import com.peew.notesr.ui.manage.KeyRecoveryActivity;
 import com.peew.notesr.ui.MainActivity;
 import com.peew.notesr.crypto.CryptoManager;
 

@@ -1,4 +1,4 @@
-package com.peew.notesr.ui;
+package com.peew.notesr.ui.setup;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -25,6 +25,8 @@ import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.db.notes.NotesDatabase;
+import com.peew.notesr.ui.ExtendedAppCompatActivity;
+import com.peew.notesr.ui.MainActivity;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;

@@ -24,6 +24,11 @@ import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 import com.peew.notesr.models.NoteItem;
+import com.peew.notesr.ui.manage.KeyRecoveryActivity;
+import com.peew.notesr.ui.manage.NoteOpenActivity;
+import com.peew.notesr.ui.manage.SearchNotesActivity;
+import com.peew.notesr.ui.setup.SetupKeyActivity;
+import com.peew.notesr.ui.setup.StartActivity;
 
 import java.util.HashMap;
 import java.util.List;

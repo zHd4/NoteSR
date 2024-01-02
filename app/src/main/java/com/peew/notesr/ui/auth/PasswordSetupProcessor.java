@@ -6,7 +6,7 @@ import android.widget.TextView;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.ui.MainActivity;
-import com.peew.notesr.ui.SetupKeyActivity;
+import com.peew.notesr.ui.setup.SetupKeyActivity;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 
