@@ -9,6 +9,15 @@ import java.io.IOException;
 
 public class FileManager {
     /** @noinspection ResultOfMethodCallIgnored*/
+    public static void createDirectory(File directory) {
+        directory.mkdirs();
+    }
+
+    public static boolean directoryExists(File directory) {
+        return directory.exists() && directory.isDirectory();
+    }
+
+    /** @noinspection ResultOfMethodCallIgnored*/
     public static byte[] readFileBytes(File file) throws IOException {
         byte[] data = new byte[(int) file.length()];
 
