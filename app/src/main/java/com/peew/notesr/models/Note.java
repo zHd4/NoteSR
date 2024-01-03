@@ -1,4 +1,8 @@
 package com.peew.notesr.models;
 
-public record Note(long id, String name, String text) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record Note(@JsonProperty("id") long id,
+                   @JsonProperty("name") String name,
+                   @JsonProperty("text") String text) {
 }
