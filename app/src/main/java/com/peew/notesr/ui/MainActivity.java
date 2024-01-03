@@ -24,6 +24,7 @@ import com.peew.notesr.ui.auth.AuthActivity;
 import com.peew.notesr.ui.manage.KeyRecoveryActivity;
 import com.peew.notesr.ui.manage.SearchNotesActivity;
 import com.peew.notesr.ui.onclick.ChangePasswordOnClick;
+import com.peew.notesr.ui.onclick.ExportNotesOnClick;
 import com.peew.notesr.ui.onclick.GenerateNewKeyOnClick;
 import com.peew.notesr.ui.onclick.LockOnClick;
 import com.peew.notesr.ui.onclick.NewNoteOnClick;
@@ -68,6 +69,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
         menuItemsMap.put(R.id.lock_app_button, new LockOnClick());
         menuItemsMap.put(R.id.change_password_menu_item, new ChangePasswordOnClick());
         menuItemsMap.put(R.id.generate_new_key_menu_item, new GenerateNewKeyOnClick());
+        menuItemsMap.put(R.id.export_menu_item, new ExportNotesOnClick());
 
         menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
 
