@@ -21,6 +21,7 @@ import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.models.Note;
 import com.peew.notesr.ui.auth.AuthActivity;
+import com.peew.notesr.ui.manage.ImportNotesActivity;
 import com.peew.notesr.ui.manage.KeyRecoveryActivity;
 import com.peew.notesr.ui.manage.SearchNotesActivity;
 import com.peew.notesr.ui.onclick.ChangePasswordOnClick;
@@ -64,15 +65,18 @@ public class MainActivity extends ExtendedAppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Intent searchActivityIntent = new Intent(App.getContext(), SearchNotesActivity.class);
+        Intent importNotesActivityIntent = new Intent(App.getContext(), ImportNotesActivity.class);
+
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         menuItemsMap.put(R.id.lock_app_button, new LockOnClick());
         menuItemsMap.put(R.id.change_password_menu_item, new ChangePasswordOnClick());
+
         menuItemsMap.put(R.id.generate_new_key_menu_item, new GenerateNewKeyOnClick());
         menuItemsMap.put(R.id.export_menu_item, new ExportNotesOnClick());
 
+        menuItemsMap.put(R.id.import_menu_item, action -> startActivity(importNotesActivityIntent));
         menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
-
         return true;
     }
 
