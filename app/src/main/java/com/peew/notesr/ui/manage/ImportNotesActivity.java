@@ -54,7 +54,7 @@ public class ImportNotesActivity extends ExtendedAppCompatActivity {
                     } else if (importResult == NotesImportResult.INVALID_DUMP) {
                         showToastMessage(getString(R.string.invalid_file), Toast.LENGTH_SHORT);
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
