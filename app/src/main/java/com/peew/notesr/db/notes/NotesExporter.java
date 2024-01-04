@@ -24,14 +24,13 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 public class NotesExporter {
-    private static final String DUMP_DIRECTORY_NAME = "NoteSR_exports";
     private final Context context;
 
     public NotesExporter(Context context) {
         this.context = context;
     }
 
-    public void export() throws Exception {
+    public String export() throws Exception {
         CryptoKey cryptoKey = CryptoManager.getInstance().getCryptoKeyInstance();
         Aes aesInstance = new Aes(cryptoKey.key(), cryptoKey.salt());
 
@@ -48,6 +47,8 @@ public class NotesExporter {
 
         File dumpFile = getDumpFile();
         FileManager.writeFileBytes(dumpFile, encryptedDump);
+
+        return dumpFile.getPath();
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -57,17 +58,9 @@ public class NotesExporter {
         String datetime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(now);
         String filename = "nsr_export_" + datetime + ".notesr.bak";
 
-        String homePath = Environment.getExternalStorageDirectory().toString();
+        File filesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        Path dumpPath = Paths.get(filesDir.toPath().toString(), filename);
 
-        Path dumpsDirectoryPath = Paths.get(homePath, DUMP_DIRECTORY_NAME);
-        File dumpsDirectory = new File(dumpsDirectoryPath.toUri());
-
-        if (!FileManager.directoryExists(dumpsDirectory)) {
-            FileManager.createDirectory(dumpsDirectory);
-        }
-
-        Path dumpPath = Paths.get(homePath, filename);
-//        Path dumpPath = Paths.get(dumpsDirectoryPath.toString(), filename);
         return new File(dumpPath.toUri());
     }
 }
