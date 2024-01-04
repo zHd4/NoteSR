@@ -51,6 +51,10 @@
             android:name=".ui.manage.ViewNotesSearchResultsActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.manage.ImportNotesActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
