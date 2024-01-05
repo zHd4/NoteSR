@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
@@ -21,6 +24,8 @@ import com.peew.notesr.ui.MainActivity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ImportNotesActivity extends ExtendedAppCompatActivity {
     @Override
@@ -42,23 +47,48 @@ public class ImportNotesActivity extends ExtendedAppCompatActivity {
     private ActivityResultCallback<ActivityResult> getImportCallback() {
         return result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
-                Uri fileUri = Objects.requireNonNull(result.getData()).getData();
+                Uri dumpUri = Objects.requireNonNull(result.getData()).getData();
 
                 try {
-                    byte[] data = getDumpData(fileUri);
+                    byte[] data = getDumpData(dumpUri);
 
-                    NotesImporter importer = new NotesImporter(this);
-                    NotesImportResult importResult = importer.importDump(data);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(
+                            this, R.style.AlertDialogTheme);
 
-                    showToastMessage(getResultMessage(importResult), Toast.LENGTH_SHORT);
-                    startActivity(new Intent(App.getContext(), MainActivity.class));
+                    builder.setView(R.layout.progress_dialog_importing).setCancelable(false);
+                    AlertDialog progressDialog = builder.create();
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
+
+                    executor.execute(() -> {
+                        handler.post(progressDialog::show);
+                        proceedImport(data);
+
+                        progressDialog.dismiss();
+                        finish();
+                    });
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-
-            finish();
         };
+    }
+
+    private void proceedImport(byte[] dumpBytes) {
+        try {
+            Thread.sleep(5000);
+
+            NotesImporter importer = new NotesImporter(this);
+            NotesImportResult importResult = importer.importDump(dumpBytes);
+
+            runOnUiThread(() -> {
+                showToastMessage(getResultMessage(importResult), Toast.LENGTH_SHORT);
+                startActivity(new Intent(App.getContext(), MainActivity.class));
+            });
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /** @noinspection ResultOfMethodCallIgnored*/
@@ -76,15 +106,12 @@ public class ImportNotesActivity extends ExtendedAppCompatActivity {
             case SUCCESS -> {
                 return getString(R.string.imported);
             }
-
             case INCOMPATIBLE_VERSION -> {
                 return getString(R.string.incompatible_file_version);
             }
-
             case INVALID_DUMP -> {
                 return getString(R.string.invalid_file);
             }
-
             default -> throw new IllegalArgumentException();
         }
     }
