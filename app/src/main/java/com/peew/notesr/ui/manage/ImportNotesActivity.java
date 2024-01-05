@@ -76,19 +76,13 @@ public class ImportNotesActivity extends ExtendedAppCompatActivity {
     }
 
     private void proceedImport(byte[] dumpBytes) {
-        try {
-            Thread.sleep(5000);
+        NotesImporter importer = new NotesImporter(this);
+        NotesImportResult importResult = importer.importDump(dumpBytes);
 
-            NotesImporter importer = new NotesImporter(this);
-            NotesImportResult importResult = importer.importDump(dumpBytes);
-
-            runOnUiThread(() -> {
-                showToastMessage(getResultMessage(importResult), Toast.LENGTH_SHORT);
-                startActivity(new Intent(App.getContext(), MainActivity.class));
-            });
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        runOnUiThread(() -> {
+            showToastMessage(getResultMessage(importResult), Toast.LENGTH_SHORT);
+            startActivity(new Intent(App.getContext(), MainActivity.class));
+        });
     }
 
     /** @noinspection ResultOfMethodCallIgnored*/
