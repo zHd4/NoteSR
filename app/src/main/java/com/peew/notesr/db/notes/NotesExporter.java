@@ -2,6 +2,7 @@ package com.peew.notesr.db.notes;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Environment;
@@ -12,16 +13,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peew.notesr.crypto.Aes;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
-import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.models.Note;
 import com.peew.notesr.models.NotesDatabaseDump;
 import com.peew.notesr.tools.FileManager;
 import com.peew.notesr.tools.VersionFetcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class NotesExporter {
     private final Context context;
@@ -30,16 +40,16 @@ public class NotesExporter {
         this.context = context;
     }
 
-    public String export() throws Exception {
+    public String export() throws PackageManager.NameNotFoundException, IOException,
+            InvalidAlgorithmParameterException, NoSuchPaddingException,
+            IllegalBlockSizeException, NoSuchAlgorithmException,
+            BadPaddingException, InvalidKeyException, MissingNotesException {
+        NotesDatabaseDump dump = getDump();
+
         CryptoKey cryptoKey = CryptoManager.getInstance().getCryptoKeyInstance();
         Aes aesInstance = new Aes(cryptoKey.key(), cryptoKey.salt());
 
-        NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
-        String version = VersionFetcher.fetchVersionName(context, false);
-
-        NotesDatabaseDump dump = new NotesDatabaseDump(version, notesTable.getAll());
         ObjectMapper mapper = new ObjectMapper();
-
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
         String jsonDump = mapper.writeValueAsString(dump);
@@ -49,6 +59,19 @@ public class NotesExporter {
         FileManager.writeFileBytes(dumpFile, encryptedDump);
 
         return dumpFile.getPath();
+    }
+
+    private NotesDatabaseDump getDump() throws
+            PackageManager.NameNotFoundException,
+            MissingNotesException {
+        List<Note> notes = NotesDatabase.getInstance().getNotesTable().getAll();
+
+        if (notes.isEmpty()) {
+            throw new MissingNotesException();
+        }
+
+        String version = VersionFetcher.fetchVersionName(context, false);
+        return new NotesDatabaseDump(version, notes);
     }
 
     @SuppressLint("SimpleDateFormat")
