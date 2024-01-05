@@ -11,7 +11,7 @@ android {
         applicationId "com.peew.notesr"
         minSdk 29
         targetSdk 34
-        versionCode 1
+        versionCode 49
         versionName "4.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -21,6 +21,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            applicationIdSuffix ".debug"
         }
     }
     compileOptions {
