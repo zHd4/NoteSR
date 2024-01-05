@@ -11,10 +11,12 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
+import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.db.notes.NotesImportResult;
 import com.peew.notesr.db.notes.NotesImporter;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
+import com.peew.notesr.ui.MainActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,12 +50,8 @@ public class ImportNotesActivity extends ExtendedAppCompatActivity {
                     NotesImporter importer = new NotesImporter(this);
                     NotesImportResult importResult = importer.importDump(data);
 
-                    if (importResult == NotesImportResult.INCOMPATIBLE_VERSION) {
-                        showToastMessage(getString(R.string.incompatible_file_version),
-                                Toast.LENGTH_SHORT);
-                    } else if (importResult == NotesImportResult.INVALID_DUMP) {
-                        showToastMessage(getString(R.string.invalid_file), Toast.LENGTH_SHORT);
-                    }
+                    showToastMessage(getResultMessage(importResult), Toast.LENGTH_SHORT);
+                    startActivity(new Intent(App.getContext(), MainActivity.class));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -70,6 +68,24 @@ public class ImportNotesActivity extends ExtendedAppCompatActivity {
             stream.read(data);
 
             return data;
+        }
+    }
+
+    private String getResultMessage(NotesImportResult result) {
+        switch (result) {
+            case SUCCESS -> {
+                return getString(R.string.imported);
+            }
+
+            case INCOMPATIBLE_VERSION -> {
+                return getString(R.string.incompatible_file_version);
+            }
+
+            case INVALID_DUMP -> {
+                return getString(R.string.invalid_file);
+            }
+
+            default -> throw new IllegalArgumentException();
         }
     }
 }
