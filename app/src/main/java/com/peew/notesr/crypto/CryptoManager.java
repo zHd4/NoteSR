@@ -98,7 +98,7 @@ public class CryptoManager {
             Exception {
         SecretKey newKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
                 Aes.KEY_GENERATOR_ALGORITHM);
-        if (verifyImportedKey(newKey, salt)) {
+        if (checkImportedKey(newKey, salt)) {
             return new CryptoKey(newKey, salt, password);
         }
 
@@ -172,11 +172,21 @@ public class CryptoManager {
         FileManager.writeFileBytes(getEncryptedTestFile(), randomBytes);
     }
 
-    private boolean verifyImportedKey(SecretKey key, byte[] salt) {
+    private boolean checkImportedKey(SecretKey key, byte[] salt) {
         if (App.onAndroid()) {
             try {
                 Aes aesInstance = new Aes(key, salt);
-                aesInstance.decrypt(FileManager.readFileBytes(getBlockFile()));
+                File blockFile = getBlockFile();
+
+                if (!blockFile.exists()) {
+                    Random random = new Random();
+                    byte[] randomBytes = new byte[ENCRYPTED_TEST_FILE_SIZE];
+
+                    random.nextBytes(randomBytes);
+                    aesInstance.decrypt(aesInstance.encrypt(randomBytes));
+                } else {
+                    aesInstance.decrypt(FileManager.readFileBytes(blockFile));
+                }
             } catch (Exception e) {
                 return false;
             }
