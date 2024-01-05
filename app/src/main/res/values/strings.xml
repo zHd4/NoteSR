@@ -64,6 +64,7 @@
     <string name="saved_to">Saved to: %s</string>
     <string name="import_from_file">Import from file</string>
     <string name="select_a_dump">Select a dump</string>
+    <string name="imported">Imported</string>
     <string name="incompatible_file_version">Incompatible file version</string>
     <string name="invalid_file">Invalid file</string>
 </resources>
