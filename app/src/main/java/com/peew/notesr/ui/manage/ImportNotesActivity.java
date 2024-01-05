@@ -104,7 +104,7 @@ public class ImportNotesActivity extends ExtendedAppCompatActivity {
                 return getString(R.string.incompatible_file_version);
             }
             case INVALID_DUMP -> {
-                return getString(R.string.invalid_file);
+                return getString(R.string.cannot_decrypt_file);
             }
             default -> throw new IllegalArgumentException();
         }
