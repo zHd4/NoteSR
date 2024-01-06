@@ -6,4 +6,4 @@
 NoteSR is an application for storing information securely.
 It is a note-taking application with all data encrypted using AES-256 symmetric encryption algorithm.
 
-<div style="text-align: center"><img alt="banner" src=".images/banner.jpg"></div>
+![Banner](.images/banner.jpg)
