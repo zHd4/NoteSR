@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/lock_app_button"
-        android:icon="@android:drawable/ic_lock_lock"
+        android:icon="@android:drawable/ic_lock_idle_lock"
         android:title="@string/lock_app"
         app:showAsAction="ifRoom" />
 
