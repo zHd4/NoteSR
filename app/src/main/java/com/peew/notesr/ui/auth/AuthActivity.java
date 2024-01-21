@@ -156,14 +156,14 @@ public class AuthActivity extends ExtendedAppCompatActivity {
             TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
 
             if (passwordBuilder.length() > 0) {
-                passwordBuilder.deleteCharAt(passwordBuilder.length() - 1);
-
                 String censoredPassword = censoredPasswordView.getText().toString();
 
                 if (censoredPassword.length() == passwordBuilder.length()) {
                     censoredPasswordView.setText(censoredPassword
                             .substring(0, censoredPassword.length() - 1));
                 }
+
+                passwordBuilder.deleteCharAt(passwordBuilder.length() - 1);
             }
         };
     }
