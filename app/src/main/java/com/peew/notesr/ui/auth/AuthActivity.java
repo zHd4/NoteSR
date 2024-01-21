@@ -2,6 +2,7 @@ package com.peew.notesr.ui.auth;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -125,7 +126,15 @@ public class AuthActivity extends ExtendedAppCompatActivity {
                 passwordBuilder.append(Character.toString(currentChar).toLowerCase());
             }
 
-            censoredPasswordView.setText(censoredPasswordView.getText() + "•");
+            int passwordViewWidth = censoredPasswordView.getMeasuredWidth();
+            int passwordViewLength = censoredPasswordView.getText().length();
+
+            int screenWidth = getDisplayMetrics().widthPixels;
+
+            if (passwordViewLength == 0 ||
+                    screenWidth - passwordViewWidth > passwordViewWidth / passwordViewLength) {
+                censoredPasswordView.setText(censoredPasswordView.getText() + "•");
+            }
         };
     }
 
@@ -150,8 +159,11 @@ public class AuthActivity extends ExtendedAppCompatActivity {
                 passwordBuilder.deleteCharAt(passwordBuilder.length() - 1);
 
                 String censoredPassword = censoredPasswordView.getText().toString();
-                censoredPasswordView.setText(censoredPassword
-                        .substring(0, censoredPassword.length() - 1));
+
+                if (censoredPassword.length() == passwordBuilder.length()) {
+                    censoredPasswordView.setText(censoredPassword
+                            .substring(0, censoredPassword.length() - 1));
+                }
             }
         };
     }
@@ -169,6 +181,13 @@ public class AuthActivity extends ExtendedAppCompatActivity {
 
     private void authorize() {
         new AuthorizationProcessor(this, passwordBuilder.toString()).proceed();
+    }
+
+    private DisplayMetrics getDisplayMetrics() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        return displayMetrics;
     }
 
     void resetPassword(String toastMessage) {
