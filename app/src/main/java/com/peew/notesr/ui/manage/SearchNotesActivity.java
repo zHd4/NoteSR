@@ -11,8 +11,8 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.models.Note;
-import com.peew.notesr.models.SearchNotesResults;
+import com.peew.notesr.model.Note;
+import com.peew.notesr.model.SearchNotesResults;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
 
 import java.util.List;

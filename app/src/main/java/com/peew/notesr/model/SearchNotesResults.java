@@ -1,4 +1,4 @@
-package com.peew.notesr.models;
+package com.peew.notesr.model;
 
 import java.io.Serializable;
 import java.util.List;

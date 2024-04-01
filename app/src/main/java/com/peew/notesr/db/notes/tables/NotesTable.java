@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.crypto.CryptoKey;
-import com.peew.notesr.models.Note;
+import com.peew.notesr.model.Note;
 
 import java.util.ArrayList;
 import java.util.List;

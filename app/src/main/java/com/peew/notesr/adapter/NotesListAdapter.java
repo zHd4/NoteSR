@@ -1,4 +1,4 @@
-package com.peew.notesr.adapters;
+package com.peew.notesr.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.peew.notesr.R;
-import com.peew.notesr.models.Note;
+import com.peew.notesr.model.Note;
 
 import java.util.List;
 import java.util.Objects;

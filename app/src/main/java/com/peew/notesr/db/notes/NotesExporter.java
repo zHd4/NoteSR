@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peew.notesr.crypto.Aes;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
-import com.peew.notesr.models.Note;
-import com.peew.notesr.models.NotesDatabaseDump;
+import com.peew.notesr.model.Note;
+import com.peew.notesr.model.NotesDatabaseDump;
 import com.peew.notesr.tools.FileManager;
 import com.peew.notesr.tools.VersionFetcher;
 
