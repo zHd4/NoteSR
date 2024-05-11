@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.crypto.CryptoKey;
-import com.peew.notesr.model.Note;
+import com.peew.notesr.model.EncryptedNote;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,7 @@ public final class NotesTable extends Table {
         return fields;
     }
 
+    @Deprecated
     @Override
     public void reEncryptAll(CryptoKey oldCryptoKey) {
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -70,13 +71,13 @@ public final class NotesTable extends Table {
         }
     }
 
-    public void add(Note note) {
+    public void add(EncryptedNote note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
             values.put(NotesTableField.NOTE_ID.getName(), note.id());
 
-            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(note.name()));
-            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(note.text()));
+            values.put(NotesTableField.ENCRYPTED_NAME.getName(), note.encryptedName());
+            values.put(NotesTableField.ENCRYPTED_DATA.getName(), note.encryptedText());
 
             db.insert(name, null, values);
         }
@@ -105,9 +106,9 @@ public final class NotesTable extends Table {
         return exists;
     }
 
-    public List<Note> getAll() {
+    public List<EncryptedNote> getAll() {
         SQLiteDatabase db = helper.getReadableDatabase();
-        List<Note> notes = new ArrayList<>();
+        List<EncryptedNote> notes = new ArrayList<>();
 
         Cursor cursor = db.query(name,
                 null,
@@ -123,10 +124,10 @@ public final class NotesTable extends Table {
                     do {
                         long id = cursor.getLong(0);
 
-                        String name = decrypt(cursor.getString(1));
-                        String text = decrypt(cursor.getString(2));
+                        String name = cursor.getString(1);
+                        String text = cursor.getString(2);
 
-                        notes.add(new Note(id, name, text));
+                        notes.add(new EncryptedNote(id, name, text));
                     } while (cursor.moveToNext());
                 }
             }
@@ -135,7 +136,7 @@ public final class NotesTable extends Table {
         return notes;
     }
 
-    public Note get(long id) {
+    public EncryptedNote get(long id) {
         SQLiteDatabase db = helper.getReadableDatabase();
         String idFieldName = NotesTableField.NOTE_ID.getName();
 
@@ -150,10 +151,10 @@ public final class NotesTable extends Table {
         try (db) {
             try (cursor) {
                 if (cursor.moveToFirst()) {
-                    String name = decrypt(cursor.getString(1));
-                    String text = decrypt(cursor.getString(2));
+                    String name = cursor.getString(1);
+                    String text = cursor.getString(2);
 
-                    return new Note(id, name, text);
+                    return new EncryptedNote(id, name, text);
                 } else {
                     throw new RuntimeException("Wrong note id");
                 }
@@ -186,12 +187,12 @@ public final class NotesTable extends Table {
         return newId;
     }
 
-    public void update(Note note) {
+    public void update(EncryptedNote note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
-            values.put(NotesTableField.ENCRYPTED_NAME.getName(), encrypt(note.name()));
-            values.put(NotesTableField.ENCRYPTED_DATA.getName(), encrypt(note.text()));
+            values.put(NotesTableField.ENCRYPTED_NAME.getName(), note.encryptedName());
+            values.put(NotesTableField.ENCRYPTED_DATA.getName(), note.encryptedText());
 
             String whereClause = NotesTableField.NOTE_ID.getName() + "=" + note.id();
             db.update(name, values, whereClause, null);
