@@ -21,14 +21,17 @@ public abstract class Table {
         this.helper = helper;
     }
 
+    @Deprecated
     protected String encrypt(String text) {
         return encrypt(text, CryptoManager.getInstance().getCryptoKeyInstance());
     }
 
+    @Deprecated
     protected String decrypt(String text) {
         return decrypt(text, CryptoManager.getInstance().getCryptoKeyInstance());
     }
 
+    @Deprecated
     protected String encrypt(String text, CryptoKey cryptoKey) {
         try {
             Aes aesInstance = getAesInstance(cryptoKey);
@@ -41,6 +44,7 @@ public abstract class Table {
         }
     }
 
+    @Deprecated
     protected String decrypt(String encryptedText, CryptoKey cryptoKey) {
         try {
             Aes aesInstance = getAesInstance(cryptoKey);
