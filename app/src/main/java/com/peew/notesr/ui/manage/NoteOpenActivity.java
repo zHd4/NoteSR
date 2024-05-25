@@ -14,8 +14,10 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
 import com.peew.notesr.ui.MainActivity;
@@ -109,7 +111,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
 
         if (notesTable.exists(noteId)) {
-            Note note = notesTable.get(noteId);
+            Note note = NotesCrypt.decrypt(notesTable.get(noteId));
 
             nameField.setText(note.name());
             textField.setText(note.text());
@@ -121,13 +123,13 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         String text = textField.getText().toString();
 
         if (!name.isBlank() && !text.isBlank()) {
-            Note note = new Note(noteId, name, text);
+            EncryptedNote encryptedNote = NotesCrypt.encrypt(new Note(noteId, name, text));
             NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
 
             if (notesTable.exists(noteId)) {
-                notesTable.update(note);
+                notesTable.update(encryptedNote);
             } else {
-                notesTable.add(note);
+                notesTable.add(encryptedNote);
             }
 
             startActivity(new Intent(App.getContext(), MainActivity.class));
