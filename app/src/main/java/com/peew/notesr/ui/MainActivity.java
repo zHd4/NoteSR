@@ -17,6 +17,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.adapter.NotesListAdapter;
 import com.peew.notesr.crypto.CryptoManager;
+import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
@@ -120,7 +121,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
                 handler.post(progressDialog::show);
 
                 NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
-                List<Note> notes = notesTable.getAll();
+                List<Note> notes = NotesCrypt.decrypt(notesTable.getAll());
 
                 if (!notes.isEmpty()) {
                     missingNotesLabel.setVisibility(View.INVISIBLE);
