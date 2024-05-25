@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peew.notesr.crypto.Aes;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
+import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.NotesDatabaseDump;
@@ -18,7 +19,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -55,18 +55,19 @@ public class NotesImporter {
 
     private void importNotes(List<Note> notes) {
         NotesTable table = NotesDatabase.getInstance().getNotesTable();
-        Consumer<Note> importer = note -> {
-            if (table.exists(note.id())) {
-                if (!table.get(note.id()).equals(note)) {
-                    table.update(note);
-                }
 
-            } else {
-                table.add(note);
-            }
-        };
+        notes.stream()
+                .map(NotesCrypt::encrypt)
+                .forEach(note -> {
+                    if (table.exists(note.id())) {
+                        if (!table.get(note.id()).equals(note)) {
+                            table.update(note);
+                        }
 
-        notes.forEach(importer);
+                    } else {
+                        table.add(note);
+                    }
+                });
     }
 
     private NotesDatabaseDump decryptDump(byte[] encryptedDump) throws IOException,
