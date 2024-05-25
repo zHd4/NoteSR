@@ -29,7 +29,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -66,9 +65,7 @@ public class NotesExporter {
     private NotesDatabaseDump getDump() throws
             PackageManager.NameNotFoundException,
             MissingNotesException {
-        List<Note> notes = NotesDatabase.getInstance().getNotesTable().getAll().stream()
-                .map(NotesCrypt::decrypt)
-                .collect(Collectors.toList());
+        List<Note> notes = NotesCrypt.decrypt(NotesDatabase.getInstance().getNotesTable().getAll());
 
         if (notes.isEmpty()) {
             throw new MissingNotesException();
