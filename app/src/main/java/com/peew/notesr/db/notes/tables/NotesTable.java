@@ -15,7 +15,7 @@ import java.util.Map;
 public final class NotesTable extends Table {
     private final String name = "notes";
     private final Map<String, String> fields = Map.of(
-            NotesTableField.NOTE_ID.getName(), "INTEGER",
+            NotesTableField.NOTE_ID.getName(), "BIGINT",
             NotesTableField.ENCRYPTED_NAME.getName(), "TEXT",
             NotesTableField.ENCRYPTED_DATA.getName(), "TEXT"
             );
