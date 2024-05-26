@@ -11,12 +11,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NotesCrypt {
-    public static List<EncryptedNote> encrypt(List<Note> notes) {
-        return encrypt(notes, CryptoManager.getInstance().getCryptoKeyInstance());
+    public static List<EncryptedNote> updateKey(List<EncryptedNote> notes,
+                                                CryptoKey oldKey,
+                                                CryptoKey newKey) {
+        return notes.stream()
+                .map(note -> encrypt(decrypt(note, oldKey), newKey))
+                .collect(Collectors.toList());
     }
 
     public static List<Note> decrypt(List<EncryptedNote> notes) {
         return decrypt(notes, CryptoManager.getInstance().getCryptoKeyInstance());
+    }
+
+    public static List<Note> decrypt(List<EncryptedNote> notes, CryptoKey cryptoKey) {
+        return notes.stream().map(note -> decrypt(note, cryptoKey)).collect(Collectors.toList());
     }
 
     public static EncryptedNote encrypt(Note note) {
@@ -25,14 +33,6 @@ public class NotesCrypt {
 
     public static Note decrypt(EncryptedNote encryptedNote) {
         return decrypt(encryptedNote, CryptoManager.getInstance().getCryptoKeyInstance());
-    }
-
-    public static List<EncryptedNote> encrypt(List<Note> notes, CryptoKey cryptoKey) {
-        return notes.stream().map(note -> encrypt(note, cryptoKey)).collect(Collectors.toList());
-    }
-
-    public static List<Note> decrypt(List<EncryptedNote> notes, CryptoKey cryptoKey) {
-        return notes.stream().map(note -> decrypt(note, cryptoKey)).collect(Collectors.toList());
     }
 
     public static EncryptedNote encrypt(Note note, CryptoKey cryptoKey) {
