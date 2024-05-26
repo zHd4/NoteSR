@@ -4,7 +4,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.App;
-import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.db.notes.tables.Table;
 import com.peew.notesr.db.notes.tables.TableName;
@@ -58,9 +57,5 @@ public class NotesDatabase extends SQLiteOpenHelper {
 
     public NotesTable getNotesTable() {
         return (NotesTable) tables.get(TableName.NOTES_TABLE);
-    }
-
-    public void reEncryptAllTables(CryptoKey oldCryptoKey) {
-        tables.values().forEach(table -> table.reEncryptAll(oldCryptoKey));
     }
 }
