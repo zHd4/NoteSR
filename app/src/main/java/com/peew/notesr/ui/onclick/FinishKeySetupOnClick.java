@@ -18,7 +18,9 @@ import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
+import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.NotesDatabase;
+import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.ui.MainActivity;
 import com.peew.notesr.ui.setup.SetupKeyActivity;
 
@@ -82,9 +84,9 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
             try {
                 CryptoKey oldCryptoKey = cryptoManager.getCryptoKeyInstance().copy();
-                cryptoManager.applyNewKey(key);
 
-                NotesDatabase.getInstance().reEncryptAllTables(oldCryptoKey);
+                cryptoManager.applyNewKey(key);
+                updateEncryptedData(oldCryptoKey, key);
 
                 activity.startActivity(new Intent(App.getContext(), MainActivity.class));
                 activity.finish();
@@ -92,6 +94,11 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
+        NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+        NotesCrypt.updateKey(notesTable.getAll(), oldKey, newKey).forEach(notesTable::update);
     }
 
     private void proceedKeyImportFail(EditText importKeyField) {
