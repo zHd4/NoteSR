@@ -174,7 +174,8 @@ public final class NotesTable extends Table {
                 null,
                 null,
                 null,
-                idFieldName + " DESC LIMIT 1");
+                idFieldName + " DESC",
+                "1");
 
         try (db) {
             try (cursor) {
