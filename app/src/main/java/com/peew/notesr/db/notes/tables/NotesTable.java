@@ -9,43 +9,23 @@ import com.peew.notesr.model.EncryptedNote;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public final class NotesTable extends Table {
-    private final String name;
-    private final Map<String, String> fields = Map.of(
-            NotesTableField.NOTE_ID.getName(), "BIGINT",
-            NotesTableField.ENCRYPTED_NAME.getName(), "TEXT",
-            NotesTableField.ENCRYPTED_DATA.getName(), "TEXT"
-            );
-
     public NotesTable(SQLiteOpenHelper helper, String name) {
-        super(helper);
-        this.name = name;
-
+        super(helper, name);
         helper.getWritableDatabase().execSQL("CREATE TABLE IF NOT EXISTS " + name + "(" +
                 "note_id bigint PRIMARY KEY AUTOINCREMENT," +
                 "encrypted_name text NOT NULL," +
                 "encrypted_data text NOT NULL)");
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Map<String, String> getFields() {
-        return fields;
-    }
-
     public void add(EncryptedNote note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
-            values.put(NotesTableField.NOTE_ID.getName(), note.id());
+            values.put("note_id", note.id());
 
-            values.put(NotesTableField.ENCRYPTED_NAME.getName(), note.encryptedName());
-            values.put(NotesTableField.ENCRYPTED_DATA.getName(), note.encryptedText());
+            values.put("encrypted_name", note.encryptedName());
+            values.put("encrypted_data", note.encryptedText());
 
             db.insert(name, null, values);
         }
@@ -55,11 +35,10 @@ public final class NotesTable extends Table {
         boolean exists;
 
         SQLiteDatabase db = helper.getReadableDatabase();
-        String idFieldName = NotesTableField.NOTE_ID.getName();
 
         Cursor cursor = db.query(name,
-                new String[] { idFieldName },
-                idFieldName + "=" + id,
+                new String[] { "note_id" },
+                "note_id" + "=" + id,
                 null,
                 null,
                 null,
@@ -106,11 +85,10 @@ public final class NotesTable extends Table {
 
     public EncryptedNote get(long id) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        String idFieldName = NotesTableField.NOTE_ID.getName();
 
         Cursor cursor = db.query(name,
                 null,
-                idFieldName + "=" + id,
+                "note_id" + "=" + id,
                 null,
                 null,
                 null,
@@ -134,7 +112,6 @@ public final class NotesTable extends Table {
         long newId = 0;
 
         SQLiteDatabase db = helper.getReadableDatabase();
-        String idFieldName = NotesTableField.NOTE_ID.getName();
 
         Cursor cursor = db.query(name,
                 null,
@@ -142,7 +119,7 @@ public final class NotesTable extends Table {
                 null,
                 null,
                 null,
-                idFieldName + " DESC",
+                "note_id DESC",
                 "1");
 
         try (db) {
@@ -160,34 +137,16 @@ public final class NotesTable extends Table {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
-            values.put(NotesTableField.ENCRYPTED_NAME.getName(), note.encryptedName());
-            values.put(NotesTableField.ENCRYPTED_DATA.getName(), note.encryptedText());
+            values.put("encrypted_name", note.encryptedName());
+            values.put("encrypted_data", note.encryptedText());
 
-            String whereClause = NotesTableField.NOTE_ID.getName() + "=" + note.id();
-            db.update(name, values, whereClause, null);
+            db.update(name, values, "note_id" + "=" + note.id(), null);
         }
     }
 
     public void delete(long id) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
-            String idFieldName = NotesTableField.NOTE_ID.name();
-            db.delete(name, idFieldName + "=" + id, null);
-        }
-    }
-
-    private enum NotesTableField {
-        NOTE_ID("note_id"),
-        ENCRYPTED_NAME("encrypted_name"),
-        ENCRYPTED_DATA("encrypted_data");
-
-        private final String name;
-
-        NotesTableField(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
+            db.delete(name, "note_id" + "=" + id, null);
         }
     }
 }
