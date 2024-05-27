@@ -58,16 +58,7 @@ public class NotesImporter {
 
         notes.stream()
                 .map(NotesCrypt::encrypt)
-                .forEach(note -> {
-                    if (table.exists(note.id())) {
-                        if (!table.get(note.id()).equals(note)) {
-                            table.update(note);
-                        }
-
-                    } else {
-                        table.add(note);
-                    }
-                });
+                .forEach(table::save);
     }
 
     private NotesDatabaseDump decryptDump(byte[] encryptedDump) throws IOException,

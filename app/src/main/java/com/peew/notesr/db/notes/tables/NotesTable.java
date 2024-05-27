@@ -19,15 +19,18 @@ public final class NotesTable extends Table {
                 "encrypted_data text NOT NULL)");
     }
 
-    public void add(EncryptedNote note) {
+    public void save(EncryptedNote note) {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
-            values.put("note_id", note.id());
 
             values.put("encrypted_name", note.encryptedName());
             values.put("encrypted_data", note.encryptedText());
 
-            db.insert(name, null, values);
+            if (!exists(note.id())) {
+                db.insert(name, null, values);
+            } else {
+                db.update(name, values, "note_id" + "=" + note.id(), null);
+            }
         }
     }
 
@@ -131,17 +134,6 @@ public final class NotesTable extends Table {
         }
 
         return newId;
-    }
-
-    public void update(EncryptedNote note) {
-        try (SQLiteDatabase db = helper.getWritableDatabase()) {
-            ContentValues values = new ContentValues();
-
-            values.put("encrypted_name", note.encryptedName());
-            values.put("encrypted_data", note.encryptedText());
-
-            db.update(name, values, "note_id" + "=" + note.id(), null);
-        }
     }
 
     public void delete(long id) {

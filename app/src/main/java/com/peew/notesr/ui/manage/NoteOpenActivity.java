@@ -126,12 +126,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
             EncryptedNote encryptedNote = NotesCrypt.encrypt(new Note(noteId, name, text));
             NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
 
-            if (notesTable.exists(noteId)) {
-                notesTable.update(encryptedNote);
-            } else {
-                notesTable.add(encryptedNote);
-            }
-
+            notesTable.save(encryptedNote);
             startActivity(new Intent(App.getContext(), MainActivity.class));
         }
     }
