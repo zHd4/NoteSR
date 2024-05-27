@@ -113,8 +113,8 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         if (notesTable.exists(noteId)) {
             Note note = NotesCrypt.decrypt(notesTable.get(noteId));
 
-            nameField.setText(note.name());
-            textField.setText(note.text());
+            nameField.setText(note.getName());
+            textField.setText(note.getText());
         }
     }
 
@@ -123,7 +123,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         String text = textField.getText().toString();
 
         if (!name.isBlank() && !text.isBlank()) {
-            EncryptedNote encryptedNote = NotesCrypt.encrypt(new Note(noteId, name, text));
+            EncryptedNote encryptedNote = NotesCrypt.encrypt(new Note(name, text));
             NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
 
             notesTable.save(encryptedNote);
