@@ -1,3 +1,3 @@
 package com.peew.notesr.model;
 
-public record EncryptedNote(long id, String encryptedName, String encryptedText) { }
+public record EncryptedNote(Long id, String encryptedName, String encryptedText) { }
