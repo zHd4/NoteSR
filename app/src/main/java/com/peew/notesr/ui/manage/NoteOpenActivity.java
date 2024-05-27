@@ -42,10 +42,6 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         mode = getIntent().getIntExtra("mode", NEW_NOTE_MODE);
         noteId = getIntent().getLongExtra("note_id", -1);
 
-        if (noteId < 0) {
-            throw new RuntimeException("Note id didn't provided");
-        }
-
         EditText nameField = findViewById(R.id.note_name_field);
         EditText textField = findViewById(R.id.note_text_field);
 
