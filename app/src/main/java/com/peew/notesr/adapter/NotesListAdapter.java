@@ -40,11 +40,11 @@ public class NotesListAdapter extends ArrayAdapter<Note> {
         Note note = getItem(position);
 
         if (note != null) {
-            TextView nameView = (TextView) view.findViewById(R.id.note_name_text_view);
-            TextView textView = (TextView) view.findViewById(R.id.note_text_view);
+            TextView nameView = view.findViewById(R.id.note_name_text_view);
+            TextView textView = view.findViewById(R.id.note_text_view);
 
-            nameView.setText(formatValue(note.name()));
-            textView.setText(formatValue(note.text()));
+            nameView.setText(formatValue(note.getName()));
+            textView.setText(formatValue(note.getText()));
         }
 
         return view;
@@ -52,7 +52,7 @@ public class NotesListAdapter extends ArrayAdapter<Note> {
 
     @Override
     public long getItemId(int position) {
-        return Objects.requireNonNull(getItem(position)).id();
+        return Objects.requireNonNull(getItem(position)).getId();
     }
 
     private String formatValue(String value) {
