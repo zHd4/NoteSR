@@ -12,15 +12,21 @@ import java.util.List;
 import java.util.Map;
 
 public final class NotesTable extends Table {
-    private final String name = "notes";
+    private final String name;
     private final Map<String, String> fields = Map.of(
             NotesTableField.NOTE_ID.getName(), "BIGINT",
             NotesTableField.ENCRYPTED_NAME.getName(), "TEXT",
             NotesTableField.ENCRYPTED_DATA.getName(), "TEXT"
             );
 
-    public NotesTable(SQLiteOpenHelper helper) {
+    public NotesTable(SQLiteOpenHelper helper, String name) {
         super(helper);
+        this.name = name;
+
+        helper.getWritableDatabase().execSQL("CREATE TABLE IF NOT EXISTS " + name + "(" +
+                "note_id bigint PRIMARY KEY AUTOINCREMENT," +
+                "encrypted_name text NOT NULL," +
+                "encrypted_data text NOT NULL)");
     }
 
     @Override
