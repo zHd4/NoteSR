@@ -2,14 +2,12 @@ package com.peew.notesr.db.notes.tables;
 
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.Map;
-
 public abstract class Table {
     protected SQLiteOpenHelper helper;
-    public abstract String getName();
-    public abstract Map<String, String> getFields();
+    protected String name;
 
-    public Table(SQLiteOpenHelper helper) {
+    public Table(SQLiteOpenHelper helper, String name) {
         this.helper = helper;
+        this.name = name;
     }
 }
