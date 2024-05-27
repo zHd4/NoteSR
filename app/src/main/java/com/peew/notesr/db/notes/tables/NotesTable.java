@@ -23,13 +23,13 @@ public final class NotesTable extends Table {
         try (SQLiteDatabase db = helper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
-            values.put("encrypted_name", note.encryptedName());
-            values.put("encrypted_data", note.encryptedText());
+            values.put("encrypted_name", note.getEncryptedName());
+            values.put("encrypted_data", note.getEncryptedText());
 
-            if (!exists(note.id())) {
+            if (note.getId() == null || !exists(note.getId())) {
                 db.insert(name, null, values);
             } else {
-                db.update(name, values, "note_id" + "=" + note.id(), null);
+                db.update(name, values, "note_id" + "=" + note.getId(), null);
             }
         }
     }
@@ -77,7 +77,10 @@ public final class NotesTable extends Table {
                         String name = cursor.getString(1);
                         String text = cursor.getString(2);
 
-                        notes.add(new EncryptedNote(id, name, text));
+                        EncryptedNote note = new EncryptedNote(name, text);
+
+                        note.setId(id);
+                        notes.add(note);
                     } while (cursor.moveToNext());
                 }
             }
@@ -103,37 +106,15 @@ public final class NotesTable extends Table {
                     String name = cursor.getString(1);
                     String text = cursor.getString(2);
 
-                    return new EncryptedNote(id, name, text);
+                    EncryptedNote note = new EncryptedNote(name, text);
+
+                    note.setId(id);
+                    return note;
                 } else {
                     throw new RuntimeException("Wrong note id");
                 }
             }
         }
-    }
-
-    public long getNewNoteId() {
-        long newId = 0;
-
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        Cursor cursor = db.query(name,
-                null,
-                null,
-                null,
-                null,
-                null,
-                "note_id DESC",
-                "1");
-
-        try (db) {
-            try (cursor) {
-                if (cursor.moveToFirst()) {
-                    newId = cursor.getLong(0) + 1;
-                }
-            }
-        }
-
-        return newId;
     }
 
     public void delete(long id) {
