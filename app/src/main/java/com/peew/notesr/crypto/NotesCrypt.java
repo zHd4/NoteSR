@@ -36,17 +36,17 @@ public class NotesCrypt {
     }
 
     public static EncryptedNote encrypt(Note note, CryptoKey cryptoKey) {
-        String encryptedName = encryptValue(note.name(), cryptoKey);
-        String encryptedText = encryptValue(note.text(), cryptoKey);
+        String encryptedName = encryptValue(note.getName(), cryptoKey);
+        String encryptedText = encryptValue(note.getText(), cryptoKey);
 
-        return new EncryptedNote(note.id(), encryptedName, encryptedText);
+        return new EncryptedNote(encryptedName, encryptedText);
     }
 
     public static Note decrypt(EncryptedNote encryptedNote, CryptoKey cryptoKey) {
-        String name = decryptValue(encryptedNote.encryptedName(), cryptoKey);
-        String text = decryptValue(encryptedNote.encryptedText(), cryptoKey);
+        String name = decryptValue(encryptedNote.getEncryptedName(), cryptoKey);
+        String text = decryptValue(encryptedNote.getEncryptedText(), cryptoKey);
 
-        return new Note(encryptedNote.id(), name, text);
+        return new Note(name, text);
     }
 
     private static String encryptValue(String value, CryptoKey cryptoKey) {
