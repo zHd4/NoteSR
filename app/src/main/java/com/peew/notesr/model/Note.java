@@ -2,21 +2,40 @@ package com.peew.notesr.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Objects;
+public final class Note {
+    @JsonProperty("id")
+    private Long id;
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("text")
+    private String text;
 
-public record Note(@JsonProperty("id") long id,
-                   @JsonProperty("name") String name,
-                   @JsonProperty("text") String text) {
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Note note = (Note) o;
-        return id == note.id && name.equals(note.name) && text.equals(note.text);
+    public Note(String name, String text) {
+        this.name = name;
+        this.text = text;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, text);
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }
