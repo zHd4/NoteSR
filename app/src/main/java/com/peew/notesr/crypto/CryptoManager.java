@@ -20,15 +20,12 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoManager {
-    private static final CryptoManager INSTANCE = new CryptoManager();
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
     private static final String ENCRYPTED_TEST_FILENAME = "test.encrypted";
     private static final String BLOCKED_FILENAME = ".blocked";
     private static final int ENCRYPTED_TEST_FILE_SIZE = 1024;
     private static final int KEY_BYTES_COUNT = Aes.KEY_SIZE / 8;
     private CryptoKey cryptoKeyInstance;
-
-    private CryptoManager() {}
 
     public boolean configure(String password) {
         try {
@@ -65,10 +62,6 @@ public class CryptoManager {
 
     public boolean isFirstRun() {
         return !getEncryptedKeyFile().exists() && !getBlockFile().exists();
-    }
-
-    public static CryptoManager getInstance() {
-        return INSTANCE;
     }
 
     public CryptoKey getCryptoKeyInstance() {
