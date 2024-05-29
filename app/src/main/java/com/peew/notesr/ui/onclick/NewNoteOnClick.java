@@ -17,10 +17,7 @@ public class NewNoteOnClick implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (App.getAppContainer().getCryptoManager().getCryptoKeyInstance() != null) {
-            Intent noteOpenActivtyIntent = new Intent(App.getContext(), NoteOpenActivity.class);
-            noteOpenActivtyIntent.putExtra("mode", NoteOpenActivity.NEW_NOTE_MODE);
-
-            activity.startActivity(noteOpenActivtyIntent);
+            activity.startActivity(new Intent(App.getContext(), NoteOpenActivity.class));
         }
     }
 }
