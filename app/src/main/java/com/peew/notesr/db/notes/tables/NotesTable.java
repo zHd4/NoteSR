@@ -14,8 +14,8 @@ public final class NotesTable extends Table {
     public NotesTable(SQLiteOpenHelper helper, String name) {
         super(helper, name);
         helper.getWritableDatabase().execSQL("CREATE TABLE IF NOT EXISTS " + name + "(" +
-                "note_id bigint PRIMARY KEY AUTOINCREMENT," +
-                "encrypted_name text NOT NULL," +
+                "note_id integer PRIMARY KEY AUTOINCREMENT, " +
+                "encrypted_name text NOT NULL, " +
                 "encrypted_data text NOT NULL)");
     }
 
