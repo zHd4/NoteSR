@@ -9,9 +9,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoKey;
-import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
 import com.peew.notesr.ui.onclick.FinishKeySetupOnClick;
@@ -21,7 +21,7 @@ import java.security.NoSuchAlgorithmException;
 public class SetupKeyActivity extends ExtendedAppCompatActivity {
     public static final int FIRST_RUN_MODE = 0;
     public static final int REGENERATION_MODE = 1;
-    private final CryptoManager cryptoManager = CryptoManager.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +51,7 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         CryptoKey key;
 
         try {
-            key = cryptoManager.generateNewKey(password);
+            key = App.getAppContainer().getCryptoManager().generateNewKey(password);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

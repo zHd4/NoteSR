@@ -9,7 +9,6 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.adapter.NotesListAdapter;
 import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.SearchNotesResults;
@@ -51,7 +50,7 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
     }
 
     private void fillResultsList(ListView resultsView) {
-        NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
 
         List<Note> notes = NotesCrypt.decrypt(results.results().stream()
                 .map(notesTable::get)

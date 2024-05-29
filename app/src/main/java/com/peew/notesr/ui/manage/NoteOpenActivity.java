@@ -104,7 +104,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
     }
 
     private void configureForm(EditText nameField, EditText textField) {
-        NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+        NotesTable notesTable = getNotesDatabase().getNotesTable();
 
         if (notesTable.exists(noteId)) {
             Note note = NotesCrypt.decrypt(notesTable.get(noteId));
@@ -120,7 +120,7 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
 
         if (!name.isBlank() && !text.isBlank()) {
             EncryptedNote encryptedNote = NotesCrypt.encrypt(new Note(name, text));
-            NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+            NotesTable notesTable = getNotesDatabase().getNotesTable();
 
             notesTable.save(encryptedNote);
             startActivity(new Intent(App.getContext(), MainActivity.class));
@@ -142,9 +142,13 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                NotesDatabase.getInstance().getNotesTable().delete(noteId);
+                getNotesDatabase().getNotesTable().delete(noteId);
                 startActivity(new Intent(App.getContext(), MainActivity.class));
             }
         };
+    }
+    
+    private NotesDatabase getNotesDatabase() {
+        return App.getAppContainer().getNotesDatabase();
     }
 }

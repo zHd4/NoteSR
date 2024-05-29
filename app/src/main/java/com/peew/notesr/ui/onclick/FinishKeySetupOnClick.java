@@ -19,7 +19,6 @@ import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.ui.MainActivity;
 import com.peew.notesr.ui.setup.SetupKeyActivity;
@@ -28,7 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class FinishKeySetupOnClick implements View.OnClickListener {
-    private final CryptoManager cryptoManager = CryptoManager.getInstance();
     private final SetupKeyActivity activity;
     private final int mode;
     private final String password;
@@ -58,7 +56,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
         if (mode == SetupKeyActivity.FIRST_RUN_MODE) {
             try {
-                cryptoManager.applyNewKey(key);
+                getCryptoManager().applyNewKey(key);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -83,6 +81,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
             });
 
             try {
+                CryptoManager cryptoManager = getCryptoManager();
                 CryptoKey oldCryptoKey = cryptoManager.getCryptoKeyInstance().copy();
 
                 cryptoManager.applyNewKey(key);
@@ -97,7 +96,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
     }
 
     private void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
-        NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
         NotesCrypt.updateKey(notesTable.getAll(), oldKey, newKey).forEach(notesTable::save);
     }
 
@@ -111,5 +110,9 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
                 BlendMode.SRC_ATOP);
 
         importKeyField.getBackground().setColorFilter(colorFilter);
+    }
+
+    private CryptoManager getCryptoManager() {
+        return App.getAppContainer().getCryptoManager();
     }
 }

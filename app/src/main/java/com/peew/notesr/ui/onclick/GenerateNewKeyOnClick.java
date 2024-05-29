@@ -7,7 +7,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.ui.MainActivity;
 import com.peew.notesr.ui.setup.SetupKeyActivity;
 
@@ -31,7 +30,11 @@ public class GenerateNewKeyOnClick implements Consumer<MainActivity> {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
                 Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
-                String password = CryptoManager.getInstance().getCryptoKeyInstance().password();
+
+                String password = App.getAppContainer()
+                        .getCryptoManager()
+                        .getCryptoKeyInstance()
+                        .password();
 
                 setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.REGENERATION_MODE);
                 setupKeyActivityIntent.putExtra("password", password);

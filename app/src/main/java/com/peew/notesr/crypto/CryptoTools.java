@@ -1,5 +1,7 @@
 package com.peew.notesr.crypto;
 
+import com.peew.notesr.App;
+
 import java.nio.ByteBuffer;
 
 public class CryptoTools {
@@ -56,7 +58,9 @@ public class CryptoTools {
         System.arraycopy(bytes, 0, keyBytes, 0, keyBytes.length);
         System.arraycopy(bytes, keyBytes.length, salt, 0, salt.length);
 
-        return CryptoManager.getInstance().createCryptoKey(keyBytes, salt, password);
+        return App.getAppContainer()
+                .getCryptoManager()
+                .createCryptoKey(keyBytes, salt, password);
     }
 
     private static String byteToHex(byte value) {

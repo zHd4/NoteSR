@@ -3,6 +3,7 @@ package com.peew.notesr.crypto;
 import android.util.Base64;
 import android.util.Log;
 
+import com.peew.notesr.App;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
 
@@ -20,7 +21,7 @@ public class NotesCrypt {
     }
 
     public static List<Note> decrypt(List<EncryptedNote> notes) {
-        return decrypt(notes, CryptoManager.getInstance().getCryptoKeyInstance());
+        return decrypt(notes, getCryptoManager().getCryptoKeyInstance());
     }
 
     public static List<Note> decrypt(List<EncryptedNote> notes, CryptoKey cryptoKey) {
@@ -28,11 +29,11 @@ public class NotesCrypt {
     }
 
     public static EncryptedNote encrypt(Note note) {
-        return encrypt(note, CryptoManager.getInstance().getCryptoKeyInstance());
+        return encrypt(note, getCryptoManager().getCryptoKeyInstance());
     }
 
     public static Note decrypt(EncryptedNote encryptedNote) {
-        return decrypt(encryptedNote, CryptoManager.getInstance().getCryptoKeyInstance());
+        return decrypt(encryptedNote, getCryptoManager().getCryptoKeyInstance());
     }
 
     public static EncryptedNote encrypt(Note note, CryptoKey cryptoKey) {
@@ -75,5 +76,9 @@ public class NotesCrypt {
 
     private static Aes getAesInstance(CryptoKey cryptoKey) {
         return new Aes(cryptoKey.key(), cryptoKey.salt());
+    }
+    
+    private static CryptoManager getCryptoManager() {
+        return App.getAppContainer().getCryptoManager();
     }
 }

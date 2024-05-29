@@ -18,7 +18,6 @@ import com.peew.notesr.R;
 import com.peew.notesr.adapter.NotesListAdapter;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.ui.auth.AuthActivity;
@@ -43,7 +42,6 @@ import java.util.function.Consumer;
 
 public class MainActivity extends ExtendedAppCompatActivity {
     private final Map<Integer, Consumer<MainActivity>> menuItemsMap = new HashMap<>();
-    private final CryptoManager cryptoManager = CryptoManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +88,9 @@ public class MainActivity extends ExtendedAppCompatActivity {
     }
 
     private void configure() {
-        if(cryptoManager.isFirstRun()) {
+        CryptoManager cryptoManager = getCryptoManager();
+
+        if (cryptoManager.isFirstRun()) {
             startActivity(new Intent(App.getContext(), StartActivity.class));
             finish();
         } else if (!cryptoManager.ready()) {
@@ -116,11 +116,13 @@ public class MainActivity extends ExtendedAppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
+        CryptoManager cryptoManager = getCryptoManager();
+
         executor.execute(() -> {
             if (cryptoManager.getCryptoKeyInstance() != null) {
                 handler.post(progressDialog::show);
 
-                NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+                NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
                 List<Note> notes = NotesCrypt.decrypt(notesTable.getAll());
 
                 if (!notes.isEmpty()) {
@@ -136,5 +138,9 @@ public class MainActivity extends ExtendedAppCompatActivity {
                 progressDialog.dismiss();
             }
         });
+    }
+
+    private CryptoManager getCryptoManager() {
+        return App.getAppContainer().getCryptoManager();
     }
 }

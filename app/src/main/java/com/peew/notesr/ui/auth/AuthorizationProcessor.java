@@ -23,7 +23,7 @@ public class AuthorizationProcessor {
     }
 
     public void proceed() {
-        CryptoManager cryptoManager = CryptoManager.getInstance();
+        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
         TextView censoredPasswordView = activity.findViewById(R.id.censored_password_text_view);
 
         if (password.isEmpty()) {

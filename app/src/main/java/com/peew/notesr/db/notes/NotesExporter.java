@@ -10,9 +10,9 @@ import android.os.Environment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peew.notesr.App;
 import com.peew.notesr.crypto.Aes;
 import com.peew.notesr.crypto.CryptoKey;
-import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.NotesDatabaseDump;
@@ -47,7 +47,7 @@ public class NotesExporter {
             BadPaddingException, InvalidKeyException, MissingNotesException {
         NotesDatabaseDump dump = getDump();
 
-        CryptoKey cryptoKey = CryptoManager.getInstance().getCryptoKeyInstance();
+        CryptoKey cryptoKey = App.getAppContainer().getCryptoManager().getCryptoKeyInstance();
         Aes aesInstance = new Aes(cryptoKey.key(), cryptoKey.salt());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -65,7 +65,10 @@ public class NotesExporter {
     private NotesDatabaseDump getDump() throws
             PackageManager.NameNotFoundException,
             MissingNotesException {
-        List<Note> notes = NotesCrypt.decrypt(NotesDatabase.getInstance().getNotesTable().getAll());
+        List<Note> notes = NotesCrypt.decrypt(App.getAppContainer()
+                .getNotesDatabase()
+                .getNotesTable()
+                .getAll());
 
         if (notes.isEmpty()) {
             throw new MissingNotesException();

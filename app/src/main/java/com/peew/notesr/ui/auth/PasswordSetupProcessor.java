@@ -5,14 +5,12 @@ import android.widget.TextView;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.ui.MainActivity;
 import com.peew.notesr.ui.setup.SetupKeyActivity;
-import com.peew.notesr.crypto.CryptoManager;
-import com.peew.notesr.crypto.CryptoTools;
 
 public class PasswordSetupProcessor {
     private static final int MIN_PASSWORD_LENGTH = 4;
-    private static final CryptoManager cryptoManager = CryptoManager.getInstance();
     private final AuthActivity activity;
     private String password;
     private final StringBuilder passwordBuilder;
@@ -38,7 +36,10 @@ public class PasswordSetupProcessor {
 
             try {
                 if (hexKey == null) throw new Exception("Missing hex-key");
-                cryptoManager.applyNewKey(CryptoTools.hexToCryptoKey(hexKey, password));
+
+                App.getAppContainer()
+                        .getCryptoManager()
+                        .applyNewKey(CryptoTools.hexToCryptoKey(hexKey, password));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -50,7 +51,7 @@ public class PasswordSetupProcessor {
     public void proceedPasswordChanging() {
         if (setPassword()) {
             try {
-                cryptoManager.changePassword(password);
+                App.getAppContainer().getCryptoManager().changePassword(password);
                 activity.resetPassword(activity.getString(R.string.updated));
 
                 activity.startActivity(new Intent(App.getContext(), MainActivity.class));

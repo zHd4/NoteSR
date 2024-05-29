@@ -10,7 +10,6 @@ import androidx.appcompat.app.ActionBar;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.SearchNotesResults;
@@ -60,7 +59,7 @@ public class SearchNotesActivity extends ExtendedAppCompatActivity {
     }
 
     private SearchNotesResults search(String query) {
-        NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
+        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
         List<Note> notes = NotesCrypt.decrypt(notesTable.getAll());
 
         Predicate<Note> check = note -> {
