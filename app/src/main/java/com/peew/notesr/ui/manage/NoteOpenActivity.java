@@ -27,11 +27,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class NoteOpenActivity extends ExtendedAppCompatActivity {
-    public static final int NEW_NOTE_MODE = 0;
-    public static final int EDIT_NOTE_MODE = 1;
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
-    private long noteId;
-    private int mode;
+    private Note note;
 
     /** @noinspection DataFlowIssue*/
     @Override
@@ -39,8 +36,11 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_open);
 
-        mode = getIntent().getIntExtra("mode", NEW_NOTE_MODE);
-        noteId = getIntent().getLongExtra("note_id", -1);
+        long noteId = getIntent().getLongExtra("note_id", -1);
+        note = findNote(noteId);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         EditText nameField = findViewById(R.id.note_name_field);
         EditText textField = findViewById(R.id.note_text_field);
@@ -48,16 +48,14 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (note != null) {
+            nameField.setText(note.getName());
+            textField.setText(note.getText());
 
-        switch (mode) {
-            case NEW_NOTE_MODE -> actionBar.setTitle(getResources().getString(R.string.new_note));
-            case EDIT_NOTE_MODE -> actionBar.setTitle(getResources().getString(R.string.edit_note));
-            default -> throw new RuntimeException("Unknown mode");
+            actionBar.setTitle(getResources().getString(R.string.edit_note));
+        } else {
+            actionBar.setTitle(getResources().getString(R.string.new_note));
         }
-
-        configureForm(nameField, textField);
     }
 
     @Override
@@ -69,20 +67,14 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
 
         menuItemsMap.put(R.id.save_note_button, action -> saveNoteOnClick(nameField, textField));
 
-        switch (mode) {
-            case NEW_NOTE_MODE -> {
-                MenuItem deleteButton = menu.findItem(R.id.delete_note_button);
+        if (note != null) {
+            Consumer<?> deleteButtonOnClick = action -> deleteNoteOnClick();
+            menuItemsMap.put(R.id.delete_note_button, deleteButtonOnClick);
+        } else {
+            MenuItem deleteButton = menu.findItem(R.id.delete_note_button);
 
-                deleteButton.setEnabled(false);
-                deleteButton.setVisible(false);
-            }
-            
-            case EDIT_NOTE_MODE -> {
-                Consumer<?> deleteButtonOnClick = action -> deleteNoteOnClick();
-                menuItemsMap.put(R.id.delete_note_button, deleteButtonOnClick);
-            }
-
-            default -> throw new RuntimeException("Unknown mode");
+            deleteButton.setEnabled(false);
+            deleteButton.setVisible(false);
         }
 
         return true;
@@ -101,17 +93,6 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         }
 
         return true;
-    }
-
-    private void configureForm(EditText nameField, EditText textField) {
-        NotesTable notesTable = getNotesDatabase().getNotesTable();
-
-        if (notesTable.exists(noteId)) {
-            Note note = NotesCrypt.decrypt(notesTable.get(noteId));
-
-            nameField.setText(note.getName());
-            textField.setText(note.getText());
-        }
     }
 
     private void saveNoteOnClick(EditText nameField, EditText textField) {
@@ -142,10 +123,15 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                getNotesDatabase().getNotesTable().delete(noteId);
+                getNotesDatabase().getNotesTable().delete(note.getId());
                 startActivity(new Intent(App.getContext(), MainActivity.class));
             }
         };
+    }
+
+    private Note findNote(long id) {
+        EncryptedNote encryptedNote = getNotesDatabase().getNotesTable().get(id);
+        return encryptedNote != null ? NotesCrypt.decrypt(encryptedNote) : null;
     }
     
     private NotesDatabase getNotesDatabase() {
