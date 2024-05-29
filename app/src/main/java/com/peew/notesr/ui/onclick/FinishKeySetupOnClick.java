@@ -98,7 +98,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
     private void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
         NotesTable notesTable = NotesDatabase.getInstance().getNotesTable();
-        NotesCrypt.updateKey(notesTable.getAll(), oldKey, newKey).forEach(notesTable::update);
+        NotesCrypt.updateKey(notesTable.getAll(), oldKey, newKey).forEach(notesTable::save);
     }
 
     private void proceedKeyImportFail(EditText importKeyField) {
