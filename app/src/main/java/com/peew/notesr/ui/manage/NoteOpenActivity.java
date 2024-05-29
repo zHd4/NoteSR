@@ -100,7 +100,14 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         String text = textField.getText().toString();
 
         if (!name.isBlank() && !text.isBlank()) {
-            EncryptedNote encryptedNote = NotesCrypt.encrypt(new Note(name, text));
+            if (note != null) {
+                note.setName(name);
+                note.setText(text);
+            } else {
+                note = new Note(name, text);
+            }
+
+            EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
             NotesTable notesTable = getNotesDatabase().getNotesTable();
 
             notesTable.save(encryptedNote);
