@@ -110,11 +110,11 @@ public final class NotesTable extends Table {
 
                     note.setId(id);
                     return note;
-                } else {
-                    throw new RuntimeException("Wrong note id");
                 }
             }
         }
+
+        return null;
     }
 
     public void delete(long id) {
