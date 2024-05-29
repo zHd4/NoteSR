@@ -40,14 +40,20 @@ public class NotesCrypt {
         String encryptedName = encryptValue(note.getName(), cryptoKey);
         String encryptedText = encryptValue(note.getText(), cryptoKey);
 
-        return new EncryptedNote(encryptedName, encryptedText);
+        EncryptedNote encryptedNote = new EncryptedNote(encryptedName, encryptedText);
+
+        encryptedNote.setId(note.getId());
+        return encryptedNote;
     }
 
     public static Note decrypt(EncryptedNote encryptedNote, CryptoKey cryptoKey) {
         String name = decryptValue(encryptedNote.getEncryptedName(), cryptoKey);
         String text = decryptValue(encryptedNote.getEncryptedText(), cryptoKey);
 
-        return new Note(name, text);
+        Note note = new Note(name, text);
+
+        note.setId(encryptedNote.getId());
+        return note;
     }
 
     private static String encryptValue(String value, CryptoKey cryptoKey) {
