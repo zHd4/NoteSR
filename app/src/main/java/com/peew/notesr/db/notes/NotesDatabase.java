@@ -10,16 +10,11 @@ import com.peew.notesr.db.notes.tables.Table;
 import java.util.Map;
 
 public class NotesDatabase extends SQLiteOpenHelper {
-    private static final NotesDatabase INSTANCE = new NotesDatabase();
     private static final int DATABASE_VERSION = 1;
     private static final String NAME = "notes";
     private Map<Class<? extends Table>, Table> tables;
 
-    public static NotesDatabase getInstance() {
-        return INSTANCE;
-    }
-
-    private NotesDatabase() {
+    public NotesDatabase() {
         super(App.getContext(), NAME, null, DATABASE_VERSION);
         onCreate(getWritableDatabase());
     }
