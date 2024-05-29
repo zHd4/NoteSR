@@ -16,7 +16,6 @@ public class NotesDatabase extends SQLiteOpenHelper {
 
     public NotesDatabase() {
         super(App.getContext(), NAME, null, DATABASE_VERSION);
-        onCreate(getWritableDatabase());
     }
 
     @Override
