@@ -13,31 +13,30 @@ import java.util.List;
 public final class NotesTable extends Table {
     public NotesTable(SQLiteOpenHelper helper, String name) {
         super(helper, name);
-        helper.getWritableDatabase().execSQL("CREATE TABLE IF NOT EXISTS " + name + "(" +
+        helper.getWritableDatabase().execSQL(
+                "CREATE TABLE IF NOT EXISTS " + name + "(" +
                 "note_id integer PRIMARY KEY AUTOINCREMENT, " +
                 "encrypted_name text NOT NULL, " +
                 "encrypted_data text NOT NULL)");
     }
 
     public void save(EncryptedNote note) {
-        try (SQLiteDatabase db = helper.getWritableDatabase()) {
-            ContentValues values = new ContentValues();
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
-            values.put("encrypted_name", note.getEncryptedName());
-            values.put("encrypted_data", note.getEncryptedText());
+        values.put("encrypted_name", note.getEncryptedName());
+        values.put("encrypted_data", note.getEncryptedText());
 
-            if (note.getId() == null || !exists(note.getId())) {
-                db.insert(name, null, values);
-            } else {
-                db.update(name, values, "note_id" + "=" + note.getId(), null);
-            }
+        if (note.getId() == null || !exists(note.getId())) {
+            db.insert(name, null, values);
+        } else {
+            db.update(name, values, "note_id" + "=" + note.getId(), null);
         }
     }
 
     public boolean exists(long id) {
-        boolean exists;
-
         SQLiteDatabase db = helper.getReadableDatabase();
+        boolean exists;
 
         Cursor cursor = db.query(name,
                 new String[] { "note_id" },
@@ -47,10 +46,8 @@ public final class NotesTable extends Table {
                 null,
                 null);
 
-        try (db) {
-            try (cursor){
-                exists = cursor.moveToFirst();
-            }
+        try (cursor){
+            exists = cursor.moveToFirst();
         }
 
         return exists;
@@ -68,21 +65,19 @@ public final class NotesTable extends Table {
                 null,
                 null);
 
-        try (db) {
-            try (cursor) {
-                if (cursor.moveToFirst()) {
-                    do {
-                        long id = cursor.getLong(0);
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                do {
+                    long id = cursor.getLong(0);
 
-                        String name = cursor.getString(1);
-                        String text = cursor.getString(2);
+                    String name = cursor.getString(1);
+                    String text = cursor.getString(2);
 
-                        EncryptedNote note = new EncryptedNote(name, text);
+                    EncryptedNote note = new EncryptedNote(name, text);
 
-                        note.setId(id);
-                        notes.add(note);
-                    } while (cursor.moveToNext());
-                }
+                    note.setId(id);
+                    notes.add(note);
+                } while (cursor.moveToNext());
             }
         }
 
@@ -100,17 +95,15 @@ public final class NotesTable extends Table {
                 null,
                 null);
 
-        try (db) {
-            try (cursor) {
-                if (cursor.moveToFirst()) {
-                    String name = cursor.getString(1);
-                    String text = cursor.getString(2);
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                String name = cursor.getString(1);
+                String text = cursor.getString(2);
 
-                    EncryptedNote note = new EncryptedNote(name, text);
+                EncryptedNote note = new EncryptedNote(name, text);
 
-                    note.setId(id);
-                    return note;
-                }
+                note.setId(id);
+                return note;
             }
         }
 
@@ -118,8 +111,7 @@ public final class NotesTable extends Table {
     }
 
     public void delete(long id) {
-        try (SQLiteDatabase db = helper.getWritableDatabase()) {
-            db.delete(name, "note_id" + "=" + id, null);
-        }
+        helper.getWritableDatabase()
+                .delete(name, "note_id" + "=" + id, null);
     }
 }
