@@ -1,11 +1,13 @@
 package com.notesr;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
 import com.peew.notesr.crypto.Aes;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoTools;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -50,9 +52,9 @@ public class SetupKeyTest {
         CryptoKey cryptoKey = new CryptoKey(secretKey, salt, password);
 
         String actual = CryptoTools.cryptoKeyToHex(cryptoKey);
-        Assertions.assertEquals(cryptoKeyHex, actual);
+        assertThat(actual, is(cryptoKeyHex));
 
         CryptoKey actualCryptoKey = CryptoTools.hexToCryptoKey(cryptoKeyHex, password);
-        Assertions.assertEquals(cryptoKey, actualCryptoKey);
+        assertThat(actualCryptoKey, is(cryptoKey));
     }
 }
