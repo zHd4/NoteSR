@@ -10,6 +10,8 @@ public final class Note {
     @JsonProperty("text")
     private String text;
 
+    public Note() {}
+
     public Note(String name, String text) {
         this.name = name;
         this.text = text;
