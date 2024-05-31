@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class Note {
     @JsonProperty("id")
     private Long id;
+
     @JsonProperty("name")
     private String name;
+
     @JsonProperty("text")
     private String text;
 
