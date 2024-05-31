@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.App;
+import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.db.notes.tables.Table;
 
@@ -16,7 +17,11 @@ public class NotesDatabase extends SQLiteOpenHelper {
 
     public NotesDatabase() {
         super(App.getContext(), NAME, null, DATABASE_VERSION);
-        tables = Map.of(NotesTable.class, new NotesTable(this, "notes"));
+
+        tables = Map.of(
+                NotesTable.class, new NotesTable(this, "notes"),
+                FilesTable.class, new FilesTable(this, "files")
+        );
     }
 
     @Override
