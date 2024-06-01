@@ -27,30 +27,11 @@ public final class NotesTable extends Table {
         values.put("encrypted_name", note.getEncryptedName());
         values.put("encrypted_data", note.getEncryptedText());
 
-        if (note.getId() == null || !exists(note.getId())) {
+        if (note.getId() == null || get(note.getId()) == null) {
             db.insert(name, null, values);
         } else {
             db.update(name, values, "note_id" + "=" + note.getId(), null);
         }
-    }
-
-    public boolean exists(long id) {
-        SQLiteDatabase db = helper.getReadableDatabase();
-        boolean exists;
-
-        Cursor cursor = db.query(name,
-                new String[] { "note_id" },
-                "note_id" + "=" + id,
-                null,
-                null,
-                null,
-                null);
-
-        try (cursor){
-            exists = cursor.moveToFirst();
-        }
-
-        return exists;
     }
 
     public List<EncryptedNote> getAll() {
@@ -88,7 +69,7 @@ public final class NotesTable extends Table {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.query(name,
-                null,
+                new String[] { "encrypted_name", "encrypted_data" },
                 "note_id" + "=" + id,
                 null,
                 null,
@@ -97,8 +78,8 @@ public final class NotesTable extends Table {
 
         try (cursor) {
             if (cursor.moveToFirst()) {
-                String name = cursor.getString(1);
-                String text = cursor.getString(2);
+                String name = cursor.getString(0);
+                String text = cursor.getString(1);
 
                 EncryptedNote note = new EncryptedNote(name, text);
 
