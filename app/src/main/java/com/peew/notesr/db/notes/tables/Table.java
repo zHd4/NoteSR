@@ -10,4 +10,8 @@ public abstract class Table {
         this.helper = helper;
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
 }
