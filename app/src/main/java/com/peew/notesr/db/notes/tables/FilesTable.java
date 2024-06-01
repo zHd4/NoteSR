@@ -37,13 +37,10 @@ public class FilesTable extends Table{
     public EncryptedFile get(long id) {
         SQLiteDatabase db = helper.getReadableDatabase();
 
-        Cursor cursor = db.query(name,
-                new String[] { "note_id", "encrypted_name", "encrypted_data" },
-                "id" + "=" + id,
-                null,
-                null,
-                null,
-                null);
+        Cursor cursor = db.rawQuery(
+                "SELECT note_id, encrypted_name, encrypted_data " +
+                "WHERE id = ?",
+                new String[] { String.valueOf(id) });
 
         try (cursor) {
             if (cursor.moveToFirst()) {
