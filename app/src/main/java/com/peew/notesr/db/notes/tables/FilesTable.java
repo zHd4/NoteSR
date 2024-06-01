@@ -60,4 +60,9 @@ public class FilesTable extends Table{
 
         return null;
     }
+
+    public void delete(long id) {
+        helper.getWritableDatabase()
+                .delete(name, "id" + "=" + id, null);
+    }
 }
