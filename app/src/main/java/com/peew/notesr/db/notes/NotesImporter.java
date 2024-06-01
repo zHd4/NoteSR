@@ -18,7 +18,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -33,10 +32,13 @@ public class NotesImporter {
 
     public NotesImportResult importDump(byte[] encryptedDump) {
         try {
-            String version = VersionFetcher.fetchVersionName(activity, false);
             NotesDatabaseDump dump = decryptDump(encryptedDump);
+            String currentVersionString = VersionFetcher.fetchVersionName(activity, true);
 
-            if (!Objects.equals(version, dump.version())) {
+            int currentVersion = Integer.parseInt(currentVersionString);
+            int dumpVersion = Integer.parseInt(dump.version().replace(".", ""));
+
+            if (currentVersion < dumpVersion) {
                 return NotesImportResult.INCOMPATIBLE_VERSION;
             }
 
