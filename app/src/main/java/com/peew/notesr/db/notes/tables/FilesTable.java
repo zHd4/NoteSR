@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.model.EncryptedFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FilesTable extends Table{
     public FilesTable(SQLiteOpenHelper helper, String name, NotesTable notesTable) {
         super(helper, name);
@@ -38,8 +41,9 @@ public class FilesTable extends Table{
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
-                "SELECT note_id, encrypted_name, encrypted_data " +
-                "WHERE id = ?",
+                "SELECT note_id, encrypted_name, encrypted_data" +
+                        " FROM " + name +
+                        " WHERE id = ?",
                 new String[] { String.valueOf(id) });
 
         try (cursor) {
@@ -56,6 +60,34 @@ public class FilesTable extends Table{
         }
 
         return null;
+    }
+
+    public List<EncryptedFile> getByNoteId(long noteId) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        List<EncryptedFile> files = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT id, encrypted_name, encrypted_data" +
+                        " FROM " + name +
+                        " WHERE note_id = ?",
+                new String[] { String.valueOf(noteId) });
+
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Long id = cursor.getLong(0);
+                    String name = cursor.getString(1);
+
+                    byte[] data = cursor.getBlob(2);
+                    EncryptedFile file = new EncryptedFile(noteId, name, data);
+
+                    file.setId(id);
+                    files.add(file);
+                } while (cursor.moveToNext());
+            }
+        }
+
+        return files;
     }
 
     public void delete(long id) {
