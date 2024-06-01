@@ -63,7 +63,7 @@ public final class NotesTable extends Table {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
-                "SELECT encrypted_name, encrypted_data WHERE note_id = ?",
+                "SELECT encrypted_name, encrypted_data FROM " + name + " WHERE note_id = ?",
                 new String[] { String.valueOf(id) });
 
         try (cursor) {
