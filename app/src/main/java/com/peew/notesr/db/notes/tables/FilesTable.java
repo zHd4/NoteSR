@@ -8,19 +8,22 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.peew.notesr.model.EncryptedFile;
 
 public class FilesTable extends Table{
-    public FilesTable(SQLiteOpenHelper helper, String name) {
+    public FilesTable(SQLiteOpenHelper helper, String name, NotesTable notesTable) {
         super(helper, name);
         helper.getWritableDatabase().execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
                         "id integer PRIMARY KEY AUTOINCREMENT, " +
+                        "note_id integer NOT NULL, " +
                         "encrypted_name text NOT NULL, " +
-                        "encrypted_data blob NOT NULL)");
+                        "encrypted_data blob NOT NULL, " +
+                        "FOREIGN KEY(note_id) REFERENCES " + notesTable.getName() + "(note_id))");
     }
 
     public void save(EncryptedFile file) {
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
+        values.put("note_id", file.getNoteId());
         values.put("encrypted_name", file.getEncryptedName());
         values.put("encrypted_data", file.getEncryptedData());
 
@@ -35,7 +38,7 @@ public class FilesTable extends Table{
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.query(name,
-                new String[] { "encrypted_name", "encrypted_data" },
+                new String[] { "note_id", "encrypted_name", "encrypted_data" },
                 "id" + "=" + id,
                 null,
                 null,
@@ -44,10 +47,11 @@ public class FilesTable extends Table{
 
         try (cursor) {
             if (cursor.moveToFirst()) {
-                String name = cursor.getString(0);
-                byte[] data = cursor.getBlob(1);
+                Long noteId = cursor.getLong(0);
+                String name = cursor.getString(1);
 
-                EncryptedFile file = new EncryptedFile(name, data);
+                byte[] data = cursor.getBlob(2);
+                EncryptedFile file = new EncryptedFile(noteId, name, data);
 
                 file.setId(id);
                 return file;
