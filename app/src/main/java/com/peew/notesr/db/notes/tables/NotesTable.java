@@ -38,13 +38,7 @@ public final class NotesTable extends Table {
         SQLiteDatabase db = helper.getReadableDatabase();
         List<EncryptedNote> notes = new ArrayList<>();
 
-        Cursor cursor = db.query(name,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + name, new String[0]);
 
         try (cursor) {
             if (cursor.moveToFirst()) {
@@ -68,13 +62,9 @@ public final class NotesTable extends Table {
     public EncryptedNote get(long id) {
         SQLiteDatabase db = helper.getReadableDatabase();
 
-        Cursor cursor = db.query(name,
-                new String[] { "encrypted_name", "encrypted_data" },
-                "note_id" + "=" + id,
-                null,
-                null,
-                null,
-                null);
+        Cursor cursor = db.rawQuery(
+                "SELECT encrypted_name, encrypted_data WHERE note_id = ?",
+                new String[] { String.valueOf(id) });
 
         try (cursor) {
             if (cursor.moveToFirst()) {
