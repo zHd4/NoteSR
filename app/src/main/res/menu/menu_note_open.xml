@@ -4,14 +4,21 @@
     <item
         android:id="@+id/save_note_button"
         android:icon="@android:drawable/ic_menu_save"
-        android:orderInCategory="1"
+        android:orderInCategory="3"
         android:title="@string/save_note"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/delete_note_button"
         android:icon="@android:drawable/ic_menu_delete"
-        android:orderInCategory="0"
+        android:orderInCategory="2"
         android:title="@string/lock_app"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/open_assignments_button"
+        android:icon="@drawable/ic_assignment"
+        android:orderInCategory="1"
+        android:title="@string/open_assignments"
         app:showAsAction="ifRoom" />
 </menu>
