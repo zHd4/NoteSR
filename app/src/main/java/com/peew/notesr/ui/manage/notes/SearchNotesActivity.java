@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.manage;
+package com.peew.notesr.ui.manage.notes;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.peew.notesr.App;
 import com.peew.notesr.ui.MainActivity;
-import com.peew.notesr.ui.manage.NoteOpenActivity;
+import com.peew.notesr.ui.manage.notes.NoteOpenActivity;
 
 public class NewNoteOnClick implements View.OnClickListener {
     private final MainActivity activity;

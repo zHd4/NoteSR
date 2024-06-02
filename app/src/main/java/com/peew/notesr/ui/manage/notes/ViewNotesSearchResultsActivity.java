@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.manage;
+package com.peew.notesr.ui.manage.notes;
 
 import android.os.Bundle;
 import android.widget.ListView;

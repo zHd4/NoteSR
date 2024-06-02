@@ -40,19 +40,23 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.manage.NoteOpenActivity"
+            android:name=".ui.manage.notes.NoteOpenActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.manage.SearchNotesActivity"
+            android:name=".ui.manage.notes.SearchNotesActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.manage.ViewNotesSearchResultsActivity"
+            android:name=".ui.manage.notes.ViewNotesSearchResultsActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.manage.ImportNotesActivity"
+            android:name=".ui.manage.notes.ImportNotesActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.manage.assignments.AssignmentsListActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>

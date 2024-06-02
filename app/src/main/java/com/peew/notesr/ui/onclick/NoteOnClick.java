@@ -6,7 +6,7 @@ import android.widget.AdapterView;
 
 import com.peew.notesr.App;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
-import com.peew.notesr.ui.manage.NoteOpenActivity;
+import com.peew.notesr.ui.manage.notes.NoteOpenActivity;
 
 public class NoteOnClick implements AdapterView.OnItemClickListener {
     private final ExtendedAppCompatActivity activity;
