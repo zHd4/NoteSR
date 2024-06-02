@@ -2,9 +2,7 @@ package com.peew.notesr.model;
 
 public class EncryptedFile {
     private Long id;
-
     private Long noteId;
-
     private final String encryptedName;
     private final byte[] encryptedData;
 
