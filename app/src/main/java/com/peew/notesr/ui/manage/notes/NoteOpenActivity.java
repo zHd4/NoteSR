@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.manage;
+package com.peew.notesr.ui.manage.notes;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -21,6 +21,7 @@ import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
 import com.peew.notesr.ui.MainActivity;
+import com.peew.notesr.ui.manage.assignments.AssignmentsListActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,15 +67,15 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_note_open, menu);
 
         menuItemsMap.put(R.id.save_note_button, action -> saveNoteOnClick(nameField, textField));
+        menuItemsMap.put(R.id.open_assignments_button, action -> openAssignmentsOnClick());
 
-        if (note != null) {
-            Consumer<?> deleteButtonOnClick = action -> deleteNoteOnClick();
-            menuItemsMap.put(R.id.delete_note_button, deleteButtonOnClick);
-        } else {
+        if (note == null) {
             MenuItem deleteButton = menu.findItem(R.id.delete_note_button);
 
             deleteButton.setEnabled(false);
             deleteButton.setVisible(false);
+        } else {
+            menuItemsMap.put(R.id.delete_note_button, action -> deleteNoteOnClick());
         }
 
         return true;
@@ -125,6 +126,10 @@ public class NoteOpenActivity extends ExtendedAppCompatActivity {
         builder.setNegativeButton(R.string.no, deleteNoteDialogOnClick());
 
         builder.create().show();
+    }
+
+    private void openAssignmentsOnClick() {
+        startActivity(new Intent(App.getContext(), AssignmentsListActivity.class));
     }
 
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
