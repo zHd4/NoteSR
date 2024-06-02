@@ -24,12 +24,12 @@ import com.peew.notesr.ui.auth.AuthActivity;
 import com.peew.notesr.ui.manage.notes.ImportNotesActivity;
 import com.peew.notesr.ui.manage.KeyRecoveryActivity;
 import com.peew.notesr.ui.manage.notes.SearchNotesActivity;
-import com.peew.notesr.ui.onclick.ChangePasswordOnClick;
-import com.peew.notesr.ui.onclick.ExportNotesOnClick;
-import com.peew.notesr.ui.onclick.GenerateNewKeyOnClick;
-import com.peew.notesr.ui.onclick.LockOnClick;
-import com.peew.notesr.ui.onclick.NewNoteOnClick;
-import com.peew.notesr.ui.onclick.NoteOnClick;
+import com.peew.notesr.ui.onclick.security.ChangePasswordOnClick;
+import com.peew.notesr.ui.onclick.notes.ExportNotesOnClick;
+import com.peew.notesr.ui.onclick.security.GenerateNewKeyOnClick;
+import com.peew.notesr.ui.onclick.security.LockOnClick;
+import com.peew.notesr.ui.onclick.notes.NewNoteOnClick;
+import com.peew.notesr.ui.onclick.notes.NoteOnClick;
 import com.peew.notesr.ui.setup.StartActivity;
 
 import java.util.HashMap;

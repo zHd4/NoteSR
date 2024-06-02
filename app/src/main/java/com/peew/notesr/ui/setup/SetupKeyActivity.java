@@ -14,7 +14,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.ui.ExtendedAppCompatActivity;
-import com.peew.notesr.ui.onclick.FinishKeySetupOnClick;
+import com.peew.notesr.ui.onclick.security.FinishKeySetupOnClick;
 
 import java.security.NoSuchAlgorithmException;
 

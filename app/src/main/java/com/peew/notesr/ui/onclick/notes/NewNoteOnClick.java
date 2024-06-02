@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.onclick;
+package com.peew.notesr.ui.onclick.notes;
 
 import android.content.Intent;
 import android.view.View;

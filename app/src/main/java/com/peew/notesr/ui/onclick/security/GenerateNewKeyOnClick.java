@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.onclick;
+package com.peew.notesr.ui.onclick.security;
 
 import android.content.DialogInterface;
 import android.content.Intent;
