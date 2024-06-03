@@ -8,8 +8,20 @@ import com.peew.notesr.model.EncryptedFile;
 import com.peew.notesr.model.File;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FilesCrypt {
+    public static List<File> decrypt(List<EncryptedFile> files) {
+        return decrypt(files, getCryptoManager().getCryptoKeyInstance());
+    }
+
+    public static List<File> decrypt(List<EncryptedFile> files, CryptoKey cryptoKey) {
+        return files.stream()
+                .map(file -> decrypt(file, cryptoKey))
+                .collect(Collectors.toList());
+    }
+
     public static EncryptedFile encrypt(File file) {
         return encrypt(file, getCryptoManager().getCryptoKeyInstance());
     }
@@ -43,7 +55,7 @@ public class FilesCrypt {
         try {
             byte[] decodedName = Base64.decode(encryptedFile.getEncryptedName(), Base64.DEFAULT);
             String decryptedName = new String(aes.decrypt(decodedName));
-            byte[] decryptedData = aes.encrypt(encryptedFile.getEncryptedData());
+            byte[] decryptedData = aes.decrypt(encryptedFile.getEncryptedData());
 
             File file = new File(decryptedName, decryptedData);
 
