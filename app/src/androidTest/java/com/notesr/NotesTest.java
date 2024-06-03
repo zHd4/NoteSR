@@ -7,6 +7,7 @@ import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.File;
 import com.peew.notesr.model.Note;
 
+import org.apache.tools.ant.taskdefs.condition.Not;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,5 +46,33 @@ public class NotesTest {
                 .findFirst();
 
         Assert.assertTrue(noteOptional.isPresent());
+    }
+
+    @Test
+    public void testUpdateNote() {
+        notesTable.save(NotesCrypt.encrypt(testNote));
+        List<Note> allNotes = NotesCrypt.decrypt(notesTable.getAll());
+
+        Assert.assertFalse(allNotes.isEmpty());
+
+        Optional<Note> noteOptional = allNotes.stream()
+                .filter(note -> note.getName().equals(testNote.getName()))
+                .filter(note -> note.getText().equals(testNote.getText()))
+                .findFirst();
+
+        Assert.assertTrue(noteOptional.isPresent());
+
+        Note note = noteOptional.get();
+
+        note.setName(faker.lorem.word());
+        note.setText(faker.lorem.paragraph());
+
+        notesTable.save(NotesCrypt.encrypt(note));
+
+        Note actual = NotesCrypt.decrypt(notesTable.get(note.getId()));
+
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(note.getName(), actual.getName());
+        Assert.assertEquals(note.getText(), actual.getText());
     }
 }
