@@ -4,10 +4,10 @@ import com.peew.notesr.App;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.File;
 import com.peew.notesr.model.Note;
 
-import org.apache.tools.ant.taskdefs.condition.Not;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,34 +35,12 @@ public class NotesTest {
 
     @Test
     public void testCreateNote() {
-        notesTable.save(NotesCrypt.encrypt(testNote));
-        List<Note> allNotes = NotesCrypt.decrypt(notesTable.getAll());
-
-        Assert.assertFalse(allNotes.isEmpty());
-
-        Optional<Note> noteOptional = allNotes.stream()
-                .filter(note -> note.getName().equals(testNote.getName()))
-                .filter(note -> note.getText().equals(testNote.getText()))
-                .findFirst();
-
-        Assert.assertTrue(noteOptional.isPresent());
+        createAndGetNote();
     }
 
     @Test
     public void testUpdateNote() {
-        notesTable.save(NotesCrypt.encrypt(testNote));
-        List<Note> allNotes = NotesCrypt.decrypt(notesTable.getAll());
-
-        Assert.assertFalse(allNotes.isEmpty());
-
-        Optional<Note> noteOptional = allNotes.stream()
-                .filter(note -> note.getName().equals(testNote.getName()))
-                .filter(note -> note.getText().equals(testNote.getText()))
-                .findFirst();
-
-        Assert.assertTrue(noteOptional.isPresent());
-
-        Note note = noteOptional.get();
+        Note note = createAndGetNote();
 
         note.setName(faker.lorem.word());
         note.setText(faker.lorem.paragraph());
@@ -74,5 +52,30 @@ public class NotesTest {
         Assert.assertNotNull(actual);
         Assert.assertEquals(note.getName(), actual.getName());
         Assert.assertEquals(note.getText(), actual.getText());
+    }
+
+    @Test
+    public void testDeleteNote() {
+        Note note = createAndGetNote();
+        notesTable.delete(note.getId());
+
+        EncryptedNote actual = notesTable.get(note.getId());
+        Assert.assertNull(actual);
+    }
+
+    private Note createAndGetNote() {
+        notesTable.save(NotesCrypt.encrypt(testNote));
+        List<Note> allNotes = NotesCrypt.decrypt(notesTable.getAll());
+
+        Assert.assertFalse(allNotes.isEmpty());
+
+        Optional<Note> noteOptional = allNotes.stream()
+                .filter(note -> note.getName().equals(testNote.getName()))
+                .filter(note -> note.getText().equals(testNote.getText()))
+                .findFirst();
+
+        Assert.assertTrue(noteOptional.isPresent());
+
+        return noteOptional.get();
     }
 }
