@@ -103,7 +103,7 @@ public class NotesTest {
 
         Assert.assertEquals(note.getId(), file.getNoteId());
         Assert.assertEquals(testFile.getName(), file.getName());
-        Assert.assertEquals(testFile.getData(), file.getData());
+        Assert.assertArrayEquals(testFile.getData(), file.getData());
     }
 
     private Note createAndGetNote() {
