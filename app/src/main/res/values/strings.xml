@@ -69,4 +69,6 @@
     <string name="incompatible_file_version">Incompatible file version</string>
     <string name="cannot_decrypt_file">Cannot decrypt file</string>
     <string name="open_assignments">Open assignments</string>
+    <string name="no_files">No files</string>
+    <string name="add_file">Add file</string>
 </resources>
