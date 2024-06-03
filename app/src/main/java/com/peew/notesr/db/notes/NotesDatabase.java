@@ -34,4 +34,8 @@ public class NotesDatabase extends SQLiteOpenHelper {
     public NotesTable getNotesTable() {
         return (NotesTable) tables.get(NotesTable.class);
     }
+
+    public FilesTable getFilesTable() {
+        return (FilesTable) tables.get(FilesTable.class);
+    }
 }
