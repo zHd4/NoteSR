@@ -1,6 +1,7 @@
 package com.notesr;
 
 import com.peew.notesr.App;
+import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
@@ -61,6 +62,25 @@ public class NotesTest {
 
         EncryptedNote actual = notesTable.get(note.getId());
         Assert.assertNull(actual);
+    }
+
+    @Test
+    public void testNoteAssignment() {
+        Note note = createAndGetNote();
+
+        testFile.setNoteId(note.getId());
+        filesTable.save(FilesCrypt.encrypt(testFile));
+
+        List<File> noteFiles = FilesCrypt.decrypt(filesTable.getByNoteId(note.getId()));
+        Optional<File> fileOptional = noteFiles.stream().findFirst();
+
+        Assert.assertTrue(fileOptional.isPresent());
+
+        File file = fileOptional.get();
+
+        Assert.assertEquals(note.getId(), file.getNoteId());
+        Assert.assertEquals(testFile.getName(), file.getName());
+        Assert.assertEquals(testFile.getData(), file.getData());
     }
 
     private Note createAndGetNote() {
