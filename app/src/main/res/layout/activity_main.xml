@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:contentDescription="@string/lock_app"
+        android:contentDescription="@string/add_note"
         android:src="@android:drawable/ic_input_add"
         android:tint="@android:color/white"
         app:backgroundTint="@color/floating_action_button_background"
