@@ -58,7 +58,7 @@
         <activity
             android:name=".ui.manage.assignments.AssignmentsListActivity"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
