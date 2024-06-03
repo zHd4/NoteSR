@@ -12,6 +12,8 @@ import com.peew.notesr.model.Note;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -22,22 +24,34 @@ import java.util.Optional;
 import io.bloco.faker.Faker;
 
 public class NotesTest {
+    private static final Faker faker = new Faker();
+    private static CryptoKey cryptoKey;
+
     private final NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
     private final FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
-    private final Faker faker = new Faker();
 
-    private CryptoKey cryptoKey;
     private Note testNote;
     private File testFile;
 
-    @Before
-    public void before() throws NoSuchAlgorithmException {
+    @BeforeClass
+    public static void beforeAll() throws NoSuchAlgorithmException {
         String password = faker.internet.password();
         cryptoKey = App.getAppContainer().getCryptoManager().generateNewKey(password);
+    }
 
+    @Before
+    public void before() {
         testNote = new Note(faker.lorem.word(), faker.lorem.paragraph());
         testFile = new File(faker.lorem.word(),
                 faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8));
+    }
+
+    @After
+    public void after() {
+        notesTable.getAll().forEach(note -> {
+            filesTable.getByNoteId(note.getId()).forEach(file -> filesTable.delete(file.getId()));
+            notesTable.delete(note.getId());
+        });
     }
 
     @Test
