@@ -118,17 +118,16 @@ public class AuthActivityHelper {
         if (createdPassword == null) {
             if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
                 createdPassword = password;
-                passwordBuilder.setLength(0);
 
                 censoredPasswordView.setText("");
                 topLabel.setText(activity.getString(R.string.repeat_access_code));
-
-                return password;
             } else {
                 activity.resetPassword(String.format(
                         activity.getString(R.string.minimum_password_length_is_n),
                         MIN_PASSWORD_LENGTH));
             }
+
+            passwordBuilder.setLength(0);
         } else {
             if (!password.equals(createdPassword)) {
                 activity.resetPassword(activity.getString(R.string.code_not_match));
