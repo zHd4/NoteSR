@@ -13,21 +13,21 @@ public class AuthActivityHelper {
     private static final int MAX_ATTEMPTS = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
-    private int attempts = MAX_ATTEMPTS;
 
     private final AuthActivity activity;
-    private String password;
     private final StringBuilder passwordBuilder;
 
-    public AuthActivityHelper(AuthActivity activity,
-                              String password,
-                              StringBuilder passwordBuilder) {
+    private int attempts = MAX_ATTEMPTS;
+    private String createdPassword;
+
+    public AuthActivityHelper(AuthActivity activity, StringBuilder passwordBuilder) {
         this.activity = activity;
-        this.password = password;
         this.passwordBuilder = passwordBuilder;
     }
 
     public void proceedAuth() {
+        String password = passwordBuilder.toString();
+
         CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
         TextView censoredPasswordView = activity.findViewById(R.id.censored_password_text_view);
 
@@ -62,17 +62,22 @@ public class AuthActivityHelper {
     }
 
     public void proceedPasswordCreation() {
-        if (setPassword()) {
-            Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
-            setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.FIRST_RUN_MODE);
+        String password = setPassword();
 
+        if (password != null) {
+            Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
+
+            setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.FIRST_RUN_MODE);
             setupKeyActivityIntent.putExtra("password", password);
+
             activity.startActivity(setupKeyActivityIntent);
         }
     }
 
     public void proceedKeyRecovery() {
-        if (setPassword()) {
+        String password = setPassword();
+
+        if (password != null) {
             String hexKey = activity.getIntent().getStringExtra("hex-key");
 
             try {
@@ -90,7 +95,9 @@ public class AuthActivityHelper {
     }
 
     public void proceedPasswordChanging() {
-        if (setPassword()) {
+        String password = setPassword();
+
+        if (password != null) {
             try {
                 App.getAppContainer().getCryptoManager().changePassword(password);
                 activity.resetPassword(activity.getString(R.string.updated));
@@ -102,33 +109,36 @@ public class AuthActivityHelper {
         }
     }
 
-    private boolean setPassword() {
+    private String setPassword() {
+        String password = passwordBuilder.toString();
+
         TextView topLabel = activity.findViewById(R.id.auth_top_label);
         TextView censoredPasswordView = activity.findViewById(R.id.censored_password_text_view);
 
-        String repeatCodeString = activity.getString(R.string.repeat_access_code);
+        if (createdPassword == null) {
+            if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
+                createdPassword = password;
+                passwordBuilder.setLength(0);
 
-        if (password != null && topLabel.getText().equals(repeatCodeString)) {
-            if (!passwordBuilder.toString().equals(password)) {
+                censoredPasswordView.setText("");
+                topLabel.setText(activity.getString(R.string.repeat_access_code));
+
+                return password;
+            } else {
+                activity.resetPassword(String.format(
+                        activity.getString(R.string.minimum_password_length_is_n),
+                        MIN_PASSWORD_LENGTH));
+            }
+        } else {
+            if (!password.equals(createdPassword)) {
                 activity.resetPassword(activity.getString(R.string.code_not_match));
-                return false;
+                return null;
             }
 
             censoredPasswordView.setText("");
-            return true;
-        } else {
-            if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
-                password = passwordBuilder.toString();
-                passwordBuilder.setLength(0);
-
-                topLabel.setText(repeatCodeString);
-                censoredPasswordView.setText("");
-            } else {
-                String messageFormat = activity.getString(R.string.minimum_password_length_is_n);
-                activity.resetPassword(String.format(messageFormat, MIN_PASSWORD_LENGTH));
-            }
+            return password;
         }
 
-        return false;
+        return null;
     }
 }
