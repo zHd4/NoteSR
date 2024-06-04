@@ -6,7 +6,6 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
@@ -36,7 +35,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     private int currentMode;
     private int inputIndex = 0;
     private boolean capsLockEnabled = false;
-    private StringBuilder passwordBuilder = new StringBuilder();
+    private final StringBuilder passwordBuilder = new StringBuilder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,13 +182,5 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         return displayMetrics;
-    }
-
-    void resetPassword(String toastMessage) {
-        TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
-        passwordBuilder = new StringBuilder();
-
-        censoredPasswordView.setText("");
-        showToastMessage(toastMessage, Toast.LENGTH_SHORT);
     }
 }
