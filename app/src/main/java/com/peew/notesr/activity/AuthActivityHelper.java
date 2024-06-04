@@ -119,22 +119,20 @@ public class AuthActivityHelper {
                 createdPassword = password;
                 topLabel.setText(activity.getString(R.string.repeat_access_code));
             } else {
-                showToastMessage(R.string.minimum_password_length_is_n);
+                showToastMessage(String.format(
+                        activity.getString(R.string.minimum_password_length_is_n),
+                        MIN_PASSWORD_LENGTH));
             }
-
-            resetPassword();
         } else {
             if (!password.equals(createdPassword)) {
                 showToastMessage(R.string.code_not_match);
-                return null;
+            } else {
+                showToastMessage(R.string.updated);
+                return password;
             }
-
-            resetPassword();
-            showToastMessage(R.string.updated);
-
-            return password;
         }
 
+        resetPassword();
         return null;
     }
 
