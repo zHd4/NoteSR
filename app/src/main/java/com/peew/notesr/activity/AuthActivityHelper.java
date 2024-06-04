@@ -1,23 +1,64 @@
-package com.peew.notesr.ui.auth;
+package com.peew.notesr.activity;
 
 import android.content.Intent;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
-import com.peew.notesr.ui.MainActivity;
-import com.peew.notesr.ui.setup.SetupKeyActivity;
 
-public class PasswordSetupProcessor {
+public class AuthActivityHelper {
+    private static final int MAX_ATTEMPTS = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
+    private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
+    private int attempts = MAX_ATTEMPTS;
+
     private final AuthActivity activity;
     private String password;
     private final StringBuilder passwordBuilder;
 
-    public PasswordSetupProcessor(AuthActivity activity, StringBuilder passwordBuilder) {
+    public AuthActivityHelper(AuthActivity activity,
+                              String password,
+                              StringBuilder passwordBuilder) {
         this.activity = activity;
+        this.password = password;
         this.passwordBuilder = passwordBuilder;
+    }
+
+    public void proceedAuth() {
+        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
+        TextView censoredPasswordView = activity.findViewById(R.id.censored_password_text_view);
+
+        if (password.isEmpty()) {
+            String enterCodeMessage = activity.getString(R.string.enter_the_code);
+            activity.showToastMessage(enterCodeMessage, Toast.LENGTH_SHORT);
+            return;
+        }
+
+        if (!cryptoManager.configure(password)) {
+            attempts--;
+
+            if (attempts == 0) {
+                cryptoManager.block();
+
+                activity.resetPassword(activity.getString(R.string.blocked));
+                activity.startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
+            } else {
+                try {
+                    Thread.sleep(ON_WRONG_PASSWORD_DELAY_MS);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                String messageFormat = activity.getString(R.string.wrong_code_you_have_n_attempts);
+                activity.resetPassword(String.format(messageFormat, attempts));
+            }
+        } else {
+            censoredPasswordView.setText("");
+            activity.startActivity(new Intent(App.getContext(), MainActivity.class));
+        }
     }
 
     public void proceedPasswordCreation() {
