@@ -1,4 +1,4 @@
-package com.notesr;
+package com.peew.notesr;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

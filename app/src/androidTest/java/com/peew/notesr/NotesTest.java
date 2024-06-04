@@ -1,6 +1,5 @@
-package com.notesr;
+package com.peew.notesr;
 
-import com.peew.notesr.App;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
@@ -10,9 +9,9 @@ import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.File;
 import com.peew.notesr.model.Note;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

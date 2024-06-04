@@ -1,4 +1,4 @@
-package com.notesr;
+package com.peew.notesr;
 
 import com.peew.notesr.crypto.Aes;
 
