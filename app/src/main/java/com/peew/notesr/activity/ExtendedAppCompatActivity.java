@@ -1,4 +1,4 @@
-package com.peew.notesr.ui;
+package com.peew.notesr.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

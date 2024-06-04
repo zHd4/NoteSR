@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.onclick.security;
+package com.peew.notesr.onclick.security;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -20,8 +20,8 @@ import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.ui.MainActivity;
-import com.peew.notesr.ui.setup.SetupKeyActivity;
+import com.peew.notesr.activity.MainActivity;
+import com.peew.notesr.activity.SetupKeyActivity;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

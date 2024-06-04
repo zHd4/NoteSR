@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.manage.notes;
+package com.peew.notesr.activity;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -19,9 +19,6 @@ import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
-import com.peew.notesr.ui.ExtendedAppCompatActivity;
-import com.peew.notesr.ui.MainActivity;
-import com.peew.notesr.ui.manage.assignments.AssignmentsListActivity;
 
 import java.util.HashMap;
 import java.util.Map;

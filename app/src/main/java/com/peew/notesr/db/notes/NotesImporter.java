@@ -11,7 +11,7 @@ import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.NotesDatabaseDump;
 import com.peew.notesr.tools.VersionFetcher;
-import com.peew.notesr.ui.manage.notes.ImportNotesActivity;
+import com.peew.notesr.activity.ImportNotesActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;

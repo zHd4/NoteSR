@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.manage.notes;
+package com.peew.notesr.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +13,6 @@ import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.SearchNotesResults;
-import com.peew.notesr.ui.ExtendedAppCompatActivity;
 
 import java.util.List;
 import java.util.function.Predicate;

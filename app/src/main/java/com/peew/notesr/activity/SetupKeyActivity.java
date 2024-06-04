@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.setup;
+package com.peew.notesr.activity;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -13,8 +13,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoTools;
-import com.peew.notesr.ui.ExtendedAppCompatActivity;
-import com.peew.notesr.ui.onclick.security.FinishKeySetupOnClick;
+import com.peew.notesr.onclick.security.FinishKeySetupOnClick;
 
 import java.security.NoSuchAlgorithmException;
 

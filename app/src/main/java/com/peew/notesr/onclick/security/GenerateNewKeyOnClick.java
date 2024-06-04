@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.onclick.security;
+package com.peew.notesr.onclick.security;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,8 +7,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.ui.MainActivity;
-import com.peew.notesr.ui.setup.SetupKeyActivity;
+import com.peew.notesr.activity.MainActivity;
+import com.peew.notesr.activity.SetupKeyActivity;
 
 import java.util.function.Consumer;
 

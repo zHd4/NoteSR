@@ -1,4 +1,4 @@
-package com.peew.notesr.ui;
+package com.peew.notesr.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,17 +20,12 @@ import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
-import com.peew.notesr.ui.auth.AuthActivity;
-import com.peew.notesr.ui.manage.notes.ImportNotesActivity;
-import com.peew.notesr.ui.manage.KeyRecoveryActivity;
-import com.peew.notesr.ui.manage.notes.SearchNotesActivity;
-import com.peew.notesr.ui.onclick.security.ChangePasswordOnClick;
-import com.peew.notesr.ui.onclick.notes.ExportNotesOnClick;
-import com.peew.notesr.ui.onclick.security.GenerateNewKeyOnClick;
-import com.peew.notesr.ui.onclick.security.LockOnClick;
-import com.peew.notesr.ui.onclick.notes.NewNoteOnClick;
-import com.peew.notesr.ui.onclick.notes.NoteOnClick;
-import com.peew.notesr.ui.setup.StartActivity;
+import com.peew.notesr.onclick.security.ChangePasswordOnClick;
+import com.peew.notesr.onclick.notes.ExportNotesOnClick;
+import com.peew.notesr.onclick.security.GenerateNewKeyOnClick;
+import com.peew.notesr.onclick.security.LockOnClick;
+import com.peew.notesr.onclick.notes.NewNoteOnClick;
+import com.peew.notesr.onclick.notes.NoteOnClick;
 
 import java.util.HashMap;
 import java.util.List;

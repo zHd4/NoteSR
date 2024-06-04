@@ -1,20 +1,18 @@
-package com.peew.notesr.ui.onclick.security;
+package com.peew.notesr.onclick.security;
 
 import android.content.Intent;
 
 import com.peew.notesr.App;
-import com.peew.notesr.ui.MainActivity;
-import com.peew.notesr.ui.auth.AuthActivity;
+import com.peew.notesr.activity.MainActivity;
+import com.peew.notesr.activity.AuthActivity;
 
 import java.util.function.Consumer;
 
-public class LockOnClick implements Consumer<MainActivity> {
+public class ChangePasswordOnClick implements Consumer<MainActivity> {
     @Override
     public void accept(MainActivity activity) {
         Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-        authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
-
-        App.getAppContainer().getCryptoManager().destroyKey();
+        authActivityIntent.putExtra("mode", AuthActivity.CHANGE_PASSWORD_MODE);
 
         activity.startActivity(authActivityIntent);
         activity.finish();

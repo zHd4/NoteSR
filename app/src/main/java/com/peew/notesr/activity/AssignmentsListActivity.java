@@ -1,18 +1,11 @@
-package com.peew.notesr.ui.manage.assignments;
+package com.peew.notesr.activity;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.crypto.FilesCrypt;
-import com.peew.notesr.db.notes.tables.FilesTable;
-import com.peew.notesr.model.File;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public class AssignmentsListActivity extends AppCompatActivity {
 

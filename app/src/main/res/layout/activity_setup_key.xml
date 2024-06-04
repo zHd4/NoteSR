@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.setup.SetupKeyActivity"
+    tools:context=".activity.SetupKeyActivity"
     android:background="@color/activity_background">
 
     <EditText

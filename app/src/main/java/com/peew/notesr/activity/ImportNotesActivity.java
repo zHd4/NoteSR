@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.manage.notes;
+package com.peew.notesr.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,8 +18,6 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.db.notes.NotesImportResult;
 import com.peew.notesr.db.notes.NotesImporter;
-import com.peew.notesr.ui.ExtendedAppCompatActivity;
-import com.peew.notesr.ui.MainActivity;
 
 import java.io.IOException;
 import java.io.InputStream;

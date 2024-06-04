@@ -1,11 +1,11 @@
-package com.peew.notesr.ui.onclick.notes;
+package com.peew.notesr.onclick.notes;
 
 import android.content.Intent;
 import android.view.View;
 
 import com.peew.notesr.App;
-import com.peew.notesr.ui.MainActivity;
-import com.peew.notesr.ui.manage.notes.NoteOpenActivity;
+import com.peew.notesr.activity.MainActivity;
+import com.peew.notesr.activity.NoteOpenActivity;
 
 public class NewNoteOnClick implements View.OnClickListener {
     private final MainActivity activity;

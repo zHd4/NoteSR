@@ -1,12 +1,12 @@
-package com.peew.notesr.ui.onclick.notes;
+package com.peew.notesr.onclick.notes;
 
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.peew.notesr.App;
-import com.peew.notesr.ui.ExtendedAppCompatActivity;
-import com.peew.notesr.ui.manage.notes.NoteOpenActivity;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
+import com.peew.notesr.activity.NoteOpenActivity;
 
 public class NoteOnClick implements AdapterView.OnItemClickListener {
     private final ExtendedAppCompatActivity activity;

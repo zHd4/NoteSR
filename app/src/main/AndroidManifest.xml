@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme">
@@ -24,39 +24,39 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.setup.StartActivity"
+            android:name=".activity.StartActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.setup.SetupKeyActivity"
+            android:name=".activity.SetupKeyActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.auth.AuthActivity"
+            android:name=".activity.AuthActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.manage.KeyRecoveryActivity"
+            android:name=".activity.KeyRecoveryActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.manage.notes.NoteOpenActivity"
+            android:name=".activity.NoteOpenActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.manage.notes.SearchNotesActivity"
+            android:name=".activity.SearchNotesActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.manage.notes.ViewNotesSearchResultsActivity"
+            android:name=".activity.ViewNotesSearchResultsActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.manage.notes.ImportNotesActivity"
+            android:name=".activity.ImportNotesActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.manage.assignments.AssignmentsListActivity"
+            android:name=".activity.AssignmentsListActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
     </application>

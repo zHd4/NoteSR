@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.onclick.notes;
+package com.peew.notesr.onclick.notes;
 
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -10,7 +10,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.R;
 import com.peew.notesr.db.notes.MissingNotesException;
 import com.peew.notesr.db.notes.NotesExporter;
-import com.peew.notesr.ui.MainActivity;
+import com.peew.notesr.activity.MainActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;

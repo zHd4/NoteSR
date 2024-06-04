@@ -1,4 +1,4 @@
-package com.peew.notesr.ui.auth;
+package com.peew.notesr.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.ui.ExtendedAppCompatActivity;
+import com.peew.notesr.ui.auth.PasswordSetupProcessor;
 
 import java.util.Arrays;
 
@@ -180,7 +180,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     }
 
     private void authorize() {
-        new AuthorizationProcessor(this, passwordBuilder.toString()).proceed();
+        new AuthActivityHelper(this, passwordBuilder.toString()).proceedAuth();
     }
 
     private DisplayMetrics getDisplayMetrics() {
