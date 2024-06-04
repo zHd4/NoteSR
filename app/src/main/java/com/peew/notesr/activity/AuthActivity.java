@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.ui.auth.PasswordSetupProcessor;
 
 import java.util.Arrays;
 
@@ -38,8 +37,6 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     private int inputIndex = 0;
     private boolean capsLockEnabled = false;
     private StringBuilder passwordBuilder = new StringBuilder();
-    private final PasswordSetupProcessor passwordSetupProcessor=
-            new PasswordSetupProcessor(this, passwordBuilder);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,18 +166,18 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     }
 
     private View.OnClickListener authButtonOnClick() {
+        AuthActivityHelper helper = new AuthActivityHelper(this,
+                passwordBuilder.toString(),
+                passwordBuilder);
+
         return view -> {
             switch (currentMode) {
-                case AUTHORIZATION_MODE -> authorize();
-                case CREATE_PASSWORD_MODE -> passwordSetupProcessor.proceedPasswordCreation();
-                case KEY_RECOVERY_MODE -> passwordSetupProcessor.proceedKeyRecovery();
-                case CHANGE_PASSWORD_MODE -> passwordSetupProcessor.proceedPasswordChanging();
+                case AUTHORIZATION_MODE -> helper.proceedAuth();
+                case CREATE_PASSWORD_MODE -> helper.proceedPasswordCreation();
+                case KEY_RECOVERY_MODE -> helper.proceedKeyRecovery();
+                case CHANGE_PASSWORD_MODE -> helper.proceedPasswordChanging();
             }
         };
-    }
-
-    private void authorize() {
-        new AuthActivityHelper(this, passwordBuilder.toString()).proceedAuth();
     }
 
     private DisplayMetrics getDisplayMetrics() {
