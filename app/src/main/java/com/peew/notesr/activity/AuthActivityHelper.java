@@ -62,7 +62,7 @@ public class AuthActivityHelper {
     }
 
     public void proceedPasswordCreation() {
-        String password = setPassword();
+        String password = checkCurrentPassword();
 
         if (password != null) {
             Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
@@ -75,7 +75,7 @@ public class AuthActivityHelper {
     }
 
     public void proceedKeyRecovery() {
-        String password = setPassword();
+        String password = checkCurrentPassword();
 
         if (password != null) {
             String hexKey = activity.getIntent().getStringExtra("hex-key");
@@ -95,7 +95,7 @@ public class AuthActivityHelper {
     }
 
     public void proceedPasswordChanging() {
-        String password = setPassword();
+        String password = checkCurrentPassword();
 
         if (password != null) {
             try {
@@ -109,7 +109,7 @@ public class AuthActivityHelper {
         }
     }
 
-    private String setPassword() {
+    private String checkCurrentPassword() {
         String password = passwordBuilder.toString();
 
         TextView topLabel = activity.findViewById(R.id.auth_top_label);
