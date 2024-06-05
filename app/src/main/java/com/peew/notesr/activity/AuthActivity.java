@@ -165,7 +165,7 @@ public class AuthActivity extends AppCompatActivityExtended {
     }
 
     private View.OnClickListener authButtonOnClick() {
-        AuthActivityHelper helper = new AuthActivityHelper(this, passwordBuilder);
+        AuthActivityExtension helper = new AuthActivityExtension(this, passwordBuilder);
 
         return view -> {
             switch (currentMode) {

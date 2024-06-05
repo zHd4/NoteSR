@@ -9,7 +9,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 
-public class AuthActivityHelper {
+public class AuthActivityExtension {
     private static final int MAX_ATTEMPTS = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
@@ -20,7 +20,7 @@ public class AuthActivityHelper {
     private int attempts = MAX_ATTEMPTS;
     private String createdPassword;
 
-    public AuthActivityHelper(AuthActivity activity, StringBuilder passwordBuilder) {
+    public AuthActivityExtension(AuthActivity activity, StringBuilder passwordBuilder) {
         this.activity = activity;
         this.passwordBuilder = passwordBuilder;
     }
