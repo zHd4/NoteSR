@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class FilesListAdapter extends ElementsListAdapter<File> {
     private static String toReadableSize(long size) {
-        String[] units = new String[] { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
+        String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
 
         if(size > 0) {
             int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
