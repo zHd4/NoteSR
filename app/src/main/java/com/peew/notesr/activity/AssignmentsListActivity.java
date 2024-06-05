@@ -18,6 +18,7 @@ import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.model.File;
 
+//import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,7 +66,7 @@ public class AssignmentsListActivity extends AppCompatActivity {
                 missingFilesLabel.setVisibility(View.INVISIBLE);
                 FilesListAdapter adapter = new FilesListAdapter(
                         App.getContext(),
-                        R.layout.notes_list_item,
+                        R.layout.files_list_item,
                         files);
 
                 runOnUiThread(() -> filesView.setAdapter(adapter));
