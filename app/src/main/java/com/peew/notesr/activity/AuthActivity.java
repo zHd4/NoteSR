@@ -169,10 +169,10 @@ public class AuthActivity extends ExtendedAppCompatActivity {
 
         return view -> {
             switch (currentMode) {
-                case AUTHORIZATION_MODE -> helper.proceedAuth();
-                case CREATE_PASSWORD_MODE -> helper.proceedPasswordCreation();
-                case KEY_RECOVERY_MODE -> helper.proceedKeyRecovery();
-                case CHANGE_PASSWORD_MODE -> helper.proceedPasswordChanging();
+                case AUTHORIZATION_MODE -> helper.authorize();
+                case CREATE_PASSWORD_MODE -> helper.createPassword();
+                case KEY_RECOVERY_MODE -> helper.recoverKey();
+                case CHANGE_PASSWORD_MODE -> helper.changePassword();
             }
         };
     }

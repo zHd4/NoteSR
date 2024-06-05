@@ -25,7 +25,7 @@ public class AuthActivityHelper {
         this.passwordBuilder = passwordBuilder;
     }
 
-    public void proceedAuth() {
+    public void authorize() {
         String password = passwordBuilder.toString();
 
         CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
@@ -64,8 +64,8 @@ public class AuthActivityHelper {
         }
     }
 
-    public void proceedPasswordCreation() {
-        String password = checkCurrentPassword();
+    public void createPassword() {
+        String password = proceedPasswordSetting();
 
         if (password != null) {
             Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
@@ -77,8 +77,8 @@ public class AuthActivityHelper {
         }
     }
 
-    public void proceedKeyRecovery() {
-        String password = checkCurrentPassword();
+    public void recoverKey() {
+        String password = proceedPasswordSetting();
 
         if (password != null) {
             String hexKey = activity.getIntent().getStringExtra("hex-key");
@@ -97,12 +97,14 @@ public class AuthActivityHelper {
         }
     }
 
-    public void proceedPasswordChanging() {
-        String password = checkCurrentPassword();
+    public void changePassword() {
+        String password = proceedPasswordSetting();
 
         if (password != null) {
             try {
                 App.getAppContainer().getCryptoManager().changePassword(password);
+
+                showToastMessage(R.string.updated);
                 activity.startActivity(new Intent(App.getContext(), MainActivity.class));
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -110,7 +112,7 @@ public class AuthActivityHelper {
         }
     }
 
-    private String checkCurrentPassword() {
+    private String proceedPasswordSetting() {
         String password = passwordBuilder.toString();
         TextView topLabel = activity.findViewById(R.id.auth_top_label);
 
@@ -124,11 +126,10 @@ public class AuthActivityHelper {
                         MIN_PASSWORD_LENGTH));
             }
         } else {
-            if (!password.equals(createdPassword)) {
-                showToastMessage(R.string.code_not_match);
-            } else {
-                showToastMessage(R.string.updated);
+            if (password.equals(createdPassword)) {
                 return password;
+            } else {
+                showToastMessage(R.string.code_not_match);
             }
         }
 
