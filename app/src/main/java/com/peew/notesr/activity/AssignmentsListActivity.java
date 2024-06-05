@@ -69,9 +69,8 @@ public class AssignmentsListActivity extends AppCompatActivity {
             handler.post(progressDialog::show);
 
             FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
-            List<File> filesList = FilesCrypt.decrypt(filesTable.getByNoteId(noteId));
+            fillFilesListView(FilesCrypt.decrypt(filesTable.getByNoteId(noteId)));
 
-            fillFilesListView(filesList);
             progressDialog.dismiss();
         });
     }
