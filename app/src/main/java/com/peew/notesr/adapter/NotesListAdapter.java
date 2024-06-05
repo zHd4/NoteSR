@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,8 +14,7 @@ import com.peew.notesr.model.Note;
 import java.util.List;
 import java.util.Objects;
 
-public class NotesListAdapter extends ArrayAdapter<Note> {
-    private static final int MAX_VALUE_LENGTH = 25;
+public class NotesListAdapter extends ElementsListAdapter<Note> {
     private final int resourceLayout;
     private final Context context;
 
@@ -53,11 +51,5 @@ public class NotesListAdapter extends ArrayAdapter<Note> {
     @Override
     public long getItemId(int position) {
         return Objects.requireNonNull(getItem(position)).getId();
-    }
-
-    private String formatValue(String value) {
-        String formatted = value.replace("\n", "");
-        return formatted.length() > MAX_VALUE_LENGTH ?
-                formatted.substring(0, MAX_VALUE_LENGTH) + "…" : formatted;
     }
 }
