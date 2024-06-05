@@ -18,29 +18,22 @@ import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.model.File;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 public class AssignmentsListActivity extends AppCompatActivity {
-    private static final Set<String> FILES_TYPES = Set.of(
-            "text/txt", "text/log",
-            "image/gif", "image/png",
-            "image/jpg", "image/jpeg",
-            "image/svg", "image/bmp",
-            "video/mp4", "video/avi",
-            "video/mov", "video/webm",
-            "audio/mp3", "audio/wav",
-            "audio/ogg", "audio/m4a"
-    );
+//    private static final Set<String> FILES_TYPES = Set.of(
+//            "text/txt", "text/log",
+//            "image/gif", "image/png",
+//            "image/jpg", "image/jpeg",
+//            "image/svg", "image/bmp",
+//            "video/mp4", "video/avi",
+//            "video/mov", "video/webm",
+//            "audio/mp3", "audio/wav",
+//            "audio/ogg", "audio/m4a"
+//    );
     private long noteId;
-    private Map<File, String> files;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,18 +69,7 @@ public class AssignmentsListActivity extends AppCompatActivity {
             handler.post(progressDialog::show);
 
             FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
-
-            Map<File, String> filesWithTypes = new HashMap<>();
-            List<File> filesList = filesTable.getByNoteId(noteId).stream()
-                    .map(encryptedFile -> {
-                        File file = FilesCrypt.decrypt(encryptedFile);
-
-                        filesWithTypes.put(file, getFileType(file));
-                        return file;
-                    })
-                    .collect(Collectors.toList());
-
-            this.files = filesWithTypes;
+            List<File> filesList = FilesCrypt.decrypt(filesTable.getByNoteId(noteId));
 
             fillFilesListView(filesList);
             progressDialog.dismiss();
@@ -109,17 +91,17 @@ public class AssignmentsListActivity extends AppCompatActivity {
         }
     }
 
-    private String getFileType(File file) {
-        String name = file.getName();
-        String extension = new LinkedList<>(Arrays.asList(name.split("\\."))).getLast();
-
-        return FILES_TYPES.stream()
-                .map(type -> type.split("/"))
-                .filter(type -> type[1].equals(extension))
-                .map(type -> type[0])
-                .findFirst()
-                .orElse(null);
-    }
+//    private String getFileType(File file) {
+//        String name = file.getName();
+//        String extension = new LinkedList<>(Arrays.asList(name.split("\\."))).getLast();
+//
+//        return FILES_TYPES.stream()
+//                .map(type -> type.split("/"))
+//                .filter(type -> type[1].equals(extension))
+//                .map(type -> type[0])
+//                .findFirst()
+//                .orElse(null);
+//    }
 
 //    private void fillTable() {
 //        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
