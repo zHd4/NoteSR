@@ -18,7 +18,7 @@ public class FilesTable extends Table{
                         "id integer PRIMARY KEY AUTOINCREMENT, " +
                         "note_id integer NOT NULL, " +
                         "encrypted_name text NOT NULL, " +
-                        "encrypted_type text NOT NULL, " +
+                        "encrypted_type text, " +
                         "encrypted_data blob NOT NULL, " +
                         "FOREIGN KEY(note_id) REFERENCES " + notesTable.getName() + "(note_id))");
     }
