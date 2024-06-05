@@ -107,9 +107,9 @@ public class AssignmentsListActivity extends AppCompatActivity {
 //        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
 //
 //        if (filesTable.getByNoteId(1).isEmpty()) {
-//            File file1 = new File("file1.txt", "foo".getBytes(StandardCharsets.UTF_8));
-//            File file2 = new File("file2.txt", "bar".getBytes(StandardCharsets.UTF_8));
-//            File file3 = new File("file3.txt", "baz".getBytes(StandardCharsets.UTF_8));
+//            File file1 = new File("file1.txt", "text", "foo".getBytes(StandardCharsets.UTF_8));
+//            File file2 = new File("file2.txt", "text", "bar".getBytes(StandardCharsets.UTF_8));
+//            File file3 = new File("file3.txt", "text", "baz".getBytes(StandardCharsets.UTF_8));
 //
 //            file1.setNoteId(1L);
 //            file2.setNoteId(1L);
