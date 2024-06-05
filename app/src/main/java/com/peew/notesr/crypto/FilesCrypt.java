@@ -35,11 +35,14 @@ public class FilesCrypt {
 
         try {
             byte[] nameBytes = aes.encrypt(file.getName().getBytes(StandardCharsets.UTF_8));
+            byte[] typeBytes = aes.encrypt(file.getType().getBytes(StandardCharsets.UTF_8));
+
             byte[] data = aes.encrypt(file.getData());
 
             String name = Base64.encodeToString(nameBytes, Base64.DEFAULT);
+            String type = Base64.encodeToString(typeBytes, Base64.DEFAULT);
 
-            EncryptedFile encryptedFile = new EncryptedFile(file.getNoteId(), name, data);
+            EncryptedFile encryptedFile = new EncryptedFile(file.getNoteId(), name, type, data);
 
             encryptedFile.setId(file.getId());
             return encryptedFile;
@@ -54,10 +57,14 @@ public class FilesCrypt {
 
         try {
             byte[] decodedName = Base64.decode(encryptedFile.getEncryptedName(), Base64.DEFAULT);
+            byte[] decodedType = Base64.decode(encryptedFile.getEncryptedType(), Base64.DEFAULT);
+
             String decryptedName = new String(aes.decrypt(decodedName));
+            String decryptedType = new String(aes.decrypt(decodedType));
+
             byte[] decryptedData = aes.decrypt(encryptedFile.getEncryptedData());
 
-            File file = new File(decryptedName, decryptedData);
+            File file = new File(decryptedName, decryptedType, decryptedData);
 
             file.setId(encryptedFile.getId());
             file.setNoteId(encryptedFile.getNoteId());

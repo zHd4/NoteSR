@@ -18,6 +18,7 @@ public class FilesTable extends Table{
                         "id integer PRIMARY KEY AUTOINCREMENT, " +
                         "note_id integer NOT NULL, " +
                         "encrypted_name text NOT NULL, " +
+                        "encrypted_type text NOT NULL, " +
                         "encrypted_data blob NOT NULL, " +
                         "FOREIGN KEY(note_id) REFERENCES " + notesTable.getName() + "(note_id))");
     }
@@ -28,6 +29,7 @@ public class FilesTable extends Table{
 
         values.put("note_id", file.getNoteId());
         values.put("encrypted_name", file.getEncryptedName());
+        values.put("encrypted_type", file.getEncryptedType());
         values.put("encrypted_data", file.getEncryptedData());
 
         if (file.getId() == null || get(file.getId()) == null) {
@@ -41,7 +43,7 @@ public class FilesTable extends Table{
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
-                "SELECT note_id, encrypted_name, encrypted_data" +
+                "SELECT note_id, encrypted_name, encrypted_type, encrypted_data" +
                         " FROM " + name +
                         " WHERE id = ?",
                 new String[] { String.valueOf(id) });
@@ -49,10 +51,12 @@ public class FilesTable extends Table{
         try (cursor) {
             if (cursor.moveToFirst()) {
                 Long noteId = cursor.getLong(0);
-                String name = cursor.getString(1);
 
-                byte[] data = cursor.getBlob(2);
-                EncryptedFile file = new EncryptedFile(noteId, name, data);
+                String name = cursor.getString(1);
+                String type = cursor.getString(2);
+
+                byte[] data = cursor.getBlob(3);
+                EncryptedFile file = new EncryptedFile(noteId, name, type, data);
 
                 file.setId(id);
                 return file;
@@ -67,7 +71,7 @@ public class FilesTable extends Table{
         List<EncryptedFile> files = new ArrayList<>();
 
         Cursor cursor = db.rawQuery(
-                "SELECT id, encrypted_name, encrypted_data" +
+                "SELECT id, encrypted_name, encrypted_type, encrypted_data" +
                         " FROM " + name +
                         " WHERE note_id = ?",
                 new String[] { String.valueOf(noteId) });
@@ -76,10 +80,12 @@ public class FilesTable extends Table{
             if (cursor.moveToFirst()) {
                 do {
                     Long id = cursor.getLong(0);
-                    String name = cursor.getString(1);
 
-                    byte[] data = cursor.getBlob(2);
-                    EncryptedFile file = new EncryptedFile(noteId, name, data);
+                    String name = cursor.getString(1);
+                    String type = cursor.getString(2);
+
+                    byte[] data = cursor.getBlob(3);
+                    EncryptedFile file = new EncryptedFile(noteId, name, type, data);
 
                     file.setId(id);
                     files.add(file);

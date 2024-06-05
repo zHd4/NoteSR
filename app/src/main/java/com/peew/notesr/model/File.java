@@ -12,12 +12,15 @@ public final class File {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("type")
+    private String type;
+
     @JsonProperty("data")
     private byte[] data;
 
     public File() {}
 
-    public File(String name, byte[] data) {
+    public File(String name, String type, byte[] data) {
         this.name = name;
         this.data = data;
     }
@@ -38,12 +41,16 @@ public final class File {
         this.name = name;
     }
 
-    public byte[] getData() {
-        return data;
+    public String getType() {
+        return type;
     }
 
-    public void setData(byte[] data) {
-        this.data = data;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     public Long getNoteId() {
