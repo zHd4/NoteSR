@@ -10,8 +10,13 @@ import java.util.List;
 public class ElementsListAdapter<T> extends ArrayAdapter<T> {
     private static final int MAX_VALUE_LENGTH = 25;
 
+    protected final int resourceLayout;
+    protected final Context context;
+
     public ElementsListAdapter(@NonNull Context context, int resource, @NonNull List<T> objects) {
         super(context, resource, objects);
+        this.context = context;
+        this.resourceLayout = resource;
     }
 
     protected String formatValue(String value) {

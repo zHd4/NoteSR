@@ -15,13 +15,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class NotesListAdapter extends ElementsListAdapter<Note> {
-    private final int resourceLayout;
-    private final Context context;
 
     public NotesListAdapter(Context context, int resource, List<Note> items) {
         super(context, resource, items);
-        this.resourceLayout = resource;
-        this.context = context;
     }
 
     @NonNull
