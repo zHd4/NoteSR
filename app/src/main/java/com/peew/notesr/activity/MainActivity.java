@@ -47,13 +47,12 @@ public class MainActivity extends AppCompatActivityExtended {
         configure();
 
         ListView notesView = findViewById(R.id.notes_list_view);
-        TextView missingNotesLabel = findViewById(R.id.missing_notes_label);
         FloatingActionButton newNoteButton = findViewById(R.id.add_note_button);
 
-        newNoteButton.setOnClickListener(new NewNoteOnClick(this));
+        loadNotes();
 
-        fillNotesList(notesView, missingNotesLabel);
         notesView.setOnItemClickListener(new NoteOnClick(this));
+        newNoteButton.setOnClickListener(new NewNoteOnClick(this));
     }
 
     @Override
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivityExtended {
         }
     }
 
-    private void fillNotesList(ListView notesView, TextView missingNotesLabel) {
+    private void loadNotes() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
@@ -118,21 +117,26 @@ public class MainActivity extends AppCompatActivityExtended {
                 handler.post(progressDialog::show);
 
                 NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
-                List<Note> notes = NotesCrypt.decrypt(notesTable.getAll());
-
-                if (!notes.isEmpty()) {
-                    missingNotesLabel.setVisibility(View.INVISIBLE);
-                    NotesListAdapter adapter = new NotesListAdapter(
-                            App.getContext(),
-                            R.layout.notes_list_item,
-                            notes);
-
-                    runOnUiThread(() -> notesView.setAdapter(adapter));
-                }
+                fillNotesListView(NotesCrypt.decrypt(notesTable.getAll()));
 
                 progressDialog.dismiss();
             }
         });
+    }
+
+    private void fillNotesListView(List<Note> notes) {
+        ListView notesView = findViewById(R.id.notes_list_view);
+        TextView missingNotesLabel = findViewById(R.id.missing_notes_label);
+
+        if (!notes.isEmpty()) {
+            missingNotesLabel.setVisibility(View.INVISIBLE);
+            NotesListAdapter adapter = new NotesListAdapter(
+                    App.getContext(),
+                    R.layout.notes_list_item,
+                    notes);
+
+            runOnUiThread(() -> notesView.setAdapter(adapter));
+        }
     }
 
     private CryptoManager getCryptoManager() {
