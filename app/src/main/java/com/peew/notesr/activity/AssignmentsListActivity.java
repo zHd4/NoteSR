@@ -18,13 +18,29 @@ import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.model.File;
 
-//import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class AssignmentsListActivity extends AppCompatActivity {
+    private static final Set<String> FILES_TYPES = Set.of(
+            "text/txt", "text/log",
+            "image/gif", "image/png",
+            "image/jpg", "image/jpeg",
+            "image/svg", "image/bmp",
+            "video/mp4", "video/avi",
+            "video/mov", "video/webm",
+            "audio/mp3", "audio/wav",
+            "audio/ogg", "audio/m4a"
+    );
     private long noteId;
+    private Map<File, String> files;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +60,10 @@ public class AssignmentsListActivity extends AppCompatActivity {
         actionBar.setTitle(R.string.files);
 
 //        fillTable();
-        fillFilesList(findViewById(R.id.files_list_view), findViewById(R.id.missing_files_label));
+        loadFiles();
     }
 
-    private void fillFilesList(ListView filesView, TextView missingFilesLabel) {
+    private void loadFiles() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
@@ -60,20 +76,49 @@ public class AssignmentsListActivity extends AppCompatActivity {
             handler.post(progressDialog::show);
 
             FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
-            List<File> files = FilesCrypt.decrypt(filesTable.getByNoteId(noteId));
 
-            if (!files.isEmpty()) {
-                missingFilesLabel.setVisibility(View.INVISIBLE);
-                FilesListAdapter adapter = new FilesListAdapter(
-                        App.getContext(),
-                        R.layout.files_list_item,
-                        files);
+            Map<File, String> filesWithTypes = new HashMap<>();
+            List<File> filesList = filesTable.getByNoteId(noteId).stream()
+                    .map(encryptedFile -> {
+                        File file = FilesCrypt.decrypt(encryptedFile);
 
-                runOnUiThread(() -> filesView.setAdapter(adapter));
-            }
+                        filesWithTypes.put(file, getFileType(file));
+                        return file;
+                    })
+                    .collect(Collectors.toList());
 
+            this.files = filesWithTypes;
+
+            fillFilesListView(filesList);
             progressDialog.dismiss();
         });
+    }
+
+    private void fillFilesListView(List<File> files) {
+        ListView filesView = findViewById(R.id.files_list_view);
+        TextView missingFilesLabel = findViewById(R.id.missing_files_label);
+
+        if (!files.isEmpty()) {
+            missingFilesLabel.setVisibility(View.INVISIBLE);
+            FilesListAdapter adapter = new FilesListAdapter(
+                    App.getContext(),
+                    R.layout.files_list_item,
+                    files);
+
+            runOnUiThread(() -> filesView.setAdapter(adapter));
+        }
+    }
+
+    private String getFileType(File file) {
+        String name = file.getName();
+        String extension = new LinkedList<>(Arrays.asList(name.split("\\."))).getLast();
+
+        return FILES_TYPES.stream()
+                .map(type -> type.split("/"))
+                .filter(type -> type[1].equals(extension))
+                .map(type -> type[0])
+                .findFirst()
+                .orElse(null);
     }
 
 //    private void fillTable() {
