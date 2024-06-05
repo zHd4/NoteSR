@@ -126,7 +126,10 @@ public class NoteOpenActivity extends AppCompatActivityExtended {
     }
 
     private void openAssignmentsOnClick() {
-        startActivity(new Intent(App.getContext(), AssignmentsListActivity.class));
+        Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
+
+        intent.putExtra("note_id", note.getId());
+        startActivity(intent);
     }
 
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
