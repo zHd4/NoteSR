@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ImportNotesActivity extends ExtendedAppCompatActivity {
+public class ImportNotesActivity extends AppCompatActivityExtended {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

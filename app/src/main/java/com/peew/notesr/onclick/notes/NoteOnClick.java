@@ -5,13 +5,13 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.peew.notesr.App;
-import com.peew.notesr.activity.ExtendedAppCompatActivity;
+import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.activity.NoteOpenActivity;
 
 public class NoteOnClick implements AdapterView.OnItemClickListener {
-    private final ExtendedAppCompatActivity activity;
+    private final AppCompatActivityExtended activity;
 
-    public NoteOnClick(ExtendedAppCompatActivity activity) {
+    public NoteOnClick(AppCompatActivityExtended activity) {
         this.activity = activity;
     }
 

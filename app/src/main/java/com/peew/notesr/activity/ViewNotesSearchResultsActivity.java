@@ -17,7 +17,7 @@ import com.peew.notesr.onclick.notes.NoteOnClick;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
+public class ViewNotesSearchResultsActivity extends AppCompatActivityExtended {
     private SearchNotesResults results;
 
     /** @noinspection DataFlowIssue*/

@@ -18,7 +18,7 @@ import com.peew.notesr.crypto.CryptoTools;
 
 import java.util.Objects;
 
-public class KeyRecoveryActivity extends ExtendedAppCompatActivity {
+public class KeyRecoveryActivity extends AppCompatActivityExtended {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

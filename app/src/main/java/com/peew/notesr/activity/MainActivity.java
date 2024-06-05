@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-public class MainActivity extends ExtendedAppCompatActivity {
+public class MainActivity extends AppCompatActivityExtended {
     private final Map<Integer, Consumer<MainActivity>> menuItemsMap = new HashMap<>();
 
     @Override

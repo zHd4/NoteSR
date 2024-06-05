@@ -17,7 +17,7 @@ import com.peew.notesr.onclick.security.FinishKeySetupOnClick;
 
 import java.security.NoSuchAlgorithmException;
 
-public class SetupKeyActivity extends ExtendedAppCompatActivity {
+public class SetupKeyActivity extends AppCompatActivityExtended {
     public static final int FIRST_RUN_MODE = 0;
     public static final int REGENERATION_MODE = 1;
 

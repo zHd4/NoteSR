@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class NoteOpenActivity extends ExtendedAppCompatActivity {
+public class NoteOpenActivity extends AppCompatActivityExtended {
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
     private Note note;
 

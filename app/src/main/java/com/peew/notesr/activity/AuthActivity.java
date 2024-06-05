@@ -14,7 +14,7 @@ import com.peew.notesr.R;
 
 import java.util.Arrays;
 
-public class AuthActivity extends ExtendedAppCompatActivity {
+public class AuthActivity extends AppCompatActivityExtended {
     public static final int AUTHORIZATION_MODE = 0;
     public static final int CREATE_PASSWORD_MODE = 1;
     public static final int KEY_RECOVERY_MODE = 2;

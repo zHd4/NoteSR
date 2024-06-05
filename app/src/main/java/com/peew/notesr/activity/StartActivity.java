@@ -7,7 +7,7 @@ import android.view.View;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 
-public class StartActivity extends ExtendedAppCompatActivity {
+public class StartActivity extends AppCompatActivityExtended {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
