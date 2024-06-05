@@ -10,7 +10,7 @@ import com.peew.notesr.model.EncryptedFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilesTable extends Table{
+public class FilesTable extends Table {
     public FilesTable(SQLiteOpenHelper helper, String name, NotesTable notesTable) {
         super(helper, name);
         helper.getWritableDatabase().execSQL(
