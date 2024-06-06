@@ -41,8 +41,14 @@ public class NotesTest {
     @Before
     public void before() {
         testNote = new Note(faker.lorem.word(), faker.lorem.paragraph());
-        testFile = new File(faker.lorem.word(),
-                faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8));
+
+        byte[] fileData = faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8);
+        testFile = new File(
+                faker.lorem.word(),
+                null,
+                (long) fileData.length,
+                fileData
+        );
     }
 
     @After
@@ -93,8 +99,10 @@ public class NotesTest {
         testFile.setNoteId(note.getId());
         filesTable.save(FilesCrypt.encrypt(testFile, cryptoKey));
 
-        List<File> noteFiles = FilesCrypt.decrypt(filesTable.getByNoteId(note.getId()), cryptoKey);
-        Optional<File> fileOptional = noteFiles.stream().findFirst();
+        Optional<File> fileOptional = filesTable.getByNoteId(note.getId()).stream()
+                .map(fileInfo -> filesTable.get(fileInfo.getId()))
+                .map(file -> FilesCrypt.decrypt(file, cryptoKey))
+                .findFirst();
 
         Assert.assertTrue(fileOptional.isPresent());
 
@@ -102,6 +110,7 @@ public class NotesTest {
 
         Assert.assertEquals(note.getId(), file.getNoteId());
         Assert.assertEquals(testFile.getName(), file.getName());
+        Assert.assertEquals(testFile.getSize(), file.getSize());
         Assert.assertArrayEquals(testFile.getData(), file.getData());
     }
 
