@@ -22,6 +22,7 @@ public final class File {
 
     public File(String name, String type, byte[] data) {
         this.name = name;
+        this.type = type;
         this.data = data;
     }
 
