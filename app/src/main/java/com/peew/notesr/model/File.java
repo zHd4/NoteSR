@@ -15,14 +15,18 @@ public final class File {
     @JsonProperty("type")
     private String type;
 
+    @JsonProperty("size")
+    private Long size;
+
     @JsonProperty("data")
     private byte[] data;
 
     public File() {}
 
-    public File(String name, String type, byte[] data) {
+    public File(String name, String type, Long size, byte[] data) {
         this.name = name;
         this.type = type;
+        this.size = size;
         this.data = data;
     }
 
@@ -48,6 +52,10 @@ public final class File {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Long getSize() {
+        return size;
     }
 
     public byte[] getData() {

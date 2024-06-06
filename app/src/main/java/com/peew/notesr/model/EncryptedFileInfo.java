@@ -5,13 +5,17 @@ public class EncryptedFileInfo {
 
     private Long noteId;
 
+    private Long size;
+
     private String encryptedName;
 
     private String encryptedType;
 
-    public EncryptedFileInfo(Long id, Long noteId, String encryptedName, String encryptedType) {
+    public EncryptedFileInfo(Long id, Long noteId, Long size, String encryptedName,
+                             String encryptedType) {
         this.id = id;
         this.noteId = noteId;
+        this.size = size;
         this.encryptedName = encryptedName;
         this.encryptedType = encryptedType;
     }
@@ -30,6 +34,14 @@ public class EncryptedFileInfo {
 
     public void setNoteId(Long noteId) {
         this.noteId = noteId;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
     }
 
     public String getEncryptedName() {

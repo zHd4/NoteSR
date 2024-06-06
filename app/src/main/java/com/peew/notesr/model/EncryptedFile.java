@@ -2,16 +2,19 @@ package com.peew.notesr.model;
 
 public class EncryptedFile {
     private Long id;
-    private Long noteId;
+    private final Long noteId;
     private final String encryptedName;
 
     private final String encryptedType;
+    private final Long size;
     private final byte[] encryptedData;
 
-    public EncryptedFile(Long noteId, String encryptedName, String encryptedType, byte[] encryptedData) {
+    public EncryptedFile(Long noteId, String encryptedName, String encryptedType, Long size,
+                         byte[] encryptedData) {
         this.noteId = noteId;
         this.encryptedName = encryptedName;
         this.encryptedType = encryptedType;
+        this.size = size;
         this.encryptedData = encryptedData;
     }
 
@@ -37,5 +40,9 @@ public class EncryptedFile {
 
     public Long getNoteId() {
         return noteId;
+    }
+
+    public Long getSize() {
+        return size;
     }
 }
