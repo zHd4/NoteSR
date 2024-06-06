@@ -78,19 +78,22 @@ public class NoteOpenActivity extends AppCompatActivityExtended {
         return true;
     }
 
-    /** @noinspection deprecation*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+
         Consumer<?> action = menuItemsMap.get(id);
 
         if (action != null) {
             action.accept(null);
-        } else {
-            super.onBackPressed();
         }
 
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     private void saveNoteOnClick(EditText nameField, EditText textField) {
