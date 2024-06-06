@@ -34,7 +34,7 @@ public class FilesListAdapter extends ElementsListAdapter<File> {
                     .format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
         }
 
-        return "0";
+        return "0 B";
     }
 
 
