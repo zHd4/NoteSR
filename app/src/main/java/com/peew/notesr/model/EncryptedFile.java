@@ -8,7 +8,7 @@ public class EncryptedFile {
     private final String encryptedType;
     private final byte[] encryptedData;
 
-    public EncryptedFile(Long noteId, String encryptedType, String encryptedName, byte[] encryptedData) {
+    public EncryptedFile(Long noteId, String encryptedName, String encryptedType, byte[] encryptedData) {
         this.noteId = noteId;
         this.encryptedName = encryptedName;
         this.encryptedType = encryptedType;
