@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.model.EncryptedFile;
+import com.peew.notesr.model.EncryptedFileInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class FilesTable extends Table {
                         "note_id integer NOT NULL, " +
                         "encrypted_name text NOT NULL, " +
                         "encrypted_type text, " +
+                        "size bigint NOT NULL, " +
                         "encrypted_data blob NOT NULL, " +
                         "FOREIGN KEY(note_id) REFERENCES " + notesTable.getName() + "(note_id))");
     }
@@ -30,6 +32,7 @@ public class FilesTable extends Table {
         values.put("note_id", file.getNoteId());
         values.put("encrypted_name", file.getEncryptedName());
         values.put("encrypted_type", file.getEncryptedType());
+        values.put("size", file.getSize());
         values.put("encrypted_data", file.getEncryptedData());
 
         if (file.getId() == null || get(file.getId()) == null) {
@@ -43,7 +46,7 @@ public class FilesTable extends Table {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
-                "SELECT note_id, encrypted_name, encrypted_type, encrypted_data" +
+                "SELECT note_id, encrypted_name, encrypted_type, size, encrypted_data" +
                         " FROM " + name +
                         " WHERE id = ?",
                 new String[] { String.valueOf(id) });
@@ -55,8 +58,10 @@ public class FilesTable extends Table {
                 String name = cursor.getString(1);
                 String type = cursor.getString(2);
 
-                byte[] data = cursor.getBlob(3);
-                EncryptedFile file = new EncryptedFile(noteId, name, type, data);
+                Long size = cursor.getLong(3);
+                byte[] data = cursor.getBlob(4);
+
+                EncryptedFile file = new EncryptedFile(noteId, name, type, size, data);
 
                 file.setId(id);
                 return file;
@@ -66,12 +71,12 @@ public class FilesTable extends Table {
         return null;
     }
 
-    public List<EncryptedFile> getByNoteId(long noteId) {
+    public List<EncryptedFileInfo> getByNoteId(long noteId) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        List<EncryptedFile> files = new ArrayList<>();
+        List<EncryptedFileInfo> files = new ArrayList<>();
 
         Cursor cursor = db.rawQuery(
-                "SELECT id, encrypted_name, encrypted_type, encrypted_data" +
+                "SELECT id, encrypted_name, encrypted_type, size" +
                         " FROM " + name +
                         " WHERE note_id = ?",
                 new String[] { String.valueOf(noteId) });
@@ -84,11 +89,9 @@ public class FilesTable extends Table {
                     String name = cursor.getString(1);
                     String type = cursor.getString(2);
 
-                    byte[] data = cursor.getBlob(3);
-                    EncryptedFile file = new EncryptedFile(noteId, name, type, data);
+                    Long size = cursor.getLong(3);
 
-                    file.setId(id);
-                    files.add(file);
+                    files.add(new EncryptedFileInfo(id, noteId, size, name, type));
                 } while (cursor.moveToNext());
             }
         }
@@ -98,6 +101,6 @@ public class FilesTable extends Table {
 
     public void delete(long id) {
         helper.getWritableDatabase()
-                .delete(name, "id" + "=" + id, null);
+                .delete(name, "id = ?", new String[]{ String.valueOf(id) });
     }
 }
