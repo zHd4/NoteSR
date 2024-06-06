@@ -24,12 +24,32 @@ public class FilesCrypt {
                 .collect(Collectors.toList());
     }
 
+    public static List<FileInfo> decryptInfo(List<EncryptedFileInfo> filesInfo) {
+        return decryptInfo(filesInfo, getCryptoManager().getCryptoKeyInstance());
+    }
+
+    public static List<FileInfo> decryptInfo(
+            List<EncryptedFileInfo> filesInfo,
+            CryptoKey cryptoKey) {
+        return filesInfo.stream()
+                .map(fileInfo -> decryptInfo(fileInfo, cryptoKey))
+                .collect(Collectors.toList());
+    }
+
     public static EncryptedFile encrypt(File file) {
         return encrypt(file, getCryptoManager().getCryptoKeyInstance());
     }
 
     public static File decrypt(EncryptedFile file) {
         return decrypt(file, getCryptoManager().getCryptoKeyInstance());
+    }
+
+    public static EncryptedFileInfo encryptInfo(FileInfo fileInfo) {
+        return encryptInfo(fileInfo, getCryptoManager().getCryptoKeyInstance());
+    }
+
+    public static FileInfo decryptInfo(EncryptedFileInfo encryptedFileInfo) {
+        return decryptInfo(encryptedFileInfo, getCryptoManager().getCryptoKeyInstance());
     }
 
     public static EncryptedFileInfo encryptInfo(FileInfo fileInfo, CryptoKey cryptoKey) {
