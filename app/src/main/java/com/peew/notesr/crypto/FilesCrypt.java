@@ -5,7 +5,9 @@ import android.util.Log;
 
 import com.peew.notesr.App;
 import com.peew.notesr.model.EncryptedFile;
+import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.File;
+import com.peew.notesr.model.FileInfo;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -30,12 +32,51 @@ public class FilesCrypt {
         return decrypt(file, getCryptoManager().getCryptoKeyInstance());
     }
 
+    public static EncryptedFileInfo encryptInfo(FileInfo fileInfo, CryptoKey cryptoKey) {
+        File file = new File(fileInfo.getName(), fileInfo.getType(), null);
+
+        file.setId(fileInfo.getId());
+        file.setNoteId(fileInfo.getNoteId());
+
+        EncryptedFile encryptedFile = encrypt(file, cryptoKey);
+
+        return new EncryptedFileInfo(
+                encryptedFile.getId(),
+                encryptedFile.getNoteId(),
+                encryptedFile.getEncryptedName(),
+                encryptedFile.getEncryptedType()
+        );
+    }
+
+    public static FileInfo decryptInfo(EncryptedFileInfo encryptedFileInfo, CryptoKey cryptoKey) {
+        EncryptedFile encryptedFile = new EncryptedFile(
+                encryptedFileInfo.getNoteId(),
+                encryptedFileInfo.getEncryptedName(),
+                encryptedFileInfo.getEncryptedType(),
+                null
+        );
+
+        encryptedFile.setId(encryptedFileInfo.getId());
+        File file = decrypt(encryptedFile, cryptoKey);
+
+        return new FileInfo(
+                file.getId(),
+                file.getNoteId(),
+                file.getName(),
+                file.getType()
+        );
+    }
+
     public static EncryptedFile encrypt(File file, CryptoKey cryptoKey) {
         Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
 
         try {
             byte[] nameBytes = aes.encrypt(file.getName().getBytes(StandardCharsets.UTF_8));
-            byte[] data = aes.encrypt(file.getData());
+            byte[] data = null;
+
+            if (file.getData() != null) {
+                data = aes.encrypt(file.getData());
+            }
 
             String name = Base64.encodeToString(nameBytes, Base64.DEFAULT);
             String type = null;
@@ -60,7 +101,11 @@ public class FilesCrypt {
 
         try {
             byte[] decodedName = Base64.decode(encryptedFile.getEncryptedName(), Base64.DEFAULT);
-            byte[] decryptedData = aes.decrypt(encryptedFile.getEncryptedData());
+            byte[] decryptedData = null;
+
+            if (encryptedFile.getEncryptedData() != null) {
+                decryptedData = aes.decrypt(encryptedFile.getEncryptedData());
+            }
 
             String decryptedName = new String(aes.decrypt(decodedName));
             String decryptedType = null;
