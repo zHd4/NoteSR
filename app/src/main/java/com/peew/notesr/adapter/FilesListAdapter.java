@@ -10,14 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.peew.notesr.R;
-import com.peew.notesr.model.File;
+import com.peew.notesr.model.FileInfo;
 
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class FilesListAdapter extends ElementsListAdapter<File> {
+public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
     private static final Map<String, Integer> FILES_TYPES_ICONS = Map.of(
             "text", R.drawable.text_file,
             "image", R.drawable.image_file,
@@ -38,7 +38,7 @@ public class FilesListAdapter extends ElementsListAdapter<File> {
     }
 
 
-    public FilesListAdapter(@NonNull Context context, int resource, @NonNull List<File> objects) {
+    public FilesListAdapter(@NonNull Context context, int resource, @NonNull List<FileInfo> objects) {
         super(context, resource, objects);
     }
 
@@ -53,20 +53,20 @@ public class FilesListAdapter extends ElementsListAdapter<File> {
             view = inflater.inflate(resourceLayout, null);
         }
 
-        File file = getItem(position);
+        FileInfo fileInfo = getItem(position);
 
-        if (file != null) {
+        if (fileInfo != null) {
             TextView nameView = view.findViewById(R.id.file_name_text_view);
             TextView sizeView = view.findViewById(R.id.file_size_text_view);
 
             ImageView iconView = view.findViewById(R.id.file_icon_image_view);
 
-            nameView.setText(formatValue(file.getName()));
-            sizeView.setText(formatValue(toReadableSize(file.getData().length)));
+            nameView.setText(formatValue(fileInfo.getName()));
+            sizeView.setText(formatValue(toReadableSize(fileInfo.getSize())));
 
-            if (file.getType() != null) {
+            if (fileInfo.getType() != null) {
                 //noinspection DataFlowIssue
-                iconView.setImageResource(FILES_TYPES_ICONS.get(file.getType()));
+                iconView.setImageResource(FILES_TYPES_ICONS.get(fileInfo.getType()));
             }
         }
 
