@@ -106,17 +106,20 @@ public class AssignmentsListActivity extends AppCompatActivity {
 //        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
 //
 //        if (filesTable.getByNoteId(1).isEmpty()) {
-//            File file1 = new File("file1.txt", "text", "foo".getBytes(StandardCharsets.UTF_8));
-//            File file2 = new File("file2.txt", "text", "bar".getBytes(StandardCharsets.UTF_8));
-//            File file3 = new File("file3.txt", "text", "baz".getBytes(StandardCharsets.UTF_8));
+//            File file1 = new File("file1.txt", "text", "test text".getBytes(StandardCharsets.UTF_8));
+//            File file2 = new File("file2.avi", "video", "test video".getBytes(StandardCharsets.UTF_8));
+//            File file3 = new File("file3.mp3", "audio", "test music".getBytes(StandardCharsets.UTF_8));
+//            File file4 = new File("file4", null, "".getBytes(StandardCharsets.UTF_8));
 //
 //            file1.setNoteId(1L);
 //            file2.setNoteId(1L);
 //            file3.setNoteId(1L);
+//            file4.setNoteId(1L);
 //
 //            filesTable.save(FilesCrypt.encrypt(file1));
 //            filesTable.save(FilesCrypt.encrypt(file2));
 //            filesTable.save(FilesCrypt.encrypt(file3));
+//            filesTable.save(FilesCrypt.encrypt(file4));
 //        }
 //
 //        List<File> files = FilesCrypt.decrypt(filesTable.getByNoteId(1L));
