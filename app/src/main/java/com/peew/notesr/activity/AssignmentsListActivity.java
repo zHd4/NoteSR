@@ -3,6 +3,7 @@ package com.peew.notesr.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,6 +55,16 @@ public class AssignmentsListActivity extends AppCompatActivity {
 
 //        fillTable();
         loadFiles();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadFiles() {
