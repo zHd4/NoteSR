@@ -17,7 +17,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.adapter.FilesListAdapter;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
-import com.peew.notesr.model.File;
+import com.peew.notesr.model.FileInfo;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -80,13 +80,13 @@ public class AssignmentsListActivity extends AppCompatActivity {
             handler.post(progressDialog::show);
 
             FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
-            fillFilesListView(FilesCrypt.decrypt(filesTable.getByNoteId(noteId)));
+            fillFilesListView(FilesCrypt.decryptInfo(filesTable.getByNoteId(noteId)));
 
             progressDialog.dismiss();
         });
     }
 
-    private void fillFilesListView(List<File> files) {
+    private void fillFilesListView(List<FileInfo> files) {
         ListView filesView = findViewById(R.id.files_list_view);
         TextView missingFilesLabel = findViewById(R.id.missing_files_label);
 
