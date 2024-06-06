@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,9 +14,17 @@ import com.peew.notesr.model.File;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class FilesListAdapter extends ElementsListAdapter<File> {
+    private static final Map<String, Integer> FILES_TYPES_ICONS = Map.of(
+            "text", R.drawable.text_file,
+            "image", R.drawable.image_file,
+            "video", R.drawable.video_file,
+            "audio", R.drawable.audio_file
+    );
+
     private static String toReadableSize(long size) {
         String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
 
@@ -50,8 +59,15 @@ public class FilesListAdapter extends ElementsListAdapter<File> {
             TextView nameView = view.findViewById(R.id.file_name_text_view);
             TextView sizeView = view.findViewById(R.id.file_size_text_view);
 
+            ImageView iconView = view.findViewById(R.id.file_icon_image_view);
+
             nameView.setText(formatValue(file.getName()));
             sizeView.setText(formatValue(toReadableSize(file.getData().length)));
+
+            if (file.getType() != null) {
+                //noinspection DataFlowIssue
+                iconView.setImageResource(FILES_TYPES_ICONS.get(file.getType()));
+            }
         }
 
         return view;
