@@ -53,7 +53,7 @@ public class FilesCrypt {
     }
 
     public static EncryptedFileInfo encryptInfo(FileInfo fileInfo, CryptoKey cryptoKey) {
-        File file = new File(fileInfo.getName(), fileInfo.getType(), null);
+        File file = new File(fileInfo.getName(), fileInfo.getType(), fileInfo.getSize(), null);
 
         file.setId(fileInfo.getId());
         file.setNoteId(fileInfo.getNoteId());
@@ -63,6 +63,7 @@ public class FilesCrypt {
         return new EncryptedFileInfo(
                 encryptedFile.getId(),
                 encryptedFile.getNoteId(),
+                encryptedFile.getSize(),
                 encryptedFile.getEncryptedName(),
                 encryptedFile.getEncryptedType()
         );
@@ -73,6 +74,7 @@ public class FilesCrypt {
                 encryptedFileInfo.getNoteId(),
                 encryptedFileInfo.getEncryptedName(),
                 encryptedFileInfo.getEncryptedType(),
+                encryptedFileInfo.getSize(),
                 null
         );
 
@@ -82,6 +84,7 @@ public class FilesCrypt {
         return new FileInfo(
                 file.getId(),
                 file.getNoteId(),
+                file.getSize(),
                 file.getName(),
                 file.getType()
         );
@@ -106,9 +109,10 @@ public class FilesCrypt {
                 type = Base64.encodeToString(typeBytes, Base64.DEFAULT);
             }
 
-            EncryptedFile encryptedFile = new EncryptedFile(file.getNoteId(), name, type, data);
-            encryptedFile.setId(file.getId());
+            EncryptedFile encryptedFile = new EncryptedFile(
+                    file.getNoteId(), name, type, file.getSize(), data);
 
+            encryptedFile.setId(file.getId());
             return encryptedFile;
         } catch (Exception e) {
             Log.e("Cannot encrypt file", e.toString());
@@ -135,7 +139,8 @@ public class FilesCrypt {
                 decryptedType = new String(aes.decrypt(decodedType));
             }
 
-            File file = new File(decryptedName, decryptedType, decryptedData);
+            File file = new File(
+                    decryptedName, decryptedType, encryptedFile.getSize(), decryptedData);
 
             file.setId(encryptedFile.getId());
             file.setNoteId(encryptedFile.getNoteId());
