@@ -16,8 +16,11 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.adapter.FilesListAdapter;
 import com.peew.notesr.crypto.FilesCrypt;
+import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.FileInfo;
+import com.peew.notesr.model.Note;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -34,24 +37,35 @@ public class AssignmentsListActivity extends AppCompatActivity {
 //            "audio/mp3", "audio/wav",
 //            "audio/ogg", "audio/m4a"
 //    );
-    private long noteId;
+    private Note note;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assignments_list);
 
-        noteId = getIntent().getLongExtra("note_id", -1);
+        long noteId = getIntent().getLongExtra("note_id", -1);
 
         if (noteId == -1) {
             throw new RuntimeException("Note id didn't provided");
+        }
+
+        EncryptedNote encryptedNote = App.getAppContainer()
+                .getNotesDatabase()
+                .getNotesTable()
+                .get(noteId);
+
+        if (encryptedNote != null) {
+            note = NotesCrypt.decrypt(encryptedNote);
+        } else {
+            throw new RuntimeException("Note with id " + noteId + " not found");
         }
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
 
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.files);
+        actionBar.setTitle("Files of: " + note.getName());
 
 //        fillDbTable();
         loadFiles();
@@ -80,7 +94,7 @@ public class AssignmentsListActivity extends AppCompatActivity {
             handler.post(progressDialog::show);
 
             FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
-            fillFilesListView(FilesCrypt.decryptInfo(filesTable.getByNoteId(noteId)));
+            fillFilesListView(FilesCrypt.decryptInfo(filesTable.getByNoteId(note.getId())));
 
             progressDialog.dismiss();
         });
