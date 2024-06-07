@@ -41,13 +41,16 @@ public class NotesTest {
 
     @Before
     public void before() {
-        testNote = new Note(faker.lorem.word(), faker.lorem.paragraph(), LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        testNote = new Note(faker.lorem.word(), faker.lorem.paragraph(), now);
 
         byte[] fileData = faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8);
         testFile = new File(
                 faker.lorem.word(),
                 null,
                 (long) fileData.length,
+                now,
+                now,
                 fileData
         );
     }
