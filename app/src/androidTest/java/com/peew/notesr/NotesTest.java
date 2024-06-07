@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ public class NotesTest {
 
     @Before
     public void before() {
-        testNote = new Note(faker.lorem.word(), faker.lorem.paragraph());
+        testNote = new Note(faker.lorem.word(), faker.lorem.paragraph(), LocalDateTime.now());
 
         byte[] fileData = faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8);
         testFile = new File(
