@@ -5,10 +5,13 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ElementsListAdapter<T> extends ArrayAdapter<T> {
     private static final int MAX_VALUE_LENGTH = 25;
+    protected static final DateTimeFormatter timestampFormatter =
+            DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
     protected final int resourceLayout;
     protected final Context context;
