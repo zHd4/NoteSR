@@ -2,6 +2,8 @@ package com.peew.notesr.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.LocalDateTime;
+
 public final class File {
     @JsonProperty("id")
     private Long id;
@@ -18,15 +20,28 @@ public final class File {
     @JsonProperty("size")
     private Long size;
 
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
+
+    @JsonProperty("updated_at")
+    private LocalDateTime updatedAt;
+
     @JsonProperty("data")
     private byte[] data;
 
     public File() {}
 
-    public File(String name, String type, Long size, byte[] data) {
+    public File(String name,
+                String type,
+                Long size,
+                LocalDateTime createdAt,
+                LocalDateTime updatedAt,
+                byte[] data) {
         this.name = name;
         this.type = type;
         this.size = size;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.data = data;
     }
 
@@ -68,5 +83,13 @@ public final class File {
 
     public void setNoteId(Long noteId) {
         this.noteId = noteId;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }

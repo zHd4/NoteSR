@@ -1,5 +1,7 @@
 package com.peew.notesr.model;
 
+import java.time.LocalDateTime;
+
 public class FileInfo {
     private Long id;
 
@@ -11,12 +13,24 @@ public class FileInfo {
 
     private String type;
 
-    public FileInfo(Long id, Long noteId, Long size, String name, String type) {
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    public FileInfo(Long id,
+                    Long noteId,
+                    Long size,
+                    String name,
+                    String type,
+                    LocalDateTime createdAt,
+                    LocalDateTime updatedAt) {
         this.id = id;
         this.noteId = noteId;
         this.size = size;
         this.name = name;
         this.type = type;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Long getId() {
@@ -57,5 +71,13 @@ public class FileInfo {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }
