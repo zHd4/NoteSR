@@ -13,10 +13,10 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="66dp"
         android:layout_marginTop="8dp"
-        android:text="text"
         android:textColor="@android:color/white"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:text="text" />
 
     <TextView
         android:id="@+id/note_text_view"
