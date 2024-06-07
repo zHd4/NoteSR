@@ -2,6 +2,8 @@ package com.peew.notesr.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.LocalDateTime;
+
 public final class Note {
     @JsonProperty("id")
     private Long id;
@@ -12,11 +14,15 @@ public final class Note {
     @JsonProperty("text")
     private String text;
 
+    @JsonProperty("updated_at")
+    private LocalDateTime updatedAt;
+
     public Note() {}
 
-    public Note(String name, String text) {
+    public Note(String name, String text, LocalDateTime updatedAt) {
         this.name = name;
         this.text = text;
+        this.updatedAt = updatedAt;
     }
 
     public Long getId() {
@@ -41,5 +47,9 @@ public final class Note {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }

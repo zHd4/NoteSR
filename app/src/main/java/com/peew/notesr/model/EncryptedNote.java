@@ -1,13 +1,17 @@
 package com.peew.notesr.model;
 
+import java.time.LocalDateTime;
+
 public final class EncryptedNote {
     private Long id;
     private final String encryptedName;
     private final String encryptedText;
+    private final LocalDateTime updatedAt;
 
-    public EncryptedNote(String encryptedName, String encryptedText) {
+    public EncryptedNote(String encryptedName, String encryptedText, LocalDateTime updatedAt) {
         this.encryptedName = encryptedName;
         this.encryptedText = encryptedText;
+        this.updatedAt = updatedAt;
     }
 
     public Long getId() {
@@ -24,5 +28,9 @@ public final class EncryptedNote {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }
