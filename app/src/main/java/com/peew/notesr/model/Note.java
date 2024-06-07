@@ -25,6 +25,11 @@ public final class Note {
         this.updatedAt = updatedAt;
     }
 
+    public Note(String name, String text) {
+        this.name = name;
+        this.text = text;
+    }
+
     public Long getId() {
         return id;
     }
