@@ -53,7 +53,7 @@ public class AssignmentsListActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.files);
 
-//        fillTable();
+//        fillDbTable();
         loadFiles();
     }
 
@@ -113,14 +113,21 @@ public class AssignmentsListActivity extends AppCompatActivity {
 //                .orElse(null);
 //    }
 
-//    private void fillTable() {
+//    private void fillDbTable() {
 //        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
 //
 //        if (filesTable.getByNoteId(1).isEmpty()) {
-//            File file1 = new File("file1.txt", "text", "test text".getBytes(StandardCharsets.UTF_8));
-//            File file2 = new File("file2.avi", "video", "test video".getBytes(StandardCharsets.UTF_8));
-//            File file3 = new File("file3.mp3", "audio", "test music".getBytes(StandardCharsets.UTF_8));
-//            File file4 = new File("file4", null, "".getBytes(StandardCharsets.UTF_8));
+//            LocalDateTime now = LocalDateTime.now();
+//
+//            byte[] data1 = "test text".getBytes(StandardCharsets.UTF_8);
+//            byte[] data2 = "test video".getBytes(StandardCharsets.UTF_8);
+//            byte[] data3 = "test music".getBytes(StandardCharsets.UTF_8);
+//            byte[] data4 = "".getBytes(StandardCharsets.UTF_8);
+//
+//            File file1 = new File("file1.txt", "text", (long) data1.length, now, now, data1);
+//            File file2 = new File("file2.avi", "video", (long) data2.length, now, now, data2);
+//            File file3 = new File("file3.mp3", "audio", (long) data3.length, now, now, data3);
+//            File file4 = new File("file4", null, (long) data4.length, now, now, data4);
 //
 //            file1.setNoteId(1L);
 //            file2.setNoteId(1L);
@@ -132,8 +139,5 @@ public class AssignmentsListActivity extends AppCompatActivity {
 //            filesTable.save(FilesCrypt.encrypt(file3));
 //            filesTable.save(FilesCrypt.encrypt(file4));
 //        }
-//
-//        List<File> files = FilesCrypt.decrypt(filesTable.getByNoteId(1L));
-//        System.out.println();
 //    }
 }
