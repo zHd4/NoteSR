@@ -58,11 +58,13 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
         if (fileInfo != null) {
             TextView nameView = view.findViewById(R.id.file_name_text_view);
             TextView sizeView = view.findViewById(R.id.file_size_text_view);
+            TextView updateAtView = view.findViewById(R.id.file_updated_at_text_view);
 
             ImageView iconView = view.findViewById(R.id.file_icon_image_view);
 
             nameView.setText(formatValue(fileInfo.getName()));
             sizeView.setText(formatValue(toReadableSize(fileInfo.getSize())));
+            updateAtView.setText(fileInfo.getUpdatedAt().format(timestampFormatter));
 
             if (fileInfo.getType() != null) {
                 //noinspection DataFlowIssue
