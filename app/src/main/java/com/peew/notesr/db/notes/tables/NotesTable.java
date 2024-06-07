@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.model.EncryptedNote;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,8 @@ public final class NotesTable extends Table {
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
                 "note_id integer PRIMARY KEY AUTOINCREMENT, " +
                 "encrypted_name text NOT NULL, " +
-                "encrypted_data text NOT NULL)");
+                "encrypted_data text NOT NULL, " +
+                "updated_at text NOT NULL)");
     }
 
     public void save(EncryptedNote note) {
@@ -26,6 +28,7 @@ public final class NotesTable extends Table {
 
         values.put("encrypted_name", note.getEncryptedName());
         values.put("encrypted_data", note.getEncryptedText());
+        values.put("updated_at", LocalDateTime.now().format(timestampFormatter));
 
         if (note.getId() == null || get(note.getId()) == null) {
             db.insert(name, null, values);
@@ -48,7 +51,10 @@ public final class NotesTable extends Table {
                     String name = cursor.getString(1);
                     String text = cursor.getString(2);
 
-                    EncryptedNote note = new EncryptedNote(name, text);
+                    String updatedAtStr = cursor.getString(3);
+                    LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, timestampFormatter);
+
+                    EncryptedNote note = new EncryptedNote(name, text, updatedAt);
 
                     note.setId(id);
                     notes.add(note);
@@ -63,7 +69,8 @@ public final class NotesTable extends Table {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
-                "SELECT encrypted_name, encrypted_data FROM " + name + " WHERE note_id = ?",
+                "SELECT encrypted_name, encrypted_data, updated_at" +
+                        " FROM " + name + " WHERE note_id = ?",
                 new String[] { String.valueOf(id) });
 
         try (cursor) {
@@ -71,7 +78,10 @@ public final class NotesTable extends Table {
                 String name = cursor.getString(0);
                 String text = cursor.getString(1);
 
-                EncryptedNote note = new EncryptedNote(name, text);
+                String updatedAtStr = cursor.getString(2);
+                LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, timestampFormatter);
+
+                EncryptedNote note = new EncryptedNote(name, text, updatedAt);
 
                 note.setId(id);
                 return note;
