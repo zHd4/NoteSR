@@ -41,7 +41,8 @@ public final class NotesTable extends Table {
         SQLiteDatabase db = helper.getReadableDatabase();
         List<EncryptedNote> notes = new ArrayList<>();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + name, new String[0]);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + name + " ORDER BY updated_at DESC",
+                new String[0]);
 
         try (cursor) {
             if (cursor.moveToFirst()) {
