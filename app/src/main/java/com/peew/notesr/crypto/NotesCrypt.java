@@ -40,7 +40,8 @@ public class NotesCrypt {
         String encryptedName = encryptValue(note.getName(), cryptoKey);
         String encryptedText = encryptValue(note.getText(), cryptoKey);
 
-        EncryptedNote encryptedNote = new EncryptedNote(encryptedName, encryptedText);
+        EncryptedNote encryptedNote = new EncryptedNote(
+                encryptedName, encryptedText, note.getUpdatedAt());
 
         encryptedNote.setId(note.getId());
         return encryptedNote;
@@ -50,7 +51,7 @@ public class NotesCrypt {
         String name = decryptValue(encryptedNote.getEncryptedName(), cryptoKey);
         String text = decryptValue(encryptedNote.getEncryptedText(), cryptoKey);
 
-        Note note = new Note(name, text);
+        Note note = new Note(name, text, encryptedNote.getUpdatedAt());
 
         note.setId(encryptedNote.getId());
         return note;
