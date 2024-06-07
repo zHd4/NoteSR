@@ -14,12 +14,14 @@ import java.util.List;
 public final class NotesTable extends Table {
     public NotesTable(SQLiteOpenHelper helper, String name) {
         super(helper, name);
+
         helper.getWritableDatabase().execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
                 "note_id integer PRIMARY KEY AUTOINCREMENT, " +
                 "encrypted_name text NOT NULL, " +
                 "encrypted_data text NOT NULL, " +
-                "updated_at text NOT NULL)");
+                "updated_at varchar(255) NOT NULL)"
+        );
     }
 
     public void save(EncryptedNote note) {
@@ -33,7 +35,8 @@ public final class NotesTable extends Table {
         if (note.getId() == null || get(note.getId()) == null) {
             db.insert(name, null, values);
         } else {
-            db.update(name, values, "note_id" + "=" + note.getId(), null);
+            db.update(name, values, "note_id = ?" ,
+                    new String[] { String.valueOf(note.getId()) });
         }
     }
 
