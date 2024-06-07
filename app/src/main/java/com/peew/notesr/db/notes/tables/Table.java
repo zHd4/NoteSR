@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 public abstract class Table {
     protected static final DateTimeFormatter timestampFormatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     protected SQLiteOpenHelper helper;
     protected String name;
