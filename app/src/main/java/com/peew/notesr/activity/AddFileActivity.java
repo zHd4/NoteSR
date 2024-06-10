@@ -15,7 +15,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.crypto.FilesCrypt;
+import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.model.File;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +28,18 @@ import java.util.List;
 import java.util.Objects;
 
 public class AddFileActivity extends AppCompatActivity {
+    private long noteId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_file);
+
+        noteId = getIntent().getLongExtra("note_id", -1);
+
+        if (noteId == -1) {
+            throw new RuntimeException("Note id didn't provided");
+        }
 
         ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -39,6 +51,16 @@ public class AddFileActivity extends AppCompatActivity {
 
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         resultLauncher.launch(Intent.createChooser(intent, getString(R.string.choose_file)));
+    }
+
+    @Override
+    public void finish() {
+        Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
+
+        intent.putExtra("note_id", noteId);
+        startActivity(intent);
+
+        super.finish();
     }
 
     private ActivityResultCallback<ActivityResult> addFileCallback() {
@@ -69,15 +91,22 @@ public class AddFileActivity extends AppCompatActivity {
     }
 
     private void addFiles(List<Uri> filesUri) {
+        FilesTable table = App.getAppContainer().getNotesDatabase().getFilesTable();
+
         filesUri.forEach(uri -> {
-            String filename = getFileName(uri);
+            String filename = getFileName(getCursor(uri));
             String type = getMimeType(filename);
+
+            long size = getFileSize(getCursor(uri));
             byte[] data = getFileData(uri);
 
+            File file = new File(noteId, filename, type, size, data);
+
+            table.save(FilesCrypt.encrypt(file));
         });
     }
 
-    private String getFileName(Uri uri) {
+    private Cursor getCursor(Uri uri) {
         Cursor cursor = getContentResolver()
                 .query(uri, null, null, null, null);
 
@@ -85,11 +114,24 @@ public class AddFileActivity extends AppCompatActivity {
             throw new RuntimeException(new NullPointerException("Cursor is null"));
         }
 
+        return cursor;
+    }
+
+    private String getFileName(Cursor cursor) {
         try (cursor) {
-            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
 
             cursor.moveToFirst();
-            return cursor.getString(nameIndex);
+            return cursor.getString(index);
+        }
+    }
+
+    private long getFileSize(Cursor cursor) {
+        try (cursor) {
+            int index = cursor.getColumnIndex(OpenableColumns.SIZE);
+
+            cursor.moveToFirst();
+            return cursor.getLong(index);
         }
     }
 
