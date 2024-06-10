@@ -60,8 +60,12 @@ public class AssignmentsListActivity extends AppCompatActivity {
         actionBar.setTitle("Files of: " + note.getName());
 
         FloatingActionButton addFileButton = findViewById(R.id.add_file_button);
-        addFileButton.setOnClickListener(view ->
-                startActivity(new Intent(App.getContext(), AddFileActivity.class)));
+        addFileButton.setOnClickListener(view -> {
+            Intent intent = new Intent(App.getContext(), AddFileActivity.class);
+
+            intent.putExtra("note_id", noteId);
+            startActivity(intent);
+        });
 
 //        fillDbTable();
         loadFiles();
