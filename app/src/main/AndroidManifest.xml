@@ -59,6 +59,10 @@
             android:name=".activity.AssignmentsListActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.AddFileActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
