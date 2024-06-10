@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.webkit.MimeTypeMap;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class AddFileActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +70,9 @@ public class AddFileActivity extends AppCompatActivity {
 
     private void addFiles(List<Uri> filesUri) {
         filesUri.forEach(uri -> {
+            String filename = getFileName(uri);
+            String type = getMimeType(filename);
+            byte[] data = getFileData(uri);
 
         });
     }
@@ -103,5 +106,16 @@ public class AddFileActivity extends AppCompatActivity {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+
+        return type;
     }
 }
