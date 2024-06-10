@@ -67,8 +67,12 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
             updateAtView.setText(fileInfo.getUpdatedAt().format(timestampFormatter));
 
             if (fileInfo.getType() != null) {
-                //noinspection DataFlowIssue
-                iconView.setImageResource(FILES_TYPES_ICONS.get(fileInfo.getType()));
+                String type = fileInfo.getType().split("/")[0];
+
+                if (FILES_TYPES_ICONS.containsKey(type)) {
+                    //noinspection DataFlowIssue
+                    iconView.setImageResource(FILES_TYPES_ICONS.get(type));
+                }
             }
         }
 
