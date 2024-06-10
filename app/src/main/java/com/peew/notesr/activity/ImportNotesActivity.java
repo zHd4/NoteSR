@@ -69,6 +69,8 @@ public class ImportNotesActivity extends AppCompatActivityExtended {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                finish();
             }
         };
     }
