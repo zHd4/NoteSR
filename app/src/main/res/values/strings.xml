@@ -72,4 +72,5 @@
     <string name="no_files">No files</string>
     <string name="add_file">Add file</string>
     <string name="file">File</string>
+    <string name="choose_file">Choose file</string>
 </resources>
