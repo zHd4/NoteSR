@@ -1,5 +1,6 @@
 package com.peew.notesr.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.adapter.FilesListAdapter;
@@ -66,6 +68,10 @@ public class AssignmentsListActivity extends AppCompatActivity {
 
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Files of: " + note.getName());
+
+        FloatingActionButton addFileButton = findViewById(R.id.add_file_button);
+        addFileButton.setOnClickListener(view ->
+                startActivity(new Intent(App.getContext(), AddFileActivity.class)));
 
 //        fillDbTable();
         loadFiles();
