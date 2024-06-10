@@ -29,16 +29,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class AssignmentsListActivity extends AppCompatActivity {
-//    private static final Set<String> FILES_TYPES = Set.of(
-//            "text/txt", "text/log",
-//            "image/gif", "image/png",
-//            "image/jpg", "image/jpeg",
-//            "image/svg", "image/bmp",
-//            "video/mp4", "video/avi",
-//            "video/mov", "video/webm",
-//            "audio/mp3", "audio/wav",
-//            "audio/ogg", "audio/m4a"
-//    );
     private Note note;
 
     @Override
