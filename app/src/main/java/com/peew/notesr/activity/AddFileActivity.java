@@ -3,8 +3,10 @@ package com.peew.notesr.activity;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -14,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.peew.notesr.R;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -68,6 +69,39 @@ public class AddFileActivity extends AppCompatActivity {
     }
 
     private void addFiles(List<Uri> filesUri) {
+        filesUri.forEach(uri -> {
 
+        });
+    }
+
+    private String getFileName(Uri uri) {
+        Cursor cursor = getContentResolver()
+                .query(uri, null, null, null, null);
+
+        if (cursor == null) {
+            throw new RuntimeException(new NullPointerException("Cursor is null"));
+        }
+
+        try (cursor) {
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+
+            cursor.moveToFirst();
+            return cursor.getString(nameIndex);
+        }
+    }
+
+    private byte[] getFileData(Uri uri) {
+        try (InputStream stream = getContentResolver().openInputStream(uri)) {
+            byte[] data = new byte[Objects.requireNonNull(stream).available()];
+            int result = stream.read(data);
+
+            if (result == -1) {
+                throw new RuntimeException("End of the stream has been reached");
+            }
+
+            return data;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
