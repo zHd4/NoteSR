@@ -1,6 +1,7 @@
 package com.peew.notesr.activity;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,8 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.peew.notesr.R;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class AddFileActivity extends AppCompatActivity {
@@ -24,37 +28,46 @@ public class AddFileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_file);
 
-        Intent intent = new Intent()
-                .setType("*/*")
-                .setAction(Intent.ACTION_GET_CONTENT);
-
         ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 addFileCallback());
 
+        Intent intent = new Intent()
+                .setType("*/*")
+                .setAction(Intent.ACTION_GET_CONTENT);
+
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         resultLauncher.launch(Intent.createChooser(intent, getString(R.string.choose_file)));
     }
 
     private ActivityResultCallback<ActivityResult> addFileCallback() {
         return result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
-                Uri dumpUri = Objects.requireNonNull(result.getData()).getData();
+                if (result.getData() != null) {
+                    List<Uri> filesUri = new ArrayList<>();
 
-                try {
-                    assert dumpUri != null;
+                    if (result.getData().getClipData() != null) {
+                        ClipData clipData = result.getData().getClipData();
+                        int filesCount = clipData.getItemCount();
 
-                    try (InputStream stream = getContentResolver().openInputStream(dumpUri)) {
-                        byte[] data = new byte[Objects.requireNonNull(stream).available()];
-
-                        int dataSize = stream.read(data);
-                        assert dataSize == data.length;
+                        for (int i = 0; i < filesCount; i++) {
+                            filesUri.add(clipData.getItemAt(i).getUri());
+                        }
+                    } else {
+                        filesUri.add(result.getData().getData());
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+
+                    addFiles(filesUri);
+                } else {
+                    throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
             }
 
             finish();
         };
+    }
+
+    private void addFiles(List<Uri> filesUri) {
+
     }
 }
