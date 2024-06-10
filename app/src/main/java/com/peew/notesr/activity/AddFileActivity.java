@@ -1,6 +1,8 @@
 package com.peew.notesr.activity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
@@ -10,6 +12,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.peew.notesr.R;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 public class AddFileActivity extends AppCompatActivity {
 
@@ -30,6 +36,25 @@ public class AddFileActivity extends AppCompatActivity {
     }
 
     private ActivityResultCallback<ActivityResult> addFileCallback() {
-        return result -> {};
+        return result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Uri dumpUri = Objects.requireNonNull(result.getData()).getData();
+
+                try {
+                    assert dumpUri != null;
+
+                    try (InputStream stream = getContentResolver().openInputStream(dumpUri)) {
+                        byte[] data = new byte[Objects.requireNonNull(stream).available()];
+
+                        int dataSize = stream.read(data);
+                        assert dataSize == data.length;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            finish();
+        };
     }
 }
