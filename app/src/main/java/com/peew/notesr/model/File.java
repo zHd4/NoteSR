@@ -45,6 +45,14 @@ public final class File {
         this.data = data;
     }
 
+    public File(Long noteId, String name, String type, Long size, byte[] data) {
+        this.noteId = noteId;
+        this.name = name;
+        this.type = type;
+        this.size = size;
+        this.data = data;
+    }
+
     public Long getId() {
         return id;
     }
