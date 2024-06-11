@@ -13,7 +13,6 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
@@ -27,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AddFileActivity extends AppCompatActivity {
+public class AddFileActivity extends AppCompatActivityExtended {
     private long noteId;
 
     @Override
