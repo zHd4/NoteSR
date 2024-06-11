@@ -1,4 +1,4 @@
-package com.peew.notesr.activity;
+package com.peew.notesr.activity.files;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.model.File;

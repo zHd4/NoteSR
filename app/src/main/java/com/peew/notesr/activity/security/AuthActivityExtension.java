@@ -1,4 +1,4 @@
-package com.peew.notesr.activity;
+package com.peew.notesr.activity.security;
 
 import android.content.Intent;
 import android.widget.TextView;
@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.MainActivity;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 

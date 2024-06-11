@@ -4,7 +4,7 @@ import android.content.Intent;
 
 import com.peew.notesr.App;
 import com.peew.notesr.activity.MainActivity;
-import com.peew.notesr.activity.AuthActivity;
+import com.peew.notesr.activity.security.AuthActivity;
 
 import java.util.function.Consumer;
 

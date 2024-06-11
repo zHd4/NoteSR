@@ -1,4 +1,4 @@
-package com.peew.notesr.activity;
+package com.peew.notesr.activity.security;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.onclick.security.FinishKeySetupOnClick;

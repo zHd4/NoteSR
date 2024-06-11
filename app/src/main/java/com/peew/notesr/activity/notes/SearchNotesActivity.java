@@ -1,4 +1,4 @@
-package com.peew.notesr.activity;
+package com.peew.notesr.activity.notes;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import androidx.appcompat.app.ActionBar;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;

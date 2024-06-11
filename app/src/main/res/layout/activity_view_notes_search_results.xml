@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/activity_background"
-    tools:context=".activity.ViewNotesSearchResultsActivity">
+    tools:context=".activity.notes.ViewNotesSearchResultsActivity">
 
     <ListView
         android:id="@+id/notes_search_results_list_view"

@@ -28,39 +28,39 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.SetupKeyActivity"
+            android:name=".activity.security.SetupKeyActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.AuthActivity"
+            android:name=".activity.security.AuthActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.KeyRecoveryActivity"
+            android:name=".activity.security.KeyRecoveryActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.NoteOpenActivity"
+            android:name=".activity.notes.NoteOpenActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.SearchNotesActivity"
+            android:name=".activity.notes.SearchNotesActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.ViewNotesSearchResultsActivity"
+            android:name=".activity.notes.ViewNotesSearchResultsActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.ImportNotesActivity"
+            android:name=".activity.notes.ImportNotesActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.AssignmentsListActivity"
+            android:name=".activity.files.AssignmentsListActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.AddFileActivity"
+            android:name=".activity.files.AddFileActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>

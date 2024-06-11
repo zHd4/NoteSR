@@ -1,4 +1,4 @@
-package com.peew.notesr.activity;
+package com.peew.notesr.activity.files;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.adapter.FilesListAdapter;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;

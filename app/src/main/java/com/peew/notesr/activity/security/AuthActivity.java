@@ -1,4 +1,4 @@
-package com.peew.notesr.activity;
+package com.peew.notesr.activity.security;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.AppCompatActivityExtended;
 
 import java.util.Arrays;
 

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.MainActivity;
-import com.peew.notesr.activity.SetupKeyActivity;
+import com.peew.notesr.activity.security.SetupKeyActivity;
 
 import java.util.function.Consumer;
 

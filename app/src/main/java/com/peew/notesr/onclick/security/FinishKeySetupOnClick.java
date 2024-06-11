@@ -21,7 +21,7 @@ import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.activity.MainActivity;
-import com.peew.notesr.activity.SetupKeyActivity;
+import com.peew.notesr.activity.security.SetupKeyActivity;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
