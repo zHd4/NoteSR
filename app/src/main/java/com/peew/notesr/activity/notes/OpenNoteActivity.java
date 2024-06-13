@@ -16,7 +16,6 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
-import com.peew.notesr.activity.MainActivity;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.NotesDatabase;
 import com.peew.notesr.db.notes.tables.NotesTable;
@@ -115,7 +114,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
             NotesTable notesTable = getNotesDatabase().getNotesTable();
 
             notesTable.save(encryptedNote);
-            startActivity(new Intent(App.getContext(), MainActivity.class));
+            startActivity(new Intent(App.getContext(), NotesListActivity.class));
         }
     }
 
@@ -142,7 +141,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
                 getNotesDatabase().getNotesTable().delete(note.getId());
-                startActivity(new Intent(App.getContext(), MainActivity.class));
+                startActivity(new Intent(App.getContext(), NotesListActivity.class));
             }
         };
     }

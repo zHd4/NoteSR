@@ -7,14 +7,14 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activity.MainActivity;
+import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.activity.security.SetupKeyActivity;
 
 import java.util.function.Consumer;
 
-public class GenerateNewKeyOnClick implements Consumer<MainActivity> {
+public class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
     @Override
-    public void accept(MainActivity activity) {
+    public void accept(NotesListActivity activity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AlertDialogTheme);
 
         builder.setView(R.layout.dialog_re_encryption_warning);
@@ -26,7 +26,7 @@ public class GenerateNewKeyOnClick implements Consumer<MainActivity> {
         builder.create().show();
     }
 
-    private DialogInterface.OnClickListener getRegenerateKeyDialogOnClick(MainActivity activity) {
+    private DialogInterface.OnClickListener getRegenerateKeyDialogOnClick(NotesListActivity activity) {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
                 Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);

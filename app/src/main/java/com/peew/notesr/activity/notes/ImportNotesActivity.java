@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
-import com.peew.notesr.activity.MainActivity;
 import com.peew.notesr.db.notes.NotesImportResult;
 import com.peew.notesr.db.notes.NotesImporter;
 
@@ -83,7 +82,7 @@ public class ImportNotesActivity extends AppCompatActivityExtended {
 
         runOnUiThread(() -> {
             showToastMessage(getResultMessage(importResult), Toast.LENGTH_SHORT);
-            startActivity(new Intent(App.getContext(), MainActivity.class));
+            startActivity(new Intent(App.getContext(), NotesListActivity.class));
         });
     }
 

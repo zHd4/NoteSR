@@ -16,7 +16,7 @@
             android:name=".activity.MainActivity"
             android:exported="true"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,6 +37,10 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.security.KeyRecoveryActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.notes.NotesListActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity

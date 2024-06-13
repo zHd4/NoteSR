@@ -10,7 +10,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.R;
 import com.peew.notesr.db.notes.MissingNotesException;
 import com.peew.notesr.db.notes.NotesExporter;
-import com.peew.notesr.activity.MainActivity;
+import com.peew.notesr.activity.notes.NotesListActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -24,9 +24,9 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-public class ExportNotesOnClick implements Consumer<MainActivity> {
+public class ExportNotesOnClick implements Consumer<NotesListActivity> {
     @Override
-    public void accept(MainActivity activity) {
+    public void accept(NotesListActivity activity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AlertDialogTheme);
         builder.setView(R.layout.progress_dialog_exporting).setCancelable(false);
 

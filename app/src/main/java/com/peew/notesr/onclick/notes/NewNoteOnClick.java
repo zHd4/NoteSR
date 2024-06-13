@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.view.View;
 
 import com.peew.notesr.App;
-import com.peew.notesr.activity.MainActivity;
+import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.activity.notes.OpenNoteActivity;
 
 public class NewNoteOnClick implements View.OnClickListener {
-    private final MainActivity activity;
+    private final NotesListActivity activity;
 
-    public NewNoteOnClick(MainActivity activity) {
+    public NewNoteOnClick(NotesListActivity activity) {
         this.activity = activity;
     }
 

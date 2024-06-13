@@ -20,7 +20,7 @@ import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.activity.MainActivity;
+import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.activity.security.SetupKeyActivity;
 
 import java.util.concurrent.ExecutorService;
@@ -61,7 +61,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
                 throw new RuntimeException(e);
             }
 
-            activity.startActivity(new Intent(App.getContext(), MainActivity.class));
+            activity.startActivity(new Intent(App.getContext(), NotesListActivity.class));
         } else if (mode == SetupKeyActivity.REGENERATION_MODE) {
             proceedRegeneration();
         }
@@ -87,7 +87,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
                 cryptoManager.applyNewKey(key);
                 updateEncryptedData(oldCryptoKey, key);
 
-                activity.startActivity(new Intent(App.getContext(), MainActivity.class));
+                activity.startActivity(new Intent(App.getContext(), NotesListActivity.class));
                 activity.finish();
             } catch (Exception e) {
                 throw new RuntimeException(e);
