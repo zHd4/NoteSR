@@ -2,9 +2,10 @@ package com.peew.notesr.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public final class File {
+public final class File implements Serializable {
     @JsonProperty("id")
     private Long id;
 
