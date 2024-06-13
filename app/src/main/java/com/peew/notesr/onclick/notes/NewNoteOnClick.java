@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.peew.notesr.App;
 import com.peew.notesr.activity.MainActivity;
-import com.peew.notesr.activity.notes.NoteOpenActivity;
+import com.peew.notesr.activity.notes.OpenNoteActivity;
 
 public class NewNoteOnClick implements View.OnClickListener {
     private final MainActivity activity;
@@ -17,7 +17,7 @@ public class NewNoteOnClick implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (App.getAppContainer().getCryptoManager().getCryptoKeyInstance() != null) {
-            activity.startActivity(new Intent(App.getContext(), NoteOpenActivity.class));
+            activity.startActivity(new Intent(App.getContext(), OpenNoteActivity.class));
         }
     }
 }

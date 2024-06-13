@@ -6,7 +6,7 @@ import android.widget.AdapterView;
 
 import com.peew.notesr.App;
 import com.peew.notesr.activity.AppCompatActivityExtended;
-import com.peew.notesr.activity.notes.NoteOpenActivity;
+import com.peew.notesr.activity.notes.OpenNoteActivity;
 
 public class NoteOnClick implements AdapterView.OnItemClickListener {
     private final AppCompatActivityExtended activity;
@@ -17,7 +17,7 @@ public class NoteOnClick implements AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent noteOpenActivtyIntent = new Intent(App.getContext(), NoteOpenActivity.class);
+        Intent noteOpenActivtyIntent = new Intent(App.getContext(), OpenNoteActivity.class);
 
         noteOpenActivtyIntent.putExtra("note_id", id);
         activity.startActivity(noteOpenActivtyIntent);

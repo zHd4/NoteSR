@@ -40,7 +40,7 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.notes.NoteOpenActivity"
+            android:name=".activity.notes.OpenNoteActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity

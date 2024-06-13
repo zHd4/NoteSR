@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class NoteOpenActivity extends AppCompatActivityExtended {
+public class OpenNoteActivity extends AppCompatActivityExtended {
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
     private Note note;
 
@@ -35,7 +35,7 @@ public class NoteOpenActivity extends AppCompatActivityExtended {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note_open);
+        setContentView(R.layout.activity_open_note);
 
         long noteId = getIntent().getLongExtra("note_id", -1);
         note = findNote(noteId);
