@@ -1,4 +1,4 @@
-package com.peew.notesr.activity.files;
+package com.peew.notesr.activity.files.viewer;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,10 +8,9 @@ import android.widget.ImageView;
 import androidx.appcompat.app.ActionBar;
 
 import com.peew.notesr.R;
-import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.model.File;
 
-public class OpenImageActivity extends AppCompatActivityExtended {
+public class OpenImageActivity extends FileViewerActivityBase {
     private File imageFile;
 
     @Override
