@@ -19,7 +19,7 @@ public class OpenImageActivity extends AppCompatActivityExtended {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_image);
 
-        imageFile = (File) getIntent().getSerializableExtra("image");
+        imageFile = (File) getIntent().getSerializableExtra("file");
 
         if (imageFile == null) {
             throw new RuntimeException("Image file not provided");
