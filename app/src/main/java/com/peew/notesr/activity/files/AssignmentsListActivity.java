@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,6 +22,7 @@ import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.Note;
+import com.peew.notesr.onclick.files.OpenFileOnClick;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -60,6 +60,7 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
         actionBar.setTitle("Files of: " + note.getName());
 
         FloatingActionButton addFileButton = findViewById(R.id.add_file_button);
+
         addFileButton.setOnClickListener(view -> {
             Intent intent = new Intent(App.getContext(), AddFileActivity.class);
 
@@ -68,6 +69,9 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
         });
 
         loadFiles();
+
+        ListView filesListView = findViewById(R.id.files_list_view);
+        filesListView.setOnItemClickListener(new OpenFileOnClick(this));
     }
 
     private void loadFiles() {
