@@ -1,6 +1,9 @@
 package com.peew.notesr.activity.files;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.ActionBar;
 
@@ -27,5 +30,16 @@ public class OpenImageActivity extends AppCompatActivityExtended {
 
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(imageFile.getName());
+
+        setImage();
+    }
+
+    private void setImage() {
+        byte[] imageBytes = imageFile.getData();
+
+        ImageView imageView = findViewById(R.id.assigned_image_view);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+        imageView.setImageBitmap(bitmap);
     }
 }
