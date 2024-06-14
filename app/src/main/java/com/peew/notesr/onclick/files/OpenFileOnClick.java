@@ -17,10 +17,10 @@ import java.util.Map;
 public class OpenFileOnClick implements AdapterView.OnItemClickListener {
     private static final Map<String, Class<? extends FileViewerActivityBase>> FILES_VIEWERS =
             Map.of(
-                    "text", null,
-                    "image", OpenImageActivity.class,
-                    "video", null,
-                    "audio", null
+//                    "text", null,
+                    "image", OpenImageActivity.class
+//                    "video", null,
+//                    "audio", null
             );
 
     private final AssignmentsListActivity activity;
