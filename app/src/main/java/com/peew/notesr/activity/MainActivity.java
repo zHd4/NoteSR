@@ -18,12 +18,10 @@ public class MainActivity extends AppCompatActivityExtended {
 
         CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
 
-        if (cryptoManager.isBlocked()) {
-            startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
-        }
-
         if (cryptoManager.isFirstRun()) {
             startActivity(new Intent(App.getContext(), StartActivity.class));
+        } else if (cryptoManager.isBlocked()) {
+            startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
         } else if (!cryptoManager.ready()) {
             Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
             authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
