@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.peew.notesr.model.EncryptedFile;
 import com.peew.notesr.model.EncryptedFileInfo;
 
 import java.time.LocalDateTime;
@@ -23,36 +22,34 @@ public class FilesTable extends Table {
                         "encrypted_name text NOT NULL, " +
                         "encrypted_type text, " +
                         "size bigint NOT NULL, " +
-                        "encrypted_data blob NOT NULL, " +
                         "created_at varchar(255) NOT NULL, " +
                         "updated_at varchar(255) NOT NULL, " +
                         "FOREIGN KEY(note_id) REFERENCES " + notesTable.getName() + "(note_id))"
         );
     }
 
-    public void save(EncryptedFile file) {
+    public void save(EncryptedFileInfo fileInfo) {
         SQLiteDatabase db = helper.getWritableDatabase();
         String now = LocalDateTime.now().format(timestampFormatter);
 
         ContentValues values = new ContentValues();
 
-        values.put("note_id", file.getNoteId());
-        values.put("encrypted_name", file.getEncryptedName());
-        values.put("encrypted_type", file.getEncryptedType());
-        values.put("size", file.getSize());
-        values.put("encrypted_data", file.getEncryptedData());
+        values.put("note_id", fileInfo.getNoteId());
+        values.put("encrypted_name", fileInfo.getEncryptedName());
+        values.put("encrypted_type", fileInfo.getEncryptedType());
+        values.put("size", fileInfo.getSize());
         values.put("updated_at", now);
 
-        if (file.getId() == null || get(file.getId()) == null) {
+        if (fileInfo.getId() == null || get(fileInfo.getId()) == null) {
             values.put("created_at", now);
             db.insert(name, null, values);
         } else {
             db.update(name, values, "id = ?",
-                    new String[] {String.valueOf(file.getId())});
+                    new String[] {String.valueOf(fileInfo.getId())});
         }
     }
 
-    public EncryptedFile get(long id) {
+    public EncryptedFileInfo get(long id) {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
@@ -62,8 +59,7 @@ public class FilesTable extends Table {
                         "encrypted_type, " +
                         "size, " +
                         "created_at, " +
-                        "updated_at, " +
-                        "encrypted_data" +
+                        "updated_at " +
                         " FROM " + name +
                         " WHERE id = ?",
                 new String[] { String.valueOf(id) });
@@ -80,19 +76,14 @@ public class FilesTable extends Table {
                 String createdAt = cursor.getString(4);
                 String updatedAt = cursor.getString(5);
 
-                byte[] data = cursor.getBlob(6);
-
-                EncryptedFile file = new EncryptedFile(
+                return new EncryptedFileInfo(
+                        id,
                         noteId,
+                        size,
                         name,
                         type,
-                        size,
                         LocalDateTime.parse(createdAt, timestampFormatter),
-                        LocalDateTime.parse(updatedAt, timestampFormatter),
-                        data);
-
-                file.setId(id);
-                return file;
+                        LocalDateTime.parse(updatedAt, timestampFormatter));
             }
         }
 
