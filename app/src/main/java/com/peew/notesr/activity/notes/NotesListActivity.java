@@ -23,7 +23,7 @@ import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.onclick.notes.ExportNotesOnClick;
 import com.peew.notesr.onclick.notes.NewNoteOnClick;
-import com.peew.notesr.onclick.notes.NoteOnClick;
+import com.peew.notesr.onclick.notes.OpenNoteOnClick;
 import com.peew.notesr.onclick.security.ChangePasswordOnClick;
 import com.peew.notesr.onclick.security.GenerateNewKeyOnClick;
 import com.peew.notesr.onclick.security.LockOnClick;
@@ -51,7 +51,7 @@ public class NotesListActivity extends AppCompatActivityExtended {
 
         loadNotes();
 
-        notesView.setOnItemClickListener(new NoteOnClick(this));
+        notesView.setOnItemClickListener(new OpenNoteOnClick(this));
         newNoteButton.setOnClickListener(new NewNoteOnClick(this));
     }
 

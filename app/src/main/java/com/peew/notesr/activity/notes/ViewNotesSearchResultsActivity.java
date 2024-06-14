@@ -13,7 +13,7 @@ import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.SearchNotesResults;
-import com.peew.notesr.onclick.notes.NoteOnClick;
+import com.peew.notesr.onclick.notes.OpenNoteOnClick;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +39,7 @@ public class ViewNotesSearchResultsActivity extends AppCompatActivityExtended {
 
         fillResultsList(resultsView);
 
-        resultsView.setOnItemClickListener(new NoteOnClick(this));
+        resultsView.setOnItemClickListener(new OpenNoteOnClick(this));
     }
 
     /** @noinspection deprecation*/

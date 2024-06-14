@@ -8,10 +8,10 @@ import com.peew.notesr.App;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.activity.notes.OpenNoteActivity;
 
-public class NoteOnClick implements AdapterView.OnItemClickListener {
+public class OpenNoteOnClick implements AdapterView.OnItemClickListener {
     private final AppCompatActivityExtended activity;
 
-    public NoteOnClick(AppCompatActivityExtended activity) {
+    public OpenNoteOnClick(AppCompatActivityExtended activity) {
         this.activity = activity;
     }
 
