@@ -26,12 +26,40 @@ public class FilesCrypt {
                 .collect(Collectors.toList());
     }
 
+    public static byte[] encryptData(byte[] data) {
+        return encryptData(data, getCryptoManager().getCryptoKeyInstance());
+    }
+
+    public static byte[] decryptData(byte[] data) {
+        return decryptData(data, getCryptoManager().getCryptoKeyInstance());
+    }
+
     public static EncryptedFileInfo encryptInfo(FileInfo fileInfo) {
         return encryptInfo(fileInfo, getCryptoManager().getCryptoKeyInstance());
     }
 
     public static FileInfo decryptInfo(EncryptedFileInfo encryptedFileInfo) {
         return decryptInfo(encryptedFileInfo, getCryptoManager().getCryptoKeyInstance());
+    }
+
+    public static byte[] encryptData(byte[] data, CryptoKey cryptoKey) {
+        try {
+            Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
+            return aes.encrypt(data);
+        } catch (Exception e) {
+            Log.e("Cannot encrypt file data", e.toString());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[] decryptData(byte[] data, CryptoKey cryptoKey) {
+        try {
+            Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
+            return aes.decrypt(data);
+        } catch (Exception e) {
+            Log.e("Cannot encrypt file data", e.toString());
+            throw new RuntimeException(e);
+        }
     }
 
     public static EncryptedFileInfo encryptInfo(FileInfo fileInfo, CryptoKey cryptoKey) {
@@ -57,7 +85,7 @@ public class FilesCrypt {
                     fileInfo.getCreatedAt(),
                     fileInfo.getUpdatedAt());
         } catch (Exception e) {
-            Log.e("Cannot encrypt file", e.toString());
+            Log.e("Cannot encrypt file info", e.toString());
             throw new RuntimeException(e);
         }
     }
@@ -85,7 +113,7 @@ public class FilesCrypt {
                     encryptedFileInfo.getCreatedAt(),
                     encryptedFileInfo.getUpdatedAt());
         } catch (Exception e) {
-            Log.e("Cannot encrypt file", e.toString());
+            Log.e("Cannot encrypt file info", e.toString());
             throw new RuntimeException(e);
         }
     }
