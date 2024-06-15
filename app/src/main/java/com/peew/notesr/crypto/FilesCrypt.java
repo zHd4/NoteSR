@@ -4,9 +4,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.peew.notesr.App;
-import com.peew.notesr.model.EncryptedFile;
 import com.peew.notesr.model.EncryptedFileInfo;
-import com.peew.notesr.model.File;
 import com.peew.notesr.model.FileInfo;
 
 import java.nio.charset.StandardCharsets;
