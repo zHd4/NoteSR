@@ -34,6 +34,11 @@ public final class NotesTable extends Table {
 
         if (note.getId() == null || get(note.getId()) == null) {
             long id = db.insert(name, null, values);
+
+            if (id == -1) {
+                throw new RuntimeException("Cannot insert note in table '" + name + "'");
+            }
+
             note.setId(id);
         } else {
             db.update(name, values, "note_id = ?" ,
