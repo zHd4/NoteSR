@@ -17,9 +17,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
-import com.peew.notesr.model.File;
+import com.peew.notesr.model.FileInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,6 +93,7 @@ public class AddFileActivity extends AppCompatActivityExtended {
 
     private void addFiles(List<Uri> filesUri) {
         FilesTable table = App.getAppContainer().getNotesDatabase().getFilesTable();
+        AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
 
         filesUri.forEach(uri -> {
             String filename = getFileName(getCursor(uri));
@@ -100,9 +102,14 @@ public class AddFileActivity extends AppCompatActivityExtended {
             long size = getFileSize(getCursor(uri));
             byte[] data = getFileData(uri);
 
-            File file = new File(noteId, filename, type, size, data);
+            FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
 
-            table.save(FilesCrypt.encrypt(file));
+            try {
+                manager.save(fileInfo.getId(), data);
+                table.save(FilesCrypt.encryptInfo(fileInfo));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
