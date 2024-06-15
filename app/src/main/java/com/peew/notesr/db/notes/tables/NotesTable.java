@@ -26,11 +26,15 @@ public final class NotesTable extends Table {
 
     public void save(EncryptedNote note) {
         SQLiteDatabase db = helper.getWritableDatabase();
+
+        LocalDateTime now = LocalDateTime.now();
+        String nowStr = now.format(timestampFormatter);
+
         ContentValues values = new ContentValues();
 
         values.put("encrypted_name", note.getEncryptedName());
         values.put("encrypted_data", note.getEncryptedText());
-        values.put("updated_at", LocalDateTime.now().format(timestampFormatter));
+        values.put("updated_at", nowStr);
 
         if (note.getId() == null || get(note.getId()) == null) {
             long id = db.insert(name, null, values);
@@ -44,6 +48,8 @@ public final class NotesTable extends Table {
             db.update(name, values, "note_id = ?" ,
                     new String[] { String.valueOf(note.getId()) });
         }
+
+        note.setUpdatedAt(now);
     }
 
     public List<EncryptedNote> getAll() {
