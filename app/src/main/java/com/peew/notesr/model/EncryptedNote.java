@@ -6,7 +6,8 @@ public final class EncryptedNote {
     private Long id;
     private final String encryptedName;
     private final String encryptedText;
-    private final LocalDateTime updatedAt;
+
+    private LocalDateTime updatedAt;
 
     public EncryptedNote(String encryptedName, String encryptedText, LocalDateTime updatedAt) {
         this.encryptedName = encryptedName;
@@ -32,5 +33,9 @@ public final class EncryptedNote {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
