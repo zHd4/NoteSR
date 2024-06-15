@@ -8,8 +8,8 @@ public class EncryptedFileInfo {
     private Long size;
     private String encryptedName;
     private String encryptedType;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public EncryptedFileInfo(Long id,
                              Long noteId,
@@ -71,7 +71,15 @@ public class EncryptedFileInfo {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
