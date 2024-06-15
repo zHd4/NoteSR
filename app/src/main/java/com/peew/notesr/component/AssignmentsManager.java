@@ -8,10 +8,8 @@ import java.io.IOException;
 public class AssignmentsManager {
     private static final String DIR_NAME = "assignments";
 
-    private final File dir;
-
     public AssignmentsManager() {
-        dir = FileManager.getInternalFile(DIR_NAME);
+        File dir = FileManager.getInternalFile(DIR_NAME);
 
         if (!dir.mkdir() && !dir.isDirectory()) {
             throw new RuntimeException("Cannot create directory " + dir.getAbsolutePath());
