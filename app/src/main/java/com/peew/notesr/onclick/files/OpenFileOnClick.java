@@ -8,10 +8,13 @@ import com.peew.notesr.App;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
 import com.peew.notesr.activity.files.viewer.OpenImageActivity;
+import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.model.File;
+import com.peew.notesr.model.FileInfo;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class OpenFileOnClick implements AdapterView.OnItemClickListener {
@@ -32,8 +35,16 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
+        AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
 
-        File file = FilesCrypt.decrypt(filesTable.get(id));
+        File file = new File(FilesCrypt.decryptInfo(filesTable.get(id)));
+
+        try {
+            file.setData(manager.get(file.getId()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         String type = file.getType().split("/")[0];
 
         if (FILES_VIEWERS.containsKey(type)) {
