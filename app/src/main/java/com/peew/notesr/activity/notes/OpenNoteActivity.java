@@ -66,14 +66,12 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
         getMenuInflater().inflate(R.menu.menu_note_open, menu);
 
         menuItemsMap.put(R.id.save_note_button, action -> saveNoteOnClick(nameField, textField));
-        menuItemsMap.put(R.id.open_assignments_button, action -> openAssignmentsOnClick());
 
         if (note == null) {
-            MenuItem deleteButton = menu.findItem(R.id.delete_note_button);
-
-            deleteButton.setEnabled(false);
-            deleteButton.setVisible(false);
+            disableMenuItem(menu.findItem(R.id.open_assignments_button));
+            disableMenuItem(menu.findItem(R.id.delete_note_button));
         } else {
+            menuItemsMap.put(R.id.open_assignments_button, action -> openAssignmentsOnClick());
             menuItemsMap.put(R.id.delete_note_button, action -> deleteNoteOnClick());
         }
 
@@ -144,6 +142,11 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
                 startActivity(new Intent(App.getContext(), NotesListActivity.class));
             }
         };
+    }
+
+    private void disableMenuItem(MenuItem item) {
+        item.setEnabled(false);
+        item.setVisible(false);
     }
 
     private Note findNote(long id) {
