@@ -54,6 +54,16 @@ public final class File implements Serializable {
         this.data = data;
     }
 
+    public File(FileInfo fileInfo) {
+        this.id = fileInfo.getId();
+        this.noteId = fileInfo.getNoteId();
+        this.name = fileInfo.getName();
+        this.type = fileInfo.getType();
+        this.size = fileInfo.getSize();
+        this.createdAt = fileInfo.getCreatedAt();
+        this.updatedAt = fileInfo.getUpdatedAt();
+    }
+
     public Long getId() {
         return id;
     }
@@ -84,6 +94,10 @@ public final class File implements Serializable {
 
     public byte[] getData() {
         return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     public Long getNoteId() {
