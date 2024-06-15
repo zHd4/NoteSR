@@ -33,6 +33,13 @@ public class FileInfo {
         this.updatedAt = updatedAt;
     }
 
+    public FileInfo(Long noteId, Long size, String name, String type) {
+        this.noteId = noteId;
+        this.size = size;
+        this.name = name;
+        this.type = type;
+    }
+
     public Long getId() {
         return id;
     }
