@@ -33,7 +33,8 @@ public final class NotesTable extends Table {
         values.put("updated_at", LocalDateTime.now().format(timestampFormatter));
 
         if (note.getId() == null || get(note.getId()) == null) {
-            db.insert(name, null, values);
+            long id = db.insert(name, null, values);
+            note.setId(id);
         } else {
             db.update(name, values, "note_id = ?" ,
                     new String[] { String.valueOf(note.getId()) });
