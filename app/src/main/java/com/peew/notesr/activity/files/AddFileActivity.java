@@ -20,6 +20,7 @@ import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.FileInfo;
 
 import java.io.IOException;
@@ -102,12 +103,15 @@ public class AddFileActivity extends AppCompatActivityExtended {
             long size = getFileSize(getCursor(uri));
             byte[] data = getFileData(uri);
 
-            FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
+            EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(
+                    new FileInfo(noteId, size, filename, type));
+
+            table.save(encryptedFileInfo);
 
             try {
-                manager.save(fileInfo.getId(), data);
-                table.save(FilesCrypt.encryptInfo(fileInfo));
+                manager.save(encryptedFileInfo.getId(), data);
             } catch (IOException e) {
+                table.delete(encryptedFileInfo.getId());
                 throw new RuntimeException(e);
             }
         });
