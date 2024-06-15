@@ -30,7 +30,9 @@ public class FilesTable extends Table {
 
     public void save(EncryptedFileInfo fileInfo) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        String now = LocalDateTime.now().format(timestampFormatter);
+
+        LocalDateTime now = LocalDateTime.now();
+        String nowStr = now.format(timestampFormatter);
 
         ContentValues values = new ContentValues();
 
@@ -38,10 +40,10 @@ public class FilesTable extends Table {
         values.put("encrypted_name", fileInfo.getEncryptedName());
         values.put("encrypted_type", fileInfo.getEncryptedType());
         values.put("size", fileInfo.getSize());
-        values.put("updated_at", now);
+        values.put("updated_at", nowStr);
 
         if (fileInfo.getId() == null || get(fileInfo.getId()) == null) {
-            values.put("created_at", now);
+            values.put("created_at", nowStr);
             long id = db.insert(name, null, values);
 
             if (id == -1) {
@@ -49,10 +51,13 @@ public class FilesTable extends Table {
             }
 
             fileInfo.setId(id);
+            fileInfo.setCreatedAt(now);
         } else {
             db.update(name, values, "id = ?",
                     new String[] {String.valueOf(fileInfo.getId())});
         }
+
+        fileInfo.setUpdatedAt(now);
     }
 
     public EncryptedFileInfo get(long id) {
