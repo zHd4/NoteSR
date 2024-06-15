@@ -57,7 +57,7 @@ public class FilesCrypt {
             Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
             return aes.decrypt(data);
         } catch (Exception e) {
-            Log.e("Cannot encrypt file data", e.toString());
+            Log.e("Cannot decrypt file data", e.toString());
             throw new RuntimeException(e);
         }
     }
@@ -113,7 +113,7 @@ public class FilesCrypt {
                     encryptedFileInfo.getCreatedAt(),
                     encryptedFileInfo.getUpdatedAt());
         } catch (Exception e) {
-            Log.e("Cannot encrypt file info", e.toString());
+            Log.e("Cannot decrypt file info", e.toString());
             throw new RuntimeException(e);
         }
     }
