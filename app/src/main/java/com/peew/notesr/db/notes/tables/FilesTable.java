@@ -42,8 +42,12 @@ public class FilesTable extends Table {
 
         if (fileInfo.getId() == null || get(fileInfo.getId()) == null) {
             values.put("created_at", now);
-
             long id = db.insert(name, null, values);
+
+            if (id == -1) {
+                throw new RuntimeException("Cannot insert file info in table '" + name + "'");
+            }
+
             fileInfo.setId(id);
         } else {
             db.update(name, values, "id = ?",
