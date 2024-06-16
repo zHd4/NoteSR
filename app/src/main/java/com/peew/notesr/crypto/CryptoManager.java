@@ -180,15 +180,9 @@ public class CryptoManager {
 
     public void block() {
         try {
-            File encryptedTestFile = getHashedCryptoKeyFile();
-            byte[] testFileData = FileManager.readFileBytes(encryptedTestFile);
-
-            FileManager.wipeFile(getEncryptedKeyFile());
-            FileManager.writeFileBytes(getBlockFile(), testFileData);
-
-            FileManager.wipeFile(encryptedTestFile);
+            FileManager.writeFileBytes(getBlockFile(), new byte[0]);
         } catch (IOException e) {
-            Log.e("CryptoManager.block error", e.toString());
+            throw new RuntimeException(e);
         }
     }
 
