@@ -129,7 +129,7 @@ public class NotesTest {
 
         Assert.assertNotNull(actualEncrypted);
 
-        File actual = new File(FilesCrypt.decryptInfo(actualEncrypted));
+        File actual = new File(FilesCrypt.decryptInfo(actualEncrypted, cryptoKey));
 
         byte[] actualData = FilesCrypt.decryptData(assignmentsManager.get(fileId), cryptoKey);
         actual.setData(actualData);
