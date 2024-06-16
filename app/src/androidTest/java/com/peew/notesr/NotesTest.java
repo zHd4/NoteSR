@@ -1,12 +1,15 @@
 package com.peew.notesr;
 
+import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.File;
+import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.Note;
 
 import org.junit.After;
@@ -15,6 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -97,25 +101,45 @@ public class NotesTest {
     }
 
     @Test
-    public void testNoteAssignment() {
+    public void testNoteAssignment() throws IOException {
+        AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
         Note note = createAndGetNote();
 
         testFile.setNoteId(note.getId());
-        filesTable.save(FilesCrypt.encrypt(testFile, cryptoKey));
 
-        Optional<File> fileOptional = filesTable.getByNoteId(note.getId()).stream()
-                .map(fileInfo -> filesTable.get(fileInfo.getId()))
-                .map(file -> FilesCrypt.decrypt(file, cryptoKey))
-                .findFirst();
+        FileInfo testFileInfo = new FileInfo(
+                testFile.getId(),
+                testFile.getNoteId(),
+                testFile.getSize(),
+                testFile.getName(),
+                testFile.getType(),
+                testFile.getCreatedAt(),
+                testFile.getUpdatedAt()
+        );
 
-        Assert.assertTrue(fileOptional.isPresent());
+        EncryptedFileInfo encryptedTestFileInfo = FilesCrypt.encryptInfo(testFileInfo, cryptoKey);
+        byte[] encryptedData = FilesCrypt.encryptData(testFile.getData(), cryptoKey);
 
-        File file = fileOptional.get();
+        filesTable.save(encryptedTestFileInfo);
 
-        Assert.assertEquals(note.getId(), file.getNoteId());
-        Assert.assertEquals(testFile.getName(), file.getName());
-        Assert.assertEquals(testFile.getSize(), file.getSize());
-        Assert.assertArrayEquals(testFile.getData(), file.getData());
+        Long fileId = encryptedTestFileInfo.getId();
+        assignmentsManager.save(fileId, encryptedData);
+
+        EncryptedFileInfo actualEncrypted = filesTable.get(fileId);
+
+        Assert.assertNotNull(actualEncrypted);
+
+        File actual = new File(FilesCrypt.decryptInfo(actualEncrypted));
+
+        byte[] actualData = FilesCrypt.decryptData(assignmentsManager.get(fileId), cryptoKey);
+        actual.setData(actualData);
+
+        Assert.assertEquals(fileId, actual.getId());
+        Assert.assertEquals(note.getId(), actual.getNoteId());
+        Assert.assertEquals(testFile.getName(), actual.getName());
+        Assert.assertEquals(testFile.getType(), actual.getType());
+        Assert.assertEquals(testFile.getSize(), actual.getSize());
+        Assert.assertArrayEquals(testFile.getData(), actual.getData());
     }
 
     private Note createAndGetNote() {
