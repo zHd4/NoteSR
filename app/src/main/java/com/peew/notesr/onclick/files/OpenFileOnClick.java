@@ -3,7 +3,6 @@ package com.peew.notesr.onclick.files;
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
-
 import com.peew.notesr.App;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
@@ -11,6 +10,7 @@ import com.peew.notesr.activity.files.viewer.OpenImageActivity;
 import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.File;
 import com.peew.notesr.model.FileInfo;
 
@@ -35,23 +35,15 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
-        AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
+        FileInfo fileInfo = FilesCrypt.decryptInfo(filesTable.get(id));
 
-        File file = new File(FilesCrypt.decryptInfo(filesTable.get(id)));
-
-        try {
-            file.setData(manager.get(file.getId()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        String type = file.getType().split("/")[0];
+        String type = fileInfo.getType().split("/")[0];
 
         if (FILES_VIEWERS.containsKey(type)) {
             Class<? extends FileViewerActivityBase> viewer = FILES_VIEWERS.get(type);
             Intent intent = new Intent(App.getContext(), viewer);
 
-            intent.putExtra("file", file);
+            intent.putExtra("file_info", fileInfo);
             activity.startActivity(intent);
         }
     }
