@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoManager {
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
-    private static final String HASHED_CRYPTO_KEY_FILENAME = "crypto_key_hashed.sha256";
+    private static final String HASHED_CRYPTO_KEY_FILENAME = "key.sha256";
     private static final String BLOCKED_FILENAME = ".blocked";
     private static final int KEY_BYTES_COUNT = Aes.KEY_SIZE / 8;
     private CryptoKey cryptoKeyInstance;
