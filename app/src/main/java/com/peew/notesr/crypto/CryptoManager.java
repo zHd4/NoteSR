@@ -162,10 +162,14 @@ public class CryptoManager {
     private boolean checkImportedKey(SecretKey key, byte[] salt) {
         if (App.onAndroid()) {
             try {
-                byte[] originalCryptoKeyHash = FileManager.readFileBytes(getHashedCryptoKeyFile());
-                byte[] hashedUserCryptoKey = hashCryptoKeyData(key.getEncoded(), salt);
+                File hashedKeyFile = getHashedCryptoKeyFile();
 
-                return Arrays.equals(originalCryptoKeyHash, hashedUserCryptoKey);
+                if (hashedKeyFile.exists()) {
+                    byte[] originalCryptoKeyHash = FileManager.readFileBytes(hashedKeyFile);
+                    byte[] hashedUserCryptoKey = hashCryptoKeyData(key.getEncoded(), salt);
+
+                    return Arrays.equals(originalCryptoKeyHash, hashedUserCryptoKey);
+                }
             } catch (IOException | NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             }
