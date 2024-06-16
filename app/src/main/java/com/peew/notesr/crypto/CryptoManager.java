@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.peew.notesr.App;
 import com.peew.notesr.tools.FileManager;
+import com.peew.notesr.tools.HashHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Random;
+import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -21,9 +22,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoManager {
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
-    private static final String ENCRYPTED_TEST_FILENAME = "test.encrypted";
+    private static final String HASHED_CRYPTO_KEY_FILENAME = "crypto_key_hashed.sha256";
     private static final String BLOCKED_FILENAME = ".blocked";
-    private static final int ENCRYPTED_TEST_FILE_SIZE = 1024;
     private static final int KEY_BYTES_COUNT = Aes.KEY_SIZE / 8;
     private CryptoKey cryptoKeyInstance;
 
@@ -76,8 +76,8 @@ public class CryptoManager {
         return FileManager.getInternalFile(BLOCKED_FILENAME);
     }
 
-    private File getEncryptedTestFile() {
-        return FileManager.getInternalFile(ENCRYPTED_TEST_FILENAME);
+    private File getHashedCryptoKeyFile() {
+        return FileManager.getInternalFile(HASHED_CRYPTO_KEY_FILENAME);
     }
 
     public CryptoKey generateNewKey(String password) throws NoSuchAlgorithmException {
@@ -125,7 +125,7 @@ public class CryptoManager {
             blockFile.delete();
         }
 
-        createEncryptedTestFile(newKey.key(), mainSalt);
+        FileManager.writeFileBytes(getHashedCryptoKeyFile(), hashCryptoKeyData(mainKey, mainSalt));
     }
 
     public void changePassword(String newPassword) throws NoSuchAlgorithmException, IOException,
@@ -150,38 +150,24 @@ public class CryptoManager {
                 newPassword);
     }
 
-    private void createEncryptedTestFile(SecretKey key, byte[] salt) throws
-            InvalidAlgorithmParameterException, NoSuchPaddingException,
-            IllegalBlockSizeException, NoSuchAlgorithmException,
-            BadPaddingException, InvalidKeyException, IOException {
-        byte[] randomBytes = new byte[ENCRYPTED_TEST_FILE_SIZE];
+    private byte[] hashCryptoKeyData(byte[] key, byte[] salt) throws NoSuchAlgorithmException {
+        byte[] cryptoKeyBytes = new byte[key.length + salt.length];
 
-        Random random = new Random();
-        Aes aesInstance = new Aes(key, salt);
+        System.arraycopy(key, 0, cryptoKeyBytes, 0, key.length);
+        System.arraycopy(salt, 0, cryptoKeyBytes, key.length, salt.length);
 
-        random.nextBytes(randomBytes);
-        randomBytes = aesInstance.encrypt(randomBytes);
-
-        FileManager.writeFileBytes(getEncryptedTestFile(), randomBytes);
+        return HashHelper.toSha256Bytes(cryptoKeyBytes);
     }
 
     private boolean checkImportedKey(SecretKey key, byte[] salt) {
         if (App.onAndroid()) {
             try {
-                Aes aesInstance = new Aes(key, salt);
-                File blockFile = getBlockFile();
+                byte[] originalCryptoKeyHash = FileManager.readFileBytes(getHashedCryptoKeyFile());
+                byte[] hashedUserCryptoKey = hashCryptoKeyData(key.getEncoded(), salt);
 
-                if (!blockFile.exists()) {
-                    Random random = new Random();
-                    byte[] randomBytes = new byte[ENCRYPTED_TEST_FILE_SIZE];
-
-                    random.nextBytes(randomBytes);
-                    aesInstance.decrypt(aesInstance.encrypt(randomBytes));
-                } else {
-                    aesInstance.decrypt(FileManager.readFileBytes(blockFile));
-                }
-            } catch (Exception e) {
-                return false;
+                return Arrays.equals(originalCryptoKeyHash, hashedUserCryptoKey);
+            } catch (IOException | NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -194,7 +180,7 @@ public class CryptoManager {
 
     public void block() {
         try {
-            File encryptedTestFile = getEncryptedTestFile();
+            File encryptedTestFile = getHashedCryptoKeyFile();
             byte[] testFileData = FileManager.readFileBytes(encryptedTestFile);
 
             FileManager.wipeFile(getEncryptedKeyFile());
