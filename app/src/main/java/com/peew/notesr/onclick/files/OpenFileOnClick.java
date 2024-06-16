@@ -7,14 +7,10 @@ import com.peew.notesr.App;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
 import com.peew.notesr.activity.files.viewer.OpenImageActivity;
-import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
-import com.peew.notesr.model.EncryptedFileInfo;
-import com.peew.notesr.model.File;
 import com.peew.notesr.model.FileInfo;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class OpenFileOnClick implements AdapterView.OnItemClickListener {
