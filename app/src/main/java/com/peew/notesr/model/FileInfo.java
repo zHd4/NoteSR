@@ -1,8 +1,9 @@
 package com.peew.notesr.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class FileInfo {
+public class FileInfo implements Serializable {
     private Long id;
 
     private Long noteId;
