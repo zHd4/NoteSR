@@ -13,31 +13,16 @@ import java.util.stream.Collectors;
 
 public class FilesCrypt {
     public static EncryptedFile updateKey(EncryptedFile file, CryptoKey oldKey, CryptoKey newKey) {
-        EncryptedFileInfo fileInfo = new EncryptedFileInfo(
-                file.getId(),
-                file.getNoteId(),
-                file.getSize(),
-                file.getEncryptedName(),
-                file.getEncryptedType(),
-                file.getCreatedAt(),
-                file.getUpdatedAt()
-        );
-
+        EncryptedFileInfo fileInfo = new EncryptedFileInfo(file);
         byte[] data = file.getEncryptedData();
 
         EncryptedFileInfo reEncryptedFileInfo = encryptInfo(decryptInfo(fileInfo, oldKey), newKey);
         byte[] reEncryptedData = encryptData(decryptData(data, oldKey), newKey);
 
-        return new EncryptedFile(
-                reEncryptedFileInfo.getId(),
-                reEncryptedFileInfo.getNoteId(),
-                reEncryptedFileInfo.getEncryptedName(),
-                reEncryptedFileInfo.getEncryptedType(),
-                reEncryptedFileInfo.getSize(),
-                reEncryptedFileInfo.getCreatedAt(),
-                reEncryptedFileInfo.getUpdatedAt(),
-                reEncryptedData
-        );
+        EncryptedFile reEncryptedFile = new EncryptedFile(reEncryptedFileInfo);
+        reEncryptedFile.setEncryptedData(reEncryptedData);
+
+        return reEncryptedFile;
     }
 
     public static List<FileInfo> decryptInfo(List<EncryptedFileInfo> filesInfo) {
