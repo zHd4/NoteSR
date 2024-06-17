@@ -2,8 +2,8 @@ package com.peew.notesr.crypto;
 
 import android.util.Base64;
 import android.util.Log;
-
 import com.peew.notesr.App;
+import com.peew.notesr.model.EncryptedFile;
 import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.FileInfo;
 
@@ -12,6 +12,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FilesCrypt {
+    public static EncryptedFile updateKey(EncryptedFile file, CryptoKey oldKey, CryptoKey newKey) {
+        EncryptedFileInfo fileInfo = new EncryptedFileInfo(
+                file.getId(),
+                file.getNoteId(),
+                file.getSize(),
+                file.getEncryptedName(),
+                file.getEncryptedType(),
+                file.getCreatedAt(),
+                file.getUpdatedAt()
+        );
+
+        byte[] data = file.getEncryptedData();
+
+        EncryptedFileInfo reEncryptedFileInfo = encryptInfo(decryptInfo(fileInfo, oldKey), newKey);
+        byte[] reEncryptedData = encryptData(decryptData(data, oldKey), newKey);
+
+        return new EncryptedFile(
+                reEncryptedFileInfo.getId(),
+                reEncryptedFileInfo.getNoteId(),
+                reEncryptedFileInfo.getEncryptedName(),
+                reEncryptedFileInfo.getEncryptedType(),
+                reEncryptedFileInfo.getSize(),
+                reEncryptedFileInfo.getCreatedAt(),
+                reEncryptedFileInfo.getUpdatedAt(),
+                reEncryptedData
+        );
+    }
+
     public static List<FileInfo> decryptInfo(List<EncryptedFileInfo> filesInfo) {
         return decryptInfo(filesInfo, getCryptoManager().getCryptoKeyInstance());
     }
