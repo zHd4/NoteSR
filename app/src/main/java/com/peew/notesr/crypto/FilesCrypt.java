@@ -20,7 +20,9 @@ public class FilesCrypt {
         byte[] reEncryptedData = encryptData(decryptData(data, oldKey), newKey);
 
         EncryptedFile reEncryptedFile = new EncryptedFile(reEncryptedFileInfo);
+
         reEncryptedFile.setEncryptedData(reEncryptedData);
+        reEncryptedFile.setSize((long) reEncryptedData.length);
 
         return reEncryptedFile;
     }
