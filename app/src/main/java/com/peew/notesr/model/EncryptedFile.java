@@ -12,7 +12,8 @@ public class EncryptedFile {
     private final LocalDateTime createdAt;
 
     private final LocalDateTime updatedAt;
-    private final byte[] encryptedData;
+
+    private byte[] encryptedData;
 
     public EncryptedFile(Long noteId,
                          String encryptedName,
@@ -30,6 +31,34 @@ public class EncryptedFile {
         this.encryptedData = encryptedData;
     }
 
+    public EncryptedFile(Long id,
+                         Long noteId,
+                         String encryptedName,
+                         String encryptedType,
+                         Long size,
+                         LocalDateTime createdAt,
+                         LocalDateTime updatedAt,
+                         byte[] encryptedData) {
+        this.id = id;
+        this.noteId = noteId;
+        this.encryptedName = encryptedName;
+        this.encryptedType = encryptedType;
+        this.size = size;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.encryptedData = encryptedData;
+    }
+
+    public EncryptedFile(EncryptedFileInfo encryptedFileInfo) {
+        this.id = encryptedFileInfo.getId();
+        this.noteId = encryptedFileInfo.getNoteId();
+        this.encryptedName = encryptedFileInfo.getEncryptedName();
+        this.encryptedType = encryptedFileInfo.getEncryptedType();
+        this.size = encryptedFileInfo.getSize();
+        this.createdAt = encryptedFileInfo.getCreatedAt();
+        this.updatedAt = encryptedFileInfo.getUpdatedAt();
+    }
+
     public String getEncryptedName() {
         return encryptedName;
     }
@@ -40,6 +69,10 @@ public class EncryptedFile {
 
     public byte[] getEncryptedData() {
         return encryptedData;
+    }
+
+    public void setEncryptedData(byte[] encryptedData) {
+        this.encryptedData = encryptedData;
     }
 
     public void setId(Long id) {
