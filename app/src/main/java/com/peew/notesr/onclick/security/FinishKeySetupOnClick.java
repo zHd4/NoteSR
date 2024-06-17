@@ -15,14 +15,22 @@ import androidx.core.content.ContextCompat;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
+import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
+import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.activity.security.SetupKeyActivity;
+import com.peew.notesr.model.EncryptedFile;
+import com.peew.notesr.model.EncryptedFileInfo;
+import com.peew.notesr.model.EncryptedNote;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -97,7 +105,30 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
     private void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
         NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
-        NotesCrypt.updateKey(notesTable.getAll(), oldKey, newKey).forEach(notesTable::save);
+
+        notesTable.getAll().forEach(note -> {
+            notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
+
+            FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
+            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
+
+            filesTable.getByNoteId(note.getId()).forEach(fileInfo -> {
+                EncryptedFile file = new EncryptedFile(fileInfo);
+
+                try {
+                    file.setEncryptedData(assignmentsManager.get(file.getId()));
+                    EncryptedFile reEncryptedFile = FilesCrypt.updateKey(file, oldKey, newKey);
+
+                    EncryptedFileInfo reEncryptedFileInfo = new EncryptedFileInfo(reEncryptedFile);
+                    byte[] reEncryptedData = reEncryptedFile.getEncryptedData();
+
+                    filesTable.save(reEncryptedFileInfo);
+                    assignmentsManager.save(reEncryptedFileInfo.getId(), reEncryptedData);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
     }
 
     private void proceedKeyImportFail(EditText importKeyField) {

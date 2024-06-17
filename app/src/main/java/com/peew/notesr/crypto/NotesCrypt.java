@@ -12,12 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NotesCrypt {
-    public static List<EncryptedNote> updateKey(List<EncryptedNote> notes,
-                                                CryptoKey oldKey,
-                                                CryptoKey newKey) {
-        return notes.stream()
-                .map(note -> encrypt(decrypt(note, oldKey), newKey))
-                .collect(Collectors.toList());
+    public static EncryptedNote updateKey(EncryptedNote note, CryptoKey oldKey, CryptoKey newKey) {
+        return encrypt(decrypt(note, oldKey), newKey);
     }
 
     public static List<Note> decrypt(List<EncryptedNote> notes) {
