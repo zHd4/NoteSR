@@ -6,13 +6,10 @@ public class EncryptedFile {
     private Long id;
     private final Long noteId;
     private final String encryptedName;
-
     private final String encryptedType;
-    private final Long size;
+    private Long size;
     private final LocalDateTime createdAt;
-
     private final LocalDateTime updatedAt;
-
     private byte[] encryptedData;
 
     public EncryptedFile(Long noteId,
@@ -89,6 +86,10 @@ public class EncryptedFile {
 
     public Long getSize() {
         return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
     }
 
     public LocalDateTime getCreatedAt() {
