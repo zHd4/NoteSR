@@ -10,11 +10,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-
 import androidx.core.content.ContextCompat;
-
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.notes.NotesListActivity;
+import com.peew.notesr.activity.security.SetupKeyActivity;
 import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
@@ -23,14 +23,10 @@ import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.activity.notes.NotesListActivity;
-import com.peew.notesr.activity.security.SetupKeyActivity;
 import com.peew.notesr.model.EncryptedFile;
 import com.peew.notesr.model.EncryptedFileInfo;
-import com.peew.notesr.model.EncryptedNote;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
