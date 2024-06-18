@@ -1,17 +1,13 @@
 package com.peew.notesr.activity.notes;
 
-import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
@@ -25,6 +21,8 @@ import com.peew.notesr.model.Note;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 public class OpenNoteActivity extends AppCompatActivityExtended {
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
@@ -83,7 +81,9 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
+            startActivity(new Intent(App.getContext(), NotesListActivity.class));
             finish();
+
             return true;
         }
 
