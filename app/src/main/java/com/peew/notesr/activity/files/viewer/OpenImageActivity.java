@@ -14,8 +14,6 @@ import com.peew.notesr.model.FileInfo;
 import java.io.IOException;
 
 public class OpenImageActivity extends FileViewerActivityBase {
-    private File imageFile;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +29,8 @@ public class OpenImageActivity extends FileViewerActivityBase {
         try {
             AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
 
-            imageFile = new File(imageInfo);
-            imageFile.setData(manager.get(imageInfo.getId()));
+            file = new File(imageInfo);
+            file.setData(manager.get(imageInfo.getId()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -41,13 +39,13 @@ public class OpenImageActivity extends FileViewerActivityBase {
         assert actionBar != null;
 
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(imageFile.getName());
+        actionBar.setTitle(file.getName());
 
         setImage();
     }
 
     private void setImage() {
-        byte[] imageBytes = imageFile.getData();
+        byte[] imageBytes = file.getData();
 
         ImageView imageView = findViewById(R.id.assigned_image_view);
         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
