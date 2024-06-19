@@ -101,15 +101,16 @@ public class AddFileActivity extends AppCompatActivityExtended {
             String type = getMimeType(filename);
 
             long size = getFileSize(getCursor(uri));
-            byte[] data = getFileData(uri);
 
             EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(
                     new FileInfo(noteId, size, filename, type));
 
+            byte[] encryptedFileData = FilesCrypt.encryptData(getFileData(uri));
+
             table.save(encryptedFileInfo);
 
             try {
-                manager.save(encryptedFileInfo.getId(), data);
+                manager.save(encryptedFileInfo.getId(), encryptedFileData);
             } catch (IOException e) {
                 table.delete(encryptedFileInfo.getId());
                 throw new RuntimeException(e);
