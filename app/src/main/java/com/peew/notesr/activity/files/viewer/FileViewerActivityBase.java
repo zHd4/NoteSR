@@ -34,6 +34,7 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
             file = new File(fileInfo);
             file.setData(fileData);
         } catch (IOException e) {
+            Log.e("FileViewerActivityBase.loadFile", e.toString());
             throw new RuntimeException(e);
         }
     }
