@@ -76,4 +76,7 @@
     <string name="cannot_save_file">Cannot save file</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="file_already_exists_overwrite">File already exists.\nOverwrite?</string>
+    <string name="save">Save</string>
+    <string name="overwrite">Overwrite</string>
+    <string name="saving_canceled">Saving canceled</string>
 </resources>
