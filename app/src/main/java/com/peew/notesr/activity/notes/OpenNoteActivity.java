@@ -117,7 +117,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
     private void deleteNoteOnClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
-        builder.setView(R.layout.dialog_delete_note);
+        builder.setView(R.layout.dialog_action_cannot_be_undo);
         builder.setTitle(R.string.warning);
 
         builder.setPositiveButton(R.string.delete, deleteNoteDialogOnClick());

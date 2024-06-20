@@ -7,7 +7,7 @@
     android:background="@color/dialog_background">
 
     <TextView
-        android:id="@+id/delete_note_warning_text"
+        android:id="@+id/action_cannot_be_undo_warning_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15sp"
