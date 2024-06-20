@@ -33,14 +33,26 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
         FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
         FileInfo fileInfo = FilesCrypt.decryptInfo(filesTable.get(id));
 
-        String type = fileInfo.getType().split("/")[0];
+        String type = getFileType(fileInfo);
 
-        if (FILES_VIEWERS.containsKey(type)) {
+        if (type != null) {
             Class<? extends FileViewerActivityBase> viewer = FILES_VIEWERS.get(type);
             Intent intent = new Intent(App.getContext(), viewer);
 
             intent.putExtra("file_info", fileInfo);
             activity.startActivity(intent);
         }
+    }
+
+    private String getFileType(FileInfo fileInfo) {
+        if (fileInfo.getType() != null) {
+            String type = fileInfo.getType().split("/")[0];
+
+            if (FILES_VIEWERS.containsKey(type)) {
+                return type;
+            }
+        }
+
+        return null;
     }
 }
