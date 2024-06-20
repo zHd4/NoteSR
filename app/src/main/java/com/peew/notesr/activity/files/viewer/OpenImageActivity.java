@@ -3,6 +3,9 @@ package com.peew.notesr.activity.files.viewer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
@@ -34,6 +37,26 @@ public class OpenImageActivity extends FileViewerActivityBase {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_open_image, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        } else if (id == R.id.save_image_to_storage_button) {
+            saveFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         scaleGestureDetector.onTouchEvent(motionEvent);
         return true;
@@ -51,8 +74,10 @@ public class OpenImageActivity extends FileViewerActivityBase {
         public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
             scaleFactor *= scaleGestureDetector.getScaleFactor();
             scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
+
             imageView.setScaleX(scaleFactor);
             imageView.setScaleY(scaleFactor);
+
             return true;
         }
     }
