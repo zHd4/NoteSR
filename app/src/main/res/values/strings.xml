@@ -74,4 +74,6 @@
     <string name="file">File</string>
     <string name="choose_file">Choose file</string>
     <string name="cannot_save_file">Cannot save file</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="file_already_exists_overwrite">File already exists.\nOverwrite?</string>
 </resources>
