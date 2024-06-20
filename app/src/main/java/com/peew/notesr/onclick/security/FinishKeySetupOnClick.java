@@ -121,6 +121,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
                     filesTable.save(reEncryptedFileInfo);
                     assignmentsManager.save(reEncryptedFileInfo.getId(), reEncryptedData);
                 } catch (IOException e) {
+                    Log.e("FinishKeySetupOnClick.updateEncryptedData", e.toString());
                     throw new RuntimeException(e);
                 }
             });
