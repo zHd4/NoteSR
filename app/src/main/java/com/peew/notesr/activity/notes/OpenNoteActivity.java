@@ -61,7 +61,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
         EditText nameField = findViewById(R.id.note_name_field);
         EditText textField = findViewById(R.id.note_text_field);
 
-        getMenuInflater().inflate(R.menu.menu_note_open, menu);
+        getMenuInflater().inflate(R.menu.menu_open_note, menu);
 
         menuItemsMap.put(R.id.save_note_button, action -> saveNoteOnClick(nameField, textField));
 
