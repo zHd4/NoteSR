@@ -73,4 +73,5 @@
     <string name="add_file">Add file</string>
     <string name="file">File</string>
     <string name="choose_file">Choose file</string>
+    <string name="cannot_save_file">Cannot save file</string>
 </resources>
