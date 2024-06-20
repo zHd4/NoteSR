@@ -68,9 +68,8 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
                     .setView(R.layout.dialog_file_already_exists)
                     .setTitle(R.string.warning)
                     .setPositiveButton(R.string.overwrite, (dialog, result) -> save.run())
-                    .setNegativeButton(R.string.no, (dialog, result) -> {
-                        showToastMessage(getResources().getString(R.string.saving_canceled), Toast.LENGTH_SHORT);
-                    });
+                    .setNegativeButton(R.string.no, (dialog, result) ->
+                            showToastMessage(getResources().getString(R.string.saving_canceled), Toast.LENGTH_SHORT));
 
             builder.create().show();
         } else {
