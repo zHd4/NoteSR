@@ -4,19 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
-import com.peew.notesr.activity.notes.OpenNoteActivity;
 import com.peew.notesr.adapter.FilesListAdapter;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
@@ -74,21 +70,6 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
 
         ListView filesListView = findViewById(R.id.files_list_view);
         filesListView.setOnItemClickListener(new OpenFileOnClick(this));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(App.getContext(), OpenNoteActivity.class);
-
-            intent.putExtra("note_id", note.getId());
-            startActivity(intent);
-
-            finish();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void loadFiles() {
