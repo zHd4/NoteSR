@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import androidx.activity.result.ActivityResult;
@@ -113,6 +114,8 @@ public class AddFileActivity extends AppCompatActivityExtended {
                 manager.save(encryptedFileInfo.getId(), encryptedFileData);
             } catch (IOException e) {
                 table.delete(encryptedFileInfo.getId());
+
+                Log.e("AddFileActivity.addFiles", e.toString());
                 throw new RuntimeException(e);
             }
         });
@@ -158,6 +161,7 @@ public class AddFileActivity extends AppCompatActivityExtended {
 
             return data;
         } catch (IOException e) {
+            Log.e("AddFileActivity.getFileData", e.toString());
             throw new RuntimeException(e);
         }
     }
