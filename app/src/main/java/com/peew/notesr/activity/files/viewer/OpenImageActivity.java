@@ -22,6 +22,7 @@ public class OpenImageActivity extends FileViewerActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_image);
 
+        saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         imageView = findViewById(R.id.assigned_image_view);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
@@ -50,7 +51,7 @@ public class OpenImageActivity extends FileViewerActivityBase {
             finish();
             return true;
         } else if (id == R.id.save_image_to_storage_button) {
-            saveFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+            saveFileOnClick();
         }
 
         return super.onOptionsItemSelected(item);
