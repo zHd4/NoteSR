@@ -81,9 +81,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            startActivity(new Intent(App.getContext(), NotesListActivity.class));
             finish();
-
             return true;
         }
 
