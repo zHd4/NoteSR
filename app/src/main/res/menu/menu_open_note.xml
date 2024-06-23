@@ -12,7 +12,7 @@
         android:id="@+id/delete_note_button"
         android:icon="@android:drawable/ic_menu_delete"
         android:orderInCategory="2"
-        android:title="@string/lock_app"
+        android:title="@string/delete_note"
         app:showAsAction="ifRoom" />
 
     <item
