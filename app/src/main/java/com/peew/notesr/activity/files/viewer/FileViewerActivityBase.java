@@ -8,6 +8,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.FilesCrypt;
+import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.model.File;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.tools.FileManager;
@@ -76,5 +77,25 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
         } else {
             save.run();
         }
+    }
+
+    protected void deleteFileOnClick() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setView(R.layout.dialog_action_cannot_be_undo)
+                .setTitle(R.string.warning)
+                .setPositiveButton(R.string.delete, (dialog, result) -> deleteFile())
+                .setNegativeButton(R.string.no, (dialog, result) -> {});
+
+        builder.create().show();
+    }
+
+    private void deleteFile() {
+        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
+        AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
+
+        filesTable.delete(file.getId());
+        assignmentsManager.delete(file.getId());
+
+        finish();
     }
 }
