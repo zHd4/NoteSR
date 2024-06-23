@@ -1,11 +1,13 @@
 package com.peew.notesr.activity.files.viewer;
 
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
@@ -83,7 +85,14 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setView(R.layout.dialog_action_cannot_be_undo)
                 .setTitle(R.string.warning)
-                .setPositiveButton(R.string.delete, (dialog, result) -> deleteFile())
+                .setPositiveButton(R.string.delete, (dialog, result) -> {
+                    deleteFile();
+
+                    Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
+
+                    intent.putExtra("note_id", file.getNoteId());
+                    startActivity(intent);
+                })
                 .setNegativeButton(R.string.no, (dialog, result) -> {});
 
         builder.create().show();
@@ -95,7 +104,5 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
 
         filesTable.delete(file.getId());
         assignmentsManager.delete(file.getId());
-
-        finish();
     }
 }
