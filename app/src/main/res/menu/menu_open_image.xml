@@ -4,7 +4,14 @@
     <item
         android:id="@+id/save_image_to_storage_button"
         android:icon="@android:drawable/ic_menu_save"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         android:title="@string/save_note"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/delete_image_button"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="1"
+        android:title="@string/delete"
         app:showAsAction="ifRoom" />
 </menu>
