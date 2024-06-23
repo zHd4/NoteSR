@@ -60,7 +60,7 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
         FloatingActionButton addFileButton = findViewById(R.id.add_file_button);
 
         addFileButton.setOnClickListener(view -> {
-            Intent intent = new Intent(App.getContext(), AddFileActivity.class);
+            Intent intent = new Intent(App.getContext(), AddFilesActivity.class);
 
             intent.putExtra("note_id", noteId);
             startActivity(intent);

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AddFileActivity extends AppCompatActivityExtended {
+public class AddFilesActivity extends AppCompatActivityExtended {
     private long noteId;
 
     @Override

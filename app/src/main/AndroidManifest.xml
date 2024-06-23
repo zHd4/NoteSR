@@ -64,7 +64,7 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.files.AddFileActivity"
+            android:name=".activity.files.AddFilesActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
