@@ -131,7 +131,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
                 .map(uri -> getFileSize(getCursor(uri)))
                 .reduce(0L, Long::sum);
 
-        return totalSize < Runtime.getRuntime().maxMemory();
+        return totalSize < Runtime.getRuntime().freeMemory();
     }
 
     private Cursor getCursor(Uri uri) {
