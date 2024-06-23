@@ -45,7 +45,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
 
         ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                addFileCallback());
+                addFilesCallback());
 
         Intent intent = new Intent()
                 .setType("*/*")
@@ -65,7 +65,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         super.finish();
     }
 
-    private ActivityResultCallback<ActivityResult> addFileCallback() {
+    private ActivityResultCallback<ActivityResult> addFilesCallback() {
         return result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 if (result.getData() != null) {
