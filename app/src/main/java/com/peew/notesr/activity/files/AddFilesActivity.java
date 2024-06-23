@@ -82,11 +82,12 @@ public class AddFilesActivity extends AppCompatActivityExtended {
                         filesUri.add(result.getData().getData());
                     }
 
-                    if (checkFilesSize(filesUri)) {
+                    try {
                         addFiles(filesUri);
-                    } else {
+                    } catch (OutOfMemoryError e) {
                         showToastMessage(getResources()
-                                .getString(R.string.too_big_or_too_many_files_at_once), Toast.LENGTH_LONG);
+                                .getString(R.string.failed_to_add_all_files_at_once), Toast.LENGTH_LONG);
+                        Log.e("addFiles", e.toString(), e);
                     }
 
                 } else {
@@ -124,14 +125,6 @@ public class AddFilesActivity extends AppCompatActivityExtended {
                 throw new RuntimeException(e);
             }
         });
-    }
-
-    private boolean checkFilesSize(List<Uri> filesUri) {
-        long totalSize = filesUri.stream()
-                .map(uri -> getFileSize(getCursor(uri)))
-                .reduce(0L, Long::sum);
-
-        return totalSize < Runtime.getRuntime().freeMemory();
     }
 
     private Cursor getCursor(Uri uri) {
