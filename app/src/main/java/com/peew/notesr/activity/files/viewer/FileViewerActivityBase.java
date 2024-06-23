@@ -22,6 +22,15 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
     protected File file;
     protected java.io.File saveDir;
 
+    private void returnToListActivity() {
+        Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
+
+        intent.putExtra("note_id", file.getNoteId());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        startActivity(intent);
+    }
+
     protected void loadFile() {
         //noinspection deprecation
         FileInfo fileInfo = (FileInfo) getIntent().getSerializableExtra("file_info");
@@ -87,11 +96,7 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.delete, (dialog, result) -> {
                     deleteFile();
-
-                    Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
-
-                    intent.putExtra("note_id", file.getNoteId());
-                    startActivity(intent);
+                    returnToListActivity();
                 })
                 .setNegativeButton(R.string.no, (dialog, result) -> {});
 
