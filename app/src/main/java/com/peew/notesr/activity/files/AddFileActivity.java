@@ -9,12 +9,11 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
-
+import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
@@ -83,7 +82,13 @@ public class AddFileActivity extends AppCompatActivityExtended {
                         filesUri.add(result.getData().getData());
                     }
 
-                    addFiles(filesUri);
+                    if (checkFilesSize(filesUri)) {
+                        addFiles(filesUri);
+                    } else {
+                        showToastMessage(getResources()
+                                .getString(R.string.too_big_or_too_many_files_at_once), Toast.LENGTH_LONG);
+                    }
+
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
@@ -103,8 +108,8 @@ public class AddFileActivity extends AppCompatActivityExtended {
 
             long size = getFileSize(getCursor(uri));
 
-            EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(
-                    new FileInfo(noteId, size, filename, type));
+            FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
+            EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
 
             byte[] encryptedFileData = FilesCrypt.encryptData(getFileData(uri));
 
@@ -119,6 +124,14 @@ public class AddFileActivity extends AppCompatActivityExtended {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private boolean checkFilesSize(List<Uri> filesUri) {
+        long totalSize = filesUri.stream()
+                .map(uri -> getFileSize(getCursor(uri)))
+                .reduce(0L, Long::sum);
+
+        return totalSize < Runtime.getRuntime().maxMemory();
     }
 
     private Cursor getCursor(Uri uri) {
