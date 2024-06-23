@@ -52,6 +52,8 @@ public class OpenImageActivity extends FileViewerActivityBase {
             return true;
         } else if (id == R.id.save_image_to_storage_button) {
             saveFileOnClick();
+        } else if (id == R.id.delete_image_button) {
+            deleteFileOnClick();
         }
 
         return super.onOptionsItemSelected(item);
