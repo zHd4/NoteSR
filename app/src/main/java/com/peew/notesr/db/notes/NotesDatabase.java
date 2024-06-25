@@ -36,7 +36,6 @@ public class NotesDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
     public <T extends Table> T getTable(Class<? extends Table> tableClass) {
-        //noinspection unchecked
         return (T) tables.get(tableClass);
     }
 }
