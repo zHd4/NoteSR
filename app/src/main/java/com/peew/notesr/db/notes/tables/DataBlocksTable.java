@@ -92,4 +92,14 @@ public class DataBlocksTable extends Table {
 
         return ids;
     }
+
+    public void delete(long id) {
+        helper.getWritableDatabase()
+                .delete(name, "id = ?", new String[]{ String.valueOf(id) });
+    }
+
+    public void deleteByFileId(long fileId) {
+        helper.getWritableDatabase()
+                .delete(name, "file_id = ?", new String[]{ String.valueOf(fileId) });
+    }
 }
