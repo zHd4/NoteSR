@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.App;
+import com.peew.notesr.db.notes.tables.DataBlocksTable;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.db.notes.tables.Table;
@@ -20,9 +21,12 @@ public class NotesDatabase extends SQLiteOpenHelper {
         super(App.getContext(), NAME, null, DATABASE_VERSION);
 
         NotesTable notesTable = new NotesTable(this, "notes");
+        FilesTable filesTable = new FilesTable(this, "files", notesTable);
+        DataBlocksTable dataBlocksTable = new DataBlocksTable(this, "data_blocks", filesTable);
 
         tables.put(NotesTable.class, notesTable);
-        tables.put(FilesTable.class, new FilesTable(this, "files", notesTable));
+        tables.put(FilesTable.class, filesTable);
+        tables.put(DataBlocksTable.class, dataBlocksTable);
     }
 
     @Override
@@ -31,11 +35,8 @@ public class NotesDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
-    public NotesTable getNotesTable() {
-        return (NotesTable) tables.get(NotesTable.class);
-    }
-
-    public FilesTable getFilesTable() {
-        return (FilesTable) tables.get(FilesTable.class);
+    public <T extends Table> T getTable(Class<? extends Table> tableClass) {
+        //noinspection unchecked
+        return (T) tables.get(tableClass);
     }
 }

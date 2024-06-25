@@ -96,7 +96,7 @@ public class NotesListActivity extends AppCompatActivityExtended {
             if (cryptoManager.getCryptoKeyInstance() != null) {
                 handler.post(progressDialog::show);
 
-                NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
+                NotesTable notesTable = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
                 fillNotesListView(NotesCrypt.decrypt(notesTable.getAll()));
 
                 progressDialog.dismiss();

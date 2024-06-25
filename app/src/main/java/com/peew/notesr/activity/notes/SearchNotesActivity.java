@@ -59,7 +59,7 @@ public class SearchNotesActivity extends AppCompatActivityExtended {
     }
 
     private SearchNotesResults search(String query) {
-        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
+        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
         List<Note> notes = NotesCrypt.decrypt(notesTable.getAll());
 
         Predicate<Note> check = note -> {

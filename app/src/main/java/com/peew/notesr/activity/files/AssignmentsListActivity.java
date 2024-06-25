@@ -17,6 +17,7 @@ import com.peew.notesr.adapter.FilesListAdapter;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.Note;
@@ -42,7 +43,7 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
 
         EncryptedNote encryptedNote = App.getAppContainer()
                 .getNotesDatabase()
-                .getNotesTable()
+                .<NotesTable>getTable(NotesTable.class)
                 .get(noteId);
 
         if (encryptedNote != null) {
@@ -84,7 +85,7 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
         executor.execute(() -> {
             handler.post(progressDialog::show);
 
-            FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
+            FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
             fillFilesListView(FilesCrypt.decryptInfo(filesTable.getByNoteId(note.getId())));
 
             progressDialog.dismiss();

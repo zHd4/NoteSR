@@ -107,7 +107,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
             }
 
             EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
-            NotesTable notesTable = getNotesDatabase().getNotesTable();
+            NotesTable notesTable = getNotesDatabase().getTable(NotesTable.class);
 
             notesTable.save(encryptedNote);
             startActivity(new Intent(App.getContext(), NotesListActivity.class));
@@ -136,7 +136,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                getNotesDatabase().getNotesTable().delete(note.getId());
+                getNotesDatabase().<NotesTable>getTable(NotesTable.class).delete(note.getId());
                 startActivity(new Intent(App.getContext(), NotesListActivity.class));
             }
         };
@@ -148,7 +148,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
     }
 
     private Note findNote(long id) {
-        EncryptedNote encryptedNote = getNotesDatabase().getNotesTable().get(id);
+        EncryptedNote encryptedNote = getNotesDatabase().<NotesTable>getTable(NotesTable.class).get(id);
         return encryptedNote != null ? NotesCrypt.decrypt(encryptedNote) : null;
     }
     

@@ -100,12 +100,12 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
     }
 
     private void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
-        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getNotesTable();
+        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
 
         notesTable.getAll().forEach(note -> {
             notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
 
-            FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
+            FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
             AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
 
             filesTable.getByNoteId(note.getId()).forEach(fileInfo -> {

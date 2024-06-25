@@ -100,7 +100,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
     }
 
     private void addFiles(List<Uri> filesUri) {
-        FilesTable table = App.getAppContainer().getNotesDatabase().getFilesTable();
+        FilesTable table = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
         AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
 
         filesUri.forEach(uri -> {

@@ -30,7 +30,7 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getFilesTable();
+        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
         FileInfo fileInfo = FilesCrypt.decryptInfo(filesTable.get(id));
 
         String type = getFileType(fileInfo);
