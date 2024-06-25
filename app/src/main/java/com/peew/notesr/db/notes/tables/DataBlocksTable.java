@@ -6,6 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.peew.notesr.model.DataBlock;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 public class DataBlocksTable extends Table {
     public DataBlocksTable(SQLiteOpenHelper helper, String name, FilesTable filesTable) {
         super(helper, name);
@@ -66,5 +69,27 @@ public class DataBlocksTable extends Table {
         }
 
         return null;
+    }
+
+    public Set<Long> getBlocksIdsByFileId(long fileId) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Set<Long> ids = new TreeSet<>();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT id" +
+                        " FROM " + name +
+                        " WHERE file_id = ?" +
+                        " ORDER BY block_order",
+                new String[] { String.valueOf(fileId) });
+
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                do {
+                    ids.add(cursor.getLong(0));
+                } while (cursor.moveToNext());
+            }
+        }
+
+        return ids;
     }
 }
