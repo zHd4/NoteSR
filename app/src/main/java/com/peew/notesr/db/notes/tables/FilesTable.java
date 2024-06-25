@@ -108,7 +108,8 @@ public class FilesTable extends Table {
         Cursor cursor = db.rawQuery(
                 "SELECT id, encrypted_name, encrypted_type, size, created_at, updated_at" +
                         " FROM " + name +
-                        " WHERE note_id = ?",
+                        " WHERE note_id = ?" +
+                        " ORDER BY updated_at DESC",
                 new String[] { String.valueOf(noteId) });
 
         try (cursor) {
