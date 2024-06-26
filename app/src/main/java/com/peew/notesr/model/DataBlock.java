@@ -13,6 +13,12 @@ public class DataBlock {
         this.data = data;
     }
 
+    public DataBlock(Long fileId, Long order, byte[] data) {
+        this.fileId = fileId;
+        this.order = order;
+        this.data = data;
+    }
+
     public Long getId() {
         return id;
     }
