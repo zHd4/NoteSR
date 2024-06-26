@@ -6,9 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.peew.notesr.model.DataBlock;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 public class DataBlocksTable extends Table {
     public DataBlocksTable(SQLiteOpenHelper helper, String name, FilesTable filesTable) {
         super(helper, name);
@@ -71,26 +68,29 @@ public class DataBlocksTable extends Table {
         return null;
     }
 
-    public Set<Long> getBlocksIdsByFileId(long fileId) {
+    public DataBlock getFirstBlockByFileId(long fileId) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        Set<Long> ids = new TreeSet<>();
 
         Cursor cursor = db.rawQuery(
-                "SELECT id" +
+                "SELECT " +
+                        "id, " +
+                        "block_order, " +
+                        "data " +
                         " FROM " + name +
-                        " WHERE file_id = ?" +
-                        " ORDER BY block_order",
+                        " WHERE file_id = ?",
                 new String[] { String.valueOf(fileId) });
 
         try (cursor) {
             if (cursor.moveToFirst()) {
-                do {
-                    ids.add(cursor.getLong(0));
-                } while (cursor.moveToNext());
+                long id = cursor.getLong(0);
+                long order = cursor.getLong(1);
+                byte[] data = cursor.getBlob(2);
+
+                return new DataBlock(id, fileId, order, data);
             }
         }
 
-        return ids;
+        return null;
     }
 
     public void delete(long id) {
