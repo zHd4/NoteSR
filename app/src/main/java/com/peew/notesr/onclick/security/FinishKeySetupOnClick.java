@@ -15,18 +15,18 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.activity.security.SetupKeyActivity;
-import com.peew.notesr.component.AssignmentsManager;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
+import com.peew.notesr.db.notes.tables.DataBlocksTable;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.model.EncryptedFile;
+import com.peew.notesr.model.DataBlock;
 import com.peew.notesr.model.EncryptedFileInfo;
 
-import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -101,29 +101,25 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
     private void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
         NotesTable notesTable = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
+        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
+
+        DataBlocksTable dataBlocksTable = App.getAppContainer().getNotesDatabase().getTable(DataBlocksTable.class);
 
         notesTable.getAll().forEach(note -> {
             notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
 
-            FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
-            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
-
             filesTable.getByNoteId(note.getId()).forEach(fileInfo -> {
-                EncryptedFile file = new EncryptedFile(fileInfo);
+                EncryptedFileInfo updatedFileInfo = FilesCrypt.updateKey(fileInfo, oldKey, newKey);
+                Set<Long> blockIds = dataBlocksTable.getBlocksIdsByFileId(updatedFileInfo.getId());
 
-                try {
-                    file.setEncryptedData(assignmentsManager.get(file.getId()));
-                    EncryptedFile reEncryptedFile = FilesCrypt.updateKey(file, oldKey, newKey);
+                for (Long blockId : blockIds) {
+                    DataBlock block = dataBlocksTable.get(blockId);
 
-                    EncryptedFileInfo reEncryptedFileInfo = new EncryptedFileInfo(reEncryptedFile);
-                    byte[] reEncryptedData = reEncryptedFile.getEncryptedData();
-
-                    filesTable.save(reEncryptedFileInfo);
-                    assignmentsManager.save(reEncryptedFileInfo.getId(), reEncryptedData);
-                } catch (IOException e) {
-                    Log.e("FinishKeySetupOnClick.updateEncryptedData", e.toString());
-                    throw new RuntimeException(e);
+                    block.setData(FilesCrypt.updateKey(block.getData(), oldKey, newKey));
+                    dataBlocksTable.save(block);
                 }
+
+                filesTable.save(updatedFileInfo);
             });
         });
     }
