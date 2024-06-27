@@ -20,7 +20,11 @@ public class FileManager {
     }
 
     public static void writeFileBytes(File file, byte[] data) throws IOException {
-        try (FileOutputStream stream = new FileOutputStream(file)) {
+        writeFileBytes(file, data, false);
+    }
+
+    public static void writeFileBytes(File file, byte[] data, boolean append) throws IOException {
+        try (FileOutputStream stream = new FileOutputStream(file, append)) {
             stream.write(data);
         }
     }
