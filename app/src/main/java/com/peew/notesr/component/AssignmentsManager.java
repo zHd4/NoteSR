@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 public class AssignmentsManager {
     private static final int CHUNK_SIZE = 500000;
 
-    public void save(Long noteId, Uri fileUri) throws IOException {
+    public void save(Long noteId, Uri fileUri) {
         ContentResolver contentResolver = App.getContext().getContentResolver();
         Long fileId = saveInfo(noteId, fileUri);
 
