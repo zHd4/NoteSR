@@ -3,12 +3,9 @@ package com.peew.notesr.activity.files;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -18,16 +15,9 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.component.AssignmentsManager;
-import com.peew.notesr.crypto.FilesCrypt;
-import com.peew.notesr.db.notes.tables.FilesTable;
-import com.peew.notesr.model.EncryptedFileInfo;
-import com.peew.notesr.model.FileInfo;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class AddFilesActivity extends AppCompatActivityExtended {
     private long noteId;
@@ -100,86 +90,8 @@ public class AddFilesActivity extends AppCompatActivityExtended {
     }
 
     private void addFiles(List<Uri> filesUri) {
-        FilesTable table = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
         AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
-
-        filesUri.forEach(uri -> {
-            String filename = getFileName(getCursor(uri));
-            String type = getMimeType(filename);
-
-            long size = getFileSize(getCursor(uri));
-
-            FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
-            EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
-
-            byte[] encryptedFileData = FilesCrypt.encryptData(getFileData(uri));
-
-            table.save(encryptedFileInfo);
-
-            try {
-                manager.save(encryptedFileInfo.getId(), encryptedFileData);
-            } catch (IOException e) {
-                table.delete(encryptedFileInfo.getId());
-
-                Log.e("AddFileActivity.addFiles", e.toString());
-                throw new RuntimeException(e);
-            }
-        });
+        filesUri.forEach(uri -> manager.save(noteId, uri));
     }
 
-    private Cursor getCursor(Uri uri) {
-        Cursor cursor = getContentResolver()
-                .query(uri, null, null, null, null);
-
-        if (cursor == null) {
-            throw new RuntimeException(new NullPointerException("Cursor is null"));
-        }
-
-        return cursor;
-    }
-
-    private String getFileName(Cursor cursor) {
-        try (cursor) {
-            int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-
-            cursor.moveToFirst();
-            return cursor.getString(index);
-        }
-    }
-
-    private long getFileSize(Cursor cursor) {
-        try (cursor) {
-            int index = cursor.getColumnIndex(OpenableColumns.SIZE);
-
-            cursor.moveToFirst();
-            return cursor.getLong(index);
-        }
-    }
-
-    private byte[] getFileData(Uri uri) {
-        try (InputStream stream = getContentResolver().openInputStream(uri)) {
-            byte[] data = new byte[Objects.requireNonNull(stream).available()];
-            int result = stream.read(data);
-
-            if (result == -1) {
-                throw new RuntimeException("End of the stream has been reached");
-            }
-
-            return data;
-        } catch (IOException e) {
-            Log.e("AddFileActivity.getFileData", e.toString());
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String getMimeType(String url) {
-        String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-
-        return type;
-    }
 }
