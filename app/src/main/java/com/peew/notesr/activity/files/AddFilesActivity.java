@@ -5,8 +5,6 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -72,14 +70,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
                         filesUri.add(result.getData().getData());
                     }
 
-                    try {
-                        addFiles(filesUri);
-                    } catch (OutOfMemoryError e) {
-                        showToastMessage(getResources()
-                                .getString(R.string.failed_to_add_all_files_at_once), Toast.LENGTH_LONG);
-                        Log.e("addFiles", e.toString(), e);
-                    }
-
+                    addFiles(filesUri);
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
@@ -93,5 +84,4 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
         filesUri.forEach(uri -> manager.save(noteId, uri));
     }
-
 }
