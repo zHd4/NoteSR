@@ -9,45 +9,33 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.component.AssignmentsManager;
-import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.FilesTable;
-import com.peew.notesr.model.File;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.tools.FileManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
 public class FileViewerActivityBase extends AppCompatActivityExtended {
-    protected File file;
+    protected FileInfo fileInfo;
     protected java.io.File saveDir;
 
     private void returnToListActivity() {
         Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
 
-        intent.putExtra("note_id", file.getNoteId());
+        intent.putExtra("note_id", fileInfo.getNoteId());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivity(intent);
     }
 
-    protected void loadFile() {
+    protected void loadFileInfo() {
         //noinspection deprecation
-        FileInfo fileInfo = (FileInfo) getIntent().getSerializableExtra("file_info");
+        fileInfo = (FileInfo) getIntent().getSerializableExtra("file_info");
 
         if (fileInfo == null) {
             throw new RuntimeException("File info not provided");
-        }
-
-        try {
-            AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
-            byte[] fileData = FilesCrypt.decryptData(manager.get(fileInfo.getId()));
-
-            file = new File(fileInfo);
-            file.setData(fileData);
-        } catch (IOException e) {
-            Log.e("FileViewerActivityBase.loadFile", e.toString());
-            throw new RuntimeException(e);
         }
     }
 
@@ -62,19 +50,8 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
     }
 
     private void saveFile() {
-        java.io.File destFile = Paths.get(saveDir.toPath().toString(), file.getName()).toFile();
-
-        Runnable save = () -> {
-            try {
-                FileManager.writeFileBytes(destFile, file.getData());
-
-                String messageFormat = getResources().getString(R.string.saved_to);
-                showToastMessage(String.format(messageFormat, destFile.getAbsolutePath()), Toast.LENGTH_LONG);
-            } catch (IOException e) {
-                Log.e("FileViewerActivityBase.saveFile", e.toString());
-                showToastMessage(getResources().getString(R.string.cannot_save_file), Toast.LENGTH_SHORT);
-            }
-        };
+        File destFile = Paths.get(saveDir.toPath().toString(), fileInfo.getName()).toFile();
+        Runnable save = getSaveRunnable(destFile);
 
         if (destFile.exists()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
@@ -88,6 +65,28 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
         } else {
             save.run();
         }
+    }
+
+    private Runnable getSaveRunnable(File destFile) {
+        return () -> {
+            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
+
+            try {
+                assignmentsManager.read(fileInfo.getId(), chunk -> {
+                    try {
+                        FileManager.writeFileBytes(destFile, chunk, true);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                String messageFormat = getResources().getString(R.string.saved_to);
+                showToastMessage(String.format(messageFormat, destFile.getAbsolutePath()), Toast.LENGTH_LONG);
+            } catch (RuntimeException e) {
+                Log.e("NoteSR", e.toString());
+                showToastMessage(getResources().getString(R.string.cannot_save_file), Toast.LENGTH_SHORT);
+            }
+        };
     }
 
     protected void deleteFileOnClick() {
@@ -107,7 +106,7 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
         FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
         AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
 
-        filesTable.delete(file.getId());
-        assignmentsManager.delete(file.getId());
+        filesTable.delete(fileInfo.getId());
+        assignmentsManager.delete(fileInfo.getId());
     }
 }

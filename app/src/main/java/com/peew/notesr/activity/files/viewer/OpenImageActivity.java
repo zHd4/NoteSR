@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
 import androidx.appcompat.app.ActionBar;
+import com.peew.notesr.App;
 import com.peew.notesr.R;
 
 public class OpenImageActivity extends FileViewerActivityBase {
@@ -26,13 +27,13 @@ public class OpenImageActivity extends FileViewerActivityBase {
         imageView = findViewById(R.id.assigned_image_view);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
-        loadFile();
+        loadFileInfo();
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
 
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(file.getName());
+        actionBar.setTitle(fileInfo.getName());
 
         setImage();
     }
@@ -66,9 +67,11 @@ public class OpenImageActivity extends FileViewerActivityBase {
     }
 
     private void setImage() {
-        byte[] imageBytes = file.getData();
-        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        byte[] imageBytes = App.getAppContainer()
+                .getAssignmentsManager()
+                .read(fileInfo.getId());
 
+        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         imageView.setImageBitmap(bitmap);
     }
 
