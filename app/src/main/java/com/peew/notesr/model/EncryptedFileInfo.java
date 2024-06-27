@@ -27,16 +27,6 @@ public class EncryptedFileInfo {
         this.updatedAt = updatedAt;
     }
 
-    public EncryptedFileInfo(EncryptedFile encryptedFile) {
-        this.id = encryptedFile.getId();
-        this.noteId = encryptedFile.getNoteId();
-        this.size = encryptedFile.getSize();
-        this.encryptedName = encryptedFile.getEncryptedName();
-        this.encryptedType = encryptedFile.getEncryptedType();
-        this.createdAt = encryptedFile.getCreatedAt();
-        this.updatedAt = encryptedFile.getUpdatedAt();
-    }
-
     public Long getId() {
         return id;
     }
