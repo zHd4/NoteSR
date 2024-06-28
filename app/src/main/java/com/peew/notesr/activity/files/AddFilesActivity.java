@@ -76,8 +76,9 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
+        AlertDialog progressDialog = createProgressDialog();
+
         executor.execute(() -> {
-            AlertDialog progressDialog = createProgressDialog();
             handler.post(progressDialog::show);
 
             AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
