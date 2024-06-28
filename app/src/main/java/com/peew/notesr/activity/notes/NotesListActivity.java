@@ -60,7 +60,7 @@ public class NotesListActivity extends AppCompatActivityExtended {
         Intent searchActivityIntent = new Intent(App.getContext(), SearchNotesActivity.class);
         Intent importNotesActivityIntent = new Intent(App.getContext(), ImportNotesActivity.class);
 
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_notes_list, menu);
 
         menuItemsMap.put(R.id.lock_app_button, new LockOnClick());
         menuItemsMap.put(R.id.change_password_menu_item, new ChangePasswordOnClick());
