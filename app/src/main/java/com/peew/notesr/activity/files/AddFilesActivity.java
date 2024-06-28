@@ -5,10 +5,13 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
@@ -16,6 +19,8 @@ import com.peew.notesr.component.AssignmentsManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AddFilesActivity extends AppCompatActivityExtended {
     private long noteId;
@@ -57,10 +62,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         return result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 if (result.getData() != null) {
-                    AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
-
-                    getFilesUri(result.getData())
-                            .forEach(uri -> manager.save(noteId, uri));
+                    addFiles(result.getData());
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
@@ -68,6 +70,21 @@ public class AddFilesActivity extends AppCompatActivityExtended {
 
             finish();
         };
+    }
+
+    private void addFiles(Intent data) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            AlertDialog progressDialog = createProgressDialog();
+            handler.post(progressDialog::show);
+
+            AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
+            getFilesUri(data).forEach(uri -> manager.save(noteId, uri));
+
+            progressDialog.dismiss();
+        });
     }
 
     private List<Uri> getFilesUri(Intent data) {
@@ -85,5 +102,12 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         }
 
         return result;
+    }
+
+    private AlertDialog createProgressDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setView(R.layout.progress_dialog_adding).setCancelable(false);
+
+        return builder.create();
     }
 }
