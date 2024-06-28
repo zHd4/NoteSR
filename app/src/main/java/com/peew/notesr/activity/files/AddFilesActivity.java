@@ -40,7 +40,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
                 .setAction(Intent.ACTION_GET_CONTENT);
 
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        resultLauncher.launch(Intent.createChooser(intent, getString(R.string.choose_file)));
+        resultLauncher.launch(Intent.createChooser(intent, getString(R.string.choose_files)));
     }
 
     @Override
