@@ -90,9 +90,9 @@ public class NotesListActivity extends AppCompatActivityExtended {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
-        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
-
         executor.execute(() -> {
+            CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
+
             if (cryptoManager.getCryptoKeyInstance() != null) {
                 handler.post(progressDialog::show);
 
