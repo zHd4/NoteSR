@@ -6,6 +6,7 @@ import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
 import com.peew.notesr.db.notes.tables.FilesTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.Note;
@@ -66,7 +67,7 @@ public class NotesTest {
 
     @Test
     public void testCreateNote() {
-        notesTable.save(NotesCrypt.encrypt(testNote, cryptoKey));
+        saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
         EncryptedNote encryptedActual = notesTable.get(testNote.getId());
@@ -81,7 +82,7 @@ public class NotesTest {
 
     @Test
     public void testUpdateNote() {
-        notesTable.save(NotesCrypt.encrypt(testNote, cryptoKey));
+        saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
         String newName = faker.lorem.word();
@@ -104,7 +105,7 @@ public class NotesTest {
 
     @Test
     public void testAddAssignment() {
-        notesTable.save(NotesCrypt.encrypt(testNote, cryptoKey));
+        saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
         byte[] testFileData = faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8);
@@ -112,20 +113,29 @@ public class NotesTest {
         String fileName = faker.lorem.word();
         long fileSize = testFileData.length;
 
-        FileInfo testFileInfo = new FileInfo(testNote.getId(), fileSize, fileName, null);
+        FileInfo fileInfo = new FileInfo(testNote.getId(), fileSize, fileName, null);
+        EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo, cryptoKey);
 
-        filesTable.save(FilesCrypt.encryptInfo(testFileInfo));
-        Assert.assertNotNull(testFileInfo.getId());
+        filesTable.save(encryptedFileInfo);
+        Assert.assertNotNull(encryptedFileInfo.getId());
     }
 
     @Test
     public void testDeleteNote() {
-        notesTable.save(NotesCrypt.encrypt(testNote, cryptoKey));
+        saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
         notesTable.delete(testNote.getId());
         EncryptedNote actual = notesTable.get(testNote.getId());
 
         Assert.assertNull(actual);
+    }
+
+    private void saveTestNote() {
+        EncryptedNote encryptedNote = NotesCrypt.encrypt(testNote, cryptoKey);
+        notesTable.save(encryptedNote);
+
+        testNote.setId(encryptedNote.getId());
+        testNote.setUpdatedAt(encryptedNote.getUpdatedAt());
     }
 }
