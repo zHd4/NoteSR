@@ -57,20 +57,10 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         return result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 if (result.getData() != null) {
-                    List<Uri> filesUri = new ArrayList<>();
+                    AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
 
-                    if (result.getData().getClipData() != null) {
-                        ClipData clipData = result.getData().getClipData();
-                        int filesCount = clipData.getItemCount();
-
-                        for (int i = 0; i < filesCount; i++) {
-                            filesUri.add(clipData.getItemAt(i).getUri());
-                        }
-                    } else {
-                        filesUri.add(result.getData().getData());
-                    }
-
-                    addFiles(filesUri);
+                    getFilesUri(result.getData())
+                            .forEach(uri -> manager.save(noteId, uri));
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
@@ -80,8 +70,20 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         };
     }
 
-    private void addFiles(List<Uri> filesUri) {
-        AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
-        filesUri.forEach(uri -> manager.save(noteId, uri));
+    private List<Uri> getFilesUri(Intent data) {
+        List<Uri> result = new ArrayList<>();
+
+        if (data.getClipData() != null) {
+            ClipData clipData = data.getClipData();
+            int filesCount = clipData.getItemCount();
+
+            for (int i = 0; i < filesCount; i++) {
+                result.add(clipData.getItemAt(i).getUri());
+            }
+        } else {
+            result.add(data.getData());
+        }
+
+        return result;
     }
 }
