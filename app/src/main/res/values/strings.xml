@@ -80,4 +80,5 @@
     <string name="overwrite">Overwrite</string>
     <string name="saving_canceled">Saving canceled</string>
     <string name="failed_to_add_all_files_at_once">Failed to add all files at once</string>
+    <string name="adding">Adding…</string>
 </resources>
