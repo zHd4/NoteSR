@@ -1,6 +1,7 @@
 package com.peew.notesr;
 
 import com.peew.notesr.crypto.CryptoKey;
+import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
 import com.peew.notesr.db.notes.tables.FilesTable;
@@ -17,7 +18,6 @@ import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 
 public class NotesTest {
     private static final Faker faker = new Faker();
@@ -36,8 +36,7 @@ public class NotesTest {
             .getTable(DataBlocksTable.class);
 
     private Note testNote;
-    private FileInfo testFileInfo;
-    private byte[] testFileData;
+
 
     @BeforeClass
     public static void beforeAll() throws NoSuchAlgorithmException {
@@ -47,18 +46,10 @@ public class NotesTest {
 
     @Before
     public void before() {
-        LocalDateTime now = LocalDateTime.now();
-
         String noteName = faker.lorem.word();
         String noteText = faker.lorem.paragraph();
 
         testNote = new Note(noteName, noteText);
-        testFileData = faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8);
-
-        String fileName = faker.lorem.word();
-        long fileSize = testFileData.length;
-
-        testFileInfo = new FileInfo(null, null, fileSize, fileName, null, now, now);
     }
 
     @After
@@ -109,6 +100,22 @@ public class NotesTest {
         Assert.assertEquals(actual.getName(), note.getName());
         Assert.assertEquals(actual.getText(), note.getText());
         Assert.assertNotNull(actual.getUpdatedAt());
+    }
+
+    @Test
+    public void testAddAssignment() {
+        notesTable.save(NotesCrypt.encrypt(testNote, cryptoKey));
+        Assert.assertNotNull(testNote.getId());
+
+        byte[] testFileData = faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8);
+
+        String fileName = faker.lorem.word();
+        long fileSize = testFileData.length;
+
+        FileInfo testFileInfo = new FileInfo(testNote.getId(), fileSize, fileName, null);
+
+        filesTable.save(FilesCrypt.encryptInfo(testFileInfo));
+        Assert.assertNotNull(testFileInfo.getId());
     }
 
     @Test
