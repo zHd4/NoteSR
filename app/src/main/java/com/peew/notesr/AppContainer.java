@@ -1,6 +1,6 @@
 package com.peew.notesr;
 
-import com.peew.notesr.component.AssignmentsManager;
+import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.db.notes.NotesDatabase;
 

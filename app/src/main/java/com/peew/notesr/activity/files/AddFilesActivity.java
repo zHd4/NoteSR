@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
-import com.peew.notesr.component.AssignmentsManager;
+import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
 
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package com.peew.notesr.component;
+package com.peew.notesr.manager;
 
 import com.peew.notesr.App;
 import com.peew.notesr.crypto.FilesCrypt;
