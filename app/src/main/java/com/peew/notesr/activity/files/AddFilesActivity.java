@@ -3,10 +3,13 @@ package com.peew.notesr.activity.files;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.OpenableColumns;
+import android.webkit.MimeTypeMap;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,9 +19,15 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.component.AssignmentsManager;
+import com.peew.notesr.model.FileInfo;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -78,11 +87,38 @@ public class AddFilesActivity extends AppCompatActivityExtended {
 
         AlertDialog progressDialog = createProgressDialog();
 
+        Map<FileInfo, InputStream> files = new HashMap<>();
+
+        getFilesUri(data).forEach(uri -> {
+            String filename = getFileName(getCursor(uri));
+            String type = getMimeType(filename);
+
+            long size = getFileSize(getCursor(uri));
+
+            FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
+
+            try {
+                InputStream stream = getContentResolver().openInputStream(uri);
+                files.put(fileInfo, stream);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         executor.execute(() -> {
             handler.post(progressDialog::show);
 
             AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
-            getFilesUri(data).forEach(uri -> manager.save(noteId, uri));
+
+            files.forEach((info, stream) -> {
+                Long fileId = manager.saveInfo(info);
+
+                try {
+                    manager.saveData(fileId, stream);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
             progressDialog.dismiss();
         });
@@ -103,6 +139,47 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         }
 
         return result;
+    }
+
+    private Cursor getCursor(Uri uri) {
+        Cursor cursor = App.getContext()
+                .getContentResolver()
+                .query(uri, null, null, null, null);
+
+        if (cursor == null) {
+            throw new RuntimeException(new NullPointerException("Cursor is null"));
+        }
+
+        return cursor;
+    }
+
+    private String getFileName(Cursor cursor) {
+        try (cursor) {
+            int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+
+            cursor.moveToFirst();
+            return cursor.getString(index);
+        }
+    }
+
+    private long getFileSize(Cursor cursor) {
+        try (cursor) {
+            int index = cursor.getColumnIndex(OpenableColumns.SIZE);
+
+            cursor.moveToFirst();
+            return cursor.getLong(index);
+        }
+    }
+
+    private String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+
+        return type;
     }
 
     private AlertDialog createProgressDialog() {

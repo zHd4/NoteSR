@@ -1,11 +1,5 @@
 package com.peew.notesr.component;
 
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.OpenableColumns;
-import android.util.Log;
-import android.webkit.MimeTypeMap;
 import com.peew.notesr.App;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
@@ -22,16 +16,38 @@ import java.util.function.Consumer;
 public class AssignmentsManager {
     private static final int CHUNK_SIZE = 500000;
 
-    public void save(Long noteId, Uri fileUri) {
-        ContentResolver contentResolver = App.getContext().getContentResolver();
-        Long fileId = saveInfo(noteId, fileUri);
+    public Long saveInfo(FileInfo fileInfo) {
+        EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
 
-        try (InputStream stream = contentResolver.openInputStream(fileUri)) {
-            saveData(fileId, stream);
-        } catch (IOException e) {
-            Log.e("NoteSR", e.toString());
-            throw new RuntimeException(e);
+        getFilesTable().save(encryptedFileInfo);
+        return encryptedFileInfo.getId();
+    }
+
+    public void saveData(Long fileId, InputStream stream) throws IOException {
+        DataBlocksTable dataBlocksTable = getDataBlocksTable();
+
+        byte[] chunk = new byte[CHUNK_SIZE];
+
+        long order = 0;
+        int bytesRead = stream.read(chunk);
+
+        while (bytesRead != -1) {
+            if (bytesRead != CHUNK_SIZE) {
+                byte[] subChunk = new byte[bytesRead];
+                System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
+                chunk = subChunk;
+            }
+
+            chunk = FilesCrypt.encryptData(chunk);
+            dataBlocksTable.save(new DataBlock(fileId, order, chunk));
+
+            chunk = new byte[CHUNK_SIZE];
+            bytesRead = stream.read(chunk);
+
+            order++;
         }
+
+        stream.close();
     }
 
     public byte[] read(Long fileId) {
@@ -73,85 +89,6 @@ public class AssignmentsManager {
 
     public void delete(Long fileId) {
         getDataBlocksTable().deleteByFileId(fileId);
-    }
-
-    private Long saveInfo(Long noteId, Uri fileUri) {
-        String filename = getFileName(getCursor(fileUri));
-        String type = getMimeType(filename);
-
-        long size = getFileSize(getCursor(fileUri));
-
-        FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
-        EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
-
-        getFilesTable().save(encryptedFileInfo);
-        return encryptedFileInfo.getId();
-    }
-
-    private void saveData(Long fileId, InputStream stream) throws IOException {
-        DataBlocksTable dataBlocksTable = getDataBlocksTable();
-
-        byte[] chunk = new byte[CHUNK_SIZE];
-
-        long order = 0;
-        int bytesRead = stream.read(chunk);
-
-        while (bytesRead != -1) {
-            if (bytesRead != CHUNK_SIZE) {
-                byte[] subChunk = new byte[bytesRead];
-                System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
-                chunk = subChunk;
-            }
-
-            chunk = FilesCrypt.encryptData(chunk);
-            dataBlocksTable.save(new DataBlock(fileId, order, chunk));
-
-            chunk = new byte[CHUNK_SIZE];
-            bytesRead = stream.read(chunk);
-
-            order++;
-        }
-    }
-
-    private Cursor getCursor(Uri uri) {
-        Cursor cursor = App.getContext()
-                .getContentResolver()
-                .query(uri, null, null, null, null);
-
-        if (cursor == null) {
-            throw new RuntimeException(new NullPointerException("Cursor is null"));
-        }
-
-        return cursor;
-    }
-
-    private String getFileName(Cursor cursor) {
-        try (cursor) {
-            int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-
-            cursor.moveToFirst();
-            return cursor.getString(index);
-        }
-    }
-
-    private long getFileSize(Cursor cursor) {
-        try (cursor) {
-            int index = cursor.getColumnIndex(OpenableColumns.SIZE);
-
-            cursor.moveToFirst();
-            return cursor.getLong(index);
-        }
-    }
-
-    private String getMimeType(String url) {
-        String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-
-        return type;
     }
 
     private FilesTable getFilesTable() {
