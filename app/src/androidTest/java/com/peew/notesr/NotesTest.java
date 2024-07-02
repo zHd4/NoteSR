@@ -4,7 +4,7 @@ import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
-import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.EncryptedNote;
@@ -28,9 +28,9 @@ public class NotesTest {
             .getNotesDatabase()
             .getTable(NotesTable.class);
 
-    private final FilesTable filesTable = App.getAppContainer()
+    private final FilesInfoTable filesInfoTable = App.getAppContainer()
             .getNotesDatabase()
-            .getTable(FilesTable.class);
+            .getTable(FilesInfoTable.class);
 
     private final DataBlocksTable dataBlocksTable = App.getAppContainer()
             .getNotesDatabase()
@@ -56,9 +56,9 @@ public class NotesTest {
     @After
     public void after() {
         notesTable.getAll().forEach(note -> {
-            filesTable.getByNoteId(note.getId()).forEach(file -> {
+            filesInfoTable.getByNoteId(note.getId()).forEach(file -> {
                 dataBlocksTable.getBlocksIdsByFileId(file.getId()).forEach(dataBlocksTable::delete);
-                filesTable.delete(file.getId());
+                filesInfoTable.delete(file.getId());
             });
 
             notesTable.delete(note.getId());
@@ -116,7 +116,7 @@ public class NotesTest {
         FileInfo fileInfo = new FileInfo(testNote.getId(), fileSize, fileName, null);
         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo, cryptoKey);
 
-        filesTable.save(encryptedFileInfo);
+        filesInfoTable.save(encryptedFileInfo);
         Assert.assertNotNull(encryptedFileInfo.getId());
     }
 

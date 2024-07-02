@@ -3,7 +3,7 @@ package com.peew.notesr.component;
 import com.peew.notesr.App;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
-import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.model.DataBlock;
 import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.FileInfo;
@@ -51,12 +51,12 @@ public class AssignmentsManager {
     }
 
     public byte[] read(Long fileId) {
-        FilesTable filesTable = getFilesTable();
+        FilesInfoTable filesInfoTable = getFilesTable();
         DataBlocksTable dataBlocksTable = getDataBlocksTable();
 
         Set<Long> ids = dataBlocksTable.getBlocksIdsByFileId(fileId);
 
-        byte[] data = new byte[Math.toIntExact(filesTable.get(fileId).getSize())];
+        byte[] data = new byte[Math.toIntExact(filesInfoTable.get(fileId).getSize())];
         int readBytes = 0;
 
         for (Long id : ids) {
@@ -91,8 +91,8 @@ public class AssignmentsManager {
         getDataBlocksTable().deleteByFileId(fileId);
     }
 
-    private FilesTable getFilesTable() {
-        return App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
+    private FilesInfoTable getFilesTable() {
+        return App.getAppContainer().getNotesDatabase().getTable(FilesInfoTable.class);
     }
 
     private DataBlocksTable getDataBlocksTable() {

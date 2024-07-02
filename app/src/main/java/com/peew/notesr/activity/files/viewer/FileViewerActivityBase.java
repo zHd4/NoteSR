@@ -9,7 +9,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.component.AssignmentsManager;
-import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.tools.FileManager;
 
@@ -103,10 +103,10 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
     }
 
     private void deleteFile() {
-        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
+        FilesInfoTable filesInfoTable = App.getAppContainer().getNotesDatabase().getTable(FilesInfoTable.class);
         AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
 
-        filesTable.delete(fileInfo.getId());
+        filesInfoTable.delete(fileInfo.getId());
         assignmentsManager.delete(fileInfo.getId());
     }
 }

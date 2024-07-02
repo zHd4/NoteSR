@@ -21,7 +21,7 @@ import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
-import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.DataBlock;
 import com.peew.notesr.model.EncryptedFileInfo;
@@ -101,14 +101,14 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
     private void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
         NotesTable notesTable = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
-        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
+        FilesInfoTable filesInfoTable = App.getAppContainer().getNotesDatabase().getTable(FilesInfoTable.class);
 
         DataBlocksTable dataBlocksTable = App.getAppContainer().getNotesDatabase().getTable(DataBlocksTable.class);
 
         notesTable.getAll().forEach(note -> {
             notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
 
-            filesTable.getByNoteId(note.getId()).forEach(fileInfo -> {
+            filesInfoTable.getByNoteId(note.getId()).forEach(fileInfo -> {
                 EncryptedFileInfo updatedFileInfo = FilesCrypt.updateKey(fileInfo, oldKey, newKey);
                 Set<Long> blockIds = dataBlocksTable.getBlocksIdsByFileId(updatedFileInfo.getId());
 
@@ -119,7 +119,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
                     dataBlocksTable.save(block);
                 }
 
-                filesTable.save(updatedFileInfo);
+                filesInfoTable.save(updatedFileInfo);
             });
         });
     }

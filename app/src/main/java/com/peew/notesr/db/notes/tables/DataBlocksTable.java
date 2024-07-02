@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class DataBlocksTable extends Table {
-    public DataBlocksTable(SQLiteOpenHelper helper, String name, FilesTable filesTable) {
+    public DataBlocksTable(SQLiteOpenHelper helper, String name, FilesInfoTable filesInfoTable) {
         super(helper, name);
 
         helper.getWritableDatabase().execSQL(
@@ -19,7 +19,7 @@ public class DataBlocksTable extends Table {
                         "file_id integer NOT NULL, " +
                         "block_order bigint NOT NULL, " +
                         "data blob NOT NULL, " +
-                        "FOREIGN KEY(file_id) REFERENCES " + filesTable.getName() + "(id))"
+                        "FOREIGN KEY(file_id) REFERENCES " + filesInfoTable.getName() + "(id))"
         );
     }
 

@@ -16,7 +16,7 @@ import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.adapter.FilesListAdapter;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.FileInfo;
@@ -85,8 +85,8 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
         executor.execute(() -> {
             handler.post(progressDialog::show);
 
-            FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
-            fillFilesListView(FilesCrypt.decryptInfo(filesTable.getByNoteId(note.getId())));
+            FilesInfoTable filesInfoTable = App.getAppContainer().getNotesDatabase().getTable(FilesInfoTable.class);
+            fillFilesListView(FilesCrypt.decryptInfo(filesInfoTable.getByNoteId(note.getId())));
 
             progressDialog.dismiss();
         });

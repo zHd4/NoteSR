@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.peew.notesr.App;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
-import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.db.notes.tables.Table;
 
@@ -21,11 +21,11 @@ public class NotesDatabase extends SQLiteOpenHelper {
         super(App.getContext(), NAME, null, DATABASE_VERSION);
 
         NotesTable notesTable = new NotesTable(this, "notes");
-        FilesTable filesTable = new FilesTable(this, "files_info", notesTable);
-        DataBlocksTable dataBlocksTable = new DataBlocksTable(this, "data_blocks", filesTable);
+        FilesInfoTable filesInfoTable = new FilesInfoTable(this, "files_info", notesTable);
+        DataBlocksTable dataBlocksTable = new DataBlocksTable(this, "data_blocks", filesInfoTable);
 
         tables.put(NotesTable.class, notesTable);
-        tables.put(FilesTable.class, filesTable);
+        tables.put(FilesInfoTable.class, filesInfoTable);
         tables.put(DataBlocksTable.class, dataBlocksTable);
     }
 

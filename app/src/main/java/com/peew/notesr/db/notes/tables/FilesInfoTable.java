@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilesTable extends Table {
-    public FilesTable(SQLiteOpenHelper helper, String name, NotesTable notesTable) {
+public class FilesInfoTable extends Table {
+    public FilesInfoTable(SQLiteOpenHelper helper, String name, NotesTable notesTable) {
         super(helper, name);
 
         helper.getWritableDatabase().execSQL(

@@ -8,7 +8,7 @@ import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
 import com.peew.notesr.activity.files.viewer.OpenImageActivity;
 import com.peew.notesr.crypto.FilesCrypt;
-import com.peew.notesr.db.notes.tables.FilesTable;
+import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.model.FileInfo;
 
 import java.util.Map;
@@ -30,8 +30,8 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        FilesTable filesTable = App.getAppContainer().getNotesDatabase().getTable(FilesTable.class);
-        FileInfo fileInfo = FilesCrypt.decryptInfo(filesTable.get(id));
+        FilesInfoTable filesInfoTable = App.getAppContainer().getNotesDatabase().getTable(FilesInfoTable.class);
+        FileInfo fileInfo = FilesCrypt.decryptInfo(filesInfoTable.get(id));
 
         String type = getFileType(fileInfo);
 
