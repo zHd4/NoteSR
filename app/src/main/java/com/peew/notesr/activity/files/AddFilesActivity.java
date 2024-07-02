@@ -83,33 +83,16 @@ public class AddFilesActivity extends AppCompatActivityExtended {
 
     private void addFiles(Intent data) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-
         AlertDialog progressDialog = createProgressDialog();
 
-        Map<FileInfo, InputStream> files = new HashMap<>();
-
-        getFilesUri(data).forEach(uri -> {
-            String filename = getFileName(getCursor(uri));
-            String type = getMimeType(filename);
-
-            long size = getFileSize(getCursor(uri));
-
-            FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
-
-            try {
-                InputStream stream = getContentResolver().openInputStream(uri);
-                files.put(fileInfo, stream);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        Map<FileInfo, InputStream> filesMap = getFilesMap(getFilesUri(data));
 
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
 
             AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
 
-            files.forEach((info, stream) -> {
+            filesMap.forEach((info, stream) -> {
                 Long fileId = manager.saveInfo(info);
 
                 try {
@@ -141,6 +124,28 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         }
 
         return result;
+    }
+
+    private Map<FileInfo, InputStream> getFilesMap(List<Uri> uris) {
+        Map<FileInfo, InputStream> map = new HashMap<>();
+
+        uris.forEach(uri -> {
+            String filename = getFileName(getCursor(uri));
+            String type = getMimeType(filename);
+
+            long size = getFileSize(getCursor(uri));
+
+            FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
+
+            try {
+                InputStream stream = getContentResolver().openInputStream(uri);
+                map.put(fileInfo, stream);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return map;
     }
 
     private Cursor getCursor(Uri uri) {
