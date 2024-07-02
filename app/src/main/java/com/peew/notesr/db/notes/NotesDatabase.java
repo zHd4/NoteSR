@@ -14,14 +14,14 @@ import java.util.Map;
 
 public class NotesDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
-    private static final String NAME = "notes";
+    private static final String NAME = "notes_db5";
     private final Map<Class<? extends Table>, Table> tables = new HashMap<>();
 
     public NotesDatabase() {
         super(App.getContext(), NAME, null, DATABASE_VERSION);
 
         NotesTable notesTable = new NotesTable(this, "notes");
-        FilesTable filesTable = new FilesTable(this, "files", notesTable);
+        FilesTable filesTable = new FilesTable(this, "files_info", notesTable);
         DataBlocksTable dataBlocksTable = new DataBlocksTable(this, "data_blocks", filesTable);
 
         tables.put(NotesTable.class, notesTable);
