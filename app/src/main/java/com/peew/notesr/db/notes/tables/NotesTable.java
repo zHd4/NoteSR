@@ -18,8 +18,8 @@ public final class NotesTable extends Table {
         helper.getWritableDatabase().execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
                 "note_id integer PRIMARY KEY AUTOINCREMENT, " +
-                "encrypted_name text NOT NULL, " +
-                "encrypted_data text NOT NULL, " +
+                "encrypted_name blob NOT NULL, " +
+                "encrypted_data blob NOT NULL, " +
                 "updated_at varchar(255) NOT NULL)"
         );
     }
@@ -64,8 +64,8 @@ public final class NotesTable extends Table {
                 do {
                     long id = cursor.getLong(0);
 
-                    String name = cursor.getString(1);
-                    String text = cursor.getString(2);
+                    byte[] name = cursor.getBlob(1);
+                    byte[] text = cursor.getBlob(2);
 
                     String updatedAtStr = cursor.getString(3);
                     LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, timestampFormatter);
@@ -91,8 +91,8 @@ public final class NotesTable extends Table {
 
         try (cursor) {
             if (cursor.moveToFirst()) {
-                String name = cursor.getString(0);
-                String text = cursor.getString(1);
+                byte[] name = cursor.getBlob(0);
+                byte[] text = cursor.getBlob(1);
 
                 String updatedAtStr = cursor.getString(2);
                 LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, timestampFormatter);

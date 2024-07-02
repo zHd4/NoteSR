@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 
 public final class EncryptedNote {
     private Long id;
-    private final String encryptedName;
-    private final String encryptedText;
+    private final byte[] encryptedName;
+    private final byte[] encryptedText;
 
     private LocalDateTime updatedAt;
 
-    public EncryptedNote(String encryptedName, String encryptedText, LocalDateTime updatedAt) {
+    public EncryptedNote(byte[] encryptedName, byte[] encryptedText, LocalDateTime updatedAt) {
         this.encryptedName = encryptedName;
         this.encryptedText = encryptedText;
         this.updatedAt = updatedAt;
@@ -19,11 +19,11 @@ public final class EncryptedNote {
         return id;
     }
 
-    public String getEncryptedName() {
+    public byte[] getEncryptedName() {
         return encryptedName;
     }
 
-    public String getEncryptedText() {
+    public byte[] getEncryptedText() {
         return encryptedText;
     }
 

@@ -1,8 +1,6 @@
 package com.peew.notesr.crypto;
 
-import android.util.Base64;
 import android.util.Log;
-
 import com.peew.notesr.App;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
@@ -33,8 +31,8 @@ public class NotesCrypt {
     }
 
     public static EncryptedNote encrypt(Note note, CryptoKey cryptoKey) {
-        String encryptedName = encryptValue(note.getName(), cryptoKey);
-        String encryptedText = encryptValue(note.getText(), cryptoKey);
+        byte[] encryptedName = encryptValue(note.getName(), cryptoKey);
+        byte[] encryptedText = encryptValue(note.getText(), cryptoKey);
 
         EncryptedNote encryptedNote = new EncryptedNote(
                 encryptedName, encryptedText, note.getUpdatedAt());
@@ -53,24 +51,20 @@ public class NotesCrypt {
         return note;
     }
 
-    private static String encryptValue(String value, CryptoKey cryptoKey) {
+    private static byte[] encryptValue(String value, CryptoKey cryptoKey) {
         try {
-            Aes aesInstance = getAesInstance(cryptoKey);
-            byte[] encrypted = aesInstance.encrypt(value.getBytes(StandardCharsets.UTF_8));
-
-            return Base64.encodeToString(encrypted, Base64.DEFAULT);
+            return getAesInstance(cryptoKey)
+                    .encrypt(value.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             Log.e("Cannot encrypt note", e.toString());
             throw new RuntimeException(e);
         }
     }
 
-    private static String decryptValue(String value, CryptoKey cryptoKey) {
+    private static String decryptValue(byte[] value, CryptoKey cryptoKey) {
         try {
-            Aes aesInstance = getAesInstance(cryptoKey);
-            byte[] decoded = Base64.decode(value, Base64.DEFAULT);
-
-            return new String(aesInstance.decrypt(decoded));
+            byte[] decrypted = getAesInstance(cryptoKey).decrypt(value);
+            return new String(decrypted);
         } catch (Exception e) {
             Log.e("Cannot decrypt note", e.toString());
             throw new RuntimeException(e);
