@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 import androidx.activity.result.ActivityResult;
@@ -69,6 +67,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
 
     private ActivityResultCallback<ActivityResult> addFilesCallback() {
         return result -> {
+            ///////////////
             if (result.getResultCode() == Activity.RESULT_OK) {
                 if (result.getData() != null) {
                     addFiles(result.getData());
@@ -76,14 +75,11 @@ public class AddFilesActivity extends AppCompatActivityExtended {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
             }
-
-            finish();
         };
     }
 
     private void addFiles(Intent data) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
 
         AlertDialog progressDialog = createProgressDialog();
 
@@ -106,7 +102,7 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         });
 
         executor.execute(() -> {
-            handler.post(progressDialog::show);
+            runOnUiThread(progressDialog::show);
 
             AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
 
@@ -120,7 +116,10 @@ public class AddFilesActivity extends AppCompatActivityExtended {
                 }
             });
 
-            progressDialog.dismiss();
+            runOnUiThread(() -> {
+                progressDialog.dismiss();
+                finish();
+            });
         });
     }
 
