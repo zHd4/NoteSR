@@ -148,18 +148,6 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         return map;
     }
 
-    private Cursor getCursor(Uri uri) {
-        Cursor cursor = App.getContext()
-                .getContentResolver()
-                .query(uri, null, null, null, null);
-
-        if (cursor == null) {
-            throw new RuntimeException(new NullPointerException("Cursor is null"));
-        }
-
-        return cursor;
-    }
-
     private String getFileName(Cursor cursor) {
         try (cursor) {
             int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
@@ -187,6 +175,18 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         }
 
         return type;
+    }
+
+    private Cursor getCursor(Uri uri) {
+        Cursor cursor = App.getContext()
+                .getContentResolver()
+                .query(uri, null, null, null, null);
+
+        if (cursor == null) {
+            throw new RuntimeException(new NullPointerException("Cursor is null"));
+        }
+
+        return cursor;
     }
 
     private AlertDialog createProgressDialog() {
