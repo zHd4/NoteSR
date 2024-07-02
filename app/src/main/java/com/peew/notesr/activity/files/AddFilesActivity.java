@@ -67,13 +67,16 @@ public class AddFilesActivity extends AppCompatActivityExtended {
 
     private ActivityResultCallback<ActivityResult> addFilesCallback() {
         return result -> {
-            ///////////////
-            if (result.getResultCode() == Activity.RESULT_OK) {
+            int resultCode = result.getResultCode();
+
+            if (resultCode == Activity.RESULT_OK) {
                 if (result.getData() != null) {
                     addFiles(result.getData());
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                finish();
             }
         };
     }
