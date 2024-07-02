@@ -19,8 +19,8 @@ public class FilesInfoTable extends Table {
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
                         "id integer PRIMARY KEY AUTOINCREMENT, " +
                         "note_id integer NOT NULL, " +
-                        "encrypted_name text NOT NULL, " +
-                        "encrypted_type text, " +
+                        "encrypted_name blob NOT NULL, " +
+                        "encrypted_type blob, " +
                         "size bigint NOT NULL, " +
                         "created_at varchar(255) NOT NULL, " +
                         "updated_at varchar(255) NOT NULL, " +
@@ -79,8 +79,8 @@ public class FilesInfoTable extends Table {
             if (cursor.moveToFirst()) {
                 Long noteId = cursor.getLong(0);
 
-                String name = cursor.getString(1);
-                String type = cursor.getString(2);
+                byte[] name = cursor.getBlob(1);
+                byte[] type = cursor.getBlob(2);
 
                 Long size = cursor.getLong(3);
 
@@ -117,8 +117,8 @@ public class FilesInfoTable extends Table {
                 do {
                     Long id = cursor.getLong(0);
 
-                    String name = cursor.getString(1);
-                    String type = cursor.getString(2);
+                    byte[] name = cursor.getBlob(1);
+                    byte[] type = cursor.getBlob(2);
 
                     Long size = cursor.getLong(3);
 

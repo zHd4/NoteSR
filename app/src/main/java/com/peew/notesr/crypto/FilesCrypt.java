@@ -71,14 +71,11 @@ public class FilesCrypt {
         Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
 
         try {
-            byte[] nameBytes = aes.encrypt(fileInfo.getName().getBytes(StandardCharsets.UTF_8));
-            String name = Base64.encodeToString(nameBytes, Base64.DEFAULT);
-
-            String type = null;
+            byte[] name = aes.encrypt(fileInfo.getName().getBytes(StandardCharsets.UTF_8));
+            byte[] type = null;
 
             if (fileInfo.getType() != null) {
-                byte[] typeBytes = aes.encrypt(fileInfo.getType().getBytes(StandardCharsets.UTF_8));
-                type = Base64.encodeToString(typeBytes, Base64.DEFAULT);
+                type = aes.encrypt(fileInfo.getType().getBytes(StandardCharsets.UTF_8));
             }
 
             return new EncryptedFileInfo(

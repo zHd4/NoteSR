@@ -6,16 +6,16 @@ public class EncryptedFileInfo {
     private Long id;
     private Long noteId;
     private Long size;
-    private String encryptedName;
-    private String encryptedType;
+    private byte[] encryptedName;
+    private byte[] encryptedType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public EncryptedFileInfo(Long id,
                              Long noteId,
                              Long size,
-                             String encryptedName,
-                             String encryptedType,
+                             byte[] encryptedName,
+                             byte[] encryptedType,
                              LocalDateTime createdAt,
                              LocalDateTime updatedAt) {
         this.id = id;
@@ -51,19 +51,19 @@ public class EncryptedFileInfo {
         this.size = size;
     }
 
-    public String getEncryptedName() {
+    public byte[] getEncryptedName() {
         return encryptedName;
     }
 
-    public void setEncryptedName(String encryptedName) {
+    public void setEncryptedName(byte[] encryptedName) {
         this.encryptedName = encryptedName;
     }
 
-    public String getEncryptedType() {
+    public byte[] getEncryptedType() {
         return encryptedType;
     }
 
-    public void setEncryptedType(String encryptedType) {
+    public void setEncryptedType(byte[] encryptedType) {
         this.encryptedType = encryptedType;
     }
 
