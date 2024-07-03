@@ -6,10 +6,19 @@ import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class NotesManager {
     public void save(Note note) {
         EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
         getNotesTable().save(encryptedNote);
+    }
+
+    public List<Note> getAll() {
+        return getNotesTable().getAll().stream()
+                .map(NotesCrypt::decrypt)
+                .collect(Collectors.toList());
     }
 
     public Note get(Long id) {
