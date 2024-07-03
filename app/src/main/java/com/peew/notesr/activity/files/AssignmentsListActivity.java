@@ -14,11 +14,8 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.adapter.FilesListAdapter;
-import com.peew.notesr.crypto.FilesCrypt;
-import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.tables.FilesInfoTable;
-import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.model.EncryptedNote;
+import com.peew.notesr.manager.AssignmentsManager;
+import com.peew.notesr.manager.NotesManager;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.onclick.files.OpenFileOnClick;
@@ -41,14 +38,9 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
             throw new RuntimeException("Note id didn't provided");
         }
 
-        EncryptedNote encryptedNote = App.getAppContainer()
-                .getNotesDatabase()
-                .<NotesTable>getTable(NotesTable.class)
-                .get(noteId);
+        note = getNotesManager().get(noteId);
 
-        if (encryptedNote != null) {
-            note = NotesCrypt.decrypt(encryptedNote);
-        } else {
+        if (note == null) {
             throw new RuntimeException("Note with id " + noteId + " not found");
         }
 
@@ -84,10 +76,7 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
 
         executor.execute(() -> {
             handler.post(progressDialog::show);
-
-            FilesInfoTable filesInfoTable = App.getAppContainer().getNotesDatabase().getTable(FilesInfoTable.class);
-            fillFilesListView(FilesCrypt.decryptInfo(filesInfoTable.getByNoteId(note.getId())));
-
+            fillFilesListView(getAssignmentsManager().getFilesInfo(note.getId()));
             progressDialog.dismiss();
         });
     }
@@ -105,5 +94,13 @@ public class AssignmentsListActivity extends AppCompatActivityExtended {
 
             runOnUiThread(() -> filesView.setAdapter(adapter));
         }
+    }
+
+    private NotesManager getNotesManager() {
+        return App.getAppContainer().getNotesManager();
+    }
+
+    private AssignmentsManager getAssignmentsManager() {
+        return App.getAppContainer().getAssignmentsManager();
     }
 }
