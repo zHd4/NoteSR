@@ -9,11 +9,19 @@ import com.peew.notesr.model.FileInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public class AssignmentsManager extends BaseManager {
     private static final int CHUNK_SIZE = 500000;
+
+    public List<FileInfo> getFilesInfo(Long noteId) {
+        List<EncryptedFileInfo> encryptedFilesInfo = getFilesInfoTable()
+                .getByNoteId(noteId);
+
+        return FilesCrypt.decryptInfo(encryptedFilesInfo);
+    }
 
     public Long saveInfo(FileInfo fileInfo) {
         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
