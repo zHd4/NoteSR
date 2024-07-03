@@ -1,15 +1,13 @@
 package com.peew.notesr.manager;
 
-import com.peew.notesr.App;
 import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class NotesManager {
+public class NotesManager extends BaseManager {
     public void save(Note note) {
         EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
         getNotesTable().save(encryptedNote);
@@ -33,11 +31,5 @@ public class NotesManager {
 
     public void delete(Long id) {
         getNotesTable().delete(id);
-    }
-
-    private NotesTable getNotesTable() {
-        return App.getAppContainer()
-                .getNotesDatabase()
-                .getTable(NotesTable.class);
     }
 }
