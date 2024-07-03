@@ -4,14 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-
 import androidx.appcompat.app.ActionBar;
-
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
-import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.SearchNotesResults;
 
@@ -59,8 +55,9 @@ public class SearchNotesActivity extends AppCompatActivityExtended {
     }
 
     private SearchNotesResults search(String query) {
-        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
-        List<Note> notes = NotesCrypt.decrypt(notesTable.getAll());
+        List<Note> notes = App.getAppContainer()
+                .getNotesManager()
+                .getAll();
 
         Predicate<Note> check = note -> {
             boolean foundInName = formatValue(note.getName()).contains(query);
