@@ -1,6 +1,5 @@
 package com.peew.notesr.manager;
 
-import com.peew.notesr.App;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
 import com.peew.notesr.db.notes.tables.FilesInfoTable;
@@ -13,13 +12,13 @@ import java.io.InputStream;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class AssignmentsManager {
+public class AssignmentsManager extends BaseManager {
     private static final int CHUNK_SIZE = 500000;
 
     public Long saveInfo(FileInfo fileInfo) {
         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
 
-        getFilesTable().save(encryptedFileInfo);
+        getFilesInfoTable().save(encryptedFileInfo);
         return encryptedFileInfo.getId();
     }
 
@@ -51,7 +50,7 @@ public class AssignmentsManager {
     }
 
     public byte[] read(Long fileId) {
-        FilesInfoTable filesInfoTable = getFilesTable();
+        FilesInfoTable filesInfoTable = getFilesInfoTable();
         DataBlocksTable dataBlocksTable = getDataBlocksTable();
 
         Set<Long> ids = dataBlocksTable.getBlocksIdsByFileId(fileId);
@@ -89,13 +88,5 @@ public class AssignmentsManager {
 
     public void delete(Long fileId) {
         getDataBlocksTable().deleteByFileId(fileId);
-    }
-
-    private FilesInfoTable getFilesTable() {
-        return App.getAppContainer().getNotesDatabase().getTable(FilesInfoTable.class);
-    }
-
-    private DataBlocksTable getDataBlocksTable() {
-        return App.getAppContainer().getNotesDatabase().getTable(DataBlocksTable.class);
     }
 }
