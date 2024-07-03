@@ -23,7 +23,10 @@ public class NotesManager {
 
     public Note get(Long id) {
         EncryptedNote encryptedNote = getNotesTable().get(id);
-        return NotesCrypt.decrypt(encryptedNote);
+
+        return encryptedNote != null
+                ? NotesCrypt.decrypt(encryptedNote)
+                : null;
     }
 
     public void delete(Long id) {
