@@ -9,17 +9,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.adapter.NotesListAdapter;
-import com.peew.notesr.crypto.CryptoManager;
-import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.tables.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.onclick.notes.ExportNotesOnClick;
 import com.peew.notesr.onclick.notes.NewNoteOnClick;
@@ -91,16 +86,12 @@ public class NotesListActivity extends AppCompatActivityExtended {
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-            CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
+            handler.post(progressDialog::show);
 
-            if (cryptoManager.getCryptoKeyInstance() != null) {
-                handler.post(progressDialog::show);
+            List<Note> notes = App.getAppContainer().getNotesManager().getAll();
+            fillNotesListView(notes);
 
-                NotesTable notesTable = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
-                fillNotesListView(NotesCrypt.decrypt(notesTable.getAll()));
-
-                progressDialog.dismiss();
-            }
+            progressDialog.dismiss();
         });
     }
 
