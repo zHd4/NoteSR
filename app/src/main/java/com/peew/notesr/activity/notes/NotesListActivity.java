@@ -88,7 +88,10 @@ public class NotesListActivity extends AppCompatActivityExtended {
         executor.execute(() -> {
             handler.post(progressDialog::show);
 
-            List<Note> notes = App.getAppContainer().getNotesManager().getAll();
+            List<Note> notes = App.getAppContainer()
+                    .getNotesManager()
+                    .getAll();
+
             fillNotesListView(notes);
 
             progressDialog.dismiss();
