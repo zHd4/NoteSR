@@ -16,7 +16,9 @@ public class NotesManager {
     }
 
     public List<Note> getAll() {
-        return getNotesTable().getAll().stream()
+        return getNotesTable()
+                .getAll()
+                .stream()
                 .map(NotesCrypt::decrypt)
                 .collect(Collectors.toList());
     }
