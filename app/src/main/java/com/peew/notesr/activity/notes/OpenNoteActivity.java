@@ -12,10 +12,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
-import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.NotesDatabase;
-import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.model.EncryptedNote;
+import com.peew.notesr.manager.NotesManager;
 import com.peew.notesr.model.Note;
 
 import java.util.HashMap;
@@ -35,7 +32,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
         setContentView(R.layout.activity_open_note);
 
         long noteId = getIntent().getLongExtra("note_id", -1);
-        note = findNote(noteId);
+        note = getNotesManager().get(noteId);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -106,10 +103,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
                 note = new Note(name, text);
             }
 
-            EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
-            NotesTable notesTable = getNotesDatabase().getTable(NotesTable.class);
-
-            notesTable.save(encryptedNote);
+            getNotesManager().save(note);
             startActivity(new Intent(App.getContext(), NotesListActivity.class));
         }
     }
@@ -136,7 +130,7 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                getNotesDatabase().<NotesTable>getTable(NotesTable.class).delete(note.getId());
+                getNotesManager().delete(note.getId());
                 startActivity(new Intent(App.getContext(), NotesListActivity.class));
             }
         };
@@ -146,13 +140,8 @@ public class OpenNoteActivity extends AppCompatActivityExtended {
         item.setEnabled(false);
         item.setVisible(false);
     }
-
-    private Note findNote(long id) {
-        EncryptedNote encryptedNote = getNotesDatabase().<NotesTable>getTable(NotesTable.class).get(id);
-        return encryptedNote != null ? NotesCrypt.decrypt(encryptedNote) : null;
-    }
     
-    private NotesDatabase getNotesDatabase() {
-        return App.getAppContainer().getNotesDatabase();
+    private NotesManager getNotesManager() {
+        return App.getAppContainer().getNotesManager();
     }
 }
