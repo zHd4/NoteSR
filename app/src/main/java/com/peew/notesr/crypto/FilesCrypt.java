@@ -1,6 +1,5 @@
 package com.peew.notesr.crypto;
 
-import android.util.Base64;
 import android.util.Log;
 import com.peew.notesr.App;
 import com.peew.notesr.model.EncryptedFileInfo;
@@ -96,14 +95,14 @@ public class FilesCrypt {
         Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
 
         try {
-            byte[] decodedName = Base64.decode(encryptedFileInfo.getEncryptedName(), Base64.DEFAULT);
-            String decryptedName = new String(aes.decrypt(decodedName));
+            byte[] encryptedName = encryptedFileInfo.getEncryptedName();
+            String decryptedName = new String(aes.decrypt(encryptedName));
 
             String decryptedType = null;
 
             if (encryptedFileInfo.getEncryptedType() != null) {
-                byte[] decodedType = Base64.decode(encryptedFileInfo.getEncryptedType(), Base64.DEFAULT);
-                decryptedType = new String(aes.decrypt(decodedType));
+                byte[] encryptedType = encryptedFileInfo.getEncryptedType();
+                decryptedType = new String(aes.decrypt(encryptedType));
             }
 
             return new FileInfo(
