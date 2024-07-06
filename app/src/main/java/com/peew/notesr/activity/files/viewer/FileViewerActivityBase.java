@@ -9,7 +9,6 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.manager.AssignmentsManager;
-import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.tools.FileManager;
 
