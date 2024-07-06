@@ -23,6 +23,13 @@ public class AssignmentsManager extends BaseManager {
         return FilesCrypt.decryptInfo(encryptedFilesInfo);
     }
 
+    public FileInfo getInfo(Long fileId) {
+        EncryptedFileInfo encryptedFileInfo = getFilesInfoTable()
+                .get(fileId);
+
+        return FilesCrypt.decryptInfo(encryptedFileInfo);
+    }
+
     public Long saveInfo(FileInfo fileInfo) {
         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
 
