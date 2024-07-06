@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
+
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
@@ -23,6 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activity.StartActivity"
             android:screenOrientation="locked"
@@ -75,6 +77,10 @@
             android:name=".activity.files.viewer.OpenVideoActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
+
+        <service android:name=".service.TempCleanService"
+            android:exported="false"
+            android:enabled="true"/>
     </application>
 
 </manifest>
