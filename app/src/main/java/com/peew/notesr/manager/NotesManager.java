@@ -29,6 +29,25 @@ public class NotesManager extends BaseManager {
                 : null;
     }
 
+    public List<Long> search(String query) {
+        return getAll().stream()
+                .filter(note -> {
+                    String lowerCaseQuery = query.toLowerCase();
+
+                    boolean foundInName = note.getName()
+                            .toLowerCase()
+                            .contains(lowerCaseQuery);
+
+                    boolean foundInText = note.getText()
+                            .toLowerCase()
+                            .contains(lowerCaseQuery);
+
+                    return foundInName || foundInText;
+                })
+                .map(Note::getId)
+                .collect(Collectors.toList());
+    }
+
     public void delete(Long id) {
         getNotesTable().delete(id);
     }
