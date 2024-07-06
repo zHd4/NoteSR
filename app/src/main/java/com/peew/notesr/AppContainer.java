@@ -2,12 +2,15 @@ package com.peew.notesr;
 
 import com.peew.notesr.crypto.CryptoManager;
 import com.peew.notesr.db.notes.NotesDB;
+import com.peew.notesr.db.services.ServicesDB;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.manager.KeyUpdateManager;
 import com.peew.notesr.manager.NotesManager;
 
 public class AppContainer {
     private final NotesDB notesDB = new NotesDB();
+
+    private final ServicesDB servicesDB = new ServicesDB();
     private final CryptoManager cryptoManager = new CryptoManager();
     private final NotesManager notesManager = new NotesManager();
     private final AssignmentsManager assignmentsManager = new AssignmentsManager();
@@ -15,6 +18,10 @@ public class AppContainer {
 
     public NotesDB getNotesDB() {
         return notesDB;
+    }
+
+    public ServicesDB getServicesDB() {
+        return servicesDB;
     }
 
     public CryptoManager getCryptoManager() {
