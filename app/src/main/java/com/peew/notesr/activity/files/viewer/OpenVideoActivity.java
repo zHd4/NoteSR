@@ -1,7 +1,9 @@
 package com.peew.notesr.activity.files.viewer;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.widget.MediaController;
 import android.widget.VideoView;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
@@ -29,7 +31,18 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         loadFileInfo();
     }
 
-    private void dropToCache() {
+    private void startVideo(Uri uri) {
+        videoView.setVideoURI(uri);
+        MediaController mediaController = new MediaController(this);
+
+        mediaController.setAnchorView(videoView);
+        mediaController.setMediaPlayer(videoView);
+
+        videoView.setMediaController(mediaController);
+        videoView.start();
+    }
+
+    private File dropToCache() {
         try {
             String extension = new LinkedList<>(Arrays.asList(fileInfo.getName().split("\\."))).getLast();
 
@@ -48,6 +61,7 @@ public class OpenVideoActivity extends FileViewerActivityBase {
             });
 
             stream.close();
+            return tempVideo;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
