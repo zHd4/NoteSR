@@ -32,6 +32,7 @@ public class ViewNotesSearchResultsActivity extends AppCompatActivityExtended {
         ActionBar actionBar = getSupportActionBar();
         String actionBarTitleFormat = getResources().getString(R.string.found_n);
 
+        //noinspection deprecation
         results = (SearchNotesResults) getIntent().getSerializableExtra("results");
 
         actionBar.setDisplayHomeAsUpEnabled(true);
