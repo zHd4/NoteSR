@@ -2,15 +2,12 @@ package com.peew.notesr.activity.notes;
 
 import android.os.Bundle;
 import android.widget.ListView;
-
 import androidx.appcompat.app.ActionBar;
-
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.adapter.NotesListAdapter;
-import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.table.NotesTable;
+import com.peew.notesr.manager.NotesManager;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.SearchNotesResults;
 import com.peew.notesr.onclick.notes.OpenNoteOnClick;
@@ -51,11 +48,12 @@ public class ViewNotesSearchResultsActivity extends AppCompatActivityExtended {
     }
 
     private void fillResultsList(ListView resultsView) {
-        NotesTable notesTable = App.getAppContainer().getNotesDB().getTable(NotesTable.class);
+        NotesManager manager = App.getAppContainer().getNotesManager();
 
-        List<Note> notes = NotesCrypt.decrypt(results.results().stream()
-                .map(notesTable::get)
-                .collect(Collectors.toList()));
+        List<Note> notes = results.results()
+                .stream()
+                .map(manager::get)
+                .collect(Collectors.toList());
 
         NotesListAdapter adapter = new NotesListAdapter(
                 App.getContext(),
