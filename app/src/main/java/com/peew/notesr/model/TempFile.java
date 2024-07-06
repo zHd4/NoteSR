@@ -7,6 +7,11 @@ public class TempFile {
     private Long id;
     private Uri uri;
 
+    public TempFile(Long id, Uri uri) {
+        this.id = id;
+        this.uri = uri;
+    }
+
     public Long getId() {
         return id;
     }
