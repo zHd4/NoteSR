@@ -27,10 +27,4 @@ public class NotesDatabase extends BaseDB {
         tables.put(FilesInfoTable.class, filesInfoTable);
         tables.put(DataBlocksTable.class, dataBlocksTable);
     }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {}
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 }

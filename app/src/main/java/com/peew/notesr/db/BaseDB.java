@@ -1,5 +1,6 @@
 package com.peew.notesr.db;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.peew.notesr.App;
 
@@ -18,4 +19,10 @@ public abstract class BaseDB extends SQLiteOpenHelper {
     public <T extends Table> T getTable(Class<? extends Table> tableClass) {
         return (T) tables.get(tableClass);
     }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {}
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 }
