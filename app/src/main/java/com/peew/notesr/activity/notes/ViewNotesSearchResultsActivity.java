@@ -50,7 +50,7 @@ public class ViewNotesSearchResultsActivity extends AppCompatActivityExtended {
     }
 
     private void fillResultsList(ListView resultsView) {
-        NotesTable notesTable = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
+        NotesTable notesTable = App.getAppContainer().getNotesDB().getTable(NotesTable.class);
 
         List<Note> notes = NotesCrypt.decrypt(results.results().stream()
                 .map(notesTable::get)

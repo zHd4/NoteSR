@@ -1,7 +1,7 @@
 package com.peew.notesr.manager;
 
 import com.peew.notesr.App;
-import com.peew.notesr.db.notes.NotesDatabase;
+import com.peew.notesr.db.notes.NotesDB;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
 import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
@@ -19,7 +19,7 @@ public class BaseManager {
         return getNotesDatabase().getTable(DataBlocksTable.class);
     }
 
-    private NotesDatabase getNotesDatabase() {
-        return App.getAppContainer().getNotesDatabase();
+    private NotesDB getNotesDatabase() {
+        return App.getAppContainer().getNotesDB();
     }
 }

@@ -25,15 +25,15 @@ public class NotesTest {
     private static CryptoKey cryptoKey;
 
     private final NotesTable notesTable = App.getAppContainer()
-            .getNotesDatabase()
+            .getNotesDB()
             .getTable(NotesTable.class);
 
     private final FilesInfoTable filesInfoTable = App.getAppContainer()
-            .getNotesDatabase()
+            .getNotesDB()
             .getTable(FilesInfoTable.class);
 
     private final DataBlocksTable dataBlocksTable = App.getAppContainer()
-            .getNotesDatabase()
+            .getNotesDB()
             .getTable(DataBlocksTable.class);
 
     private Note testNote;

@@ -56,7 +56,7 @@ public class NotesImporter {
     }
 
     private void importNotes(List<Note> notes) {
-        NotesTable table = App.getAppContainer().getNotesDatabase().getTable(NotesTable.class);
+        NotesTable table = App.getAppContainer().getNotesDB().getTable(NotesTable.class);
 
         notes.stream()
                 .map(NotesCrypt::encrypt)

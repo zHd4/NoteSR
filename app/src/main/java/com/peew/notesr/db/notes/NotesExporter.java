@@ -67,7 +67,7 @@ public class NotesExporter {
             PackageManager.NameNotFoundException,
             MissingNotesException {
         List<Note> notes = NotesCrypt.decrypt(App.getAppContainer()
-                .getNotesDatabase()
+                .getNotesDB()
                 .<NotesTable>getTable(NotesTable.class)
                 .getAll());
 

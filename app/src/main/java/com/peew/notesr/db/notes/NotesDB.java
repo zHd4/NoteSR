@@ -1,22 +1,14 @@
 package com.peew.notesr.db.notes;
 
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
-import com.peew.notesr.App;
 import com.peew.notesr.db.BaseDB;
 import com.peew.notesr.db.notes.tables.DataBlocksTable;
 import com.peew.notesr.db.notes.tables.FilesInfoTable;
 import com.peew.notesr.db.notes.tables.NotesTable;
-import com.peew.notesr.db.Table;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class NotesDatabase extends BaseDB {
+public class NotesDB extends BaseDB {
     private static final String NAME = "notes_db5";
 
-    public NotesDatabase() {
+    public NotesDB() {
         super(NAME);
 
         NotesTable notesTable = new NotesTable(this, "notes");
