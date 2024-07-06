@@ -8,12 +8,8 @@ import androidx.appcompat.app.ActionBar;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
-import com.peew.notesr.model.Note;
+import com.peew.notesr.manager.NotesManager;
 import com.peew.notesr.model.SearchNotesResults;
-
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class SearchNotesActivity extends AppCompatActivityExtended {
     /** @noinspection DataFlowIssue*/
@@ -40,41 +36,20 @@ public class SearchNotesActivity extends AppCompatActivityExtended {
 
     private View.OnClickListener searchButtonOnClick(EditText queryField) {
         return view -> {
-            String query = formatValue(queryField.getText().toString());
+            String query = queryField.getText().toString();
 
             if (!query.isBlank()) {
                 SearchNotesResults results = search(query);
+                Intent intent = new Intent(App.getContext(), ViewNotesSearchResultsActivity.class);
 
-                Class<?> viewResultsClass = ViewNotesSearchResultsActivity.class;
-                Intent viewResultsIntent = new Intent(App.getContext(), viewResultsClass);
-
-                viewResultsIntent.putExtra("results", results);
-                startActivity(viewResultsIntent);
+                intent.putExtra("results", results);
+                startActivity(intent);
             }
         };
     }
 
     private SearchNotesResults search(String query) {
-        List<Note> notes = App.getAppContainer()
-                .getNotesManager()
-                .getAll();
-
-        Predicate<Note> check = note -> {
-            boolean foundInName = formatValue(note.getName()).contains(query);
-            boolean foundInText = formatValue(note.getText()).contains(query);
-
-            return foundInName || foundInText;
-        };
-
-        List<Long> notesIds = notes.stream()
-                .filter(check)
-                .map(Note::getId)
-                .collect(Collectors.toList());
-
-        return new SearchNotesResults(notesIds);
-    }
-
-    private String formatValue(String value) {
-        return value.toLowerCase().replace("\n", "");
+        NotesManager manager = App.getAppContainer().getNotesManager();
+        return new SearchNotesResults(manager.search(query));
     }
 }
