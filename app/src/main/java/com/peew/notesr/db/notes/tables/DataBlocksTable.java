@@ -4,13 +4,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.peew.notesr.db.Table;
+import com.peew.notesr.db.BaseTable;
 import com.peew.notesr.model.DataBlock;
 
 import java.util.Set;
 import java.util.TreeSet;
 
-public class DataBlocksTable extends Table {
+public class DataBlocksTable extends BaseTable {
     public DataBlocksTable(SQLiteOpenHelper helper, String name, FilesInfoTable filesInfoTable) {
         super(helper, name);
 

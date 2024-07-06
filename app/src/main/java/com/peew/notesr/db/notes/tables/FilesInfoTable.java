@@ -5,14 +5,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.peew.notesr.db.Table;
+import com.peew.notesr.db.BaseTable;
 import com.peew.notesr.model.EncryptedFileInfo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilesInfoTable extends Table {
+public class FilesInfoTable extends BaseTable {
     public FilesInfoTable(SQLiteOpenHelper helper, String name, NotesTable notesTable) {
         super(helper, name);
 
