@@ -1,8 +1,8 @@
 package com.peew.notesr.manager;
 
 import com.peew.notesr.crypto.FilesCrypt;
-import com.peew.notesr.db.notes.tables.DataBlocksTable;
-import com.peew.notesr.db.notes.tables.FilesInfoTable;
+import com.peew.notesr.db.notes.table.DataBlocksTable;
+import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.model.DataBlock;
 import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.FileInfo;

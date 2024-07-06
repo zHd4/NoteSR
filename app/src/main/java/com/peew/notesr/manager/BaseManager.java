@@ -2,9 +2,9 @@ package com.peew.notesr.manager;
 
 import com.peew.notesr.App;
 import com.peew.notesr.db.notes.NotesDB;
-import com.peew.notesr.db.notes.tables.DataBlocksTable;
-import com.peew.notesr.db.notes.tables.FilesInfoTable;
-import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.db.notes.table.DataBlocksTable;
+import com.peew.notesr.db.notes.table.FilesInfoTable;
+import com.peew.notesr.db.notes.table.NotesTable;
 
 public class BaseManager {
     protected NotesTable getNotesTable() {

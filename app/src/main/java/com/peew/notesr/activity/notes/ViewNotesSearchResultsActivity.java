@@ -10,7 +10,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.adapter.NotesListAdapter;
 import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.db.notes.table.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.SearchNotesResults;
 import com.peew.notesr.onclick.notes.OpenNoteOnClick;

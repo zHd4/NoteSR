@@ -1,9 +1,9 @@
 package com.peew.notesr.db.notes;
 
 import com.peew.notesr.db.BaseDB;
-import com.peew.notesr.db.notes.tables.DataBlocksTable;
-import com.peew.notesr.db.notes.tables.FilesInfoTable;
-import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.db.notes.table.DataBlocksTable;
+import com.peew.notesr.db.notes.table.FilesInfoTable;
+import com.peew.notesr.db.notes.table.NotesTable;
 
 public class NotesDB extends BaseDB {
     private static final String NAME = "notes_db5";

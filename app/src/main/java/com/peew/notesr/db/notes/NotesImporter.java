@@ -7,7 +7,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.crypto.Aes;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.NotesCrypt;
-import com.peew.notesr.db.notes.tables.NotesTable;
+import com.peew.notesr.db.notes.table.NotesTable;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.model.NotesDatabaseDump;
 import com.peew.notesr.tools.VersionFetcher;

@@ -8,7 +8,7 @@ import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
 import com.peew.notesr.activity.files.viewer.OpenImageActivity;
 import com.peew.notesr.crypto.FilesCrypt;
-import com.peew.notesr.db.notes.tables.FilesInfoTable;
+import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.model.FileInfo;
 
 import java.util.Map;
