@@ -1,4 +1,4 @@
-package com.peew.notesr.db.notes.tables;
+package com.peew.notesr.db;
 
 import android.database.sqlite.SQLiteOpenHelper;
 

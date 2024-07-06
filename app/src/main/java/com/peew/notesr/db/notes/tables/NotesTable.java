@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.peew.notesr.db.Table;
 import com.peew.notesr.model.EncryptedNote;
 
 import java.time.LocalDateTime;
