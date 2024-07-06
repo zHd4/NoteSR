@@ -103,10 +103,8 @@ public class FileViewerActivityBase extends AppCompatActivityExtended {
     }
 
     private void deleteFile() {
-        FilesInfoTable filesInfoTable = App.getAppContainer().getNotesDB().getTable(FilesInfoTable.class);
-        AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
-
-        filesInfoTable.delete(fileInfo.getId());
-        assignmentsManager.delete(fileInfo.getId());
+        App.getAppContainer()
+                .getAssignmentsManager()
+                .delete(fileInfo.getId());
     }
 }

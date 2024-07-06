@@ -96,5 +96,6 @@ public class AssignmentsManager extends BaseManager {
 
     public void delete(Long fileId) {
         getDataBlocksTable().deleteByFileId(fileId);
+        getFilesInfoTable().delete(fileId);
     }
 }
