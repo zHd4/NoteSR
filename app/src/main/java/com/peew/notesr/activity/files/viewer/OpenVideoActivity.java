@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -26,6 +28,7 @@ public class OpenVideoActivity extends FileViewerActivityBase {
 
     private static final Random RANDOM = new Random();
 
+    private ScaleGestureDetector scaleGestureDetector;
     private VideoView videoView;
     private File videoFile;
 
@@ -47,6 +50,8 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         videoView = findViewById(R.id.open_video_view);
         videoFile = dropToCache(fileInfo);
 
+        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
+
         TempFilesTable tempFilesTable = App.getAppContainer()
                 .getServicesDB()
                 .getTable(TempFilesTable.class);
@@ -58,6 +63,12 @@ public class OpenVideoActivity extends FileViewerActivityBase {
 
         setVideo(videoUri);
         videoView.start();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        scaleGestureDetector.onTouchEvent(motionEvent);
+        return true;
     }
 
     private void setVideo(Uri uri) {
