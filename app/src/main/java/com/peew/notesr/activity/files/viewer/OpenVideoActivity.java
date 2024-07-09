@@ -3,6 +3,8 @@ package com.peew.notesr.activity.files.viewer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.DisplayMetrics;
+import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
 import androidx.appcompat.app.ActionBar;
@@ -60,12 +62,22 @@ public class OpenVideoActivity extends FileViewerActivityBase {
 
     private void setVideo(Uri uri) {
         videoView.setVideoURI(uri);
+
         MediaController mediaController = new MediaController(this);
 
         mediaController.setAnchorView(videoView);
         mediaController.setMediaPlayer(videoView);
 
+        DisplayMetrics metrics = new DisplayMetrics();
+        ViewGroup.LayoutParams params = videoView.getLayoutParams();
+
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        params.width = metrics.widthPixels;
+        params.height = metrics.heightPixels;
+
         videoView.setMediaController(mediaController);
+        videoView.setLayoutParams(params);
     }
 
     private File dropToCache(FileInfo fileInfo) {
