@@ -1,8 +1,12 @@
 package com.peew.notesr.activity.files.viewer;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
@@ -19,6 +23,41 @@ import java.nio.file.Paths;
 public class FileViewerActivityBase extends AppCompatActivityExtended {
     protected FileInfo fileInfo;
     protected java.io.File saveDir;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        loadFileInfo();
+
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(fileInfo.getName());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_open_media, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        } else if (id == R.id.save_image_to_storage_button) {
+            saveFileOnClick();
+        } else if (id == R.id.delete_image_button) {
+            deleteFileOnClick();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     private void returnToListActivity() {
         Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);

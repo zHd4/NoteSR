@@ -37,14 +37,6 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_video);
 
-        loadFileInfo();
-
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(fileInfo.getName());
-
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 
         videoView = findViewById(R.id.open_video_view);

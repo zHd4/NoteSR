@@ -27,37 +27,7 @@ public class OpenImageActivity extends FileViewerActivityBase {
         imageView = findViewById(R.id.assigned_image_view);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(imageView));
 
-        loadFileInfo();
-
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(fileInfo.getName());
-
         setImage();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_open_media, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == android.R.id.home) {
-            finish();
-            return true;
-        } else if (id == R.id.save_image_to_storage_button) {
-            saveFileOnClick();
-        } else if (id == R.id.delete_image_button) {
-            deleteFileOnClick();
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
