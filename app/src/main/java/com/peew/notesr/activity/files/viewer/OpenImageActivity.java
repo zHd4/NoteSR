@@ -40,7 +40,7 @@ public class OpenImageActivity extends FileViewerActivityBase {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_open_image, menu);
+        getMenuInflater().inflate(R.menu.menu_open_media, menu);
         return true;
     }
 
