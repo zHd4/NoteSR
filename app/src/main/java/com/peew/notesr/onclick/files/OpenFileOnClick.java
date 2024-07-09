@@ -42,7 +42,6 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
             intent.putExtra("file_info", fileInfo);
 
             activity.startActivity(intent);
-            activity.finish();
         }
     }
 
