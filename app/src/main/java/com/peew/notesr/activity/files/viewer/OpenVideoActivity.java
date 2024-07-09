@@ -7,8 +7,10 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.db.services.tables.TempFilesTable;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
+import com.peew.notesr.model.TempFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,8 +38,14 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         videoView = findViewById(R.id.open_video_view);
         videoFile = dropToCache(fileInfo);
 
-        Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
+        TempFilesTable tempFilesTable = App.getAppContainer()
+                .getServicesDB()
+                .getTable(TempFilesTable.class);
 
+        Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
+        TempFile tempFile = new TempFile(videoUri);
+
+        tempFilesTable.save(tempFile);
         startVideo(videoUri);
     }
 
