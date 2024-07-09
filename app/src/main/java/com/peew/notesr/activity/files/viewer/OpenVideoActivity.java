@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.widget.MediaController;
 import android.widget.VideoView;
+import androidx.appcompat.app.ActionBar;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.db.services.tables.TempFilesTable;
@@ -31,9 +32,15 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_video);
 
-        saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-
         loadFileInfo();
+
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(fileInfo.getName());
+
+        saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 
         videoView = findViewById(R.id.open_video_view);
         videoFile = dropToCache(fileInfo);
@@ -46,10 +53,10 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         TempFile tempFile = new TempFile(videoUri);
 
         tempFilesTable.save(tempFile);
-        startVideo(videoUri);
+        setVideo(videoUri);
     }
 
-    private void startVideo(Uri uri) {
+    private void setVideo(Uri uri) {
         videoView.setVideoURI(uri);
         MediaController mediaController = new MediaController(this);
 
@@ -57,7 +64,6 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         mediaController.setMediaPlayer(videoView);
 
         videoView.setMediaController(mediaController);
-        videoView.start();
     }
 
     private File dropToCache(FileInfo fileInfo) {
