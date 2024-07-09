@@ -15,7 +15,6 @@ import com.peew.notesr.R;
 
 public class OpenImageActivity extends FileViewerActivityBase {
     private ScaleGestureDetector scaleGestureDetector;
-    private float scaleFactor = 1.0f;
     private ImageView imageView;
 
     @Override
@@ -24,8 +23,9 @@ public class OpenImageActivity extends FileViewerActivityBase {
         setContentView(R.layout.activity_open_image);
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
         imageView = findViewById(R.id.assigned_image_view);
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(imageView));
 
         loadFileInfo();
 
@@ -73,18 +73,5 @@ public class OpenImageActivity extends FileViewerActivityBase {
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         imageView.setImageBitmap(bitmap);
-    }
-
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
-            scaleFactor *= scaleGestureDetector.getScaleFactor();
-            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
-
-            imageView.setScaleX(scaleFactor);
-            imageView.setScaleY(scaleFactor);
-
-            return true;
-        }
     }
 }
