@@ -53,7 +53,9 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         TempFile tempFile = new TempFile(videoUri);
 
         tempFilesTable.save(tempFile);
+
         setVideo(videoUri);
+        videoView.start();
     }
 
     private void setVideo(Uri uri) {
