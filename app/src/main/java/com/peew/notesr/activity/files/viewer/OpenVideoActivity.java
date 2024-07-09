@@ -8,6 +8,7 @@ import android.widget.VideoView;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.manager.AssignmentsManager;
+import com.peew.notesr.model.FileInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +22,7 @@ public class OpenVideoActivity extends FileViewerActivityBase {
     private static final Random RANDOM = new Random();
 
     private VideoView videoView;
+    private File videoFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +30,15 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         setContentView(R.layout.activity_open_video);
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+
         loadFileInfo();
+
+        videoView = findViewById(R.id.open_video_view);
+        videoFile = dropToCache(fileInfo);
+
+        Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
+
+        startVideo(videoUri);
     }
 
     private void startVideo(Uri uri) {
@@ -42,7 +52,7 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         videoView.start();
     }
 
-    private File dropToCache() {
+    private File dropToCache(FileInfo fileInfo) {
         try {
             String extension = new LinkedList<>(Arrays.asList(fileInfo.getName().split("\\."))).getLast();
 
