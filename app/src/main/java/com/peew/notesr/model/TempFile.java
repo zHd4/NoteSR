@@ -12,6 +12,10 @@ public class TempFile {
         this.uri = uri;
     }
 
+    public TempFile(Uri uri) {
+        this.uri = uri;
+    }
+
     public Long getId() {
         return id;
     }
