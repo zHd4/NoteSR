@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
 
-public class TempCleanService extends Service {
+public class CacheCleanService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
