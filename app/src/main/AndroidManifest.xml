@@ -77,10 +77,6 @@
             android:name=".activity.files.viewer.OpenVideoActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
-
-        <service android:name=".service.CacheCleanService"
-            android:exported="false"
-            android:enabled="true"/>
     </application>
 
 </manifest>
