@@ -15,6 +15,8 @@ public class App extends Application {
 
         context = this;
         appContainer = new AppContainer();
+
+        startServices();
     }
 
     public static Context getContext() {
