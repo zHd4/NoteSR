@@ -23,6 +23,23 @@ import java.nio.file.Paths;
 public class FileViewerActivityBase extends AppCompatActivityExtended {
     protected FileInfo fileInfo;
     protected java.io.File saveDir;
+    protected static boolean running;
+
+    public static boolean isRunning() {
+        return running;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        running = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        running = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
