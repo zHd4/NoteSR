@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
 
 public class CacheCleanService extends Service {
 
@@ -60,6 +61,8 @@ public class CacheCleanService extends Service {
     public void onCreate() {
         handler = new Handler(Looper.getMainLooper());
         runnable = () -> {
+            boolean assignmentOpened = FileViewerActivityBase.isRunning();
+
             handler.postDelayed(runnable, 500);
         };
 
