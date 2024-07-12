@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
 
-public class CacheCleanService extends Service {
+public class CacheCleanerService extends Service {
 
     private static final String CHANNEL_ID = "CacheCleanChannel";
 

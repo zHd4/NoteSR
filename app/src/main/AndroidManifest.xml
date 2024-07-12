@@ -81,7 +81,7 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
 
-        <service android:name=".service.CacheCleanService"
+        <service android:name=".service.CacheCleanerService"
             android:exported="false"
             android:foregroundServiceType="dataSync"
             android:enabled="true"/>
