@@ -11,13 +11,24 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import com.peew.notesr.App;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
+import com.peew.notesr.db.services.tables.TempFilesTable;
+import com.peew.notesr.model.TempFile;
+import com.peew.notesr.tools.FileManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class CacheCleanerService extends Service {
 
-    private static final String CHANNEL_ID = "CacheCleanChannel";
+    private static final String TAG = CacheCleanerService.class.getName();
+    private static final String CHANNEL_ID = "CacheCleanerChannel";
+    private static final int DELAY = 2000;
 
     private Handler handler;
     private Runnable runnable;
@@ -61,11 +72,35 @@ public class CacheCleanerService extends Service {
     public void onCreate() {
         handler = new Handler(Looper.getMainLooper());
         runnable = () -> {
-            boolean assignmentOpened = FileViewerActivityBase.isRunning();
+            if (!FileViewerActivityBase.isRunning()) {
+                clearCache();
+            }
 
-            handler.postDelayed(runnable, 500);
+            handler.postDelayed(runnable, DELAY);
         };
 
-        handler.postDelayed(runnable, 500);
+        handler.postDelayed(runnable, DELAY);
+    }
+
+    private void clearCache() {
+        TempFilesTable tempFilesTable = App.getAppContainer()
+                .getServicesDB()
+                .getTable(TempFilesTable.class);
+
+        List<TempFile> tempFiles = tempFilesTable.getAll();
+
+        tempFiles.forEach(tempFile -> {
+            File file = new File(tempFile.getUri().getPath());
+
+            if (file.exists()) {
+                try {
+                    FileManager.wipeFile(file);
+                } catch (IOException e) {
+                    Log.e(TAG, "IOException while clearing cache", e);
+                }
+            }
+
+            tempFilesTable.delete(tempFile.getId());
+        });
     }
 }
