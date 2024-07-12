@@ -24,14 +24,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class CacheCleanerService extends Service {
+public class CacheCleanerService extends Service implements Runnable {
 
     private static final String TAG = CacheCleanerService.class.getName();
     private static final String CHANNEL_ID = "CacheCleanerChannel";
     private static final int DELAY = 2000;
 
-    private Handler handler;
-    private Runnable runnable;
+    private Thread thread;
 
     @Nullable
     @Override
@@ -70,16 +69,23 @@ public class CacheCleanerService extends Service {
     }
     @Override
     public void onCreate() {
-        handler = new Handler(Looper.getMainLooper());
-        runnable = () -> {
+        thread = new Thread(this);
+        thread.start();
+    }
+
+    @Override
+    public void run() {
+        while (thread.isAlive()) {
             if (!FileViewerActivityBase.isRunning()) {
                 clearCache();
             }
 
-            handler.postDelayed(runnable, DELAY);
-        };
-
-        handler.postDelayed(runnable, DELAY);
+            try {
+                Thread.sleep(DELAY);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void clearCache() {
