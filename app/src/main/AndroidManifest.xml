@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:name=".App"
@@ -15,7 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
-
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
@@ -27,7 +26,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.StartActivity"
             android:screenOrientation="locked"
@@ -80,11 +78,16 @@
             android:name=".activity.files.viewer.OpenVideoActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.files.viewer.OpenTextFileActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme" />
 
-        <service android:name=".service.CacheCleanerService"
+        <service
+            android:name=".service.CacheCleanerService"
+            android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="dataSync"
-            android:enabled="true"/>
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>
