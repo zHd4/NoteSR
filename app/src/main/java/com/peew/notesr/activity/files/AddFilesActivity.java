@@ -18,12 +18,15 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.AppCompatActivityExtended;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
+import com.peew.notesr.tools.FileManager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -166,9 +169,9 @@ public class AddFilesActivity extends AppCompatActivityExtended {
         }
     }
 
-    private String getMimeType(String url) {
+    private String getMimeType(String filename) {
         String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        String extension = FileManager.getFileExtension(filename);
 
         if (extension != null) {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
