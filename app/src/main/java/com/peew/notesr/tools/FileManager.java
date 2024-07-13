@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FileManager {
     /** @noinspection ResultOfMethodCallIgnored*/
@@ -44,5 +47,16 @@ public class FileManager {
         }
 
         return file.delete();
+    }
+
+    public static String getFileExtension(String filename) {
+        String extension = null;
+        String[] array = filename.split("\\.");
+
+        if (array.length >= 2) {
+            return new LinkedList<>(Arrays.asList(array)).getLast();
+        }
+
+        return null;
     }
 }
