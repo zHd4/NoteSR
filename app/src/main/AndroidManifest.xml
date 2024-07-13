@@ -29,62 +29,77 @@
         </activity>
         <activity
             android:name=".activity.StartActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.security.SetupKeyActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.security.AuthActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.security.KeyRecoveryActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.notes.NotesListActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.notes.OpenNoteActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.notes.SearchNotesActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.notes.ViewNotesSearchResultsActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.notes.ImportNotesActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.files.AssignmentsListActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.files.AddFilesActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.files.viewer.OpenImageActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.files.viewer.OpenVideoActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.files.viewer.OpenTextFileActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.files.viewer.OpenFileActivity"
+            android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
 
