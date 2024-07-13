@@ -8,7 +8,7 @@
     tools:context=".activity.files.viewer.OpenTextFileActivity">
 
     <EditText
-        android:id="@+id/note_text_field"
+        android:id="@+id/text_file_field"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:autofillHints=""
