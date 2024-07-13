@@ -7,6 +7,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
 import com.peew.notesr.activity.files.viewer.OpenImageActivity;
+import com.peew.notesr.activity.files.viewer.OpenTextFileActivity;
 import com.peew.notesr.activity.files.viewer.OpenVideoActivity;
 import com.peew.notesr.model.FileInfo;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 public class OpenFileOnClick implements AdapterView.OnItemClickListener {
     private static final Map<String, Class<? extends FileViewerActivityBase>> FILES_VIEWERS =
             Map.of(
-//                    "text", null,
+                    "text", OpenTextFileActivity.class,
                     "image", OpenImageActivity.class,
                     "video", OpenVideoActivity.class
 //                    "audio", null
