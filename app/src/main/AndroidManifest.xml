@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
+
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
@@ -80,6 +81,10 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.files.viewer.OpenTextFileActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.files.viewer.OpenFileActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
 
