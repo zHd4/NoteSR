@@ -16,6 +16,7 @@ import com.peew.notesr.db.services.tables.TempFilesTable;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.TempFile;
+import com.peew.notesr.tools.FileManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -85,7 +86,7 @@ public class OpenVideoActivity extends FileViewerActivityBase {
 
     private File dropToCache(FileInfo fileInfo) {
         try {
-            String extension = new LinkedList<>(Arrays.asList(fileInfo.getName().split("\\."))).getLast();
+            String extension = FileManager.getFileExtension(fileInfo.getName());
 
             File tempDir = getCacheDir();
             File tempVideo = File.createTempFile(String.valueOf(RANDOM.nextLong()), "." + extension, tempDir);
