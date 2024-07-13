@@ -98,7 +98,7 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.files.viewer.OpenFileActivity"
+            android:name=".activity.files.viewer.OpenUnknownFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
