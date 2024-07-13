@@ -81,4 +81,5 @@
     <string name="saving_canceled">Saving canceled</string>
     <string name="failed_to_add_all_files_at_once">Failed to add all files at once</string>
     <string name="adding">Adding…</string>
+    <string name="cannot_open_file">Cannot open file</string>
 </resources>
