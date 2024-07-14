@@ -2,8 +2,6 @@ package com.peew.notesr;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import com.peew.notesr.service.CacheCleanerService;
 
 public class App extends Application {
     private static App context;
