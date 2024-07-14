@@ -19,6 +19,8 @@ import com.peew.notesr.tools.FileManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class CacheCleanerService extends Service implements Runnable {
 
@@ -66,6 +68,10 @@ public class CacheCleanerService extends Service implements Runnable {
         while (thread.isAlive()) {
             if (!BaseFileViewerActivity.isRunning()) {
                 clearCache();
+
+                if (!App.isActivityVisible()) {
+                    thread.interrupt();
+                }
             }
 
             try {
@@ -77,12 +83,22 @@ public class CacheCleanerService extends Service implements Runnable {
     }
 
     private void clearCache() {
-        getTempFilesTable()
-                .getAll()
-                .forEach(tempFile -> new Thread(wipeFile(tempFile)).start());
+        List<TempFile> tempFiles = getTempFilesTable().getAll();
+        CountDownLatch latch = new CountDownLatch(tempFiles.size());
+
+        tempFiles.forEach(tempFile -> {
+            Thread thread = new Thread(wipeFile(tempFile, latch));
+            thread.start();
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e(TAG, "CountDownLatch interrupted", e);
+        }
     }
 
-    private Runnable wipeFile(TempFile tempFile) {
+    private Runnable wipeFile(TempFile tempFile, CountDownLatch latch) {
         return () -> {
             File file = new File(tempFile.getUri().getPath());
 
@@ -95,6 +111,7 @@ public class CacheCleanerService extends Service implements Runnable {
             }
 
             getTempFilesTable().delete(tempFile.getId());
+            latch.countDown();
         };
     }
 
