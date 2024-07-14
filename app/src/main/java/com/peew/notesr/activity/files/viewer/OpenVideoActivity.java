@@ -17,17 +17,16 @@ import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.TempFile;
 import com.peew.notesr.tools.FileManager;
+import com.peew.notesr.tools.HashHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Random;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class OpenVideoActivity extends BaseFileViewerActivity {
-
-    private static final Random RANDOM = new Random();
 
     private ScaleGestureDetector scaleGestureDetector;
     private VideoView videoView;
@@ -102,10 +101,11 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
 
     private File dropToCache(FileInfo fileInfo) {
         try {
+            String name = generateTempName(fileInfo.getId(), fileInfo.getName());
             String extension = FileManager.getFileExtension(fileInfo.getName());
 
             File tempDir = getCacheDir();
-            File tempVideo = File.createTempFile(String.valueOf(RANDOM.nextLong()), "." + extension, tempDir);
+            File tempVideo = File.createTempFile(name, "." + extension, tempDir);
 
             AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
             FileOutputStream stream = new FileOutputStream(tempVideo);
@@ -121,6 +121,14 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
             stream.close();
             return tempVideo;
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String generateTempName(Long id, String name) {
+        try {
+            return HashHelper.toSha256String(id.toString() + "$" + name);
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
