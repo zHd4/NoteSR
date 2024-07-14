@@ -76,7 +76,7 @@ public class CacheCleanerService extends Service implements Runnable {
             try {
                 Thread.sleep(DELAY);
             } catch (InterruptedException e) {
-                Log.e(TAG, "Service interrupted", e);
+                Log.e(TAG, "Thread interrupted", e);
             }
         }
     }
