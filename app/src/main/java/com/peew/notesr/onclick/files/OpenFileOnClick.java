@@ -8,6 +8,7 @@ import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
 import com.peew.notesr.activity.files.viewer.OpenImageActivity;
 import com.peew.notesr.activity.files.viewer.OpenTextFileActivity;
+import com.peew.notesr.activity.files.viewer.OpenUnknownFileActivity;
 import com.peew.notesr.activity.files.viewer.OpenVideoActivity;
 import com.peew.notesr.model.FileInfo;
 
@@ -36,14 +37,18 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
 
         String type = getFileType(fileInfo);
 
-        if (type != null) {
-            Class<? extends FileViewerActivityBase> viewer = FILES_VIEWERS.get(type);
-            Intent intent = new Intent(App.getContext(), viewer);
+        Class<? extends FileViewerActivityBase> viewer = type != null
+                ? FILES_VIEWERS.get(type)
+                : OpenUnknownFileActivity.class;
 
-            intent.putExtra("file_info", fileInfo);
+        openViewer(viewer, fileInfo);
+    }
 
-            activity.startActivity(intent);
-        }
+    private void openViewer(Class<? extends FileViewerActivityBase> viewer, FileInfo fileInfo) {
+        Intent intent = new Intent(App.getContext(), viewer);
+
+        intent.putExtra("file_info", fileInfo);
+        activity.startActivity(intent);
     }
 
     private String getFileType(FileInfo fileInfo) {
