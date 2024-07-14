@@ -28,7 +28,4 @@ public class TempFile {
         return uri;
     }
 
-    public void setUri(Uri uri) {
-        this.uri = uri;
-    }
 }
