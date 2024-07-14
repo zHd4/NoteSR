@@ -16,8 +16,6 @@ public class App extends Application {
 
         context = this;
         appContainer = new AppContainer();
-
-        startServices();
     }
 
     public static Context getContext() {
@@ -42,9 +40,5 @@ public class App extends Application {
 
     public static boolean isActivityVisible() {
         return activityVisible;
-    }
-
-    private void startServices() {
-        startForegroundService(new Intent(this, CacheCleanerService.class));
     }
 }
