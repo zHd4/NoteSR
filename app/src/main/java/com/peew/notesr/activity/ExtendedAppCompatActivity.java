@@ -23,18 +23,6 @@ public class ExtendedAppCompatActivity extends AppCompatActivity {
         getWindow().setFlags(windowFlag, windowFlag);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        App.activityResumed();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        App.activityPaused();
-    }
-
     public void showToastMessage(String text, int duration) {
         Toast toast = Toast.makeText(App.getContext(), text, duration);
         toast.show();
