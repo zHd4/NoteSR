@@ -19,8 +19,9 @@ import com.peew.notesr.tools.FileManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.Map;
 
 public class CacheCleanerService extends Service implements Runnable {
 
@@ -28,6 +29,7 @@ public class CacheCleanerService extends Service implements Runnable {
     private static final String CHANNEL_ID = "CacheCleanerChannel";
     private static final int DELAY = 2000;
 
+    private final Map<TempFile, Thread> runningJobs = new LinkedHashMap<>();
     private Thread thread;
 
     @Nullable
@@ -83,21 +85,18 @@ public class CacheCleanerService extends Service implements Runnable {
 
     private void clearCache() {
         List<TempFile> tempFiles = getTempFilesTable().getAll();
-        CountDownLatch latch = new CountDownLatch(tempFiles.size());
 
-        tempFiles.forEach(tempFile -> {
-            Thread thread = new Thread(wipeFile(tempFile, latch));
-            thread.start();
-        });
+        tempFiles.stream()
+                .filter(tempFile -> !runningJobs.containsKey(tempFile))
+                .forEach(tempFile -> {
+                    Thread thread = new Thread(wipeFile(tempFile));
 
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "CountDownLatch interrupted", e);
-        }
+                    runningJobs.put(tempFile, thread);
+                    thread.start();
+                });
     }
 
-    private Runnable wipeFile(TempFile tempFile, CountDownLatch latch) {
+    private Runnable wipeFile(TempFile tempFile) {
         return () -> {
             File file = new File(tempFile.getUri().getPath());
 
@@ -110,7 +109,7 @@ public class CacheCleanerService extends Service implements Runnable {
             }
 
             getTempFilesTable().delete(tempFile.getId());
-            latch.countDown();
+            runningJobs.remove(tempFile);
         };
     }
 
