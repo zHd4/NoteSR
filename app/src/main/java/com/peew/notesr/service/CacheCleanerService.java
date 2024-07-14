@@ -1,6 +1,5 @@
 package com.peew.notesr.service;
 
-import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -37,30 +36,22 @@ public class CacheCleanerService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        try {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Cleaning cache",
-                    NotificationManager.IMPORTANCE_NONE);
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Cleaning cache",
+                NotificationManager.IMPORTANCE_NONE);
 
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
 
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .build();
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .build();
 
-            int type = 0;
+        int type = 0;
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-            }
-
-            startForeground(startId, notification, type);
-        } catch (Exception e) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                    e instanceof ForegroundServiceStartNotAllowedException
-            ) {
-                throw new IllegalStateException(e);
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
+
+        startForeground(startId, notification, type);
 
         return START_STICKY;
     }
