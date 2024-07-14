@@ -69,9 +69,8 @@ public class CacheCleanerService extends Service implements Runnable {
             if (!BaseFileViewerActivity.isRunning()) {
                 clearCache();
 
-                if (!App.isActivityVisible()) {
-                    thread.interrupt();
-                }
+                thread.interrupt();
+                stopSelf();
             }
 
             try {
