@@ -22,10 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class OpenVideoActivity extends FileViewerActivityBase {
 
@@ -45,29 +43,41 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         videoView = findViewById(R.id.open_video_view);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
 
-        TempFilesTable tempFilesTable = App.getAppContainer()
-                .getServicesDB()
-                .getTable(TempFilesTable.class);
-
-        try {
-            videoFile = dropToCacheAsync(fileInfo);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
-        TempFile tempFile = new TempFile(videoUri);
-
-        tempFilesTable.save(tempFile);
-
-        setVideo(videoUri);
-        videoView.start();
+        loadVideo();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         scaleGestureDetector.onTouchEvent(motionEvent);
         return true;
+    }
+
+    private void loadVideo() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+
+        AlertDialog progressDialog = builder.create();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        TempFilesTable tempFilesTable = App.getAppContainer()
+                .getServicesDB()
+                .getTable(TempFilesTable.class);
+
+        executor.execute(() -> {
+            runOnUiThread(progressDialog::show);
+
+            videoFile = dropToCache(fileInfo);
+
+            Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
+            TempFile tempFile = new TempFile(videoUri);
+
+            tempFilesTable.save(tempFile);
+
+            setVideo(videoUri);
+            videoView.start();
+
+            runOnUiThread(progressDialog::dismiss);
+        });
     }
 
     private void setVideo(Uri uri) {
@@ -88,25 +98,6 @@ public class OpenVideoActivity extends FileViewerActivityBase {
 
         videoView.setMediaController(mediaController);
         videoView.setLayoutParams(params);
-    }
-
-    private File dropToCacheAsync(FileInfo fileInfo) throws ExecutionException, InterruptedException {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
-
-        AlertDialog progressDialog = builder.create();
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-
-        Future<File> result = executor.submit(() -> {
-            runOnUiThread(progressDialog::show);
-
-            File file = dropToCache(fileInfo);
-
-            runOnUiThread(progressDialog::dismiss);
-            return file;
-        });
-
-        return result.get();
     }
 
     private File dropToCache(FileInfo fileInfo) {
