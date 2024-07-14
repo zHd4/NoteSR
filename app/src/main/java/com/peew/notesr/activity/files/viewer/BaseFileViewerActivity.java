@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class FileViewerActivityBase extends ExtendedAppCompatActivity {
+public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
     protected FileInfo fileInfo;
     protected java.io.File saveDir;
     protected static boolean running;

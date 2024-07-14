@@ -13,7 +13,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import com.peew.notesr.App;
-import com.peew.notesr.activity.files.viewer.FileViewerActivityBase;
+import com.peew.notesr.activity.files.viewer.BaseFileViewerActivity;
 import com.peew.notesr.db.services.tables.TempFilesTable;
 import com.peew.notesr.model.TempFile;
 import com.peew.notesr.tools.FileManager;
@@ -74,7 +74,7 @@ public class CacheCleanerService extends Service implements Runnable {
     @Override
     public void run() {
         while (thread.isAlive()) {
-            if (!FileViewerActivityBase.isRunning()) {
+            if (!BaseFileViewerActivity.isRunning()) {
                 clearCache();
             }
 

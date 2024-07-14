@@ -25,7 +25,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class OpenVideoActivity extends FileViewerActivityBase {
+public class OpenVideoActivity extends BaseFileViewerActivity {
 
     private static final Random RANDOM = new Random();
 

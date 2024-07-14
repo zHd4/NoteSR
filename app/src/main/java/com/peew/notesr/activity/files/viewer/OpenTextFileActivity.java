@@ -7,7 +7,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.manager.AssignmentsManager;
 
-public class OpenTextFileActivity extends FileViewerActivityBase {
+public class OpenTextFileActivity extends BaseFileViewerActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

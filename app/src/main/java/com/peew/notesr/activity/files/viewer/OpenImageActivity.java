@@ -4,16 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
-import androidx.appcompat.app.ActionBar;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 
-public class OpenImageActivity extends FileViewerActivityBase {
+public class OpenImageActivity extends BaseFileViewerActivity {
     private ScaleGestureDetector scaleGestureDetector;
     private ImageView imageView;
 
