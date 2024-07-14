@@ -65,18 +65,18 @@ public class OpenVideoActivity extends FileViewerActivityBase {
 
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
-
             videoFile = dropToCache(fileInfo);
 
-            Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
-            TempFile tempFile = new TempFile(videoUri);
-
-            tempFilesTable.save(tempFile);
-
-            setVideo(videoUri);
-            videoView.start();
-
             runOnUiThread(progressDialog::dismiss);
+            runOnUiThread(() -> {
+                Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
+                TempFile tempFile = new TempFile(videoUri);
+
+                tempFilesTable.save(tempFile);
+
+                setVideo(videoUri);
+                videoView.start();
+            });
         });
     }
 
