@@ -2,6 +2,8 @@ package com.peew.notesr.model;
 
 import android.net.Uri;
 
+import java.util.Objects;
+
 public class TempFile {
 
     private Long id;
@@ -28,4 +30,16 @@ public class TempFile {
         return uri;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        TempFile tempFile = (TempFile) object;
+        return Objects.equals(id, tempFile.id) && Objects.equals(uri, tempFile.uri);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, uri);
+    }
 }
