@@ -9,7 +9,7 @@ import android.view.ScaleGestureDetector;
 import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
-import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.db.services.tables.TempFilesTable;
@@ -21,9 +21,9 @@ import com.peew.notesr.tools.FileManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class OpenVideoActivity extends FileViewerActivityBase {
 
@@ -41,7 +41,7 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 
         videoView = findViewById(R.id.open_video_view);
-        videoFile = dropToCache(fileInfo);
+        videoFile = dropToCacheAsync(fileInfo);
 
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
 
@@ -84,6 +84,24 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         videoView.setLayoutParams(params);
     }
 
+    private File dropToCacheAsync(FileInfo fileInfo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+
+        AlertDialog progressDialog = builder.create();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        CacheFile cacheFile = new CacheFile();
+
+        executor.execute(() -> {
+            runOnUiThread(progressDialog::show);
+            cacheFile.file = dropToCache(fileInfo);
+            runOnUiThread(progressDialog::dismiss);
+        });
+
+        return cacheFile.file;
+    }
+
     private File dropToCache(FileInfo fileInfo) {
         try {
             String extension = FileManager.getFileExtension(fileInfo.getName());
@@ -107,5 +125,9 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static final class CacheFile {
+        public File file;
     }
 }
