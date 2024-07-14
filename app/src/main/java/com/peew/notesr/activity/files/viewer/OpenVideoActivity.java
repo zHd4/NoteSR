@@ -1,5 +1,6 @@
 package com.peew.notesr.activity.files.viewer;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,6 +17,7 @@ import com.peew.notesr.db.services.tables.TempFilesTable;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.TempFile;
+import com.peew.notesr.service.CacheCleanerService;
 import com.peew.notesr.tools.FileManager;
 import com.peew.notesr.tools.HashHelper;
 
@@ -43,6 +45,7 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
 
         loadVideo();
+        startForegroundService(new Intent(this, CacheCleanerService.class));
     }
 
     @Override
