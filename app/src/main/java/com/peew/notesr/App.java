@@ -6,7 +6,6 @@ import android.content.Context;
 public class App extends Application {
     private static App context;
     private static AppContainer appContainer;
-    private static boolean activityVisible;
 
     @Override
     public void onCreate() {
@@ -26,17 +25,5 @@ public class App extends Application {
 
     public static boolean onAndroid() {
         return context != null;
-    }
-
-    public static void activityResumed() {
-        activityVisible = true;
-    }
-
-    public static void activityPaused() {
-        activityVisible = false;
-    }
-
-    public static boolean isActivityVisible() {
-        return activityVisible;
     }
 }
