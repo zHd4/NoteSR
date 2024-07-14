@@ -67,21 +67,22 @@ public class CacheCleanerService extends Service implements Runnable {
 
     @Override
     public void run() {
-        while (thread.isAlive()) {
-            if (!BaseFileViewerActivity.isRunning()) {
-                clearCache();
+        try {
+            while (thread.isAlive()) {
+                if (!BaseFileViewerActivity.isRunning()) {
+                    clearCache();
 
-                if (runningJobs.isEmpty()) {
-                    thread.interrupt();
-                    stopSelf();
+                    if (runningJobs.isEmpty()) {
+                        thread.interrupt();
+                        stopSelf();
+                    }
                 }
-            }
 
-            try {
+                //noinspection BusyWait
                 Thread.sleep(DELAY);
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Thread interrupted", e);
             }
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Thread interrupted", e);
         }
     }
 
