@@ -20,7 +20,6 @@ import com.peew.notesr.tools.FileManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class CacheCleanerService extends Service implements Runnable {
 
@@ -87,13 +86,13 @@ public class CacheCleanerService extends Service implements Runnable {
     }
 
     private void clearCache() {
-        TempFilesTable tempFilesTable = App.getAppContainer()
-                .getServicesDB()
-                .getTable(TempFilesTable.class);
+        getTempFilesTable()
+                .getAll()
+                .forEach(tempFile -> new Thread(wipeFile(tempFile)).start());
+    }
 
-        List<TempFile> tempFiles = tempFilesTable.getAll();
-
-        tempFiles.forEach(tempFile -> {
+    private Runnable wipeFile(TempFile tempFile) {
+        return () -> {
             File file = new File(tempFile.getUri().getPath());
 
             if (file.exists()) {
@@ -104,7 +103,13 @@ public class CacheCleanerService extends Service implements Runnable {
                 }
             }
 
-            tempFilesTable.delete(tempFile.getId());
-        });
+            getTempFilesTable().delete(tempFile.getId());
+        };
+    }
+
+    private TempFilesTable getTempFilesTable() {
+        return App.getAppContainer()
+                .getServicesDB()
+                .getTable(TempFilesTable.class);
     }
 }
