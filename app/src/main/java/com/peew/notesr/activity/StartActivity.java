@@ -8,7 +8,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.security.AuthActivity;
 
-public class StartActivity extends AppCompatActivityExtended {
+public class StartActivity extends ExtendedAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

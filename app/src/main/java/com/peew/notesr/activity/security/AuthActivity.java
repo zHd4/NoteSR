@@ -11,11 +11,11 @@ import androidx.core.content.ContextCompat;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
 
 import java.util.Arrays;
 
-public class AuthActivity extends AppCompatActivityExtended {
+public class AuthActivity extends ExtendedAppCompatActivity {
     public static final int AUTHORIZATION_MODE = 0;
     public static final int CREATE_PASSWORD_MODE = 1;
     public static final int KEY_RECOVERY_MODE = 2;

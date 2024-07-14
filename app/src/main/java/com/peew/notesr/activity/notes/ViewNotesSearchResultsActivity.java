@@ -5,7 +5,7 @@ import android.widget.ListView;
 import androidx.appcompat.app.ActionBar;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.adapter.NotesListAdapter;
 import com.peew.notesr.manager.NotesManager;
 import com.peew.notesr.model.Note;
@@ -15,7 +15,7 @@ import com.peew.notesr.onclick.notes.OpenNoteOnClick;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ViewNotesSearchResultsActivity extends AppCompatActivityExtended {
+public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
     private SearchNotesResults results;
 
     /** @noinspection DataFlowIssue*/

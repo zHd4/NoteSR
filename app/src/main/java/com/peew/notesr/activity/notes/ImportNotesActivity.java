@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.db.notes.NotesImportResult;
 import com.peew.notesr.db.notes.NotesImporter;
 
@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ImportNotesActivity extends AppCompatActivityExtended {
+public class ImportNotesActivity extends ExtendedAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

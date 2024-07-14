@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.adapter.FilesListAdapter;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.manager.NotesManager;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class AssignmentsListActivity extends AppCompatActivityExtended {
+public class AssignmentsListActivity extends ExtendedAppCompatActivity {
     private Note note;
 
     @Override

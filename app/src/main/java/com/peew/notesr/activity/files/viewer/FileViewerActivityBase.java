@@ -10,7 +10,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class FileViewerActivityBase extends AppCompatActivityExtended {
+public class FileViewerActivityBase extends ExtendedAppCompatActivity {
     protected FileInfo fileInfo;
     protected java.io.File saveDir;
     protected static boolean running;

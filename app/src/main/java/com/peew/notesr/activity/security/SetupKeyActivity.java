@@ -11,14 +11,14 @@ import android.widget.Toast;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.crypto.CryptoKey;
 import com.peew.notesr.crypto.CryptoTools;
 import com.peew.notesr.onclick.security.FinishKeySetupOnClick;
 
 import java.security.NoSuchAlgorithmException;
 
-public class SetupKeyActivity extends AppCompatActivityExtended {
+public class SetupKeyActivity extends ExtendedAppCompatActivity {
     public static final int FIRST_RUN_MODE = 0;
     public static final int REGENERATION_MODE = 1;
 

@@ -15,7 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.activity.AppCompatActivityExtended;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.tools.FileManager;
@@ -24,15 +24,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class AddFilesActivity extends AppCompatActivityExtended {
+public class AddFilesActivity extends ExtendedAppCompatActivity {
     private long noteId;
 
     @Override

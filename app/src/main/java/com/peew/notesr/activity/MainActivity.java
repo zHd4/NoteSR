@@ -10,7 +10,7 @@ import com.peew.notesr.activity.security.AuthActivity;
 import com.peew.notesr.activity.security.KeyRecoveryActivity;
 import com.peew.notesr.crypto.CryptoManager;
 
-public class MainActivity extends AppCompatActivityExtended {
+public class MainActivity extends ExtendedAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
