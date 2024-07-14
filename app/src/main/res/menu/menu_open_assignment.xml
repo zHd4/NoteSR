@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/save_image_to_storage_button"
-        android:icon="@android:drawable/ic_menu_save"
+        android:icon="@android:drawable/stat_sys_download"
         android:orderInCategory="2"
         android:title="@string/save_note"
         app:showAsAction="ifRoom" />
