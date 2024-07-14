@@ -41,13 +41,13 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 
         videoView = findViewById(R.id.open_video_view);
-        videoFile = dropToCacheAsync(fileInfo);
-
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
 
         TempFilesTable tempFilesTable = App.getAppContainer()
                 .getServicesDB()
                 .getTable(TempFilesTable.class);
+
+        dropToCacheAsync();
 
         Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
         TempFile tempFile = new TempFile(videoUri);
@@ -84,22 +84,18 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         videoView.setLayoutParams(params);
     }
 
-    private File dropToCacheAsync(FileInfo fileInfo) {
+    private void dropToCacheAsync() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
         AlertDialog progressDialog = builder.create();
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        CacheFile cacheFile = new CacheFile();
-
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
-            cacheFile.file = dropToCache(fileInfo);
+            videoFile =  dropToCache(fileInfo);
             runOnUiThread(progressDialog::dismiss);
         });
-
-        return cacheFile.file;
     }
 
     private File dropToCache(FileInfo fileInfo) {
@@ -125,9 +121,5 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static final class CacheFile {
-        public File file;
     }
 }
