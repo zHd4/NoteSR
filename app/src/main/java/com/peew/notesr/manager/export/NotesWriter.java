@@ -35,7 +35,7 @@ public class NotesWriter {
     private void writeNote(Note note) throws IOException {
         jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeFieldId(note.getId());
+        jsonGenerator.writeNumberField("id", note.getId());
 
         jsonGenerator.writeStringField("name", note.getName());
         jsonGenerator.writeStringField("text", note.getText());
