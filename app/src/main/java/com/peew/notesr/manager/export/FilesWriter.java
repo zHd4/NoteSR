@@ -1,13 +1,16 @@
 package com.peew.notesr.manager.export;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.table.DataBlocksTable;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.model.DataBlock;
+import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.FileInfo;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 public class FilesWriter {
     private final JsonGenerator jsonGenerator;
@@ -27,6 +30,23 @@ public class FilesWriter {
 
     public void writeFiles() throws IOException {
         jsonGenerator.writeArrayFieldStart("assignments");
+
+        writeFilesInfo();
+
+        jsonGenerator.writeEndArray();
+    }
+
+    private void writeFilesInfo() throws IOException {
+        jsonGenerator.writeArrayFieldStart("files_info");
+
+        Set<Long> filesId = filesInfoTable.getAllIds();
+
+        for (Long id : filesId) {
+            FileInfo fileInfo = FilesCrypt.decryptInfo(filesInfoTable.get(id));
+            writeFileInfo(fileInfo);
+        }
+
+
         jsonGenerator.writeEndArray();
     }
 
