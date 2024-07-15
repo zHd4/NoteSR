@@ -25,9 +25,8 @@ public class ExportManager extends BaseManager {
         File outputFile = new File(outputPath);
 
         JsonFactory jsonFactory = new JsonFactory();
-        JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputFile, JsonEncoding.UTF8);
-
-        jsonGenerator.useDefaultPrettyPrinter();
+        JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputFile, JsonEncoding.UTF8)
+                .useDefaultPrettyPrinter();
 
         NotesWriter notesWriter = new NotesWriter(jsonGenerator, getNotesTable(), getTimestampFormatter());
 
