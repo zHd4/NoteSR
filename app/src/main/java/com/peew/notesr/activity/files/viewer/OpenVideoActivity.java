@@ -7,8 +7,10 @@ import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
+import android.widget.TextView;
 import android.widget.VideoView;
 import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
@@ -44,8 +46,20 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
         videoView = findViewById(R.id.open_video_view);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
 
-        loadVideo();
-        startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
+        TextView label = findViewById(R.id.tap_to_play_label);
+
+        View.OnClickListener playAction = view -> {
+            videoView.setVisibility(View.VISIBLE);
+
+            label.setVisibility(View.INVISIBLE);
+            label.setEnabled(false);
+
+            loadVideo();
+            startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
+        };
+
+        videoView.setOnClickListener(playAction);
+        label.setOnClickListener(playAction);
     }
 
     @Override
