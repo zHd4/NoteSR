@@ -7,9 +7,13 @@ import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.manager.KeyUpdateManager;
 import com.peew.notesr.manager.NotesManager;
 
+import java.time.format.DateTimeFormatter;
+
 public class AppContainer {
     private final NotesDB notesDB = new NotesDB();
     private final ServicesDB servicesDB = new ServicesDB();
+
+    private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final CryptoManager cryptoManager = new CryptoManager();
     private final NotesManager notesManager = new NotesManager();
@@ -22,6 +26,10 @@ public class AppContainer {
 
     public ServicesDB getServicesDB() {
         return servicesDB;
+    }
+
+    public DateTimeFormatter getTimestampFormatter() {
+        return timestampFormatter;
     }
 
     public CryptoManager getCryptoManager() {
