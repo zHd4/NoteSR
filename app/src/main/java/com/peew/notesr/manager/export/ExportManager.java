@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.peew.notesr.App;
-import com.peew.notesr.db.notes.table.NotesTable;
 import com.peew.notesr.manager.BaseManager;
 import com.peew.notesr.tools.VersionFetcher;
 
@@ -30,11 +29,13 @@ public class ExportManager extends BaseManager {
 
         jsonGenerator.useDefaultPrettyPrinter();
 
+        NotesWriter notesWriter = new NotesWriter(jsonGenerator, getNotesTable(), getTimestampFormatter());
+
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
 
             writeVersion(jsonGenerator);
-            getNotesExporter(jsonGenerator, getTimestampFormatter()).writeNotes();
+            notesWriter.writeNotes();
 
             jsonGenerator.writeEndObject();
         }
@@ -47,14 +48,6 @@ public class ExportManager extends BaseManager {
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private NotesWriter getNotesExporter(JsonGenerator jsonGenerator, DateTimeFormatter dateTimeFormatter) {
-        NotesTable notesTable = App.getAppContainer()
-                .getNotesDB()
-                .getTable(NotesTable.class);
-
-        return new NotesWriter(jsonGenerator, notesTable, dateTimeFormatter);
     }
 
     private DateTimeFormatter getTimestampFormatter() {
