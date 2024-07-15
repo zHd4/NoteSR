@@ -9,13 +9,13 @@ import com.peew.notesr.model.Note;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-public class NotesExporter {
+public class NotesWriter {
 
     private final JsonGenerator jsonGenerator;
     private final NotesTable notesTable;
     private final DateTimeFormatter timestampFormatter;
 
-    public NotesExporter(JsonGenerator jsonGenerator, NotesTable notesTable, DateTimeFormatter timestampFormatter) {
+    public NotesWriter(JsonGenerator jsonGenerator, NotesTable notesTable, DateTimeFormatter timestampFormatter) {
         this.jsonGenerator = jsonGenerator;
         this.notesTable = notesTable;
         this.timestampFormatter = timestampFormatter;

@@ -47,12 +47,12 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private NotesExporter getNotesExporter(JsonGenerator jsonGenerator, DateTimeFormatter dateTimeFormatter) {
+    private NotesWriter getNotesExporter(JsonGenerator jsonGenerator, DateTimeFormatter dateTimeFormatter) {
         NotesTable notesTable = App.getAppContainer()
                 .getNotesDB()
                 .getTable(NotesTable.class);
 
-        return new NotesExporter(jsonGenerator, notesTable, dateTimeFormatter);
+        return new NotesWriter(jsonGenerator, notesTable, dateTimeFormatter);
     }
 
     private DateTimeFormatter getTimestampFormatter() {
