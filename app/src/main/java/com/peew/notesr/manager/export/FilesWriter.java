@@ -3,6 +3,7 @@ package com.peew.notesr.manager.export;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.peew.notesr.db.notes.table.DataBlocksTable;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
+import com.peew.notesr.model.DataBlock;
 import com.peew.notesr.model.FileInfo;
 
 import java.io.IOException;
@@ -44,6 +45,18 @@ public class FilesWriter {
 
         jsonGenerator.writeStringField("created_at", createdAt);
         jsonGenerator.writeStringField("updated_at", updatedAt);
+
+        jsonGenerator.writeEndObject();
+    }
+
+    private void writeDataBlock(DataBlock dataBlock) throws IOException {
+        jsonGenerator.writeStartObject();
+
+        jsonGenerator.writeNumberField("id", dataBlock.getId());
+        jsonGenerator.writeNumberField("file_id", dataBlock.getFileId());
+        jsonGenerator.writeNumberField("order", dataBlock.getOrder());
+
+        jsonGenerator.writeBinaryField("data", dataBlock.getData());
 
         jsonGenerator.writeEndObject();
     }
