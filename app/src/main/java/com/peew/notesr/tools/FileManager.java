@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 public class FileManager {
     /** @noinspection ResultOfMethodCallIgnored*/
@@ -59,7 +58,6 @@ public class FileManager {
     }
 
     public static String getFileExtension(String filename) {
-        String extension = null;
         String[] array = filename.split("\\.");
 
         if (array.length >= 2) {
