@@ -16,7 +16,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.adapter.NotesListAdapter;
 import com.peew.notesr.model.Note;
-import com.peew.notesr.onclick.notes.ExportNotesOnClick;
+import com.peew.notesr.onclick.notes.ExportOnClick;
 import com.peew.notesr.onclick.notes.NewNoteOnClick;
 import com.peew.notesr.onclick.notes.OpenNoteOnClick;
 import com.peew.notesr.onclick.security.ChangePasswordOnClick;
@@ -61,7 +61,7 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
         menuItemsMap.put(R.id.change_password_menu_item, new ChangePasswordOnClick());
 
         menuItemsMap.put(R.id.generate_new_key_menu_item, new GenerateNewKeyOnClick());
-        menuItemsMap.put(R.id.export_menu_item, new ExportNotesOnClick());
+        menuItemsMap.put(R.id.export_menu_item, new ExportOnClick());
 
         menuItemsMap.put(R.id.import_menu_item, action -> startActivity(importNotesActivityIntent));
         menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));

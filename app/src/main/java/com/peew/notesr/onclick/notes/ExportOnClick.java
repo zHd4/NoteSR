@@ -24,7 +24,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-public class ExportNotesOnClick implements Consumer<NotesListActivity> {
+public class ExportOnClick implements Consumer<NotesListActivity> {
     @Override
     public void accept(NotesListActivity activity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AlertDialogTheme);
