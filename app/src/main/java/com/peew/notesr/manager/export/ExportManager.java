@@ -28,6 +28,8 @@ public class ExportManager extends BaseManager {
         JsonFactory jsonFactory = new JsonFactory();
         JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputFile, JsonEncoding.UTF8);
 
+        jsonGenerator.useDefaultPrettyPrinter();
+
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
 
