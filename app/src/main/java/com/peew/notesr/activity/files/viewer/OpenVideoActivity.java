@@ -1,7 +1,5 @@
 package com.peew.notesr.activity.files.viewer;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -47,7 +45,7 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
 
         loadVideo();
-        startCacheCleaner();
+        startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
     }
 
     @Override
@@ -127,21 +125,6 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
             return tempVideo;
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private void startCacheCleaner() {
-        String cleanerName = CacheCleanerService.class.getName();
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-
-        String foundName = manager.getRunningServices(Integer.MAX_VALUE).stream()
-                .map(info -> info.service.getClassName())
-                .filter(name -> name.equals(cleanerName))
-                .findFirst()
-                .orElse(null);
-
-        if (foundName == null) {
-            startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
         }
     }
 
