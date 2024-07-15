@@ -35,6 +35,7 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
     private ScaleGestureDetector scaleGestureDetector;
     private VideoView videoView;
     private File videoFile;
+    private boolean playing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,26 +47,25 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
         videoView = findViewById(R.id.open_video_view);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
 
-        TextView label = findViewById(R.id.tap_to_play_label);
-
-        View.OnClickListener playAction = view -> {
-            videoView.setVisibility(View.VISIBLE);
-            label.setVisibility(View.INVISIBLE);
-
-            videoView.setOnClickListener(null);
-            label.setOnClickListener(null);
-
-            loadVideo();
-            startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
-        };
-
-        videoView.setOnClickListener(playAction);
-        label.setOnClickListener(playAction);
+        videoView.setOnClickListener(null);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
-        scaleGestureDetector.onTouchEvent(motionEvent);
+        if (!playing) {
+            TextView label = findViewById(R.id.tap_to_play_label);
+
+            videoView.setVisibility(View.VISIBLE);
+            label.setVisibility(View.INVISIBLE);
+
+            loadVideo();
+            startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
+
+            playing = true;
+        } else {
+            scaleGestureDetector.onTouchEvent(motionEvent);
+        }
+
         return true;
     }
 
