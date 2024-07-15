@@ -8,7 +8,7 @@ public class FileWiper {
 
     private static final int LOOPS_COUNT = 6;
 
-    private File file;
+    private final File file;
 
     public FileWiper(File file) {
         this.file = file;
