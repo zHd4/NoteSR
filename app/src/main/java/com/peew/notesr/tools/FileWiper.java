@@ -1,11 +1,14 @@
 package com.peew.notesr.tools;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class FileWiper {
 
+    private static final String TAG = FileWiper.class.getName();
     private static final int LOOPS_COUNT = 6;
 
     private final File file;
@@ -32,10 +35,15 @@ public class FileWiper {
                 long bytesWrite = 0;
 
                 do {
-                    byte[] empty = new byte[(int) (getAvailableMemory() / 2)];
+                    try {
+                        byte[] empty = new byte[(int) (getAvailableMemory() / 2)];
 
-                    stream.write(empty);
-                    bytesWrite += empty.length;
+                        stream.write(empty);
+                        bytesWrite += empty.length;
+                    } catch (OutOfMemoryError error) {
+                        Log.e(TAG, "OutOfMemoryError", error);
+                    }
+
                 } while (bytesWrite < size);
             }
         }
