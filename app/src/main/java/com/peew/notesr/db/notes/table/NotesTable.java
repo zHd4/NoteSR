@@ -29,7 +29,7 @@ public final class NotesTable extends BaseTable {
         SQLiteDatabase db = helper.getWritableDatabase();
 
         LocalDateTime now = LocalDateTime.now();
-        String nowStr = now.format(timestampFormatter);
+        String nowStr = now.format(getTimestampFormatter());
 
         ContentValues values = new ContentValues();
 
@@ -69,7 +69,7 @@ public final class NotesTable extends BaseTable {
                     byte[] text = cursor.getBlob(2);
 
                     String updatedAtStr = cursor.getString(3);
-                    LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, timestampFormatter);
+                    LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, getTimestampFormatter());
 
                     EncryptedNote note = new EncryptedNote(name, text, updatedAt);
 
@@ -96,7 +96,7 @@ public final class NotesTable extends BaseTable {
                 byte[] text = cursor.getBlob(1);
 
                 String updatedAtStr = cursor.getString(2);
-                LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, timestampFormatter);
+                LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, getTimestampFormatter());
 
                 EncryptedNote note = new EncryptedNote(name, text, updatedAt);
 

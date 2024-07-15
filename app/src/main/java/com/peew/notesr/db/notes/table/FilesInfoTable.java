@@ -33,7 +33,7 @@ public class FilesInfoTable extends BaseTable {
         SQLiteDatabase db = helper.getWritableDatabase();
 
         LocalDateTime now = LocalDateTime.now();
-        String nowStr = now.format(timestampFormatter);
+        String nowStr = now.format(getTimestampFormatter());
 
         ContentValues values = new ContentValues();
 
@@ -94,8 +94,8 @@ public class FilesInfoTable extends BaseTable {
                         size,
                         name,
                         type,
-                        LocalDateTime.parse(createdAt, timestampFormatter),
-                        LocalDateTime.parse(updatedAt, timestampFormatter));
+                        LocalDateTime.parse(createdAt, getTimestampFormatter()),
+                        LocalDateTime.parse(updatedAt, getTimestampFormatter()));
             }
         }
 
@@ -132,8 +132,8 @@ public class FilesInfoTable extends BaseTable {
                             size,
                             name,
                             type,
-                            LocalDateTime.parse(createdAt, timestampFormatter),
-                            LocalDateTime.parse(updatedAt, timestampFormatter)));
+                            LocalDateTime.parse(createdAt, getTimestampFormatter()),
+                            LocalDateTime.parse(updatedAt, getTimestampFormatter())));
                 } while (cursor.moveToNext());
             }
         }

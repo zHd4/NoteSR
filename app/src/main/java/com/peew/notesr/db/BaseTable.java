@@ -6,8 +6,6 @@ import com.peew.notesr.App;
 import java.time.format.DateTimeFormatter;
 
 public abstract class BaseTable {
-    protected static final DateTimeFormatter timestampFormatter = App.getAppContainer().getTimestampFormatter();
-
     protected SQLiteOpenHelper helper;
     protected String name;
 
@@ -18,5 +16,9 @@ public abstract class BaseTable {
 
     public String getName() {
         return name;
+    }
+
+    protected DateTimeFormatter getTimestampFormatter() {
+        return App.getAppContainer().getTimestampFormatter();
     }
 }
