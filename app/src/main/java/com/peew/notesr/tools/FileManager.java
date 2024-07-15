@@ -38,11 +38,20 @@ public class FileManager {
 
     /** @noinspection UnusedReturnValue*/
     public static boolean wipeFile(File file) throws IOException {
-        int size = (int) file.length();
+        long fileSize = file.length();
 
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            for (int i = 0; i < size; i++) {
-                stream.write(0);
+            try {
+                stream.write(new byte[(int) fileSize]);
+            } catch (OutOfMemoryError e) {
+                long bytesWrite = 0;
+
+                do {
+                    byte[] empty = new byte[(int) (getAvailableMemory() / 2)];
+
+                    stream.write(empty);
+                    bytesWrite += empty.length;
+                } while (bytesWrite < fileSize);
             }
         }
 
@@ -58,5 +67,10 @@ public class FileManager {
         }
 
         return null;
+    }
+
+    private static long getAvailableMemory() {
+        Runtime runtime = Runtime.getRuntime();
+        return runtime.maxMemory() - (runtime.totalMemory() - runtime.freeMemory());
     }
 }
