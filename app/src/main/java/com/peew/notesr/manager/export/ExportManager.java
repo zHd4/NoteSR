@@ -1,4 +1,4 @@
-package com.peew.notesr.manager;
+package com.peew.notesr.manager.export;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.peew.notesr.App;
+import com.peew.notesr.manager.BaseManager;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.tools.VersionFetcher;
 
