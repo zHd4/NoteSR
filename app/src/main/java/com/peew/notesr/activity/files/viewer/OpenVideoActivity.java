@@ -50,9 +50,10 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
 
         View.OnClickListener playAction = view -> {
             videoView.setVisibility(View.VISIBLE);
-
             label.setVisibility(View.INVISIBLE);
-            label.setEnabled(false);
+
+            videoView.setOnClickListener(null);
+            label.setOnClickListener(null);
 
             loadVideo();
             startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
