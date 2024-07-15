@@ -6,8 +6,8 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.peew.notesr.App;
+import com.peew.notesr.db.notes.table.NotesTable;
 import com.peew.notesr.manager.BaseManager;
-import com.peew.notesr.model.Note;
 import com.peew.notesr.tools.VersionFetcher;
 
 import java.io.File;
@@ -30,7 +30,10 @@ public class ExportManager extends BaseManager {
 
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
+
             writeVersion(jsonGenerator);
+            getNotesExporter(jsonGenerator, getTimestampFormatter()).writeNotes();
+
             jsonGenerator.writeEndObject();
         }
     }
@@ -44,26 +47,15 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void writeNotes(JsonGenerator jsonGenerator) throws IOException {
-        jsonGenerator.writeArrayFieldStart("notes");
-        jsonGenerator.writeEndArray();
+    private NotesExporter getNotesExporter(JsonGenerator jsonGenerator, DateTimeFormatter dateTimeFormatter) {
+        NotesTable notesTable = App.getAppContainer()
+                .getNotesDB()
+                .getTable(NotesTable.class);
+
+        return new NotesExporter(jsonGenerator, notesTable, dateTimeFormatter);
     }
 
-    private void writeNote(JsonGenerator jsonGenerator, Note note) throws IOException {
-        jsonGenerator.writeStartObject();
-
-        jsonGenerator.writeFieldId(note.getId());
-
-        jsonGenerator.writeStringField("name", note.getName());
-        jsonGenerator.writeStringField("text", note.getText());
-
-        String updatedAt = note.getUpdatedAt().format(getTimestampFormatter());
-        jsonGenerator.writeStringField("updated_at", updatedAt);
-
-        jsonGenerator.writeEndObject();
-    }
-
-    protected DateTimeFormatter getTimestampFormatter() {
+    private DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
     }
 }
