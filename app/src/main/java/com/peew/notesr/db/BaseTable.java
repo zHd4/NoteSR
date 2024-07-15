@@ -1,12 +1,12 @@
 package com.peew.notesr.db;
 
 import android.database.sqlite.SQLiteOpenHelper;
+import com.peew.notesr.App;
 
 import java.time.format.DateTimeFormatter;
 
 public abstract class BaseTable {
-    protected static final DateTimeFormatter timestampFormatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    protected static final DateTimeFormatter timestampFormatter = App.getAppContainer().getTimestampFormatter();
 
     protected SQLiteOpenHelper helper;
     protected String name;
