@@ -15,7 +15,6 @@ import com.peew.notesr.App;
 import com.peew.notesr.activity.files.viewer.BaseFileViewerActivity;
 import com.peew.notesr.db.services.tables.TempFilesTable;
 import com.peew.notesr.model.TempFile;
-import com.peew.notesr.tools.FileManager;
 import com.peew.notesr.tools.FileWiper;
 
 import java.io.File;
@@ -107,7 +106,11 @@ public class CacheCleanerService extends Service implements Runnable {
             if (file.exists()) {
                 try {
                     FileWiper wiper = new FileWiper(file);
-                    wiper.wipeFile();
+                    boolean removed = wiper.wipeFile();
+
+                    if (!removed) {
+                        Log.e(TAG, "File " + file + " not removed");
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "IOException while clearing cache", e);
                 }
