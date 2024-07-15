@@ -35,28 +35,6 @@ public class FileManager {
         return new File(App.getContext().getFilesDir(), path);
     }
 
-    /** @noinspection UnusedReturnValue*/
-    public static boolean wipeFile(File file) throws IOException {
-        long fileSize = file.length();
-
-        try (FileOutputStream stream = new FileOutputStream(file)) {
-            try {
-                stream.write(new byte[(int) fileSize]);
-            } catch (OutOfMemoryError e) {
-                long bytesWrite = 0;
-
-                do {
-                    byte[] empty = new byte[(int) (getAvailableMemory() / 2)];
-
-                    stream.write(empty);
-                    bytesWrite += empty.length;
-                } while (bytesWrite < fileSize);
-            }
-        }
-
-        return file.delete();
-    }
-
     public static String getFileExtension(String filename) {
         String[] array = filename.split("\\.");
 
@@ -65,10 +43,5 @@ public class FileManager {
         }
 
         return null;
-    }
-
-    private static long getAvailableMemory() {
-        Runtime runtime = Runtime.getRuntime();
-        return runtime.maxMemory() - (runtime.totalMemory() - runtime.freeMemory());
     }
 }
