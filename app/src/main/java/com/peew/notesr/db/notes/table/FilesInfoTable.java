@@ -4,13 +4,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import com.peew.notesr.db.BaseTable;
 import com.peew.notesr.model.EncryptedFileInfo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FilesInfoTable extends BaseTable {
     public FilesInfoTable(SQLiteOpenHelper helper, String name, NotesTable notesTable) {
@@ -139,6 +140,23 @@ public class FilesInfoTable extends BaseTable {
         }
 
         return files;
+    }
+
+    public Set<Long> getAllIds() {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Set<Long> ids = new HashSet<>();
+
+        Cursor cursor = db.rawQuery("SELECT id FROM " + name + " ORDER BY id", new String[] { });
+
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                do {
+                    ids.add(cursor.getLong(0));
+                } while (cursor.moveToNext());
+            }
+        }
+
+        return ids;
     }
 
     public void delete(long id) {
