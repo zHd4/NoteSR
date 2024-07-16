@@ -15,6 +15,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class BackupsCrypt {
 
+    private static final int CHUNK_SIZE = 100000;
+
     private final File source;
     private final File output;
     private final CryptoKey cryptoKey;
@@ -28,7 +30,23 @@ public class BackupsCrypt {
     public void encrypt() throws IOException {
         try (FileInputStream sourceStream = new FileInputStream(source)) {
             try (FileOutputStream outputStream = new FileOutputStream(output)) {
+                byte[] chunk = new byte[CHUNK_SIZE];
+                int bytesRead = sourceStream.read(chunk);
 
+                while (bytesRead != -1) {
+                    if (bytesRead != CHUNK_SIZE) {
+                        byte[] subChunk = new byte[bytesRead];
+                        System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
+
+                        chunk = subChunk;
+                    }
+
+                    chunk = encryptData(chunk);
+                    outputStream.write(chunk);
+
+                    chunk = new byte[CHUNK_SIZE];
+                    bytesRead = sourceStream.read(chunk);
+                }
             }
         }
     }
@@ -51,11 +69,6 @@ public class BackupsCrypt {
                  InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private long getAvailableMemory() {
-        Runtime runtime = Runtime.getRuntime();
-        return runtime.maxMemory() - (runtime.totalMemory() - runtime.freeMemory());
     }
 
     private CryptoKey getCryptoKey() {
