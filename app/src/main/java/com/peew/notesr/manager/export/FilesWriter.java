@@ -5,7 +5,6 @@ import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.table.DataBlocksTable;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.model.DataBlock;
-import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.FileInfo;
 
 import java.io.IOException;
@@ -31,21 +30,35 @@ public class FilesWriter {
     public void writeFiles() throws IOException {
         jsonGenerator.writeArrayFieldStart("assignments");
 
-        writeFilesInfo();
+        Set<Long> filesId = filesInfoTable.getAllIds();
+
+        writeFilesInfo(filesId);
 
         jsonGenerator.writeEndArray();
     }
 
-    private void writeFilesInfo() throws IOException {
+    private void writeFilesInfo(Set<Long> filesId) throws IOException {
         jsonGenerator.writeArrayFieldStart("files_info");
-
-        Set<Long> filesId = filesInfoTable.getAllIds();
 
         for (Long id : filesId) {
             FileInfo fileInfo = FilesCrypt.decryptInfo(filesInfoTable.get(id));
             writeFileInfo(fileInfo);
         }
 
+        jsonGenerator.writeEndArray();
+    }
+
+    private void writeFilesData(Set<Long> filesId) throws IOException {
+        jsonGenerator.writeArrayFieldStart("files_data_blocks");
+
+        for (Long fileId : filesId) {
+            Set<Long> blocksId = dataBlocksTable.getBlocksIdsByFileId(fileId);
+
+            for (Long blockId : blocksId) {
+                DataBlock block = dataBlocksTable.get(blockId);
+                writeDataBlock(block);
+            }
+        }
 
         jsonGenerator.writeEndArray();
     }
