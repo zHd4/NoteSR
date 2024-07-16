@@ -28,13 +28,25 @@ public class ExportManager extends BaseManager {
         JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputFile, JsonEncoding.UTF8)
                 .useDefaultPrettyPrinter();
 
-        NotesWriter notesWriter = new NotesWriter(jsonGenerator, getNotesTable(), getTimestampFormatter());
+        NotesWriter notesWriter = new NotesWriter(
+                jsonGenerator,
+                getNotesTable(),
+                getTimestampFormatter()
+        );
+
+        FilesWriter filesWriter = new FilesWriter(
+                jsonGenerator,
+                getFilesInfoTable(),
+                getDataBlocksTable(),
+                getTimestampFormatter()
+        );
 
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
-
             writeVersion(jsonGenerator);
+
             notesWriter.writeNotes();
+            filesWriter.writeFiles();
 
             jsonGenerator.writeEndObject();
         }
