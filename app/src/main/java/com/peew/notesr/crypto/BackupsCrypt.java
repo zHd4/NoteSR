@@ -16,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
 public class BackupsCrypt {
 
     private static final int CHUNK_SIZE = 100000;
+    private static final int ENCRYPTION_MODE = 0;
+    private static final int DECRYPTION_MODE = 1;
 
     private final File source;
     private final File output;
@@ -28,6 +30,14 @@ public class BackupsCrypt {
     }
 
     public void encrypt() throws IOException {
+        transform(ENCRYPTION_MODE);
+    }
+
+    public void decrypt() throws IOException {
+        transform(DECRYPTION_MODE);
+    }
+
+    private void transform(int mode) throws IOException {
         try (FileInputStream sourceStream = new FileInputStream(source)) {
             try (FileOutputStream outputStream = new FileOutputStream(output)) {
                 byte[] chunk = new byte[CHUNK_SIZE];
@@ -41,7 +51,14 @@ public class BackupsCrypt {
                         chunk = subChunk;
                     }
 
-                    chunk = encryptData(chunk);
+                    if (mode == ENCRYPTION_MODE) {
+                        chunk = encryptData(chunk);
+                    } else if (mode == DECRYPTION_MODE) {
+                        chunk = decryptData(chunk);
+                    } else {
+                        throw new IllegalArgumentException("Invalid mode " + mode);
+                    }
+
                     outputStream.write(chunk);
 
                     chunk = new byte[CHUNK_SIZE];
