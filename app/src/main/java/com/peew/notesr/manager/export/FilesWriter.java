@@ -39,7 +39,7 @@ public class FilesWriter {
     }
 
     private void writeFilesInfo(Set<Long> filesId) throws IOException {
-        jsonGenerator.writeArrayFieldStart("files_info");
+        jsonGenerator.writeArrayFieldStart("info");
 
         for (Long id : filesId) {
             FileInfo fileInfo = FilesCrypt.decryptInfo(filesInfoTable.get(id));
@@ -50,7 +50,7 @@ public class FilesWriter {
     }
 
     private void writeFilesData(Set<Long> filesId) throws IOException {
-        jsonGenerator.writeArrayFieldStart("files_data_blocks");
+        jsonGenerator.writeArrayFieldStart("data_blocks");
 
         for (Long fileId : filesId) {
             Set<Long> blocksId = dataBlocksTable.getBlocksIdsByFileId(fileId);
