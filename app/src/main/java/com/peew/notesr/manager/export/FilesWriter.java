@@ -33,6 +33,7 @@ public class FilesWriter {
         Set<Long> filesId = filesInfoTable.getAllIds();
 
         writeFilesInfo(filesId);
+        writeFilesData(filesId);
 
         jsonGenerator.writeEndArray();
     }
