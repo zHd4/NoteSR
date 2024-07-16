@@ -57,6 +57,8 @@ public class FilesWriter {
 
             for (Long blockId : blocksId) {
                 DataBlock block = dataBlocksTable.get(blockId);
+                block.setData(FilesCrypt.decryptData(block.getData()));
+
                 writeDataBlock(block);
             }
         }
