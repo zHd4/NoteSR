@@ -13,9 +13,6 @@ import com.peew.notesr.tools.VersionFetcher;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ExportManager extends BaseManager {
@@ -26,9 +23,8 @@ public class ExportManager extends BaseManager {
         this.context = context;
     }
 
-    public void export(String outputPath) throws IOException {
+    public void export(File outputFile) throws IOException {
         File jsonTempFile = generateTempJson();
-        File outputFile = getOutputFile(outputPath);
 
         encrypt(jsonTempFile, outputFile);
         wipe(jsonTempFile);
@@ -78,16 +74,6 @@ public class ExportManager extends BaseManager {
         if (!success) {
             throw new RuntimeException("Filed to wipe file");
         }
-    }
-
-    private File getOutputFile(String dirPath) {
-        LocalDateTime now = LocalDateTime.now();
-        String nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-        String filename = "nsr_export_" + nowStr + ".notesr.bak";
-        Path outputPath = Paths.get(dirPath, filename);
-
-        return new File(outputPath.toUri());
     }
 
     private void writeVersion(JsonGenerator jsonGenerator) throws IOException {
