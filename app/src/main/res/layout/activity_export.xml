@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/note" />
 
     <TextView
-        android:id="@+id/s_files_label"
+        android:id="@+id/files_count_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -43,7 +43,7 @@
         app:srcCompat="@drawable/file" />
 
     <TextView
-        android:id="@+id/s_notes_label"
+        android:id="@+id/notes_count_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
