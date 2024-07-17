@@ -85,4 +85,5 @@
     <string name="tap_the_screen_to_play">Tap the screen to play</string>
     <string name="s_notes">%s notes</string>
     <string name="s_files">%s files</string>
+    <string name="your_data_will_be_exported">Your data will be exported to an encrypted file\nThis may take a long time</string>
 </resources>
