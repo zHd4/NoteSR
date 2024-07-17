@@ -20,7 +20,7 @@ public abstract class BaseTable {
         return name;
     }
 
-    public Long getRowsCount() {
+    public long getRowsCount() {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + getName(), null);
