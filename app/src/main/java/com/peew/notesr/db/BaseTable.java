@@ -22,15 +22,21 @@ public abstract class BaseTable {
 
     public Long getRowsCount() {
         SQLiteDatabase db = helper.getReadableDatabase();
+
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + getName(), null);
+        Long count = null;
 
         try (cursor) {
             if (cursor.moveToFirst()) {
-                return cursor.getLong(0);
+                count = cursor.getLong(0);
             }
         }
 
-        return null;
+        if (count == null) {
+            throw new NullPointerException();
+        }
+
+        return count;
     }
 
     protected DateTimeFormatter getTimestampFormatter() {
