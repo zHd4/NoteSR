@@ -1,16 +1,17 @@
 package com.peew.notesr.activity.data;
 
+import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.db.notes.table.NotesTable;
 
-public class ExportActivity extends AppCompatActivity {
+public class ExportActivity extends ExtendedAppCompatActivity {
 
     private ActionBar actionBar;
 
@@ -33,6 +34,13 @@ public class ExportActivity extends AppCompatActivity {
 
         notesCountLabel.setText(String.format(getString(R.string.d_notes), notesCount));
         filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
+
+        Button startStopButton = findViewById(R.id.start_stop_export_button);
+
+        startStopButton.setOnClickListener(view -> {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            disableBackButton();
+        });
     }
 
     @Override
