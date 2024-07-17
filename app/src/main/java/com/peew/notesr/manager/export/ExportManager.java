@@ -2,9 +2,6 @@ package com.peew.notesr.manager.export;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.icu.text.SimpleDateFormat;
-import android.icu.util.Calendar;
-import android.os.Environment;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -20,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class ExportManager extends BaseManager {
 
@@ -31,10 +27,18 @@ public class ExportManager extends BaseManager {
     }
 
     public void export(String outputPath) throws IOException {
-        File outputFile = new File(outputPath);
+        File jsonTempFile = generateTempJson();
+        File outputFile = getOutputFile(outputPath);
+
+        encrypt(jsonTempFile, outputFile);
+        wipe(jsonTempFile);
+    }
+
+    private File generateTempJson() throws IOException {
+        File file = File.createTempFile("export", ".json");
 
         JsonFactory jsonFactory = new JsonFactory();
-        JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputFile, JsonEncoding.UTF8);
+        JsonGenerator jsonGenerator = jsonFactory.createGenerator(file, JsonEncoding.UTF8);
 
         NotesWriter notesWriter = new NotesWriter(
                 jsonGenerator,
@@ -58,6 +62,8 @@ public class ExportManager extends BaseManager {
 
             jsonGenerator.writeEndObject();
         }
+
+        return file;
     }
 
     private void encrypt(File jsonFile, File outputFile) throws IOException {
@@ -74,16 +80,14 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private File getDumpFile() {
+    private File getOutputFile(String dirPath) {
         LocalDateTime now = LocalDateTime.now();
-
         String nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
         String filename = "nsr_export_" + nowStr + ".notesr.bak";
+        Path outputPath = Paths.get(dirPath, filename);
 
-        File filesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        Path dumpPath = Paths.get(filesDir.toPath().toString(), filename);
-
-        return new File(dumpPath.toUri());
+        return new File(outputPath.toUri());
     }
 
     private void writeVersion(JsonGenerator jsonGenerator) throws IOException {
