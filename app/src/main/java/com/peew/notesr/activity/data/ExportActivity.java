@@ -1,5 +1,6 @@
 package com.peew.notesr.activity.data;
 
+import android.view.MenuItem;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,18 @@ public class ExportActivity extends AppCompatActivity {
 
         notesCountLabel.setText(String.format(getString(R.string.d_notes), notesCount));
         filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private long getNotesCount() {
