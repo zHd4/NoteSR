@@ -51,6 +51,6 @@ public class MainActivity extends ExtendedAppCompatActivity {
                 .findFirst()
                 .orElse(null);
 
-        return foundName == null;
+        return foundName != null;
     }
 }
