@@ -40,7 +40,9 @@ public class ExtendedAppCompatActivity extends AppCompatActivity {
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, new OnBackPressedCallback(true) {
             @Override
-            public void handleOnBackPressed() {}
+            public void handleOnBackPressed() {
+                finishAffinity();
+            }
         });
     }
 
