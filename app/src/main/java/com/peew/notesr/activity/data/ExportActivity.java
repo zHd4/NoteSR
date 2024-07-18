@@ -1,8 +1,11 @@
 package com.peew.notesr.activity.data;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import com.peew.notesr.App;
@@ -10,27 +13,35 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.db.notes.table.NotesTable;
+import com.peew.notesr.service.ExportService;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExportActivity extends ExtendedAppCompatActivity {
 
-    private static boolean running;
 
     private ActionBar actionBar;
+    private ExportService exportService;
 
-    public static boolean isRunning() {
-        return running;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
 
+        exportService = ExportService.getInstance();
+
         actionBar = getSupportActionBar();
         assert actionBar != null;
 
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(getString(R.string.export));
+        if (exportService == null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(getString(R.string.export));
+        } else {
+            actionBar.setTitle(getString(R.string.exporting));
+            disableBackButton();
+        }
 
         TextView notesCountLabel = findViewById(R.id.notes_count_label);
         TextView filesCountLabel = findViewById(R.id.files_count_label);
@@ -42,11 +53,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
 
         Button startStopButton = findViewById(R.id.start_stop_export_button);
-
-        startStopButton.setOnClickListener(view -> {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            disableBackButton();
-        });
+        startStopButton.setOnClickListener(startStopButtonOnClick());
     }
 
     @Override
@@ -61,22 +68,41 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onPause() {
-        running = false;
-        super.onPause();
+    private View.OnClickListener startStopButtonOnClick() {
+        return view -> {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setTitle(getString(R.string.exporting));
+
+            disableBackButton();
+
+            startForegroundService(new Intent(this, ExportService.class));
+            startProgressUpdater();
+        };
     }
 
-    @Override
-    public void onDestroy() {
-        running = false;
-        super.onDestroy();
-    }
+    private void startProgressUpdater() {
+        int delay = 500;
 
-    @Override
-    public void onResume() {
-        running = true;
-        super.onResume();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        ProgressBar progressBar = findViewById(R.id.export_progress_bar);
+
+        executor.execute(() -> {
+            while (true) {
+                int progress = exportService.getProgress();
+
+                runOnUiThread(() -> progressBar.setProgress(progress));
+
+                if (progress == 100) {
+                    break;
+                }
+
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     private long getNotesCount() {
