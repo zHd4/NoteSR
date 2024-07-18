@@ -59,6 +59,8 @@ public class ExportService extends Service implements Runnable {
             Log.e(TAG, "IOException", e);
             throw new RuntimeException(e);
         }
+
+        instance = null;
     }
 
     private File getOutputFile(String dirPath) {
