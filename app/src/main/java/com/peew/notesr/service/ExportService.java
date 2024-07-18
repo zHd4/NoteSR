@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.peew.notesr.App;
 import com.peew.notesr.manager.export.ExportManager;
 
@@ -26,41 +27,69 @@ import java.time.format.DateTimeFormatter;
 public class ExportService extends Service implements Runnable {
     private static final String TAG = CacheCleanerService.class.getName();
     private static final String CHANNEL_ID = "ExportChannel";
+    private static final int DELAY = 500;
 
-    private static ExportService instance;
-
-    private Thread thread;
+    private Thread serviceThread;
+    private Thread workerThread;
     private File outputFile;
     private ExportManager exportManager;
 
-    public static ExportService getInstance() {
-        return instance;
-    }
-
     @Override
     public void onCreate() {
-        instance = this;
-
-        thread = new Thread(this);
-        thread.start();
+        serviceThread = new Thread(this);
+        serviceThread.start();
     }
 
     @Override
     public void run() {
-        Context context = App.getContext();
-        File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        workerThread = new Thread(worker());
+        workerThread.start();
 
-        outputFile = getOutputFile(outputDir.getPath());
-        exportManager = new ExportManager(context);
+        do {
+            try {
+                sendProgress();
+                Thread.sleep(DELAY);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Thread interrupted", e);
+            }
+        } while (workerThread.isAlive());
 
-        try {
-            exportManager.export(outputFile);
-        } catch (IOException e) {
-            Log.e(TAG, "IOException", e);
-            throw new RuntimeException(e);
+        sendOutputPath();
+    }
+
+    private Runnable worker() {
+        return () -> {
+            Context context = App.getContext();
+            File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+            outputFile = getOutputFile(outputDir.getPath());
+            exportManager = new ExportManager(context);
+
+            try {
+                exportManager.export(outputFile);
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    private void sendProgress() {
+        if (exportManager != null) {
+            Intent intent = new Intent("ProgressUpdate");
+            intent.putExtra("progress", exportManager.calculateProgress());
+
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }
+    }
 
-        instance = null;
+    private void sendOutputPath() {
+        if (outputFile != null) {
+            Intent intent = new Intent("ExportOutputPath");
+            intent.putExtra("path", outputFile.getAbsolutePath());
+
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        }
     }
 
     private File getOutputFile(String dirPath) {
@@ -72,22 +101,6 @@ public class ExportService extends Service implements Runnable {
         Path outputPath = Paths.get(dirPath, filename);
 
         return new File(outputPath.toUri());
-    }
-
-    public String getOutputPath() {
-        if (outputFile == null) {
-            throw new IllegalStateException("Service has not been started");
-        }
-
-        return outputFile.getAbsolutePath();
-    }
-
-    public int getProgress() {
-        if (exportManager == null) {
-            throw new IllegalStateException("Service has not been started");
-        }
-
-        return exportManager.calculateProgress();
     }
 
     @Override
