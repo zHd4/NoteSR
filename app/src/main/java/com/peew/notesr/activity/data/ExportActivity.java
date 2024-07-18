@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
@@ -77,21 +78,27 @@ public class ExportActivity extends ExtendedAppCompatActivity {
             disableBackButton();
 
             startForegroundService(new Intent(this, ExportService.class));
-            startProgressUpdater();
+            startActivityWorker();
         };
     }
 
-    private void startProgressUpdater() {
+    private void startActivityWorker() {
         int delay = 500;
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(activityWorker(delay));
+    }
+
+    private Runnable activityWorker(int delay) {
         ProgressBar progressBar = findViewById(R.id.export_progress_bar);
 
-        executor.execute(() -> {
+        return () -> {
             while (true) {
                 int progress = exportService.getProgress();
 
-                runOnUiThread(() -> progressBar.setProgress(progress));
+                runOnUiThread(() -> {
+                    progressBar.setProgress(progress);
+                });
 
                 if (progress == 100) {
                     break;
@@ -104,12 +111,22 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                 }
             }
 
-            runOnUiThread(() -> {
-                startActivity(new Intent(this, NotesListActivity.class));
-                finish();
-            });
-        });
+            runOnUiThread(onActivityWorkerFinished());
+        };
     }
+
+    private Runnable onActivityWorkerFinished() {
+        return () -> {
+            String path = exportService.getOutputPath();
+            String message = String.format(getString(R.string.saved_to), path);
+
+            showToastMessage(message, Toast.LENGTH_LONG);
+            startActivity(new Intent(this, NotesListActivity.class));
+
+            finish();
+        };
+    }
+
 
     private long getNotesCount() {
         return App.getAppContainer().getNotesDB().getTable(NotesTable.class).getRowsCount();
