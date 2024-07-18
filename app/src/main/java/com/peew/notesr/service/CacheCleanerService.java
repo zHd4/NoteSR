@@ -32,33 +32,6 @@ public class CacheCleanerService extends Service implements Runnable {
     private final Map<TempFile, Thread> runningJobs = new LinkedHashMap<>();
     private Thread thread;
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Cleaning cache",
-                NotificationManager.IMPORTANCE_NONE);
-
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
-
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .build();
-
-        int type = 0;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-        }
-
-        startForeground(startId, notification, type);
-
-        return START_STICKY;
-    }
     @Override
     public void onCreate() {
         thread = new Thread(this);
@@ -125,5 +98,33 @@ public class CacheCleanerService extends Service implements Runnable {
         return App.getAppContainer()
                 .getServicesDB()
                 .getTable(TempFilesTable.class);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Cleaning cache",
+                NotificationManager.IMPORTANCE_NONE);
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .build();
+
+        int type = 0;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
+        }
+
+        startForeground(startId, notification, type);
+
+        return START_STICKY;
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }
