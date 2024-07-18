@@ -96,9 +96,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
             while (true) {
                 int progress = exportService.getProgress();
 
-                runOnUiThread(() -> {
-                    progressBar.setProgress(progress);
-                });
+                runOnUiThread(() -> progressBar.setProgress(progress));
 
                 if (progress == 100) {
                     break;
