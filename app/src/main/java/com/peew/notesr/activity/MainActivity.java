@@ -1,14 +1,18 @@
 package com.peew.notesr.activity;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.peew.notesr.App;
 import com.peew.notesr.R;
+import com.peew.notesr.activity.data.ExportActivity;
 import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.activity.security.AuthActivity;
 import com.peew.notesr.activity.security.KeyRecoveryActivity;
 import com.peew.notesr.crypto.CryptoManager;
+import com.peew.notesr.service.ExportService;
 
 public class MainActivity extends ExtendedAppCompatActivity {
     @Override
@@ -18,19 +22,35 @@ public class MainActivity extends ExtendedAppCompatActivity {
 
         CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
 
-        if (cryptoManager.isFirstRun()) {
-            startActivity(new Intent(App.getContext(), StartActivity.class));
-        } else if (cryptoManager.isBlocked()) {
-            startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
-        } else if (!cryptoManager.ready()) {
-            Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-            authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
+        Intent intent;
 
-            startActivity(authActivityIntent);
+        if (cryptoManager.isFirstRun()) {
+            intent = new Intent(this, StartActivity.class);
+        } else if (cryptoManager.isBlocked()) {
+            intent = new Intent(this, KeyRecoveryActivity.class);
+        } else if (isServiceRunning(ExportService.class)) {
+            intent = new Intent(this, ExportActivity.class);
+        } else if (!cryptoManager.ready()) {
+            intent = new Intent(this, AuthActivity.class);
+            intent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
         } else {
-            startActivity(new Intent(App.getContext(), NotesListActivity.class));
+            intent = new Intent(this, NotesListActivity.class);
         }
 
+        startActivity(intent);
         finish();
+    }
+
+    private boolean isServiceRunning(Class<?> serviceClass) {
+        String cleanerName = serviceClass.getName();
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        String foundName = manager.getRunningServices(Integer.MAX_VALUE).stream()
+                .map(info -> info.service.getClassName())
+                .filter(name -> name.equals(cleanerName))
+                .findFirst()
+                .orElse(null);
+
+        return foundName == null;
     }
 }
