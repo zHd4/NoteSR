@@ -110,7 +110,10 @@
 
         <service
             android:name=".service.CacheCleanerService"
-            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+        <service
+            android:name=".service.ExportService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
     </application>
