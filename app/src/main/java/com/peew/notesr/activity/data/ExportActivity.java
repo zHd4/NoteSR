@@ -11,6 +11,7 @@ import androidx.appcompat.app.ActionBar;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
+import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.db.notes.table.NotesTable;
 import com.peew.notesr.service.ExportService;
@@ -102,6 +103,11 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                     throw new RuntimeException(e);
                 }
             }
+
+            runOnUiThread(() -> {
+                startActivity(new Intent(this, NotesListActivity.class));
+                finish();
+            });
         });
     }
 
