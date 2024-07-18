@@ -13,7 +13,13 @@ import com.peew.notesr.db.notes.table.NotesTable;
 
 public class ExportActivity extends ExtendedAppCompatActivity {
 
+    private static boolean running;
+
     private ActionBar actionBar;
+
+    public static boolean isRunning() {
+        return running;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,24 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        running = false;
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        running = false;
+        super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        running = true;
+        super.onResume();
     }
 
     private long getNotesCount() {
