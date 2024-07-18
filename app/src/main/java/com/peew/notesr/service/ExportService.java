@@ -29,8 +29,7 @@ public class ExportService extends Service implements Runnable {
 
     private static ExportService instance;
 
-    private Thread mainThread;
-    private Thread workerThread;
+    private Thread thread;
     private File outputFile;
     private ExportManager exportManager;
 
@@ -38,8 +37,8 @@ public class ExportService extends Service implements Runnable {
     public void onCreate() {
         instance = this;
 
-        mainThread = new Thread(this);
-        mainThread.start();
+        thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -50,15 +49,11 @@ public class ExportService extends Service implements Runnable {
         outputFile = getOutputFile(outputDir.getPath());
         exportManager = new ExportManager(context);
 
-        workerThread = new Thread(() -> {
-            try {
-                exportManager.export(outputFile);
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-            }
-        });
-
-        workerThread.start();
+        try {
+            exportManager.export(outputFile);
+        } catch (IOException e) {
+            Log.e(TAG, "IOException", e);
+        }
     }
 
     private File getOutputFile(String dirPath) {
