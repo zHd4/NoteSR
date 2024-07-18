@@ -62,7 +62,7 @@
     <string name="exporting">Exporting…</string>
     <string name="importing">Importing…</string>
     <string name="export">Export</string>
-    <string name="saved_to">Saved to: %s</string>
+    <string name="saved_to">Saved to %s</string>
     <string name="import_from_file">Import from file</string>
     <string name="select_a_dump">Select a dump</string>
     <string name="imported">Imported</string>
