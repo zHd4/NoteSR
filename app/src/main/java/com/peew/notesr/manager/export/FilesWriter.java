@@ -18,7 +18,7 @@ public class FilesWriter implements Writer {
     private final DateTimeFormatter timestampFormatter;
     private final long total;
 
-    private long done;
+    private long done = 0;
 
     public FilesWriter(JsonGenerator jsonGenerator,
                        FilesInfoTable filesInfoTable,
@@ -45,6 +45,8 @@ public class FilesWriter implements Writer {
         for (Long id : filesId) {
             FileInfo fileInfo = FilesCrypt.decryptInfo(filesInfoTable.get(id));
             writeFileInfo(fileInfo);
+
+            done++;
         }
 
         jsonGenerator.writeEndArray();
@@ -58,9 +60,11 @@ public class FilesWriter implements Writer {
 
             for (Long blockId : blocksId) {
                 DataBlock block = dataBlocksTable.get(blockId);
-                block.setData(FilesCrypt.decryptData(block.getData()));
 
+                block.setData(FilesCrypt.decryptData(block.getData()));
                 writeDataBlock(block);
+
+                done++;
             }
         }
 
