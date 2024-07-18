@@ -33,6 +33,10 @@ public class ExportService extends Service implements Runnable {
     private File outputFile;
     private ExportManager exportManager;
 
+    public static ExportService getInstance() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         instance = this;
@@ -53,6 +57,7 @@ public class ExportService extends Service implements Runnable {
             exportManager.export(outputFile);
         } catch (IOException e) {
             Log.e(TAG, "IOException", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -60,6 +65,7 @@ public class ExportService extends Service implements Runnable {
         LocalDateTime now = LocalDateTime.now();
         String nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
+        //noinspection SpellCheckingInspection
         String filename = "nsr_export_" + nowStr + ".notesr.bak";
         Path outputPath = Paths.get(dirPath, filename);
 
@@ -68,10 +74,6 @@ public class ExportService extends Service implements Runnable {
 
     public String getOutputPath() {
         return outputFile != null ? outputFile.getAbsolutePath() : null;
-    }
-
-    public static ExportService getInstance() {
-        return instance;
     }
 
     @Override
