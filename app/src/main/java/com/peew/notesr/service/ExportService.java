@@ -66,6 +66,14 @@ public class ExportService extends Service implements Runnable {
         return new File(outputPath.toUri());
     }
 
+    public String getOutputPath() {
+        return outputFile != null ? outputFile.getAbsolutePath() : null;
+    }
+
+    public static ExportService getInstance() {
+        return instance;
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Exporting",
@@ -92,13 +100,5 @@ public class ExportService extends Service implements Runnable {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    public String getOutputPath() {
-        return outputFile.getAbsolutePath();
-    }
-
-    public static ExportService getInstance() {
-        return instance;
     }
 }
