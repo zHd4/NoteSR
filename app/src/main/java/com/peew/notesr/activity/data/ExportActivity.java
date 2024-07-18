@@ -81,6 +81,8 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
             broadcastManager.registerReceiver(progressReceiver(), new IntentFilter("ProgressUpdate"));
             broadcastManager.registerReceiver(outputPathReceiver(), new IntentFilter("ExportOutputPath"));
+
+            view.setEnabled(false);
         };
     }
 
@@ -104,7 +106,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                     throw new NullPointerException("Path is null");
                 }
 
-                String message = String.format(getString(R.string.saved_to), path);
+                String message = String.format(getString(R.string.saved_to), "Download");
 
                 showToastMessage(message, Toast.LENGTH_LONG);
                 startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
