@@ -11,11 +11,14 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
-public class FilesWriter {
+public class FilesWriter implements Writer {
     private final JsonGenerator jsonGenerator;
     private final FilesInfoTable filesInfoTable;
     private final DataBlocksTable dataBlocksTable;
     private final DateTimeFormatter timestampFormatter;
+    private final long total;
+
+    private long done;
 
     public FilesWriter(JsonGenerator jsonGenerator,
                        FilesInfoTable filesInfoTable,
@@ -25,6 +28,8 @@ public class FilesWriter {
         this.filesInfoTable = filesInfoTable;
         this.dataBlocksTable = dataBlocksTable;
         this.timestampFormatter = timestampFormatter;
+
+        this.total = filesInfoTable.getRowsCount() + dataBlocksTable.getRowsCount();
     }
 
     public void writeFiles() throws IOException {
@@ -91,5 +96,10 @@ public class FilesWriter {
         jsonGenerator.writeBinaryField("data", dataBlock.getData());
 
         jsonGenerator.writeEndObject();
+    }
+
+    @Override
+    public int getProgress() {
+        return Math.round((done * 100.0f) / total);
     }
 }
