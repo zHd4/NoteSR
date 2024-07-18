@@ -19,6 +19,10 @@ public class ExportManager extends BaseManager {
 
     private final Context context;
 
+    private NotesWriter notesWriter;
+    private FilesWriter filesWriter;
+    private boolean finished = false;
+
     public ExportManager(Context context) {
         this.context = context;
     }
@@ -28,6 +32,23 @@ public class ExportManager extends BaseManager {
 
         encrypt(jsonTempFile, outputFile);
         wipe(jsonTempFile);
+
+        finished = true;
+    }
+
+    public int calculateProgress() {
+        if (notesWriter == null || filesWriter == null) {
+            return 0;
+        }
+
+        if (finished) {
+            return 100;
+        }
+
+        int total = 100 * 2;
+        int current = notesWriter.getProgress() + filesWriter.getProgress();
+
+        return Math.round((current * 99.0f) / total);
     }
 
     private File generateTempJson() throws IOException {
@@ -36,13 +57,13 @@ public class ExportManager extends BaseManager {
         JsonFactory jsonFactory = new JsonFactory();
         JsonGenerator jsonGenerator = jsonFactory.createGenerator(file, JsonEncoding.UTF8);
 
-        NotesWriter notesWriter = new NotesWriter(
+        notesWriter = new NotesWriter(
                 jsonGenerator,
                 getNotesTable(),
                 getTimestampFormatter()
         );
 
-        FilesWriter filesWriter = new FilesWriter(
+        filesWriter = new FilesWriter(
                 jsonGenerator,
                 getFilesInfoTable(),
                 getDataBlocksTable(),
