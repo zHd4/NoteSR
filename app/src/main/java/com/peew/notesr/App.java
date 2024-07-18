@@ -16,7 +16,7 @@ public class App extends Application {
         appContainer = new AppContainer();
     }
 
-    public static Context getContext() {
+    public static App getContext() {
         return context;
     }
 
@@ -28,7 +28,7 @@ public class App extends Application {
         return context != null;
     }
 
-    public boolean isServiceRunning(Class<?> serviceClass) {
+    public boolean serviceRunning(Class<?> serviceClass) {
         String cleanerName = serviceClass.getName();
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 

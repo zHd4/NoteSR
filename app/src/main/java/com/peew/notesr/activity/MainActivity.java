@@ -28,7 +28,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
             intent = new Intent(this, StartActivity.class);
         } else if (cryptoManager.isBlocked()) {
             intent = new Intent(this, KeyRecoveryActivity.class);
-        } else if (isServiceRunning(ExportService.class)) {
+        } else if (App.getContext().serviceRunning(ExportService.class)) {
             intent = new Intent(this, ExportActivity.class);
         } else if (!cryptoManager.ready()) {
             intent = new Intent(this, AuthActivity.class);
@@ -39,18 +39,5 @@ public class MainActivity extends ExtendedAppCompatActivity {
 
         startActivity(intent);
         finish();
-    }
-
-    private boolean isServiceRunning(Class<?> serviceClass) {
-        String cleanerName = serviceClass.getName();
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-
-        String foundName = manager.getRunningServices(Integer.MAX_VALUE).stream()
-                .map(info -> info.service.getClassName())
-                .filter(name -> name.equals(cleanerName))
-                .findFirst()
-                .orElse(null);
-
-        return foundName != null;
     }
 }
