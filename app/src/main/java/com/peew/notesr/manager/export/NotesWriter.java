@@ -9,16 +9,21 @@ import com.peew.notesr.model.Note;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-public class NotesWriter {
+public class NotesWriter implements Writer {
 
     private final JsonGenerator jsonGenerator;
     private final NotesTable notesTable;
     private final DateTimeFormatter timestampFormatter;
+    private final long totalNotes;
+
+    private long done;
 
     public NotesWriter(JsonGenerator jsonGenerator, NotesTable notesTable, DateTimeFormatter timestampFormatter) {
         this.jsonGenerator = jsonGenerator;
         this.notesTable = notesTable;
         this.timestampFormatter = timestampFormatter;
+
+        this.totalNotes = notesTable.getRowsCount();
     }
 
     public void writeNotes() throws IOException {
@@ -27,6 +32,8 @@ public class NotesWriter {
         for (EncryptedNote encryptedNote : notesTable.getAll()) {
             Note note = NotesCrypt.decrypt(encryptedNote);
             writeNote(note);
+
+            done++;
         }
 
         jsonGenerator.writeEndArray();
@@ -44,5 +51,10 @@ public class NotesWriter {
         jsonGenerator.writeStringField("updated_at", updatedAt);
 
         jsonGenerator.writeEndObject();
+    }
+
+    @Override
+    public int getProgress() {
+        return Math.round((done * 100.0f) / totalNotes);
     }
 }
