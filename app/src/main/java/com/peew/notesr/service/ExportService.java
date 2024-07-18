@@ -73,7 +73,19 @@ public class ExportService extends Service implements Runnable {
     }
 
     public String getOutputPath() {
-        return outputFile != null ? outputFile.getAbsolutePath() : null;
+        if (outputFile == null) {
+            throw new IllegalStateException("Service has not been started");
+        }
+
+        return outputFile.getAbsolutePath();
+    }
+
+    public int getProgress() {
+        if (exportManager == null) {
+            throw new IllegalStateException("Service has not been started");
+        }
+
+        return exportManager.calculateProgress();
     }
 
     @Override
