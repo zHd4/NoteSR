@@ -84,6 +84,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
     private void startActivityWorker() {
         int delay = 500;
+        exportService = ExportService.getInstance();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(activityWorker(delay));
