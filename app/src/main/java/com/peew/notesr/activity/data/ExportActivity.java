@@ -99,24 +99,6 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    private BroadcastReceiver outputPathReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                TextView outputPathLabel = findViewById(R.id.export_output_path_label);
-
-                String path = intent.getStringExtra("path");
-                String newText = outputPathLabel.getText().toString() + " " + path;
-
-                if (outputPathLabel.getVisibility() == View.INVISIBLE) {
-                    outputPathLabel.setVisibility(View.VISIBLE);
-                }
-
-                outputPathLabel.setText(newText);
-            }
-        };
-    }
-
     private void updateProgressViews(int progress, String status, String outputPath) {
         ProgressBar progressBar = findViewById(R.id.export_progress_bar);
         progressBar.setProgress(progress);
