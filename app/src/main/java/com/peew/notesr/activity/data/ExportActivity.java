@@ -95,23 +95,14 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                int progress = intent.getIntExtra("progress", 0);
                 String status = intent.getStringExtra("status");
 
                 if (status == null) {
                     throw new NullPointerException("Status is null");
                 }
 
-                int progress = intent.getIntExtra("progress", 0);
-                String progressStr = progress + "%";
-
-                if (percentageLabel.getVisibility() == View.INVISIBLE) {
-                    percentageLabel.setVisibility(View.VISIBLE);
-                }
-
-                progressBar.setProgress(progress);
-
-                percentageLabel.setText(progressStr);
-                statusLabel.setText(status);
+                updateProgressViews(progress, status);
 
                 if (progress == 100) {
                     finishExporting();
@@ -136,6 +127,23 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                 outputPathLabel.setText(newText);
             }
         };
+    }
+
+    private void updateProgressViews(int progress, String status) {
+        String progressStr = progress + "%";
+
+        if (percentageLabel.getVisibility() == View.INVISIBLE) {
+            percentageLabel.setVisibility(View.VISIBLE);
+        }
+
+        if (statusLabel.getVisibility() == View.INVISIBLE) {
+            statusLabel.setVisibility(View.VISIBLE);
+        }
+
+        progressBar.setProgress(progress);
+
+        percentageLabel.setText(progressStr);
+        statusLabel.setText(status);
     }
 
     private void finishExporting() {
