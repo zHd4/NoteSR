@@ -40,25 +40,50 @@ public class ExportManager extends BaseManager {
         this.outputFile = outputFile;
     }
 
-    public void export() throws InterruptedException {
+    public void export() {
         jsonGeneratorThread = new Thread(tempJsonGenerator());
         encryptorThread = new Thread(encryptor());
         wiperThread = new Thread(wiper());
 
-        status = context.getString(R.string.exporting_data);
+        try {
+            status = context.getString(R.string.exporting_data);
 
-        jsonGeneratorThread.start();
-        jsonGeneratorThread.join();
+            jsonGeneratorThread.start();
+            jsonGeneratorThread.join();
 
-        status = context.getString(R.string.encrypting_data);
+            status = context.getString(R.string.encrypting_data);
 
-        encryptorThread.start();
-        encryptorThread.join();
+            encryptorThread.start();
+            encryptorThread.join();
 
-        status = context.getString(R.string.wiping_temp_data);
+            status = context.getString(R.string.wiping_temp_data);
 
-        wiperThread.start();
-        wiperThread.join();
+            wiperThread.start();
+            wiperThread.join();
+        } catch (InterruptedException e) {
+            Log.e(TAG, "InterruptedException", e);
+        }
+
+        status = "";
+        finished = true;
+    }
+
+    public void cancel() throws IOException {
+        if (jsonGeneratorThread == null || encryptorThread == null || wiperThread == null) {
+            throw new IllegalStateException("Export has not been started");
+        }
+
+        status = context.getString(R.string.canceling);
+
+        if (jsonGeneratorThread.isAlive()) {
+            jsonGeneratorThread.interrupt();
+            new FileWiper(jsonTempFile).wipeFile();
+        } else if (encryptorThread.isAlive()) {
+            encryptorThread.interrupt();
+
+            new FileWiper(jsonTempFile).wipeFile();
+            new FileWiper(outputFile).wipeFile();
+        }
 
         status = "";
         finished = true;

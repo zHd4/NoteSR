@@ -58,12 +58,8 @@ public class ExportService extends Service implements Runnable {
 
     private Runnable exportWorker() {
         return () -> {
-            try {
-                exportManager.export();
-            } catch (InterruptedException e) {
-                Log.e(TAG, "InterruptedException", e);
-                stop();
-            }
+            exportManager.export();
+            stop();
         };
     }
 
