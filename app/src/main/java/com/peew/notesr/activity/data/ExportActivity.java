@@ -90,7 +90,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                 String status = intent.getStringExtra("status");
                 String outputPath = intent.getStringExtra("outputPath");
 
-                updateProgressViews(progress, status, outputPath);
+                updateViews(progress, status, outputPath);
 
                 if (progress == 100) {
                     finishExporting();
@@ -99,7 +99,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    private void updateProgressViews(int progress, String status, String outputPath) {
+    private void updateViews(int progress, String status, String outputPath) {
         ProgressBar progressBar = findViewById(R.id.export_progress_bar);
         progressBar.setProgress(progress);
 
