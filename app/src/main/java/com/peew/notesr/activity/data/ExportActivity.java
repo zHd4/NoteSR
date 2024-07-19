@@ -26,7 +26,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
     private ActionBar actionBar;
     private ProgressBar progressBar;
     private TextView percentageLabel;
-    private int progress;
+    private TextView statusLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
         progressBar = findViewById(R.id.export_progress_bar);
         percentageLabel = findViewById(R.id.export_percentage_label);
+        statusLabel = findViewById(R.id.export_status_label);
 
         assert actionBar != null;
 
@@ -94,7 +95,13 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                progress = intent.getIntExtra("progress", 0);
+                String status = intent.getStringExtra("status");
+
+                if (status == null) {
+                    throw new NullPointerException("Status is null");
+                }
+
+                int progress = intent.getIntExtra("progress", 0);
                 String progressStr = progress + "%";
 
                 if (percentageLabel.getVisibility() == View.INVISIBLE) {
@@ -102,13 +109,12 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                 }
 
                 progressBar.setProgress(progress);
+
                 percentageLabel.setText(progressStr);
+                statusLabel.setText(status);
 
                 if (progress == 100) {
-                    showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
-                    startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-
-                    finish();
+                    finishExporting();
                 }
             }
         };
@@ -130,6 +136,13 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                 outputPathLabel.setText(newText);
             }
         };
+    }
+
+    private void finishExporting() {
+        showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
+        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+
+        finish();
     }
 
     private long getNotesCount() {
