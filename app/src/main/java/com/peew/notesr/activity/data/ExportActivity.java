@@ -33,10 +33,8 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         actionBar = getSupportActionBar();
         assert actionBar != null;
 
-        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-
-        broadcastManager.registerReceiver(progressReceiver(), new IntentFilter("ProgressUpdate"));
-        broadcastManager.registerReceiver(outputPathReceiver(), new IntentFilter("ExportOutputPath"));
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(dataReceiver(), new IntentFilter("ExportDataBroadcast"));
 
         if (App.getContext().serviceRunning(ExportService.class)) {
             actionBar.setTitle(getString(R.string.exporting));
@@ -83,18 +81,16 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    private BroadcastReceiver progressReceiver() {
+    private BroadcastReceiver dataReceiver() {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int progress = intent.getIntExtra("progress", 0);
+
                 String status = intent.getStringExtra("status");
+                String outputPath = intent.getStringExtra("outputPath");
 
-                if (status == null) {
-                    throw new NullPointerException("Status is null");
-                }
-
-                updateProgressViews(progress, status);
+                updateProgressViews(progress, status, outputPath);
 
                 if (progress == 100) {
                     finishExporting();
@@ -121,21 +117,23 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    private void updateProgressViews(int progress, String status) {
-        String progressStr = progress + "%";
-
+    private void updateProgressViews(int progress, String status, String outputPath) {
         ProgressBar progressBar = findViewById(R.id.export_progress_bar);
+        progressBar.setProgress(progress);
+
+        String progressStr = progress + "%";
 
         TextView percentageLabel = findViewById(R.id.export_percentage_label);
         TextView statusLabel = findViewById(R.id.export_status_label);
+        TextView outputPathLabel = findViewById(R.id.export_output_path_label);
 
-        progressBar.setProgress(progress);
-
-        percentageLabel.setVisibility(View.VISIBLE);
-        statusLabel.setVisibility(View.VISIBLE);
+        makeViewVisible(percentageLabel);
+        makeViewVisible(statusLabel);
+        makeViewVisible(outputPathLabel);
 
         percentageLabel.setText(progressStr);
         statusLabel.setText(status);
+        outputPathLabel.setText(outputPath);
     }
 
     private void finishExporting() {
@@ -143,6 +141,12 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
 
         finish();
+    }
+
+    private void makeViewVisible(View view) {
+        if (view.getVisibility() == View.INVISIBLE) {
+            view.setVisibility(View.VISIBLE);
+        }
     }
 
     private long getNotesCount() {
