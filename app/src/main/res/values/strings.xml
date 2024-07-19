@@ -86,4 +86,5 @@
     <string name="d_notes">%d\nnotes</string>
     <string name="d_files">%d\nfiles</string>
     <string name="your_data_will_be_exported">Your data will be exported to an encrypted file\nThis may take a long time</string>
+    <string name="output_path">Output path:</string>
 </resources>
