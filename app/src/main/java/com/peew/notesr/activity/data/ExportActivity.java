@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -122,7 +121,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         percentageLabel.setText(progressStr);
         statusLabel.setText(status);
 
-        outputPathLabel.setText(String.format("%s %s", getString(R.string.output_path), outputPath));
+        outputPathLabel.setText(String.format("%s\n%s", getString(R.string.saving_in), outputPath));
     }
 
     private void setCancelButton() {
