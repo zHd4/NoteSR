@@ -18,7 +18,6 @@ import com.peew.notesr.App;
 import com.peew.notesr.manager.export.ExportManager;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -47,7 +46,7 @@ public class ExportService extends Service implements Runnable {
         File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         outputFile = getOutputFile(outputDir.getPath());
 
-        exportManager = new ExportManager(context);
+        exportManager = new ExportManager(context, outputFile);
         exportWorkerThread = new Thread(exportWorker());
 
         exportWorkerThread.start();
@@ -60,10 +59,10 @@ public class ExportService extends Service implements Runnable {
     private Runnable exportWorker() {
         return () -> {
             try {
-                exportManager.export(outputFile);
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-                throw new RuntimeException(e);
+                exportManager.export();
+            } catch (InterruptedException e) {
+                Log.e(TAG, "InterruptedException", e);
+                stop();
             }
         };
     }
@@ -136,5 +135,13 @@ public class ExportService extends Service implements Runnable {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private void stop() {
+        serviceThread.interrupt();
+        exportWorkerThread.interrupt();
+
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
     }
 }

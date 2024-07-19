@@ -2,6 +2,7 @@ package com.peew.notesr.manager.export;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -18,26 +19,46 @@ import java.time.format.DateTimeFormatter;
 
 public class ExportManager extends BaseManager {
 
+    private static final String TAG = ExportManager.class.getName();
+
     private final Context context;
+    private final File outputFile;
 
     private NotesWriter notesWriter;
     private FilesWriter filesWriter;
+
+    private Thread jsonGeneratorThread;
+    private Thread encryptorThread;
+    private Thread wiperThread;
+
+    private File jsonTempFile;
     private boolean finished = false;
     private String status = "";
 
-    public ExportManager(Context context) {
+    public ExportManager(Context context, File outputFile) {
         this.context = context;
+        this.outputFile = outputFile;
     }
 
-    public void export(File outputFile) throws IOException {
+    public void export() throws InterruptedException {
+        jsonGeneratorThread = new Thread(tempJsonGenerator());
+        encryptorThread = new Thread(encryptor());
+        wiperThread = new Thread(wiper());
+
         status = context.getString(R.string.exporting_data);
-        File jsonTempFile = generateTempJson();
+
+        jsonGeneratorThread.start();
+        jsonGeneratorThread.join();
 
         status = context.getString(R.string.encrypting_data);
-        encrypt(jsonTempFile, outputFile);
+
+        encryptorThread.start();
+        encryptorThread.join();
 
         status = context.getString(R.string.wiping_temp_data);
-        wipe(jsonTempFile);
+
+        wiperThread.start();
+        wiperThread.join();
 
         status = "";
         finished = true;
@@ -62,50 +83,59 @@ public class ExportManager extends BaseManager {
         return status;
     }
 
-    private File generateTempJson() throws IOException {
-        File file = File.createTempFile("export", ".json");
+    private Runnable tempJsonGenerator() {
+        return () -> {
+            try {
+                jsonTempFile = File.createTempFile("export", ".json");
 
-        JsonFactory jsonFactory = new JsonFactory();
-        JsonGenerator jsonGenerator = jsonFactory.createGenerator(file, JsonEncoding.UTF8);
+                JsonFactory jsonFactory = new JsonFactory();
+                JsonGenerator jsonGenerator = jsonFactory.createGenerator(jsonTempFile, JsonEncoding.UTF8);
 
-        notesWriter = new NotesWriter(
-                jsonGenerator,
-                getNotesTable(),
-                getTimestampFormatter()
-        );
+                notesWriter = getNotesWriter(jsonGenerator);
+                filesWriter = getFilesWriter(jsonGenerator);
 
-        filesWriter = new FilesWriter(
-                jsonGenerator,
-                getFilesInfoTable(),
-                getDataBlocksTable(),
-                getTimestampFormatter()
-        );
+                try (jsonGenerator) {
+                    jsonGenerator.writeStartObject();
+                    writeVersion(jsonGenerator);
 
-        try (jsonGenerator) {
-            jsonGenerator.writeStartObject();
-            writeVersion(jsonGenerator);
+                    notesWriter.writeNotes();
+                    filesWriter.writeFiles();
 
-            notesWriter.writeNotes();
-            filesWriter.writeFiles();
-
-            jsonGenerator.writeEndObject();
-        }
-
-        return file;
+                    jsonGenerator.writeEndObject();
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException();
+            }
+        };
     }
 
-    private void encrypt(File jsonFile, File outputFile) throws IOException {
-        BackupsCrypt backupsCrypt = new BackupsCrypt(jsonFile, outputFile);
-        backupsCrypt.encrypt();
+    private Runnable encryptor() {
+        return () -> {
+            try {
+                BackupsCrypt backupsCrypt = new BackupsCrypt(jsonTempFile, outputFile);
+                backupsCrypt.encrypt();
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException(e);
+            }
+        };
     }
 
-    private void wipe(File file) throws IOException {
-        FileWiper fileWiper = new FileWiper(file);
-        boolean success = fileWiper.wipeFile();
+    private Runnable wiper() {
+        return () -> {
+            try {
+                FileWiper fileWiper = new FileWiper(jsonTempFile);
+                boolean success = fileWiper.wipeFile();
 
-        if (!success) {
-            throw new RuntimeException("Filed to wipe file");
-        }
+                if (!success) {
+                    throw new RuntimeException("Filed to wipe file");
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     private void writeVersion(JsonGenerator jsonGenerator) throws IOException {
@@ -115,6 +145,23 @@ public class ExportManager extends BaseManager {
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private NotesWriter getNotesWriter(JsonGenerator jsonGenerator) {
+        return new NotesWriter(
+                jsonGenerator,
+                getNotesTable(),
+                getTimestampFormatter()
+        );
+    }
+
+    private FilesWriter getFilesWriter(JsonGenerator jsonGenerator) {
+        return new FilesWriter(
+                jsonGenerator,
+                getFilesInfoTable(),
+                getDataBlocksTable(),
+                getTimestampFormatter()
+        );
     }
 
     private DateTimeFormatter getTimestampFormatter() {
