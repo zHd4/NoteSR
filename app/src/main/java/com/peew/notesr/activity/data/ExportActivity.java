@@ -37,6 +37,9 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(dataReceiver(), new IntentFilter("ExportDataBroadcast"));
 
+        startStopButton = findViewById(R.id.start_stop_export_button);
+        startStopButton.setOnClickListener(startStopButtonOnClick());
+
         if (exportRunning()) {
             actionBar.setTitle(getString(R.string.exporting));
 
@@ -55,9 +58,6 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
         notesCountLabel.setText(String.format(getString(R.string.d_notes), notesCount));
         filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
-
-        startStopButton = findViewById(R.id.start_stop_export_button);
-        startStopButton.setOnClickListener(startStopButtonOnClick());
     }
 
     @Override
