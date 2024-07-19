@@ -24,9 +24,6 @@ import com.peew.notesr.service.ExportService;
 public class ExportActivity extends ExtendedAppCompatActivity {
 
     private ActionBar actionBar;
-    private ProgressBar progressBar;
-    private TextView percentageLabel;
-    private TextView statusLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +31,12 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         setContentView(R.layout.activity_export);
 
         actionBar = getSupportActionBar();
-
-        progressBar = findViewById(R.id.export_progress_bar);
-        percentageLabel = findViewById(R.id.export_percentage_label);
-        statusLabel = findViewById(R.id.export_status_label);
-
         assert actionBar != null;
+
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+
+        broadcastManager.registerReceiver(progressReceiver(), new IntentFilter("ProgressUpdate"));
+        broadcastManager.registerReceiver(outputPathReceiver(), new IntentFilter("ExportOutputPath"));
 
         if (App.getContext().serviceRunning(ExportService.class)) {
             actionBar.setTitle(getString(R.string.exporting));
@@ -81,11 +78,6 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
             disableBackButton();
             startForegroundService(new Intent(this, ExportService.class));
-
-            LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-
-            broadcastManager.registerReceiver(progressReceiver(), new IntentFilter("ProgressUpdate"));
-            broadcastManager.registerReceiver(outputPathReceiver(), new IntentFilter("ExportOutputPath"));
 
             view.setEnabled(false);
         };
@@ -132,15 +124,15 @@ public class ExportActivity extends ExtendedAppCompatActivity {
     private void updateProgressViews(int progress, String status) {
         String progressStr = progress + "%";
 
-        if (percentageLabel.getVisibility() == View.INVISIBLE) {
-            percentageLabel.setVisibility(View.VISIBLE);
-        }
+        ProgressBar progressBar = findViewById(R.id.export_progress_bar);
 
-        if (statusLabel.getVisibility() == View.INVISIBLE) {
-            statusLabel.setVisibility(View.VISIBLE);
-        }
+        TextView percentageLabel = findViewById(R.id.export_percentage_label);
+        TextView statusLabel = findViewById(R.id.export_status_label);
 
         progressBar.setProgress(progress);
+
+        percentageLabel.setVisibility(View.VISIBLE);
+        statusLabel.setVisibility(View.VISIBLE);
 
         percentageLabel.setText(progressStr);
         statusLabel.setText(status);
