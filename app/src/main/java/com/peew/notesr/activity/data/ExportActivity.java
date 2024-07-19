@@ -20,11 +20,14 @@ import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.db.notes.table.NotesTable;
 import com.peew.notesr.service.ExportService;
+import com.peew.notesr.tools.FileManager;
 
 public class ExportActivity extends ExtendedAppCompatActivity {
 
     private ActionBar actionBar;
     private ProgressBar progressBar;
+    private TextView percentageLabel;
+    private int progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +35,9 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         setContentView(R.layout.activity_export);
 
         actionBar = getSupportActionBar();
+
         progressBar = findViewById(R.id.export_progress_bar);
+        percentageLabel = findViewById(R.id.export_percentage_label);
 
         assert actionBar != null;
 
@@ -90,8 +95,22 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int progress = intent.getIntExtra("progress", 0);
+                progress = intent.getIntExtra("progress", 0);
+                String progressStr = progress + "%";
+
+                if (percentageLabel.getVisibility() == View.INVISIBLE) {
+                    percentageLabel.setVisibility(View.VISIBLE);
+                }
+
                 progressBar.setProgress(progress);
+                percentageLabel.setText(progressStr);
+
+                if (progress == 100) {
+                    showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
+                    startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+
+                    finish();
+                }
             }
         };
     }
@@ -100,18 +119,16 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String path = intent.getStringExtra("path");
+                TextView outputPathLabel = findViewById(R.id.export_output_path_label);
 
-                if (path == null) {
-                    throw new NullPointerException("Path is null");
+                String path = intent.getStringExtra("path");
+                String newText = outputPathLabel.getText().toString() + " " + path;
+
+                if (outputPathLabel.getVisibility() == View.INVISIBLE) {
+                    outputPathLabel.setVisibility(View.VISIBLE);
                 }
 
-                String message = String.format(getString(R.string.saved_to), "Download");
-
-                showToastMessage(message, Toast.LENGTH_LONG);
-                startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-
-                finish();
+                outputPathLabel.setText(newText);
             }
         };
     }
