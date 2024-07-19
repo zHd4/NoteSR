@@ -20,7 +20,6 @@ import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.db.notes.table.NotesTable;
 import com.peew.notesr.service.ExportService;
-import com.peew.notesr.tools.FileManager;
 
 public class ExportActivity extends ExtendedAppCompatActivity {
 
