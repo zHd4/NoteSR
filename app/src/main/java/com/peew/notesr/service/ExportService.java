@@ -46,15 +46,19 @@ public class ExportService extends Service implements Runnable {
         workerThread.start();
 
         Integer progress = getProgress();
+        String status = getStatus();
 
-        while (progress == null) {
+        while (progress == null || status == null) {
             progress = getProgress();
+            status = getStatus();
         }
 
-        while (progress < 100) {
+        while (progress != null && progress < 100) {
             try {
-                sendProgress(progress);
+                sendProgress(progress, status);
+
                 progress = getProgress();
+                status = getStatus();
 
                 Thread.sleep(DELAY);
             } catch (InterruptedException e) {
@@ -62,7 +66,7 @@ public class ExportService extends Service implements Runnable {
             }
         }
 
-        sendProgress(100);
+        sendProgress(100, "");
 
         // Delete file
         outputFile.delete();
@@ -86,10 +90,12 @@ public class ExportService extends Service implements Runnable {
         };
     }
 
-    private void sendProgress(Integer progress) {
-        if (progress != null) {
+    private void sendProgress(Integer progress, String status) {
+        if (progress != null && status != null) {
             Intent intent = new Intent("ProgressUpdate");
+
             intent.putExtra("progress", progress);
+            intent.putExtra("status", status);
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }
@@ -101,6 +107,14 @@ public class ExportService extends Service implements Runnable {
         }
 
         return exportManager.calculateProgress();
+    }
+
+    private String getStatus() {
+        if (exportManager == null) {
+            return null;
+        }
+
+        return exportManager.getStatus();
     }
 
     private void sendOutputPath(String path) {
