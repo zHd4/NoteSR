@@ -115,7 +115,8 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
         percentageLabel.setText(progressStr);
         statusLabel.setText(status);
-        outputPathLabel.setText(outputPath);
+
+        outputPathLabel.setText(String.format("%s %s", getString(R.string.output_path), outputPath));
     }
 
     private void finishExporting() {
