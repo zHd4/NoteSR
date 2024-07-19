@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.peew.notesr.service.ExportService;
 public class ExportActivity extends ExtendedAppCompatActivity {
 
     private ActionBar actionBar;
+    private Button startStopButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +38,11 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(dataReceiver(), new IntentFilter("ExportDataBroadcast"));
 
-        if (App.getContext().serviceRunning(ExportService.class)) {
+        if (exportRunning()) {
             actionBar.setTitle(getString(R.string.exporting));
+
             disableBackButton();
+            setCancelButton();
         } else {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(getString(R.string.export));
@@ -53,7 +57,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         notesCountLabel.setText(String.format(getString(R.string.d_notes), notesCount));
         filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
 
-        Button startStopButton = findViewById(R.id.start_stop_export_button);
+        startStopButton = findViewById(R.id.start_stop_export_button);
         startStopButton.setOnClickListener(startStopButtonOnClick());
     }
 
@@ -71,13 +75,15 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener startStopButtonOnClick() {
         return view -> {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setTitle(getString(R.string.exporting));
+            if (!exportRunning()) {
+                actionBar.setDisplayHomeAsUpEnabled(false);
+                actionBar.setTitle(getString(R.string.exporting));
 
-            disableBackButton();
-            startForegroundService(new Intent(this, ExportService.class));
+                disableBackButton();
+                startForegroundService(new Intent(this, ExportService.class));
 
-            view.setEnabled(false);
+                setCancelButton();
+            }
         };
     }
 
@@ -119,6 +125,11 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         outputPathLabel.setText(String.format("%s %s", getString(R.string.output_path), outputPath));
     }
 
+    private void setCancelButton() {
+        startStopButton.setText(getString(R.string.cancel));
+        startStopButton.setTextColor(getColor(android.R.color.holo_red_light));
+    }
+
     private void finishExporting() {
         showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
         startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
@@ -130,6 +141,10 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         if (view.getVisibility() == View.INVISIBLE) {
             view.setVisibility(View.VISIBLE);
         }
+    }
+
+    private boolean exportRunning() {
+        return App.getContext().serviceRunning(ExportService.class);
     }
 
     private long getNotesCount() {
