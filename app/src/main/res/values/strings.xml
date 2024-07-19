@@ -92,4 +92,5 @@
     <string name="your_data_will_be_exported">Your data will be exported to an encrypted file\nThis may take a long time</string>
     <string name="saving_in">Saving in:</string>
     <string name="cancel">Cancel</string>
+    <string name="canceling">Canceling…</string>
 </resources>
