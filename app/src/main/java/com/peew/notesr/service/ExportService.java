@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter;
 public class ExportService extends Service implements Runnable {
     private static final String TAG = CacheCleanerService.class.getName();
     private static final String CHANNEL_ID = "ExportChannel";
-    private static final int DELAY = 500;
+    private static final int DELAY = 100;
 
     private Thread serviceThread;
     private Thread workerThread;
