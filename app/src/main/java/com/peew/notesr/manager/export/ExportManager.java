@@ -52,10 +52,10 @@ public class ExportManager extends BaseManager {
             return 100;
         }
 
-        int total = 100 * 2;
-        int current = notesWriter.getProgress() + filesWriter.getProgress();
+        long total = notesWriter.getTotal() + filesWriter.getTotal();
+        long exported = notesWriter.getExported() + filesWriter.getExported();
 
-        return Math.round((current * 99.0f) / total);
+        return Math.round((exported * 99.0f) / total);
     }
 
     public String getStatus() {

@@ -16,7 +16,7 @@ public class NotesWriter implements Writer {
     private final DateTimeFormatter timestampFormatter;
     private final long totalNotes;
 
-    private long done;
+    private long exported;
 
     public NotesWriter(JsonGenerator jsonGenerator, NotesTable notesTable, DateTimeFormatter timestampFormatter) {
         this.jsonGenerator = jsonGenerator;
@@ -33,7 +33,7 @@ public class NotesWriter implements Writer {
             Note note = NotesCrypt.decrypt(encryptedNote);
             writeNote(note);
 
-            done++;
+            exported++;
         }
 
         jsonGenerator.writeEndArray();
@@ -54,7 +54,12 @@ public class NotesWriter implements Writer {
     }
 
     @Override
-    public int getProgress() {
-        return Math.round((done * 100.0f) / totalNotes);
+    public long getTotal() {
+        return totalNotes;
+    }
+
+    @Override
+    public long getExported() {
+        return exported;
     }
 }
