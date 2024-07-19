@@ -45,16 +45,27 @@ public class ExportService extends Service implements Runnable {
         workerThread = new Thread(worker());
         workerThread.start();
 
-        do {
+        Integer progress = getProgress();
+
+        while (progress == null) {
+            progress = getProgress();
+        }
+
+        while (progress < 100) {
             try {
-                sendProgress();
+                sendProgress(progress);
+                progress = getProgress();
+
                 Thread.sleep(DELAY);
             } catch (InterruptedException e) {
                 Log.e(TAG, "Thread interrupted", e);
             }
-        } while (workerThread.isAlive());
+        }
 
-        sendOutputPath();
+        sendProgress(100);
+
+        // Delete file
+        outputFile.delete();
     }
 
     private Runnable worker() {
@@ -66,6 +77,7 @@ public class ExportService extends Service implements Runnable {
             exportManager = new ExportManager(context);
 
             try {
+                sendOutputPath(outputFile.getAbsolutePath());
                 exportManager.export(outputFile);
             } catch (IOException e) {
                 Log.e(TAG, "IOException", e);
@@ -74,22 +86,28 @@ public class ExportService extends Service implements Runnable {
         };
     }
 
-    private void sendProgress() {
-        if (exportManager != null) {
+    private void sendProgress(Integer progress) {
+        if (progress != null) {
             Intent intent = new Intent("ProgressUpdate");
-            intent.putExtra("progress", exportManager.calculateProgress());
+            intent.putExtra("progress", progress);
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }
     }
 
-    private void sendOutputPath() {
-        if (outputFile != null) {
-            Intent intent = new Intent("ExportOutputPath");
-            intent.putExtra("path", outputFile.getAbsolutePath());
-
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    private Integer getProgress() {
+        if (exportManager == null) {
+            return null;
         }
+
+        return exportManager.calculateProgress();
+    }
+
+    private void sendOutputPath(String path) {
+        Intent intent = new Intent("ExportOutputPath");
+        intent.putExtra("path", path);
+
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private File getOutputFile(String dirPath) {
