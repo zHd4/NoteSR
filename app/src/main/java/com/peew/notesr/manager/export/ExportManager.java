@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.peew.notesr.App;
+import com.peew.notesr.R;
 import com.peew.notesr.crypto.BackupsCrypt;
 import com.peew.notesr.manager.BaseManager;
 import com.peew.notesr.tools.FileWiper;
@@ -22,17 +23,23 @@ public class ExportManager extends BaseManager {
     private NotesWriter notesWriter;
     private FilesWriter filesWriter;
     private boolean finished = false;
+    private String status = "";
 
     public ExportManager(Context context) {
         this.context = context;
     }
 
     public void export(File outputFile) throws IOException {
+        status = context.getString(R.string.exporting_data);
         File jsonTempFile = generateTempJson();
 
+        status = context.getString(R.string.encrypting_data);
         encrypt(jsonTempFile, outputFile);
+
+        status = context.getString(R.string.wiping_temp_data);
         wipe(jsonTempFile);
 
+        status = "";
         finished = true;
     }
 
@@ -49,6 +56,10 @@ public class ExportManager extends BaseManager {
         int current = notesWriter.getProgress() + filesWriter.getProgress();
 
         return Math.round((current * 99.0f) / total);
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     private File generateTempJson() throws IOException {
