@@ -94,7 +94,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int progress = intent.getIntExtra("progress", 0);
-                boolean wasStopped = intent.getBooleanExtra("stopped", true);
+                boolean canceled = intent.getBooleanExtra("canceled", false);
 
                 String status = intent.getStringExtra("status");
                 String outputPath = intent.getStringExtra("outputPath");
@@ -103,7 +103,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
                 if (progress == 100) {
                     finishExporting(false);
-                } else if (wasStopped) {
+                } else if (canceled) {
                     finishExporting(true);
                 }
             }
@@ -135,8 +135,8 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         startStopButton.setTextColor(getColor(android.R.color.holo_red_light));
     }
 
-    private void finishExporting(boolean wasStopped) {
-        if (!wasStopped) {
+    private void finishExporting(boolean canceled) {
+        if (!canceled) {
             showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
         }
 

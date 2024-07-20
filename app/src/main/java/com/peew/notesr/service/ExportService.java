@@ -50,7 +50,7 @@ public class ExportService extends Service implements Runnable {
         outputFile = getOutputFile(outputDir.getPath());
 
         exportManager = new ExportManager(context, outputFile);
-        exportWorkerThread = new Thread(exportWorker());
+        exportWorkerThread = new Thread(() -> exportManager.export());
 
         registerCancelSignalReceiver();
 
@@ -59,42 +59,44 @@ public class ExportService extends Service implements Runnable {
 
         // Delete file
         outputFile.delete();
-    }
 
-    private Runnable exportWorker() {
-        return () -> {
-            exportManager.export();
-            stop();
-        };
+        stop();
     }
 
     private Runnable broadcastWorker() {
         return () -> {
+            String status = exportManager.getStatus();
             String outputPath = outputFile.getAbsolutePath();
 
-            do {
+            int progress = exportManager.calculateProgress();
+
+            while (exportManager.getResult() == ExportManager.NONE) {
                 try {
-                    String status = exportManager.getStatus();
+                    status = exportManager.getStatus();
+                    progress = exportManager.calculateProgress();
 
-                    int progress = exportManager.calculateProgress();
-                    boolean wasCanceled = exportManager.getResult() == ExportManager.CANCELED;
-
-                    sendBroadcastData(progress, status, outputPath, wasCanceled);
+                    sendBroadcastData(progress, status, outputPath, false);
 
                     Thread.sleep(BROADCAST_DELAY);
                 } catch (InterruptedException e) {
                     Log.e(TAG, "Thread interrupted", e);
                 }
-            } while (exportManager.getResult() == ExportManager.NONE);
+            }
+
+            if (exportManager.getResult() == ExportManager.FINISHED_SUCCESSFULLY) {
+                sendBroadcastData(progress, status, outputPath, false);
+            } else if (exportManager.getResult() == ExportManager.CANCELED) {
+                sendBroadcastData(progress, status, outputPath, true);
+            }
         };
     }
 
-    private void sendBroadcastData(int progress, String status, String outputPath, boolean stopped) {
+    private void sendBroadcastData(int progress, String status, String outputPath, boolean canceled) {
         Intent intent = new Intent("ExportDataBroadcast")
                 .putExtra("progress", progress)
                 .putExtra("status", status)
                 .putExtra("outputPath", outputPath)
-                .putExtra("stopped", stopped);
+                .putExtra("canceled", canceled);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
@@ -106,7 +108,6 @@ public class ExportService extends Service implements Runnable {
             }
 
             exportManager.cancel();
-            stop();
         };
 
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
