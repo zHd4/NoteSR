@@ -87,7 +87,12 @@ public class ExportService extends Service implements Runnable {
                 }
             }
 
-            sendBroadcastData(100, exportManager.getStatus(), outputPath, exportManager.completed());
+            sendBroadcastData(
+                    exportManager.calculateProgress(),
+                    exportManager.getStatus(),
+                    outputPath,
+                    exportManager.completed()
+            );
         };
     }
 
