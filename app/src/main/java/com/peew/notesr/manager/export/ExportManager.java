@@ -68,25 +68,30 @@ public class ExportManager extends BaseManager {
         finished = true;
     }
 
-    public void cancel() throws IOException {
+    public void cancel() {
         if (jsonGeneratorThread == null || encryptorThread == null || wiperThread == null) {
             throw new IllegalStateException("Export has not been started");
         }
 
-        status = context.getString(R.string.canceling);
+        try {
+            status = context.getString(R.string.canceling);
 
-        if (jsonGeneratorThread.isAlive()) {
-            jsonGeneratorThread.interrupt();
-            new FileWiper(jsonTempFile).wipeFile();
-        } else if (encryptorThread.isAlive()) {
-            encryptorThread.interrupt();
+            if (jsonGeneratorThread.isAlive()) {
+                jsonGeneratorThread.interrupt();
+                new FileWiper(jsonTempFile).wipeFile();
+            } else if (encryptorThread.isAlive()) {
+                encryptorThread.interrupt();
 
-            new FileWiper(jsonTempFile).wipeFile();
-            outputFile.delete();
+                new FileWiper(jsonTempFile).wipeFile();
+                outputFile.delete();
+            }
+
+            status = "";
+            finished = true;
+        } catch (IOException e) {
+            Log.e(TAG, "IOException", e);
+            throw new RuntimeException(e);
         }
-
-        status = "";
-        finished = true;
     }
 
     public int calculateProgress() {

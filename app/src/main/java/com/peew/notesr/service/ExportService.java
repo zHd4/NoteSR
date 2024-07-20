@@ -34,6 +34,7 @@ public class ExportService extends Service implements Runnable {
 
     private Thread serviceThread;
     private Thread exportWorkerThread;
+    private Thread cancelThread;
     private File outputFile;
     private ExportManager exportManager;
 
@@ -103,34 +104,24 @@ public class ExportService extends Service implements Runnable {
     }
 
     private void registerCancelSignalReceiver() {
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (exportManager == null) {
-                    throw new IllegalStateException("Service has not been started");
-                }
-
-                try {
-                    if (!exportManager.completed()) {
-                        exportManager.cancel();
-                        stop();
-
-                        sendBroadcastData(
-                                exportManager.calculateProgress(),
-                                exportManager.getStatus(),
-                                outputFile.getAbsolutePath(),
-                                true
-                        );
-                    }
-                } catch (IOException e) {
-                    Log.e(TAG, "IOException", e);
-                    throw new RuntimeException(e);
-                }
+        Runnable cancel = () -> {
+            if (exportManager == null) {
+                throw new IllegalStateException("Service has not been started");
             }
+
+            exportManager.cancel();
+            stop();
         };
 
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(receiver, new IntentFilter("CancelExportSignal"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        if (cancelThread != null && cancelThread.isAlive()) {
+                            cancelThread = new Thread(cancel);
+                            cancelThread.start();
+                        }
+                    }
+                }, new IntentFilter("CancelExportSignal"));
     }
 
     private File getOutputFile(String dirPath) {
