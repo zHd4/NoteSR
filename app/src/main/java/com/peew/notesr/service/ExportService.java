@@ -76,7 +76,8 @@ public class ExportService extends Service implements Runnable {
             while (progress < 100) {
                 try {
                     String status = exportManager.getStatus();
-                    sendBroadcastData(progress, status, outputPath);
+                    boolean isCompleted = exportManager.completed();
+                    sendBroadcastData(progress, status, outputPath, isCompleted);
 
                     progress = exportManager.calculateProgress();
 
@@ -86,15 +87,16 @@ public class ExportService extends Service implements Runnable {
                 }
             }
 
-            sendBroadcastData(100, exportManager.getStatus(), outputPath);
+            sendBroadcastData(100, exportManager.getStatus(), outputPath, exportManager.completed());
         };
     }
 
-    private void sendBroadcastData(int progress, String status, String outputPath) {
+    private void sendBroadcastData(int progress, String status, String outputPath, boolean completed) {
         Intent intent = new Intent("ExportDataBroadcast")
                 .putExtra("progress", progress)
                 .putExtra("status", status)
-                .putExtra("outputPath", outputPath);
+                .putExtra("outputPath", outputPath)
+                .putExtra("completed", completed);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
@@ -108,8 +110,15 @@ public class ExportService extends Service implements Runnable {
                 }
 
                 try {
-                    exportManager.cancel();
                     stop();
+                    exportManager.cancel();
+
+                    sendBroadcastData(
+                            exportManager.calculateProgress(),
+                            exportManager.getStatus(),
+                            outputFile.getAbsolutePath(),
+                            exportManager.completed()
+                    );
                 } catch (IOException e) {
                     Log.e(TAG, "IOException", e);
                     throw new RuntimeException(e);
