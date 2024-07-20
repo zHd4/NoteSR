@@ -110,15 +110,17 @@ public class ExportService extends Service implements Runnable {
                 }
 
                 try {
-                    stop();
-                    exportManager.cancel();
+                    if (!exportManager.completed()) {
+                        stop();
+                        exportManager.cancel();
 
-                    sendBroadcastData(
-                            exportManager.calculateProgress(),
-                            exportManager.getStatus(),
-                            outputFile.getAbsolutePath(),
-                            exportManager.completed()
-                    );
+                        sendBroadcastData(
+                                exportManager.calculateProgress(),
+                                exportManager.getStatus(),
+                                outputFile.getAbsolutePath(),
+                                exportManager.completed()
+                        );
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "IOException", e);
                     throw new RuntimeException(e);
