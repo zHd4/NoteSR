@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 public class ExportService extends Service implements Runnable {
     private static final String TAG = CacheCleanerService.class.getName();
     private static final String CHANNEL_ID = "ExportChannel";
-    private static final int DELAY = 100;
+    private static final int BROADCAST_DELAY = 100;
 
     private Thread serviceThread;
     private Thread exportWorkerThread;
@@ -81,7 +81,7 @@ public class ExportService extends Service implements Runnable {
 
                     progress = exportManager.calculateProgress();
 
-                    Thread.sleep(DELAY);
+                    Thread.sleep(BROADCAST_DELAY);
                 } catch (InterruptedException e) {
                     Log.e(TAG, "Thread interrupted", e);
                 }
