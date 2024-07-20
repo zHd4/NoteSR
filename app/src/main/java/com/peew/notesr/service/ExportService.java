@@ -84,7 +84,7 @@ public class ExportService extends Service implements Runnable {
             }
 
             if (exportManager.getResult() == ExportManager.FINISHED_SUCCESSFULLY) {
-                sendBroadcastData(progress, status, outputPath, false);
+                sendBroadcastData(100, status, outputPath, false);
             } else if (exportManager.getResult() == ExportManager.CANCELED) {
                 sendBroadcastData(progress, status, outputPath, true);
             }
