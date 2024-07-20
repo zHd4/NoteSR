@@ -108,6 +108,10 @@ public class ExportManager extends BaseManager {
         return status;
     }
 
+    public boolean completed() {
+        return finished;
+    }
+
     private Runnable tempJsonGenerator() {
         return () -> {
             try {
