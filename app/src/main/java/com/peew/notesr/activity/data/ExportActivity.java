@@ -94,16 +94,17 @@ public class ExportActivity extends ExtendedAppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int progress = intent.getIntExtra("progress", 0);
-                boolean isCompleted = intent.getBooleanExtra("completed", true);
+                boolean wasStopped = intent.getBooleanExtra("stopped", true);
 
                 String status = intent.getStringExtra("status");
                 String outputPath = intent.getStringExtra("outputPath");
 
                 updateViews(progress, status, outputPath);
 
-                if (isCompleted) {
-                    boolean wasStopped = progress != 100;
-                    finishExporting(wasStopped);
+                if (progress == 100) {
+                    finishExporting(false);
+                } else if (wasStopped) {
+                    finishExporting(true);
                 }
             }
         };

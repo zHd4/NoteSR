@@ -19,6 +19,9 @@ import java.time.format.DateTimeFormatter;
 
 public class ExportManager extends BaseManager {
 
+    public static final int NONE = 0;
+    public static final int FINISHED_SUCCESSFULLY = 2;
+    public static final int CANCELED = -1;
     private static final String TAG = ExportManager.class.getName();
 
     private final Context context;
@@ -32,7 +35,7 @@ public class ExportManager extends BaseManager {
     private Thread wiperThread;
 
     private File jsonTempFile;
-    private boolean finished = false;
+    private int result = NONE;
     private String status = "";
 
     public ExportManager(Context context, File outputFile) {
@@ -47,17 +50,14 @@ public class ExportManager extends BaseManager {
 
         try {
             status = context.getString(R.string.exporting_data);
-
             jsonGeneratorThread.start();
             jsonGeneratorThread.join();
 
             status = context.getString(R.string.encrypting_data);
-
             encryptorThread.start();
             encryptorThread.join();
 
             status = context.getString(R.string.wiping_temp_data);
-
             wiperThread.start();
             wiperThread.join();
         } catch (InterruptedException e) {
@@ -65,7 +65,7 @@ public class ExportManager extends BaseManager {
         }
 
         status = "";
-        finished = true;
+        result = FINISHED_SUCCESSFULLY;
     }
 
     public void cancel() {
@@ -87,7 +87,7 @@ public class ExportManager extends BaseManager {
             }
 
             status = "";
-            finished = true;
+            result = CANCELED;
         } catch (IOException e) {
             Log.e(TAG, "IOException", e);
             throw new RuntimeException(e);
@@ -99,7 +99,7 @@ public class ExportManager extends BaseManager {
             return 0;
         }
 
-        if (finished) {
+        if (result == FINISHED_SUCCESSFULLY) {
             return 100;
         }
 
@@ -113,8 +113,8 @@ public class ExportManager extends BaseManager {
         return status;
     }
 
-    public boolean completed() {
-        return finished;
+    public int getResult() {
+        return result;
     }
 
     private Runnable tempJsonGenerator() {
