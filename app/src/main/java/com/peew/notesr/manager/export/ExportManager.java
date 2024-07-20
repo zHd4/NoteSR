@@ -82,7 +82,7 @@ public class ExportManager extends BaseManager {
             encryptorThread.interrupt();
 
             new FileWiper(jsonTempFile).wipeFile();
-            new FileWiper(outputFile).wipeFile();
+            outputFile.delete();
         }
 
         status = "";
