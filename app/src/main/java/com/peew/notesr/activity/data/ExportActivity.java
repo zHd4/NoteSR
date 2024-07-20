@@ -82,6 +82,8 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                 startForegroundService(new Intent(this, ExportService.class));
 
                 setCancelButton();
+            } else {
+                cancelExport();
             }
         };
     }
@@ -144,6 +146,10 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
     private boolean exportRunning() {
         return App.getContext().serviceRunning(ExportService.class);
+    }
+
+    private void cancelExport() {
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("CancelExportSignal"));
     }
 
     private long getNotesCount() {
