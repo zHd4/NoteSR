@@ -83,6 +83,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
                 setCancelButton();
             } else {
+                view.setEnabled(false);
                 cancelExport();
             }
         };
