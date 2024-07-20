@@ -70,29 +70,22 @@ public class ExportService extends Service implements Runnable {
 
     private Runnable broadcastWorker() {
         return () -> {
-            int progress = exportManager.calculateProgress();
+            boolean isCompleted = exportManager.completed();
             String outputPath = outputFile.getAbsolutePath();
 
-            while (progress < 100) {
+            while (!isCompleted) {
                 try {
                     String status = exportManager.getStatus();
-                    boolean isCompleted = exportManager.completed();
-                    sendBroadcastData(progress, status, outputPath, isCompleted);
+                    int progress = exportManager.calculateProgress();
 
-                    progress = exportManager.calculateProgress();
+                    isCompleted = exportManager.completed();
+                    sendBroadcastData(progress, status, outputPath, isCompleted);
 
                     Thread.sleep(BROADCAST_DELAY);
                 } catch (InterruptedException e) {
                     Log.e(TAG, "Thread interrupted", e);
                 }
             }
-
-            sendBroadcastData(
-                    exportManager.calculateProgress(),
-                    exportManager.getStatus(),
-                    outputPath,
-                    exportManager.completed()
-            );
         };
     }
 
