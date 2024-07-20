@@ -4,8 +4,10 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Environment;
@@ -18,6 +20,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.manager.export.ExportManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -48,6 +51,8 @@ public class ExportService extends Service implements Runnable {
 
         exportManager = new ExportManager(context, outputFile);
         exportWorkerThread = new Thread(exportWorker());
+
+        registerCancelSignalReceiver();
 
         exportWorkerThread.start();
         broadcastWorker().run();
@@ -92,6 +97,28 @@ public class ExportService extends Service implements Runnable {
                 .putExtra("outputPath", outputPath);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void registerCancelSignalReceiver() {
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (exportManager == null) {
+                    throw new IllegalStateException("Service has not been started");
+                }
+
+                try {
+                    exportManager.cancel();
+                    stop();
+                } catch (IOException e) {
+                    Log.e(TAG, "IOException", e);
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(receiver, new IntentFilter("CancelExportSignal"));
     }
 
     private File getOutputFile(String dirPath) {
