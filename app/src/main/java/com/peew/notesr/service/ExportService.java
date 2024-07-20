@@ -114,7 +114,7 @@ public class ExportService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {
-                        if (cancelThread != null && cancelThread.isAlive()) {
+                        if (cancelThread == null) {
                             cancelThread = new Thread(cancel);
                             cancelThread.start();
                         }
