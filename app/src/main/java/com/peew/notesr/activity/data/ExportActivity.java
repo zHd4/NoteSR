@@ -93,14 +93,16 @@ public class ExportActivity extends ExtendedAppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int progress = intent.getIntExtra("progress", 0);
+                boolean isCompleted = intent.getBooleanExtra("completed", true);
 
                 String status = intent.getStringExtra("status");
                 String outputPath = intent.getStringExtra("outputPath");
 
                 updateViews(progress, status, outputPath);
 
-                if (progress == 100) {
-                    finishExporting();
+                if (isCompleted) {
+                    boolean wasStopped = progress != 100;
+                    finishExporting(wasStopped);
                 }
             }
         };
@@ -131,10 +133,12 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         startStopButton.setTextColor(getColor(android.R.color.holo_red_light));
     }
 
-    private void finishExporting() {
-        showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
-        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+    private void finishExporting(boolean wasStopped) {
+        if (!wasStopped) {
+            showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
+        }
 
+        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
         finish();
     }
 
