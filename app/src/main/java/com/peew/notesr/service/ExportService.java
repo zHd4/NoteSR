@@ -58,7 +58,7 @@ public class ExportService extends Service implements Runnable {
         broadcastWorker().run();
 
         // Delete file
-        outputFile.delete();
+        //outputFile.delete();
 
         stop();
     }
