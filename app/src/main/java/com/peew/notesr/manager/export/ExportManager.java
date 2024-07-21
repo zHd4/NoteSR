@@ -30,9 +30,7 @@ public class ExportManager extends BaseManager {
     private NotesWriter notesWriter;
     private FilesWriter filesWriter;
 
-    private Thread jsonGeneratorThread;
-    private Thread encryptorThread;
-    private Thread wiperThread;
+    private Thread thread;
 
     private File jsonTempFile;
     private int result = NONE;
@@ -44,22 +42,26 @@ public class ExportManager extends BaseManager {
     }
 
     public void export() {
-        jsonGeneratorThread = new Thread(tempJsonGenerator());
-        encryptorThread = new Thread(encryptor());
-        wiperThread = new Thread(wiper());
-
         try {
-            status = context.getString(R.string.exporting_data);
-            jsonGeneratorThread.start();
-            jsonGeneratorThread.join();
+            thread = new Thread(() -> {
+                try {
+                    status = context.getString(R.string.exporting_data);
+                    jsonTempFile = File.createTempFile("export", ".json");
 
-            status = context.getString(R.string.encrypting_data);
-            encryptorThread.start();
-            encryptorThread.join();
+                    generateJson(jsonTempFile);
 
-            status = context.getString(R.string.wiping_temp_data);
-            wiperThread.start();
-            wiperThread.join();
+                    status = context.getString(R.string.encrypting_data);
+                    encrypt(jsonTempFile, outputFile);
+
+                    status = context.getString(R.string.wiping_temp_data);
+                    wipe(jsonTempFile);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            thread.start();
+            thread.join();
         } catch (InterruptedException e) {
             Log.e(TAG, "InterruptedException", e);
         }
@@ -69,29 +71,23 @@ public class ExportManager extends BaseManager {
     }
 
     public void cancel() {
-        if (jsonGeneratorThread == null || encryptorThread == null || wiperThread == null) {
+        if (thread == null || !thread.isAlive()) {
             throw new IllegalStateException("Export has not been started");
         }
 
-        try {
-            status = context.getString(R.string.canceling);
+        status = context.getString(R.string.canceling);
+        thread.interrupt();
 
-            if (jsonGeneratorThread.isAlive()) {
-                jsonGeneratorThread.interrupt();
-                new FileWiper(jsonTempFile).wipeFile();
-            } else if (encryptorThread.isAlive()) {
-                encryptorThread.interrupt();
-
-                new FileWiper(jsonTempFile).wipeFile();
-                outputFile.delete();
-            }
-
-            status = "";
-            result = CANCELED;
-        } catch (IOException e) {
-            Log.e(TAG, "IOException", e);
-            throw new RuntimeException(e);
+        if (jsonTempFile.exists()) {
+            wipe(jsonTempFile);
         }
+
+        if (outputFile.exists()) {
+            delete(outputFile);
+        }
+
+        status = "";
+        result = CANCELED;
     }
 
     public int calculateProgress() {
@@ -117,59 +113,57 @@ public class ExportManager extends BaseManager {
         return result;
     }
 
-    private Runnable tempJsonGenerator() {
-        return () -> {
-            try {
-                jsonTempFile = File.createTempFile("export", ".json");
+    private void generateJson(File output) {
+        try {
+            JsonFactory jsonFactory = new JsonFactory();
+            JsonGenerator jsonGenerator = jsonFactory.createGenerator(output, JsonEncoding.UTF8);
 
-                JsonFactory jsonFactory = new JsonFactory();
-                JsonGenerator jsonGenerator = jsonFactory.createGenerator(jsonTempFile, JsonEncoding.UTF8);
+            notesWriter = getNotesWriter(jsonGenerator);
+            filesWriter = getFilesWriter(jsonGenerator);
 
-                notesWriter = getNotesWriter(jsonGenerator);
-                filesWriter = getFilesWriter(jsonGenerator);
+            try (jsonGenerator) {
+                jsonGenerator.writeStartObject();
+                writeVersion(jsonGenerator);
 
-                try (jsonGenerator) {
-                    jsonGenerator.writeStartObject();
-                    writeVersion(jsonGenerator);
+                notesWriter.writeNotes();
+                filesWriter.writeFiles();
 
-                    notesWriter.writeNotes();
-                    filesWriter.writeFiles();
-
-                    jsonGenerator.writeEndObject();
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-                throw new RuntimeException();
+                jsonGenerator.writeEndObject();
             }
-        };
+        } catch (IOException e) {
+            Log.e(TAG, "IOException", e);
+            throw new RuntimeException(e);
+        }
     }
 
-    private Runnable encryptor() {
-        return () -> {
-            try {
-                BackupsCrypt backupsCrypt = new BackupsCrypt(jsonTempFile, outputFile);
-                backupsCrypt.encrypt();
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-                throw new RuntimeException(e);
-            }
-        };
+    private void encrypt(File input, File output) {
+        try {
+            BackupsCrypt backupsCrypt = new BackupsCrypt(input, output);
+            backupsCrypt.encrypt();
+        } catch (IOException e) {
+            Log.e(TAG, "IOException", e);
+            throw new RuntimeException(e);
+        }
     }
 
-    private Runnable wiper() {
-        return () -> {
-            try {
-                FileWiper fileWiper = new FileWiper(jsonTempFile);
-                boolean success = fileWiper.wipeFile();
+    private void wipe(File file) {
+        try {
+            FileWiper fileWiper = new FileWiper(file);
+            boolean success = fileWiper.wipeFile();
 
-                if (!success) {
-                    throw new RuntimeException("Filed to wipe file");
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-                throw new RuntimeException(e);
+            if (!success) {
+                throw new RuntimeException("Filed to wipe file");
             }
-        };
+        } catch (IOException e) {
+            Log.e(TAG, "IOException", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void delete(File file) {
+        if (!file.delete()) {
+            throw new RuntimeException("Cannot delete file " + file.getAbsolutePath());
+        }
     }
 
     private void writeVersion(JsonGenerator jsonGenerator) throws IOException {
