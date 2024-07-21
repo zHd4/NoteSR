@@ -121,14 +121,16 @@ public class ExportManager extends BaseManager {
             notesWriter = getNotesWriter(jsonGenerator);
             filesWriter = getFilesWriter(jsonGenerator);
 
-            try (jsonGenerator) {
-                jsonGenerator.writeStartObject();
-                writeVersion(jsonGenerator);
+            if (result == NONE) {
+                try (jsonGenerator) {
+                    jsonGenerator.writeStartObject();
+                    writeVersion(jsonGenerator);
 
-                notesWriter.writeNotes();
-                filesWriter.writeFiles();
+                    notesWriter.writeNotes();
+                    filesWriter.writeFiles();
 
-                jsonGenerator.writeEndObject();
+                    jsonGenerator.writeEndObject();
+                }
             }
         } catch (IOException e) {
             Log.e(TAG, "IOException", e);
@@ -137,26 +139,30 @@ public class ExportManager extends BaseManager {
     }
 
     private void encrypt(File input, File output) {
-        try {
-            BackupsCrypt backupsCrypt = new BackupsCrypt(input, output);
-            backupsCrypt.encrypt();
-        } catch (IOException e) {
-            Log.e(TAG, "IOException", e);
-            throw new RuntimeException(e);
+        if (result == NONE) {
+            try {
+                BackupsCrypt backupsCrypt = new BackupsCrypt(input, output);
+                backupsCrypt.encrypt();
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException(e);
+            }
         }
     }
 
     private void wipe(File file) {
-        try {
-            FileWiper fileWiper = new FileWiper(file);
-            boolean success = fileWiper.wipeFile();
+        if (result == NONE) {
+            try {
+                FileWiper fileWiper = new FileWiper(file);
+                boolean success = fileWiper.wipeFile();
 
-            if (!success) {
-                throw new RuntimeException("Filed to wipe file");
+                if (!success) {
+                    throw new RuntimeException("Filed to wipe file");
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            Log.e(TAG, "IOException", e);
-            throw new RuntimeException(e);
         }
     }
 
