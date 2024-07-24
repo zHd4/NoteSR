@@ -1,4 +1,4 @@
-package com.peew.notesr.manager.export;
+package com.peew.notesr.manager.exporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.peew.notesr.crypto.NotesCrypt;

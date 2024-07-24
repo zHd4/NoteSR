@@ -1,4 +1,4 @@
-package com.peew.notesr.manager.export;
+package com.peew.notesr.manager.exporter;
 
 import android.content.Context;
 import android.content.pm.PackageManager;

@@ -1,4 +1,4 @@
-package com.peew.notesr.manager.export;
+package com.peew.notesr.manager.exporter;
 
 public interface Writer {
     long getTotal();

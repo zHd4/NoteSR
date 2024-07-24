@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.peew.notesr.App;
-import com.peew.notesr.manager.export.ExportManager;
+import com.peew.notesr.manager.exporter.ExportManager;
 
 import java.io.File;
 import java.nio.file.Path;
