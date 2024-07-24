@@ -110,13 +110,13 @@ public class ExportManager extends BaseManager {
 
     private void generateJson(File output) {
         try {
-            JsonFactory jsonFactory = new JsonFactory();
-            JsonGenerator jsonGenerator = jsonFactory.createGenerator(output, JsonEncoding.UTF8);
-
-            notesWriter = getNotesWriter(jsonGenerator);
-            filesWriter = getFilesWriter(jsonGenerator);
-
             if (result == NONE) {
+                JsonFactory jsonFactory = new JsonFactory();
+                JsonGenerator jsonGenerator = jsonFactory.createGenerator(output, JsonEncoding.UTF8);
+
+                notesWriter = getNotesWriter(jsonGenerator);
+                filesWriter = getFilesWriter(jsonGenerator);
+
                 try (jsonGenerator) {
                     jsonGenerator.writeStartObject();
                     writeVersion(jsonGenerator);
