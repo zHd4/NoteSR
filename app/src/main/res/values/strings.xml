@@ -61,7 +61,9 @@
     <string name="loading">Loading…</string>
     <string name="exporting">Exporting…</string>
     <string name="exporting_data">Exporting data…</string>
+    <string name="importing_data">Importing data…</string>
     <string name="encrypting_data">Encrypting data…</string>
+    <string name="decrypting_data">Decrypting data…</string>
     <string name="wiping_temp_data">Wiping temp data…</string>
     <string name="importing">Importing…</string>
     <string name="export">Export</string>
