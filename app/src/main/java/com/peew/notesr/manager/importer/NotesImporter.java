@@ -56,8 +56,9 @@ class NotesImporter {
                 }
 
                 Note note = new Note(name, text, updatedAt);
-                EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
+                note.setId(id);
 
+                EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
                 notesTable.save(encryptedNote);
             }
         }
