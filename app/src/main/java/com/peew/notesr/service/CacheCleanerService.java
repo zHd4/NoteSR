@@ -47,6 +47,8 @@ public class CacheCleanerService extends Service implements Runnable {
 
                     if (runningJobs.isEmpty()) {
                         thread.interrupt();
+
+                        stopForeground(STOP_FOREGROUND_REMOVE);
                         stopSelf();
                     }
                 }
@@ -57,9 +59,6 @@ public class CacheCleanerService extends Service implements Runnable {
         } catch (InterruptedException e) {
             Log.e(TAG, "Thread interrupted", e);
         }
-
-        stopForeground(STOP_FOREGROUND_REMOVE);
-        stopSelf();
     }
 
     private void clearCache() {
