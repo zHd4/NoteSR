@@ -17,16 +17,17 @@ import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-public class ExportManager extends BaseManager implements Runnable {
+public class ExportManager extends BaseManager {
 
     public static final int NONE = 0;
     public static final int FINISHED_SUCCESSFULLY = 2;
     public static final int CANCELED = -1;
     private static final String TAG = ExportManager.class.getName();
 
-    private final Thread thread;
     private final Context context;
     private final File outputFile;
+
+    private Thread thread;
 
     private NotesWriter notesWriter;
     private FilesWriter filesWriter;
@@ -38,31 +39,29 @@ public class ExportManager extends BaseManager implements Runnable {
     public ExportManager(Context context, File outputFile) {
         this.context = context;
         this.outputFile = outputFile;
-        this.thread = new Thread(this);
-    }
-
-    @Override
-    public void run() {
-        try {
-            status = context.getString(R.string.exporting_data);
-            jsonTempFile = File.createTempFile("export", ".json");
-
-            generateJson(jsonTempFile);
-
-            status = context.getString(R.string.encrypting_data);
-            encrypt(jsonTempFile, outputFile);
-
-            status = context.getString(R.string.wiping_temp_data);
-            wipe(jsonTempFile);
-
-            status = "";
-            result = FINISHED_SUCCESSFULLY;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void start() {
+        thread = new Thread(() -> {
+            try {
+                status = context.getString(R.string.exporting_data);
+                jsonTempFile = File.createTempFile("export", ".json");
+
+                generateJson(jsonTempFile);
+
+                status = context.getString(R.string.encrypting_data);
+                encrypt(jsonTempFile, outputFile);
+
+                status = context.getString(R.string.wiping_temp_data);
+                wipe(jsonTempFile);
+
+                status = "";
+                result = FINISHED_SUCCESSFULLY;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         thread.start();
     }
 
