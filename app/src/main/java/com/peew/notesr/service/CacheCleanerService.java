@@ -57,6 +57,9 @@ public class CacheCleanerService extends Service implements Runnable {
         } catch (InterruptedException e) {
             Log.e(TAG, "Thread interrupted", e);
         }
+
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
     }
 
     private void clearCache() {
