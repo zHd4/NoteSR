@@ -30,65 +30,60 @@ public class ExportService extends Service implements Runnable {
     private static final String CHANNEL_ID = "ExportChannel";
     private static final int BROADCAST_DELAY = 100;
 
-    private Thread serviceThread;
-    private Thread exportWorkerThread;
     private Thread cancelThread;
     private File outputFile;
     private ExportManager exportManager;
 
     @Override
     public void onCreate() {
-        serviceThread = new Thread(this);
-        serviceThread.start();
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     @Override
     public void run() {
         Context context = App.getContext();
-
         File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        outputFile = getOutputFile(outputDir.getPath());
 
+        outputFile = getOutputFile(outputDir.getPath());
         exportManager = new ExportManager(context, outputFile);
-        exportWorkerThread = new Thread(() -> exportManager.export());
+
+        exportManager.start();
 
         registerCancelSignalReceiver();
-
-        exportWorkerThread.start();
-        broadcastWorker().run();
+        broadcastLoop();
 
         // Delete file
         //outputFile.delete();
 
-        stop();
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
     }
 
-    private Runnable broadcastWorker() {
-        return () -> {
-            String status = exportManager.getStatus();
-            String outputPath = outputFile.getAbsolutePath();
+    private void broadcastLoop() {
+        String status = exportManager.getStatus();
+        String outputPath = outputFile.getAbsolutePath();
 
-            int progress = exportManager.calculateProgress();
+        int progress = exportManager.calculateProgress();
 
-            while (exportManager.getResult() == ExportManager.NONE) {
-                try {
-                    status = exportManager.getStatus();
-                    progress = exportManager.calculateProgress();
+        while (exportManager.getResult() == ExportManager.NONE) {
+            try {
+                status = exportManager.getStatus();
+                progress = exportManager.calculateProgress();
 
-                    sendBroadcastData(progress, status, outputPath, false);
+                sendBroadcastData(progress, status, outputPath, false);
 
-                    Thread.sleep(BROADCAST_DELAY);
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "Thread interrupted", e);
-                }
+                Thread.sleep(BROADCAST_DELAY);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Thread interrupted", e);
             }
+        }
 
-            if (exportManager.getResult() == ExportManager.FINISHED_SUCCESSFULLY) {
-                sendBroadcastData(100, status, outputPath, false);
-            } else if (exportManager.getResult() == ExportManager.CANCELED) {
-                sendBroadcastData(progress, status, outputPath, true);
-            }
-        };
+        if (exportManager.getResult() == ExportManager.FINISHED_SUCCESSFULLY) {
+            sendBroadcastData(100, status, outputPath, false);
+        } else if (exportManager.getResult() == ExportManager.CANCELED) {
+            sendBroadcastData(progress, status, outputPath, true);
+        }
     }
 
     private void sendBroadcastData(int progress, String status, String outputPath, boolean canceled) {
@@ -158,13 +153,5 @@ public class ExportService extends Service implements Runnable {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    private void stop() {
-        serviceThread.interrupt();
-        exportWorkerThread.interrupt();
-
-        stopForeground(STOP_FOREGROUND_REMOVE);
-        stopSelf();
     }
 }

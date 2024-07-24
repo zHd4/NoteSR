@@ -17,20 +17,19 @@ import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-public class ExportManager extends BaseManager {
+public class ExportManager extends BaseManager implements Runnable {
 
     public static final int NONE = 0;
     public static final int FINISHED_SUCCESSFULLY = 2;
     public static final int CANCELED = -1;
     private static final String TAG = ExportManager.class.getName();
 
+    private final Thread thread;
     private final Context context;
     private final File outputFile;
 
     private NotesWriter notesWriter;
     private FilesWriter filesWriter;
-
-    private Thread thread;
 
     private File jsonTempFile;
     private int result = NONE;
@@ -39,35 +38,32 @@ public class ExportManager extends BaseManager {
     public ExportManager(Context context, File outputFile) {
         this.context = context;
         this.outputFile = outputFile;
+        this.thread = new Thread(this);
     }
 
-    public void export() {
+    @Override
+    public void run() {
         try {
-            thread = new Thread(() -> {
-                try {
-                    status = context.getString(R.string.exporting_data);
-                    jsonTempFile = File.createTempFile("export", ".json");
+            status = context.getString(R.string.exporting_data);
+            jsonTempFile = File.createTempFile("export", ".json");
 
-                    generateJson(jsonTempFile);
+            generateJson(jsonTempFile);
 
-                    status = context.getString(R.string.encrypting_data);
-                    encrypt(jsonTempFile, outputFile);
+            status = context.getString(R.string.encrypting_data);
+            encrypt(jsonTempFile, outputFile);
 
-                    status = context.getString(R.string.wiping_temp_data);
-                    wipe(jsonTempFile);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            status = context.getString(R.string.wiping_temp_data);
+            wipe(jsonTempFile);
 
-            thread.start();
-            thread.join();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "InterruptedException", e);
+            status = "";
+            result = FINISHED_SUCCESSFULLY;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+    }
 
-        status = "";
-        result = FINISHED_SUCCESSFULLY;
+    public void start() {
+        thread.start();
     }
 
     public void cancel() {
