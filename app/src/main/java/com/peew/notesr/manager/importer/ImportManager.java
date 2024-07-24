@@ -2,6 +2,9 @@ package com.peew.notesr.manager.importer;
 
 import android.content.Context;
 import android.util.Log;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.BackupsCrypt;
 import com.peew.notesr.manager.BaseManager;
@@ -9,6 +12,7 @@ import com.peew.notesr.tools.ProgressCounter;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 public class ImportManager extends BaseManager {
     private static final String TAG = BaseManager.class.getName();
@@ -66,5 +70,25 @@ public class ImportManager extends BaseManager {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void importData(File file) throws IOException {
+        JsonFactory jsonFactory = new JsonFactory();
+        JsonParser jsonParser = jsonFactory.createParser(file);
+
+        NotesImporter notesImporter = new NotesImporter(
+                jsonParser,
+                progressCounter,
+                getNotesTable(),
+                getTimestampFormatter()
+        );
+
+        try (jsonParser) {
+            notesImporter.importNotes();
+        }
+    }
+
+    private DateTimeFormatter getTimestampFormatter() {
+        return App.getAppContainer().getTimestampFormatter();
     }
 }
