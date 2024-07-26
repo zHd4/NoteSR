@@ -10,7 +10,7 @@
     <Button
         android:id="@+id/select_file_to_import_button"
         android:layout_width="152dp"
-        android:layout_height="47dp"
+        android:layout_height="48dp"
         android:background="@drawable/button"
         android:text="@string/select_file"
         android:textColor="@color/text_color"
