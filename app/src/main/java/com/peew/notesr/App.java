@@ -29,12 +29,12 @@ public class App extends Application {
     }
 
     public boolean serviceRunning(Class<?> serviceClass) {
-        String cleanerName = serviceClass.getName();
+        String serviceName = serviceClass.getName();
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 
         String foundName = manager.getRunningServices(Integer.MAX_VALUE).stream()
                 .map(info -> info.service.getClassName())
-                .filter(name -> name.equals(cleanerName))
+                .filter(name -> name.equals(serviceName))
                 .findFirst()
                 .orElse(null);
 
