@@ -4,6 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.data.ImportActivity">
+    tools:context=".activity.data.ImportActivity"
+    android:background="@color/activity_background">
+
+    <Button
+        android:id="@+id/select_file_to_import_button"
+        android:layout_width="152dp"
+        android:layout_height="47dp"
+        android:background="@drawable/button"
+        android:text="@string/select_file"
+        android:textColor="@color/text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
