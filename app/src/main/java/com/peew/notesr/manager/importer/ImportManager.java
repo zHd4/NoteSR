@@ -8,7 +8,6 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.BackupsCrypt;
 import com.peew.notesr.manager.BaseManager;
-import com.peew.notesr.tools.ProgressCounter;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +21,6 @@ public class ImportManager extends BaseManager {
 
     private final File file;
     private final Context context;
-    private final ProgressCounter progressCounter = new ProgressCounter();
 
     private int result = NONE;
     private String status = "";
@@ -38,9 +36,7 @@ public class ImportManager extends BaseManager {
         thread = new Thread(() -> {
             try {
                 jsonTempFile = File.createTempFile("import", ".json");
-
                 status = context.getString(R.string.decrypting_data);
-                progressCounter.increase();
 
                 decrypt(file, jsonTempFile);
 
@@ -78,7 +74,6 @@ public class ImportManager extends BaseManager {
 
         NotesImporter notesImporter = new NotesImporter(
                 jsonParser,
-                progressCounter,
                 getNotesTable(),
                 getTimestampFormatter()
         );
