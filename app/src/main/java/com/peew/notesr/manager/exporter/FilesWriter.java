@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
-public class FilesWriter implements Writer {
+class FilesWriter implements Writer {
     private final JsonGenerator jsonGenerator;
     private final FilesInfoTable filesInfoTable;
     private final DataBlocksTable dataBlocksTable;

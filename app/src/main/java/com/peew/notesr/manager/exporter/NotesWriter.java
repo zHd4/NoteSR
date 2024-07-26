@@ -9,7 +9,7 @@ import com.peew.notesr.model.Note;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-public class NotesWriter implements Writer {
+class NotesWriter implements Writer {
 
     private final JsonGenerator jsonGenerator;
     private final NotesTable notesTable;
