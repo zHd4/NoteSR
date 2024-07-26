@@ -15,7 +15,7 @@ import android.widget.VideoView;
 import androidx.appcompat.app.AlertDialog;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
-import com.peew.notesr.db.services.tables.TempFilesTable;
+import com.peew.notesr.db.services.table.TempFilesTable;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
 import com.peew.notesr.model.TempFile;

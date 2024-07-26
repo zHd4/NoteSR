@@ -1,4 +1,4 @@
-package com.peew.notesr.db.services.tables;
+package com.peew.notesr.db.services.table;
 
 import android.content.ContentValues;
 import android.database.Cursor;
