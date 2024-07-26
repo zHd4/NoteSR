@@ -15,6 +15,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.activity.data.ExportActivity;
+import com.peew.notesr.activity.data.ImportActivity;
 import com.peew.notesr.adapter.NotesListAdapter;
 import com.peew.notesr.model.Note;
 import com.peew.notesr.onclick.notes.NewNoteOnClick;
@@ -53,7 +54,7 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Intent searchActivityIntent = new Intent(this, SearchNotesActivity.class);
-        Intent importNotesActivityIntent = new Intent(this, ImportNotesActivity.class);
+        Intent importActivityIntent = new Intent(this, ImportActivity.class);
         Intent exportActivityIntent = new Intent(this, ExportActivity.class);
 
         getMenuInflater().inflate(R.menu.menu_notes_list, menu);
@@ -64,7 +65,7 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
         menuItemsMap.put(R.id.generate_new_key_menu_item, new GenerateNewKeyOnClick());
         menuItemsMap.put(R.id.export_menu_item, action -> startActivity(exportActivityIntent));
 
-        menuItemsMap.put(R.id.import_menu_item, action -> startActivity(importNotesActivityIntent));
+        menuItemsMap.put(R.id.import_menu_item, action -> startActivity(importActivityIntent));
         menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
         return true;
     }
