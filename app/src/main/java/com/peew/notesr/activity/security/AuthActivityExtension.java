@@ -82,10 +82,10 @@ public class AuthActivityExtension {
         String password = proceedPasswordSetting();
 
         if (password != null) {
-            String hexKey = activity.getIntent().getStringExtra("hex-key");
+            String hexKey = activity.getIntent().getStringExtra("hexKey");
 
             try {
-                if (hexKey == null) throw new Exception("Missing hex-key");
+                if (hexKey == null) throw new Exception("Missing hexKey");
 
                 App.getAppContainer()
                         .getCryptoManager()
