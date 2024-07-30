@@ -60,7 +60,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
     public void finish() {
         Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
 
-        intent.putExtra("note_id", noteId);
+        intent.putExtra("noteId", noteId);
         startActivity(intent);
 
         super.finish();

@@ -55,7 +55,7 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
         addFileButton.setOnClickListener(view -> {
             Intent intent = new Intent(App.getContext(), AddFilesActivity.class);
 
-            intent.putExtra("note_id", noteId);
+            intent.putExtra("noteId", noteId);
             startActivity(intent);
         });
 

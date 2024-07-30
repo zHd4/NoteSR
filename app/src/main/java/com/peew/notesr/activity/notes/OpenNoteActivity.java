@@ -123,7 +123,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
     private void openAssignmentsOnClick() {
         Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
 
-        intent.putExtra("note_id", note.getId());
+        intent.putExtra("noteId", note.getId());
         startActivity(intent);
     }
 
