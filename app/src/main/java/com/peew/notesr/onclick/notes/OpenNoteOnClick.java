@@ -19,7 +19,7 @@ public class OpenNoteOnClick implements AdapterView.OnItemClickListener {
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent noteOpenActivtyIntent = new Intent(App.getContext(), OpenNoteActivity.class);
 
-        noteOpenActivtyIntent.putExtra("note_id", id);
+        noteOpenActivtyIntent.putExtra("noteId", id);
         activity.startActivity(noteOpenActivtyIntent);
     }
 }
