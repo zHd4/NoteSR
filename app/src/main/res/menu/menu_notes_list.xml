@@ -2,23 +2,23 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/lock_app_button"
+        android:id="@+id/lockAppButton"
         android:icon="@android:drawable/ic_lock_idle_lock"
         android:title="@string/lock_app"
         app:showAsAction="ifRoom" />
 
-    <item android:id="@+id/search_menu_item"
+    <item android:id="@+id/searchMenuItem"
         android:title="@string/search"/>
 
-    <item android:id="@+id/export_menu_item"
+    <item android:id="@+id/exportMenuItem"
         android:title="@string/export"/>
 
-    <item android:id="@+id/import_menu_item"
+    <item android:id="@+id/importMenuItem"
         android:title="@string/import_text"/>
 
-    <item android:id="@+id/change_password_menu_item"
+    <item android:id="@+id/changePasswordMenuItem"
         android:title="@string/change_access_code"/>
 
-    <item android:id="@+id/generate_new_key_menu_item"
+    <item android:id="@+id/generateNewKeyMenuItem"
         android:title="@string/generate_new_key"/>
 </menu>

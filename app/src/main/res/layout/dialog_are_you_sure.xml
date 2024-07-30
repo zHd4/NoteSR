@@ -7,7 +7,7 @@
     android:background="@color/dialog_background">
 
     <TextView
-        android:id="@+id/are_you_sure_question_text"
+        android:id="@+id/areYouSureQuestionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15sp"

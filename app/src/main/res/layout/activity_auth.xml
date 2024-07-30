@@ -9,7 +9,7 @@
     android:background="@color/activity_background">
 
     <TextView
-        android:id="@+id/censored_password_text_view"
+        android:id="@+id/censoredPasswordTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
@@ -36,7 +36,7 @@
         app:layout_constraintVertical_bias="0.271" />
 
     <TextView
-        android:id="@+id/auth_top_label"
+        android:id="@+id/authTopLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
@@ -49,7 +49,7 @@
         app:layout_constraintVertical_bias="0.13" />
 
     <Button
-        android:id="@+id/pin_button_2"
+        android:id="@+id/pinButton2"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -63,7 +63,7 @@
         app:layout_constraintVertical_bias="0.358" />
 
     <Button
-        android:id="@+id/pin_button_6"
+        android:id="@+id/pinButton6"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -77,7 +77,7 @@
         app:layout_constraintVertical_bias="0.49" />
 
     <Button
-        android:id="@+id/change_input_index_button"
+        android:id="@+id/changeInputIndexButton"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -93,7 +93,7 @@
         tools:ignore="SmallSp" />
 
     <Button
-        android:id="@+id/pin_button_4"
+        android:id="@+id/pinButton4"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -107,7 +107,7 @@
         app:layout_constraintVertical_bias="0.49" />
 
     <Button
-        android:id="@+id/pin_backspace_button"
+        android:id="@+id/pinBackspaceButton"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -121,7 +121,7 @@
         app:layout_constraintVertical_bias="0.882" />
 
     <Button
-        android:id="@+id/pin_button_8"
+        android:id="@+id/pinButton8"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -135,7 +135,7 @@
         app:layout_constraintVertical_bias="0.623" />
 
     <Button
-        android:id="@+id/auth_button"
+        android:id="@+id/authButton"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -150,7 +150,7 @@
         app:layout_constraintVertical_bias="0.882" />
 
     <Button
-        android:id="@+id/pin_button_9"
+        android:id="@+id/pinButton9"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -164,7 +164,7 @@
         app:layout_constraintVertical_bias="0.623" />
 
     <Button
-        android:id="@+id/pin_button_5"
+        android:id="@+id/pinButton5"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -178,7 +178,7 @@
         app:layout_constraintVertical_bias="0.49" />
 
     <Button
-        android:id="@+id/pin_button_3"
+        android:id="@+id/pinButton3"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -192,7 +192,7 @@
         app:layout_constraintVertical_bias="0.358" />
 
     <Button
-        android:id="@+id/pin_button_7"
+        android:id="@+id/pinButton7"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -206,7 +206,7 @@
         app:layout_constraintVertical_bias="0.623" />
 
     <Button
-        android:id="@+id/pin_button_0"
+        android:id="@+id/pinButton0"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -220,7 +220,7 @@
         app:layout_constraintVertical_bias="0.752" />
 
     <Button
-        android:id="@+id/pin_button_1"
+        android:id="@+id/pinButton1"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"
@@ -234,7 +234,7 @@
         app:layout_constraintVertical_bias="0.357" />
 
     <Button
-        android:id="@+id/caps_button"
+        android:id="@+id/capsButton"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/pin_button"

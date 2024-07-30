@@ -2,21 +2,21 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/save_note_button"
+        android:id="@+id/saveNoteButton"
         android:icon="@android:drawable/ic_menu_save"
         android:orderInCategory="3"
         android:title="@string/save_note"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/delete_note_button"
+        android:id="@+id/deleteNoteButton"
         android:icon="@android:drawable/ic_menu_delete"
         android:orderInCategory="2"
         android:title="@string/delete_note"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/open_assignments_button"
+        android:id="@+id/openAssignmentsButton"
         android:icon="@drawable/ic_assignment"
         android:orderInCategory="1"
         android:title="@string/open_assignments"

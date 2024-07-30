@@ -37,8 +37,8 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        EditText nameField = findViewById(R.id.note_name_field);
-        EditText textField = findViewById(R.id.note_text_field);
+        EditText nameField = findViewById(R.id.noteNameField);
+        EditText textField = findViewById(R.id.noteTextField);
 
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -55,19 +55,19 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        EditText nameField = findViewById(R.id.note_name_field);
-        EditText textField = findViewById(R.id.note_text_field);
+        EditText nameField = findViewById(R.id.noteNameField);
+        EditText textField = findViewById(R.id.noteTextField);
 
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
 
-        menuItemsMap.put(R.id.save_note_button, action -> saveNoteOnClick(nameField, textField));
+        menuItemsMap.put(R.id.saveNoteButton, action -> saveNoteOnClick(nameField, textField));
 
         if (note == null) {
-            disableMenuItem(menu.findItem(R.id.open_assignments_button));
-            disableMenuItem(menu.findItem(R.id.delete_note_button));
+            disableMenuItem(menu.findItem(R.id.openAssignmentsButton));
+            disableMenuItem(menu.findItem(R.id.deleteNoteButton));
         } else {
-            menuItemsMap.put(R.id.open_assignments_button, action -> openAssignmentsOnClick());
-            menuItemsMap.put(R.id.delete_note_button, action -> deleteNoteOnClick());
+            menuItemsMap.put(R.id.openAssignmentsButton, action -> openAssignmentsOnClick());
+            menuItemsMap.put(R.id.deleteNoteButton, action -> deleteNoteOnClick());
         }
 
         return true;

@@ -30,7 +30,7 @@ public class AuthActivityExtension {
         String password = passwordBuilder.toString();
 
         CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
-        TextView censoredPasswordView = activity.findViewById(R.id.censored_password_text_view);
+        TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
 
         if (password.isEmpty()) {
             String enterCodeMessage = activity.getString(R.string.enter_the_code);
@@ -115,7 +115,7 @@ public class AuthActivityExtension {
 
     private String proceedPasswordSetting() {
         String password = passwordBuilder.toString();
-        TextView topLabel = activity.findViewById(R.id.auth_top_label);
+        TextView topLabel = activity.findViewById(R.id.authTopLabel);
 
         if (createdPassword == null) {
             if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
@@ -139,7 +139,7 @@ public class AuthActivityExtension {
     }
 
     private void resetPassword() {
-        TextView censoredPasswordView = activity.findViewById(R.id.censored_password_text_view);
+        TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
 
         censoredPasswordView.setText("");
         passwordBuilder.setLength(0);

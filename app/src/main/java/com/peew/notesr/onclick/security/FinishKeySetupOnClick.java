@@ -38,7 +38,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        EditText importKeyField = activity.findViewById(R.id.import_key_field);
+        EditText importKeyField = activity.findViewById(R.id.importKeyField);
         String hexKeyToImport = importKeyField.getText().toString();
 
         if (!hexKeyToImport.isBlank()) {

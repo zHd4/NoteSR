@@ -21,16 +21,16 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     public static final int KEY_RECOVERY_MODE = 2;
     public static final int CHANGE_PASSWORD_MODE = 3;
     private static final Integer[] PIN_BUTTONS_ID = {
-            R.id.pin_button_1,
-            R.id.pin_button_2,
-            R.id.pin_button_3,
-            R.id.pin_button_4,
-            R.id.pin_button_5,
-            R.id.pin_button_6,
-            R.id.pin_button_7,
-            R.id.pin_button_8,
-            R.id.pin_button_9,
-            R.id.pin_button_0
+            R.id.pinButton1,
+            R.id.pinButton2,
+            R.id.pinButton3,
+            R.id.pinButton4,
+            R.id.pinButton5,
+            R.id.pinButton6,
+            R.id.pinButton7,
+            R.id.pinButton8,
+            R.id.pinButton9,
+            R.id.pinButton0
     };
 
     private int currentMode;
@@ -53,13 +53,13 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     }
 
     private void configure() {
-        TextView topLabel = findViewById(R.id.auth_top_label);
+        TextView topLabel = findViewById(R.id.authTopLabel);
 
-        Button changeInputIndexButton = findViewById(R.id.change_input_index_button);
-        Button capsButton = findViewById(R.id.caps_button);
+        Button changeInputIndexButton = findViewById(R.id.changeInputIndexButton);
+        Button capsButton = findViewById(R.id.capsButton);
 
-        Button backspaceButton = findViewById(R.id.pin_backspace_button);
-        Button authButton = findViewById(R.id.auth_button);
+        Button backspaceButton = findViewById(R.id.pinBackspaceButton);
+        Button authButton = findViewById(R.id.authButton);
 
         switch (currentMode) {
             case AUTHORIZATION_MODE -> {
@@ -110,7 +110,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
     private View.OnClickListener pinButtonOnClick() {
         return view -> {
             Button self = ((Button)view);
-            TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
+            TextView censoredPasswordView = findViewById(R.id.censoredPasswordTextView);
 
             char currentChar = self.getText()
                     .toString()
@@ -150,7 +150,7 @@ public class AuthActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener pinBackspaceButtonOnClick() {
         return view -> {
-            TextView censoredPasswordView = findViewById(R.id.censored_password_text_view);
+            TextView censoredPasswordView = findViewById(R.id.censoredPasswordTextView);
 
             if (passwordBuilder.length() > 0) {
                 String censoredPassword = censoredPasswordView.getText().toString();

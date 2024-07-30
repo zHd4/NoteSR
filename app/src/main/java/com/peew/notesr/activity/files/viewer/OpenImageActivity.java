@@ -21,7 +21,7 @@ public class OpenImageActivity extends BaseFileViewerActivity {
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
-        imageView = findViewById(R.id.assigned_image_view);
+        imageView = findViewById(R.id.assignedImageView);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(imageView));
 
         setImage();

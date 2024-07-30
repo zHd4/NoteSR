@@ -56,11 +56,11 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
         FileInfo fileInfo = getItem(position);
 
         if (fileInfo != null) {
-            TextView nameView = view.findViewById(R.id.file_name_text_view);
-            TextView sizeView = view.findViewById(R.id.file_size_text_view);
-            TextView updateAtView = view.findViewById(R.id.file_updated_at_text_view);
+            TextView nameView = view.findViewById(R.id.fileNameTextView);
+            TextView sizeView = view.findViewById(R.id.fileSizeTextView);
+            TextView updateAtView = view.findViewById(R.id.fileUpdatedAtTextView);
 
-            ImageView iconView = view.findViewById(R.id.file_icon_image_view);
+            ImageView iconView = view.findViewById(R.id.fileIconImageView);
 
             nameView.setText(formatValue(fileInfo.getName()));
             sizeView.setText(formatValue(toReadableSize(fileInfo.getSize())));

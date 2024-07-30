@@ -27,13 +27,13 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_key);
 
-        TextView keyView = findViewById(R.id.aes_key_hex);
+        TextView keyView = findViewById(R.id.aesKeyHex);
 
-        EditText importKeyField = findViewById(R.id.import_key_field);
+        EditText importKeyField = findViewById(R.id.importKeyField);
         importKeyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
-        Button copyToClipboardButton = findViewById(R.id.copy_aes_key_hex);
-        Button nextButton = findViewById(R.id.key_setup_next_button);
+        Button copyToClipboardButton = findViewById(R.id.copyAesKeyHex);
+        Button nextButton = findViewById(R.id.keySetupNextButton);
 
         int mode = getIntent().getIntExtra("mode", -1);
         String password = getIntent().getStringExtra("password");

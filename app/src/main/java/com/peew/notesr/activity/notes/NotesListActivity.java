@@ -42,8 +42,8 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
         setContentView(R.layout.activity_notes_list);
         disableBackButton();
 
-        ListView notesView = findViewById(R.id.notes_list_view);
-        FloatingActionButton newNoteButton = findViewById(R.id.add_note_button);
+        ListView notesView = findViewById(R.id.notesListView);
+        FloatingActionButton newNoteButton = findViewById(R.id.addNoteButton);
 
         loadNotes();
 
@@ -59,14 +59,14 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
 
         getMenuInflater().inflate(R.menu.menu_notes_list, menu);
 
-        menuItemsMap.put(R.id.lock_app_button, new LockOnClick());
-        menuItemsMap.put(R.id.change_password_menu_item, new ChangePasswordOnClick());
+        menuItemsMap.put(R.id.lockAppButton, new LockOnClick());
+        menuItemsMap.put(R.id.changePasswordMenuItem, new ChangePasswordOnClick());
 
-        menuItemsMap.put(R.id.generate_new_key_menu_item, new GenerateNewKeyOnClick());
-        menuItemsMap.put(R.id.export_menu_item, action -> startActivity(exportActivityIntent));
+        menuItemsMap.put(R.id.generateNewKeyMenuItem, new GenerateNewKeyOnClick());
+        menuItemsMap.put(R.id.exportMenuItem, action -> startActivity(exportActivityIntent));
 
-        menuItemsMap.put(R.id.import_menu_item, action -> startActivity(importActivityIntent));
-        menuItemsMap.put(R.id.search_menu_item, action -> startActivity(searchActivityIntent));
+        menuItemsMap.put(R.id.importMenuItem, action -> startActivity(importActivityIntent));
+        menuItemsMap.put(R.id.searchMenuItem, action -> startActivity(searchActivityIntent));
         return true;
     }
 
@@ -101,8 +101,8 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
     }
 
     private void fillNotesListView(List<Note> notes) {
-        ListView notesView = findViewById(R.id.notes_list_view);
-        TextView missingNotesLabel = findViewById(R.id.missing_notes_label);
+        ListView notesView = findViewById(R.id.notesListView);
+        TextView missingNotesLabel = findViewById(R.id.missingNotesLabel);
 
         if (!notes.isEmpty()) {
             missingNotesLabel.setVisibility(View.INVISIBLE);

@@ -8,7 +8,7 @@
     tools:context=".activity.files.AssignmentsListActivity">
 
     <TextView
-        android:id="@+id/missing_files_label"
+        android:id="@+id/missingFilesLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_files"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/files_list_view"
+        android:id="@+id/filesListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:paddingTop="10dp"
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_file_button"
+        android:id="@+id/addFileButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"

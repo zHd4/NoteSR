@@ -7,13 +7,13 @@
     android:background="@color/dialog_background">
 
     <ProgressBar
-        android:id="@+id/export_loading_animation"
+        android:id="@+id/exportLoadingAnimation"
         android:layout_marginEnd="5dp"
         android:layout_width="45dp"
         android:layout_height="45dp" />
 
     <TextView
-        android:id="@+id/export_loading_text"
+        android:id="@+id/exportLoadingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"

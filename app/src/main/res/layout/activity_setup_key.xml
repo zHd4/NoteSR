@@ -8,7 +8,7 @@
     android:background="@color/activity_background">
 
     <EditText
-        android:id="@+id/import_key_field"
+        android:id="@+id/importKeyField"
         android:layout_width="300dp"
         android:layout_height="53dp"
         android:backgroundTint="@color/edit_text_background_tint"
@@ -56,7 +56,7 @@
         app:layout_constraintVertical_bias="0.07" />
 
     <TextView
-        android:id="@+id/aes_key_hex"
+        android:id="@+id/aesKeyHex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
@@ -68,7 +68,7 @@
         app:layout_constraintVertical_bias="0.3"/>
 
     <Button
-        android:id="@+id/copy_aes_key_hex"
+        android:id="@+id/copyAesKeyHex"
         android:layout_width="317dp"
         android:layout_height="52dp"
         android:background="@drawable/button"
@@ -81,7 +81,7 @@
         app:layout_constraintVertical_bias="0.87" />
 
     <Button
-        android:id="@+id/key_setup_next_button"
+        android:id="@+id/keySetupNextButton"
         android:layout_width="317dp"
         android:layout_height="52dp"
         android:background="@drawable/button"

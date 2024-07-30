@@ -67,9 +67,9 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
         if (id == android.R.id.home) {
             finish();
             return true;
-        } else if (id == R.id.save_image_to_storage_button) {
+        } else if (id == R.id.saveImageButton) {
             saveFileOnClick();
-        } else if (id == R.id.delete_image_button) {
+        } else if (id == R.id.deleteImageButton) {
             deleteFileOnClick();
         }
 

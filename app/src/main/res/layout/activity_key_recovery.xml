@@ -8,7 +8,7 @@
     android:background="@color/activity_background">
 
     <EditText
-        android:id="@+id/import_key_field"
+        android:id="@+id/importKeyField"
         android:layout_width="0dp"
         android:layout_height="642dp"
         android:backgroundTint="@color/activity_background"
@@ -32,7 +32,7 @@
         tools:ignore="Autofill" />
 
     <Button
-        android:id="@+id/check_recovery_key_button"
+        android:id="@+id/checkRecoveryKeyButton"
         android:layout_width="0dp"
         android:layout_height="64dp"
         android:background="@drawable/button"

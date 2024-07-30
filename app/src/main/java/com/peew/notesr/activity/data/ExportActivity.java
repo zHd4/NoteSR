@@ -37,7 +37,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(dataReceiver(), new IntentFilter("ExportDataBroadcast"));
 
-        startStopButton = findViewById(R.id.start_stop_export_button);
+        startStopButton = findViewById(R.id.startStopExportButton);
         startStopButton.setOnClickListener(startStopButtonOnClick());
 
         if (exportRunning()) {
@@ -50,8 +50,8 @@ public class ExportActivity extends ExtendedAppCompatActivity {
             actionBar.setTitle(getString(R.string.export));
         }
 
-        TextView notesCountLabel = findViewById(R.id.notes_count_label);
-        TextView filesCountLabel = findViewById(R.id.files_count_label);
+        TextView notesCountLabel = findViewById(R.id.notesCountLabel);
+        TextView filesCountLabel = findViewById(R.id.filesCountLabel);
 
         long notesCount = getNotesCount();
         long filesCount = getFilesCount();
@@ -111,14 +111,14 @@ public class ExportActivity extends ExtendedAppCompatActivity {
     }
 
     private void updateViews(int progress, String status, String outputPath) {
-        ProgressBar progressBar = findViewById(R.id.export_progress_bar);
+        ProgressBar progressBar = findViewById(R.id.exportProgressBar);
         progressBar.setProgress(progress);
 
         String progressStr = progress + "%";
 
-        TextView percentageLabel = findViewById(R.id.export_percentage_label);
-        TextView statusLabel = findViewById(R.id.export_status_label);
-        TextView outputPathLabel = findViewById(R.id.export_output_path_label);
+        TextView percentageLabel = findViewById(R.id.exportPercentageLabel);
+        TextView statusLabel = findViewById(R.id.exportStatusLabel);
+        TextView outputPathLabel = findViewById(R.id.exportOutputPathLabel);
 
         makeViewVisible(percentageLabel);
         makeViewVisible(statusLabel);

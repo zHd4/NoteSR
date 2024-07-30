@@ -2,14 +2,14 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/save_image_to_storage_button"
+        android:id="@+id/saveImageButton"
         android:icon="@android:drawable/stat_sys_download"
         android:orderInCategory="2"
         android:title="@string/save_note"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/delete_image_button"
+        android:id="@+id/deleteImageButton"
         android:icon="@android:drawable/ic_menu_delete"
         android:orderInCategory="1"
         android:title="@string/delete"

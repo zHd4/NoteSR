@@ -24,7 +24,7 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_notes_search_results);
 
-        ListView resultsView = findViewById(R.id.notes_search_results_list_view);
+        ListView resultsView = findViewById(R.id.notesSearchResultsListView);
 
         ActionBar actionBar = getSupportActionBar();
         String actionBarTitleFormat = getResources().getString(R.string.found_n);

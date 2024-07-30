@@ -23,8 +23,8 @@ public class SearchNotesActivity extends ExtendedAppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(getResources().getString(R.string.search));
 
-        EditText queryField = findViewById(R.id.search_notes_query_field);
-        findViewById(R.id.search_notes_button).setOnClickListener(searchButtonOnClick(queryField));
+        EditText queryField = findViewById(R.id.searchNotesQueryField);
+        findViewById(R.id.searchNotesButton).setOnClickListener(searchButtonOnClick(queryField));
     }
 
     /** @noinspection deprecation*/

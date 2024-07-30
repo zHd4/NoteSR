@@ -44,7 +44,7 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 
-        videoView = findViewById(R.id.open_video_view);
+        videoView = findViewById(R.id.openVideoView);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
 
         videoView.setOnClickListener(null);
@@ -53,7 +53,7 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         if (!playing) {
-            TextView label = findViewById(R.id.tap_to_play_label);
+            TextView label = findViewById(R.id.tapToPlayLabel);
 
             videoView.setVisibility(View.VISIBLE);
             label.setVisibility(View.INVISIBLE);

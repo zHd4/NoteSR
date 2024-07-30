@@ -8,7 +8,7 @@
     android:background="@color/activity_background">
 
     <EditText
-        android:id="@+id/search_notes_query_field"
+        android:id="@+id/searchNotesQueryField"
         android:layout_width="match_parent"
         android:layout_height="53dp"
         android:backgroundTint="@color/edit_text_background_tint"
@@ -29,7 +29,7 @@
         tools:ignore="Autofill" />
 
     <Button
-        android:id="@+id/search_notes_button"
+        android:id="@+id/searchNotesButton"
         android:layout_width="380dp"
         android:layout_height="52dp"
         android:background="@drawable/button"

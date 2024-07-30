@@ -7,7 +7,7 @@
     android:background="@color/dialog_background">
 
     <TextView
-        android:id="@+id/file_already_exists_question_text"
+        android:id="@+id/fileAlreadyExistsQuestionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15sp"

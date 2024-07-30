@@ -20,7 +20,7 @@ public class OpenTextFileActivity extends BaseFileViewerActivity {
 
     private void loadText() {
         AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
-        EditText field = findViewById(R.id.text_file_field);
+        EditText field = findViewById(R.id.textFileField);
 
         String content = new String(assignmentsManager.read(fileInfo.getId()));
 

@@ -6,7 +6,7 @@
     android:background="@color/activity_background">
 
     <TextView
-        android:id="@+id/note_name_text_view"
+        android:id="@+id/noteNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -19,7 +19,7 @@
         tools:text="text" />
 
     <TextView
-        android:id="@+id/note_text_view"
+        android:id="@+id/noteTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -32,7 +32,7 @@
         tools:text="text" />
 
     <TextView
-        android:id="@+id/note_updated_at_text_view"
+        android:id="@+id/noteUpdatedAtTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

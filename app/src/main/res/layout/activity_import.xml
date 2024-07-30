@@ -8,7 +8,7 @@
     android:background="@color/activity_background">
 
     <TextView
-        android:id="@+id/import_info_text"
+        android:id="@+id/importInfoText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="240dp"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
-        android:id="@+id/import_progress_bar"
+        android:id="@+id/importProgressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="144dp"
         android:layout_height="137dp"
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/importing_text_view"
+        android:id="@+id/importingTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/importing"
@@ -46,7 +46,7 @@
         app:layout_constraintVertical_bias="0.627" />
 
     <Button
-        android:id="@+id/select_file_to_import_button"
+        android:id="@+id/selectFileToImportButton"
         android:layout_width="152dp"
         android:layout_height="48dp"
         android:background="@drawable/button"
@@ -59,7 +59,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/import_cannot_be_canceled_text_view"
+        android:id="@+id/importCannotBeCanceledLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/import_cannot_be_canceled"
@@ -72,7 +72,7 @@
         app:layout_constraintVertical_bias="0.02" />
 
     <Button
-        android:id="@+id/start_import_button"
+        android:id="@+id/startImportButton"
         android:layout_width="378dp"
         android:layout_height="52dp"
         android:background="@drawable/button"

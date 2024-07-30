@@ -9,7 +9,7 @@
     tools:context=".activity.files.viewer.OpenImageActivity">
 
     <ImageView
-        android:id="@+id/assigned_image_view"
+        android:id="@+id/assignedImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"

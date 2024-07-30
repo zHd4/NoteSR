@@ -50,7 +50,7 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Files of: " + note.getName());
 
-        FloatingActionButton addFileButton = findViewById(R.id.add_file_button);
+        FloatingActionButton addFileButton = findViewById(R.id.addFileButton);
 
         addFileButton.setOnClickListener(view -> {
             Intent intent = new Intent(App.getContext(), AddFilesActivity.class);
@@ -61,7 +61,7 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
 
         loadFiles();
 
-        ListView filesListView = findViewById(R.id.files_list_view);
+        ListView filesListView = findViewById(R.id.filesListView);
         filesListView.setOnItemClickListener(new OpenFileOnClick(this));
     }
 
@@ -82,8 +82,8 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
     }
 
     private void fillFilesListView(List<FileInfo> files) {
-        ListView filesView = findViewById(R.id.files_list_view);
-        TextView missingFilesLabel = findViewById(R.id.missing_files_label);
+        ListView filesView = findViewById(R.id.filesListView);
+        TextView missingFilesLabel = findViewById(R.id.missingFilesLabel);
 
         if (!files.isEmpty()) {
             missingFilesLabel.setVisibility(View.INVISIBLE);

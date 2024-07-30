@@ -18,7 +18,7 @@ public class StartActivity extends ExtendedAppCompatActivity {
         authActivityIntent.putExtra("mode", AuthActivity.CREATE_PASSWORD_MODE);
 
         View.OnClickListener onGetStartedButtonClick = view -> startActivity(authActivityIntent);
-        findViewById(R.id.get_started_button).setOnClickListener(onGetStartedButtonClick);
+        findViewById(R.id.getStartedButton).setOnClickListener(onGetStartedButtonClick);
 
         disableBackButton();
     }
