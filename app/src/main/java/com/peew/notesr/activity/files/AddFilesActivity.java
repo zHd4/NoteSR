@@ -38,7 +38,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_file);
 
-        noteId = getIntent().getLongExtra("note_id", -1);
+        noteId = getIntent().getLongExtra("noteId", -1);
 
         if (noteId == -1) {
             throw new RuntimeException("Note id didn't provided");
