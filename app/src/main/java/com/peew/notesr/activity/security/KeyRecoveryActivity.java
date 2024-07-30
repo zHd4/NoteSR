@@ -47,7 +47,7 @@ public class KeyRecoveryActivity extends ExtendedAppCompatActivity {
                     Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
 
                     authActivityIntent.putExtra("mode", AuthActivity.KEY_RECOVERY_MODE);
-                    authActivityIntent.putExtra("hex-key", hexKey);
+                    authActivityIntent.putExtra("hexKey", hexKey);
 
                     startActivity(authActivityIntent);
                 } catch (Exception e) {
