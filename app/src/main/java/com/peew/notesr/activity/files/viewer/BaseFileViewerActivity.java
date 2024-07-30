@@ -79,7 +79,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
     private void returnToListActivity() {
         Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
 
-        intent.putExtra("note_id", fileInfo.getNoteId());
+        intent.putExtra("noteId", fileInfo.getNoteId());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivity(intent);
@@ -87,7 +87,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
 
     protected void loadFileInfo() {
         //noinspection deprecation
-        fileInfo = (FileInfo) getIntent().getSerializableExtra("file_info");
+        fileInfo = (FileInfo) getIntent().getSerializableExtra("fileInfo");
 
         if (fileInfo == null) {
             throw new RuntimeException("File info not provided");

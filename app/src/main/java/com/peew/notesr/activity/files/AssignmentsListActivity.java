@@ -32,7 +32,7 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assignments_list);
 
-        long noteId = getIntent().getLongExtra("note_id", -1);
+        long noteId = getIntent().getLongExtra("noteId", -1);
 
         if (noteId == -1) {
             throw new RuntimeException("Note id didn't provided");
