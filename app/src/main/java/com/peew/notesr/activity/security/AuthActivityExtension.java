@@ -85,7 +85,7 @@ public class AuthActivityExtension {
             String hexKey = activity.getIntent().getStringExtra("hexKey");
 
             try {
-                if (hexKey == null) throw new Exception("Missing hexKey");
+                if (hexKey == null) throw new Exception("Missing hex key");
 
                 App.getAppContainer()
                         .getCryptoManager()
