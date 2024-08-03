@@ -2,8 +2,10 @@ package com.peew.notesr.activity.data;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +18,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.service.ImportService;
+import com.peew.notesr.tools.FileExifDataResolver;
 
 public class ImportActivity extends ExtendedAppCompatActivity {
 
@@ -63,20 +66,23 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                 Intent data = result.getData();
 
                 if (data != null) {
+                    selectedFileUri = data.getData();
+
+                    FileExifDataResolver resolver = new FileExifDataResolver(selectedFileUri);
+                    String filename = resolver.getFileName();
+
                     TextView infoTextView = findViewById(R.id.importInfoText);
+                    infoTextView.setVisibility(View.INVISIBLE);
+
+                    TextView selectedFileTextView = findViewById(R.id.selectedFileTextView);
+
+                    selectedFileTextView.setVisibility(View.VISIBLE);
+                    selectedFileTextView.setText(filename);
 
                     Button startButton = findViewById(R.id.startImportButton);
-                    Button selectFileButton = findViewById(R.id.selectFileToImportButton);
-
-                    infoTextView.setVisibility(View.INVISIBLE);
 
                     startButton.setVisibility(View.VISIBLE);
                     startButton.setEnabled(true);
-
-                    selectFileButton.setVisibility(View.INVISIBLE);
-                    selectFileButton.setEnabled(false);
-
-                    selectedFileUri = data.getData();
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
