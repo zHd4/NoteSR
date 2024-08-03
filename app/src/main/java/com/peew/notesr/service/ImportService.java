@@ -23,12 +23,11 @@ public class ImportService extends Service implements Runnable {
     private static final String CHANNEL_ID = "ImportChannel";
     private static final int BROADCAST_DELAY = 100;
 
-    private Thread thread;
     private ImportManager importManager;
 
     @Override
     public void onCreate() {
-        thread = new Thread(this);
+        Thread thread = new Thread(this);
         thread.start();
     }
 
