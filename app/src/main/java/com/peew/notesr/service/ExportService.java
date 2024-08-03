@@ -16,7 +16,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.peew.notesr.App;
 import com.peew.notesr.manager.exporter.ExportManager;
 
 import java.io.File;
@@ -42,7 +41,7 @@ public class ExportService extends Service implements Runnable {
 
     @Override
     public void run() {
-        Context context = App.getContext();
+        Context context = this;
         File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
