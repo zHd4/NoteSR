@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.peew.notesr.manager.importer.ImportManager;
 
 import java.io.File;
@@ -20,6 +21,7 @@ public class ImportService extends Service implements Runnable {
 
     private static final String TAG = ImportService.class.getName();
     private static final String CHANNEL_ID = "ImportChannel";
+    private static final int BROADCAST_DELAY = 100;
 
     private Thread thread;
     private ImportManager importManager;
@@ -47,7 +49,24 @@ public class ImportService extends Service implements Runnable {
     }
 
     private void broadcastLoop() {
+        while (importManager.getResult() == ImportManager.NONE) {
+            try {
+                sendBroadcastData(importManager.getStatus(), false);
+                Thread.sleep(BROADCAST_DELAY);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Thread interrupted", e);
+            }
+        }
 
+        sendBroadcastData(importManager.getStatus(), true);
+    }
+
+    private void sendBroadcastData(String status, boolean finished) {
+        Intent intent = new Intent("importDataBroadcast")
+                .putExtra("status", status)
+                .putExtra("finished", finished);
+
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     @Override
