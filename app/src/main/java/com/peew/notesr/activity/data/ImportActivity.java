@@ -47,13 +47,19 @@ public class ImportActivity extends ExtendedAppCompatActivity {
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(dataReceiver(), new IntentFilter("importDataBroadcast"));
 
-        if (importRunning()) {
-            actionBar.setTitle(R.string.importing);
-        } else {
+        boolean importRunning = isImportRunning();
+
+        if (!importRunning) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(R.string.import_text);
+        } else {
+            actionBar.setTitle(R.string.importing);
         }
 
+        initViews(importRunning);
+    }
+
+    private void initViews(boolean importRunning) {
         progressBar = findViewById(R.id.importProgressBar);
         statusTextView = findViewById(R.id.statusTextView);
 
@@ -160,7 +166,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
         startForegroundService(intent);
     }
 
-    private boolean importRunning() {
+    private boolean isImportRunning() {
         return App.getContext().serviceRunning(ImportService.class);
     }
 }
