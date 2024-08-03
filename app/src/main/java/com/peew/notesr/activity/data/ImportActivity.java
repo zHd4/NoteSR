@@ -1,7 +1,10 @@
 package com.peew.notesr.activity.data;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,9 +17,11 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
+import com.peew.notesr.activity.notes.NotesListActivity;
 import com.peew.notesr.service.ImportService;
 import com.peew.notesr.tools.FileExifDataResolver;
 
@@ -38,6 +43,9 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
         actionBar = getSupportActionBar();
         assert actionBar != null;
+
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(dataReceiver(), new IntentFilter("importDataBroadcast"));
 
         if (importRunning()) {
             actionBar.setTitle(R.string.importing);
@@ -124,6 +132,24 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
             progressBar.setVisibility(View.VISIBLE);
             importingTextView.setVisibility(View.VISIBLE);
+        };
+    }
+
+    private BroadcastReceiver dataReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String status = intent.getStringExtra("status");
+                boolean finished = intent.getBooleanExtra("finished", false);
+
+                if (finished) {
+                    startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+                    finish();
+                    return;
+                }
+
+                importingTextView.setText(status);
+            }
         };
     }
 
