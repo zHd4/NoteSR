@@ -2,6 +2,7 @@ package com.peew.notesr.activity.data;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import com.peew.notesr.service.ImportService;
 public class ImportActivity extends ExtendedAppCompatActivity {
 
     private ActionBar actionBar;
+    private Uri selectedFileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,9 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(R.string.import_text);
         }
+
+        Button selectFileButton = findViewById(R.id.selectFileToImportButton);
+        selectFileButton.setOnClickListener(selectFileOnClick());
     }
 
     private View.OnClickListener selectFileOnClick() {
@@ -55,7 +60,9 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             int resultCode = result.getResultCode();
 
             if (resultCode == Activity.RESULT_OK) {
-                if (result.getData() != null) {
+                Intent data = result.getData();
+
+                if (data != null) {
                     TextView infoTextView = findViewById(R.id.importInfoText);
 
                     Button startButton = findViewById(R.id.startImportButton);
@@ -68,6 +75,8 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
                     selectFileButton.setVisibility(View.INVISIBLE);
                     selectFileButton.setEnabled(false);
+
+                    selectedFileUri = data.getData();
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
