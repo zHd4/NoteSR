@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -23,8 +24,12 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
     private static final String TAG = ImportActivity.class.getName();
 
-    private ActionBar actionBar;
     private Uri selectedFileUri;
+
+    private ActionBar actionBar;
+    private Button selectFileButton;
+    private ProgressBar progressBar;
+    private TextView importingTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +46,10 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             actionBar.setTitle(R.string.import_text);
         }
 
-        Button selectFileButton = findViewById(R.id.selectFileToImportButton);
+        progressBar = findViewById(R.id.importProgressBar);
+        importingTextView = findViewById(R.id.importingTextView);
+
+        selectFileButton = findViewById(R.id.selectFileToImportButton);
         selectFileButton.setOnClickListener(selectFileOnClick());
 
         Button startButton = findViewById(R.id.startImportButton);
@@ -102,7 +110,28 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                 Log.e(TAG, "NullPointerException", e);
                 throw e;
             }
+
+            view.setEnabled(false);
+            view.setVisibility(View.INVISIBLE);
+
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setTitle(getString(R.string.importing));
+
+            selectFileButton.setEnabled(false);
+            selectFileButton.setVisibility(View.INVISIBLE);
+
+            startImport();
+
+            progressBar.setVisibility(View.VISIBLE);
+            importingTextView.setVisibility(View.VISIBLE);
         };
+    }
+
+    private void startImport() {
+        Intent intent = new Intent(this, ImportService.class)
+                .putExtra("sourceFileUri", selectedFileUri.toString());
+
+        startForegroundService(intent);
     }
 
     private boolean importRunning() {
