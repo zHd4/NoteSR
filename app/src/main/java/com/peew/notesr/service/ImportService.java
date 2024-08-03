@@ -40,6 +40,14 @@ public class ImportService extends Service implements Runnable {
         }
 
         importManager.start();
+        broadcastLoop();
+
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
+    }
+
+    private void broadcastLoop() {
+
     }
 
     @Override
