@@ -24,7 +24,6 @@ public class ImportManager extends BaseManager {
 
     private int result = NONE;
     private String status = "";
-    private Thread thread;
     private File jsonTempFile;
 
     public ImportManager(Context context, File file) {
@@ -33,7 +32,7 @@ public class ImportManager extends BaseManager {
     }
 
     public void start() {
-        thread = new Thread(() -> {
+        Thread thread = new Thread(() -> {
             try {
                 jsonTempFile = File.createTempFile("import", ".json");
                 status = context.getString(R.string.decrypting_data);
