@@ -35,6 +35,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     private Button selectFileButton;
     private ProgressBar progressBar;
     private TextView statusTextView;
+    private TextView infoTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +63,20 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     private void initViews(boolean importRunning) {
         progressBar = findViewById(R.id.importProgressBar);
         statusTextView = findViewById(R.id.statusTextView);
-
         selectFileButton = findViewById(R.id.selectFileToImportButton);
-        selectFileButton.setOnClickListener(selectFileOnClick());
+        infoTextView = findViewById(R.id.importInfoText);
 
-        Button startButton = findViewById(R.id.startImportButton);
-        startButton.setOnClickListener(startButtonOnClick());
+        if (importRunning) {
+            infoTextView.setVisibility(View.INVISIBLE);
+
+            selectFileButton.setVisibility(View.INVISIBLE);
+            selectFileButton.setEnabled(false);
+        } else {
+            selectFileButton.setOnClickListener(selectFileOnClick());
+
+            Button startButton = findViewById(R.id.startImportButton);
+            startButton.setOnClickListener(startButtonOnClick());
+        }
     }
 
     private View.OnClickListener selectFileOnClick() {
@@ -97,7 +106,6 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                     FileExifDataResolver resolver = new FileExifDataResolver(selectedFileUri);
                     String filename = resolver.getFileName();
 
-                    TextView infoTextView = findViewById(R.id.importInfoText);
                     infoTextView.setVisibility(View.INVISIBLE);
 
                     TextView selectedFileTextView = findViewById(R.id.selectedFileTextView);
