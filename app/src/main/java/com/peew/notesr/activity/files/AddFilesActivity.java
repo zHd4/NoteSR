@@ -3,11 +3,8 @@ package com.peew.notesr.activity.files;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
-import android.webkit.MimeTypeMap;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,7 +15,7 @@ import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.manager.AssignmentsManager;
 import com.peew.notesr.model.FileInfo;
-import com.peew.notesr.tools.FileManager;
+import com.peew.notesr.tools.FileExifDataResolver;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -131,10 +128,12 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         Map<FileInfo, InputStream> map = new HashMap<>();
 
         uris.forEach(uri -> {
-            String filename = getFileName(getCursor(uri));
-            String type = getMimeType(filename);
+            FileExifDataResolver resolver = new FileExifDataResolver(uri);
 
-            long size = getFileSize(getCursor(uri));
+            String filename = resolver.getFileName();
+            String type = resolver.getMimeType();
+
+            long size = resolver.getFileSize();
 
             FileInfo fileInfo = new FileInfo(noteId, size, filename, type);
 
@@ -147,47 +146,6 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         });
 
         return map;
-    }
-
-    private String getFileName(Cursor cursor) {
-        try (cursor) {
-            int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-
-            cursor.moveToFirst();
-            return cursor.getString(index);
-        }
-    }
-
-    private long getFileSize(Cursor cursor) {
-        try (cursor) {
-            int index = cursor.getColumnIndex(OpenableColumns.SIZE);
-
-            cursor.moveToFirst();
-            return cursor.getLong(index);
-        }
-    }
-
-    private String getMimeType(String filename) {
-        String type = null;
-        String extension = FileManager.getFileExtension(filename);
-
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-
-        return type;
-    }
-
-    private Cursor getCursor(Uri uri) {
-        Cursor cursor = App.getContext()
-                .getContentResolver()
-                .query(uri, null, null, null, null);
-
-        if (cursor == null) {
-            throw new RuntimeException(new NullPointerException("Cursor is null"));
-        }
-
-        return cursor;
     }
 
     private AlertDialog createProgressDialog() {
