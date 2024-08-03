@@ -11,8 +11,10 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
+import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
+import com.peew.notesr.service.ImportService;
 
 public class ImportActivity extends ExtendedAppCompatActivity {
 
@@ -25,6 +27,13 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
         actionBar = getSupportActionBar();
         assert actionBar != null;
+
+        if (importRunning()) {
+            actionBar.setTitle(R.string.importing);
+        } else {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.import_text);
+        }
     }
 
     private View.OnClickListener selectFileOnClick() {
@@ -64,5 +73,9 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                 }
             }
         };
+    }
+
+    private boolean importRunning() {
+        return App.getContext().serviceRunning(ImportService.class);
     }
 }
