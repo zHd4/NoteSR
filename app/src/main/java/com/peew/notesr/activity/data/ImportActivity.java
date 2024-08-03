@@ -2,10 +2,8 @@ package com.peew.notesr.activity.data;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -42,6 +40,9 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
         Button selectFileButton = findViewById(R.id.selectFileToImportButton);
         selectFileButton.setOnClickListener(selectFileOnClick());
+
+        Button startButton = findViewById(R.id.startImportButton);
+        startButton.setOnClickListener(startButtonOnClick());
     }
 
     private View.OnClickListener selectFileOnClick() {
@@ -88,6 +89,10 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                 }
             }
         };
+    }
+
+    private View.OnClickListener startButtonOnClick() {
+        return view -> {};
     }
 
     private boolean importRunning() {
