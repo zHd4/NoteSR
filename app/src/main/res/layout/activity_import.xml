@@ -79,6 +79,7 @@
         android:text="@string/start"
         android:textColor="@color/text_color"
         android:visibility="invisible"
+        android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
