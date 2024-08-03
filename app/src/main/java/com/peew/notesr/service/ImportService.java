@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import com.peew.notesr.manager.importer.ImportManager;
@@ -32,7 +33,10 @@ public class ImportService extends Service implements Runnable {
     @Override
     public void run() {
         if (importManager == null) {
-            throw new UnsupportedOperationException("Service has not been started");
+            RuntimeException e = new UnsupportedOperationException("Service has not been started");
+
+            Log.e(TAG, "UnsupportedOperationException", e);
+            throw e;
         }
 
         importManager.start();
