@@ -34,7 +34,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     private ActionBar actionBar;
     private Button selectFileButton;
     private ProgressBar progressBar;
-    private TextView importingTextView;
+    private TextView statusTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
         }
 
         progressBar = findViewById(R.id.importProgressBar);
-        importingTextView = findViewById(R.id.importingTextView);
+        statusTextView = findViewById(R.id.statusTextView);
 
         selectFileButton = findViewById(R.id.selectFileToImportButton);
         selectFileButton.setOnClickListener(selectFileOnClick());
@@ -131,7 +131,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             startImport();
 
             progressBar.setVisibility(View.VISIBLE);
-            importingTextView.setVisibility(View.VISIBLE);
+            statusTextView.setVisibility(View.VISIBLE);
         };
     }
 
@@ -148,7 +148,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                     return;
                 }
 
-                importingTextView.setText(status);
+                statusTextView.setText(status);
             }
         };
     }
