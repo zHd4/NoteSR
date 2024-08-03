@@ -71,6 +71,9 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
             selectFileButton.setVisibility(View.INVISIBLE);
             selectFileButton.setEnabled(false);
+
+            progressBar.setVisibility(View.VISIBLE);
+            statusTextView.setVisibility(View.VISIBLE);
         } else {
             selectFileButton.setOnClickListener(selectFileOnClick());
 
