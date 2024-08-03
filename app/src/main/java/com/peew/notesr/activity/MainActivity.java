@@ -1,10 +1,7 @@
 package com.peew.notesr.activity;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.data.ExportActivity;
