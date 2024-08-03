@@ -8,6 +8,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.BackupsCrypt;
 import com.peew.notesr.manager.BaseManager;
+import com.peew.notesr.tools.FileWiper;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,6 @@ public class ImportManager extends BaseManager {
     private static final String TAG = BaseManager.class.getName();
     public static final int NONE = 0;
     public static final int FINISHED_SUCCESSFULLY = 2;
-    public static final int CANCELED = -1;
 
     private final File file;
     private final Context context;
@@ -37,9 +37,16 @@ public class ImportManager extends BaseManager {
             try {
                 jsonTempFile = File.createTempFile("import", ".json");
                 status = context.getString(R.string.decrypting_data);
-
                 decrypt(file, jsonTempFile);
 
+                status = context.getString(R.string.importing);
+                importData(jsonTempFile);
+
+                status = context.getString(R.string.wiping_temp_data);
+                wipeFile(jsonTempFile);
+
+                status = "";
+                result = FINISHED_SUCCESSFULLY;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -80,6 +87,17 @@ public class ImportManager extends BaseManager {
 
         try (jsonParser) {
             notesImporter.importNotes();
+        }
+    }
+
+    private void wipeFile(File file) throws IOException {
+        if (result == NONE) {
+            FileWiper wiper = new FileWiper(file);
+            boolean success = wiper.wipeFile();
+
+            if (!success) {
+                throw new RuntimeException("Filed to wipe file");
+            }
         }
     }
 
