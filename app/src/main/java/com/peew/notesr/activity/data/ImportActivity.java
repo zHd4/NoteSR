@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -45,7 +47,18 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
             if (resultCode == Activity.RESULT_OK) {
                 if (result.getData() != null) {
+                    TextView infoTextView = findViewById(R.id.importInfoText);
 
+                    Button startButton = findViewById(R.id.startImportButton);
+                    Button selectFileButton = findViewById(R.id.selectFileToImportButton);
+
+                    infoTextView.setVisibility(View.INVISIBLE);
+
+                    startButton.setVisibility(View.VISIBLE);
+                    startButton.setEnabled(true);
+
+                    selectFileButton.setVisibility(View.INVISIBLE);
+                    selectFileButton.setEnabled(false);
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
