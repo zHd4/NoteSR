@@ -4,12 +4,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import com.peew.notesr.manager.importer.ImportManager;
 
 import java.io.File;
 
@@ -19,7 +21,7 @@ public class ImportService extends Service implements Runnable {
     private static final String CHANNEL_ID = "ImportChannel";
 
     private Thread thread;
-    private File sourceFile;
+    private ImportManager importManager;
 
     @Override
     public void onCreate() {
@@ -29,7 +31,11 @@ public class ImportService extends Service implements Runnable {
 
     @Override
     public void run() {
+        if (importManager == null) {
+            throw new UnsupportedOperationException("Service has not been started");
+        }
 
+        importManager.start();
     }
 
     @Override
@@ -48,7 +54,10 @@ public class ImportService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        sourceFile = new File(intent.getStringExtra("sourceFileUri"));
+        Context context = this;
+        File sourceFile = new File(intent.getStringExtra("sourceFileUri"));
+
+        importManager = new ImportManager(context, sourceFile);
 
         startForeground(startId, notification, type);
 
