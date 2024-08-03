@@ -8,14 +8,14 @@ import com.peew.notesr.App;
 
 public class FileExifDataResolver {
 
-    private final Cursor cursor;
+    private final Uri uri;
 
     public FileExifDataResolver(Uri uri) {
-        this.cursor = getCursor(uri);
+        this.uri = uri;
     }
 
     public String getFileName() {
-        try (cursor) {
+        try (Cursor cursor = getCursor(uri)) {
             int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
 
             cursor.moveToFirst();
@@ -24,7 +24,7 @@ public class FileExifDataResolver {
     }
 
     public long getFileSize() {
-        try (cursor) {
+        try (Cursor cursor = getCursor(uri)) {
             int index = cursor.getColumnIndex(OpenableColumns.SIZE);
 
             cursor.moveToFirst();
