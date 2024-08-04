@@ -59,17 +59,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/selectedFileTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:textAlignment="center"
-        android:textSize="14sp"
-        android:text="example.notesr.bak"
-        app:layout_constraintTop_toBottomOf="@+id/selectFileToImportButton"
-        app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="12dp"
-        android:layout_marginStart="144dp"/>
-
+            android:id="@+id/selectedFileTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:text="example.notesr.bak"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="17dp"
+            app:layout_constraintBottom_toTopOf="@+id/startImportButton"
+            android:layout_marginBottom="4dp"/>
     <TextView
         android:id="@+id/importCannotBeCanceledLabel"
         android:layout_width="wrap_content"
