@@ -115,6 +115,10 @@
             android:name=".service.ExportService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+        <service
+            android:name=".service.ImportService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>
