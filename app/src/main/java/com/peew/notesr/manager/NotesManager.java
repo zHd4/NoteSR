@@ -1,6 +1,8 @@
 package com.peew.notesr.manager;
 
 import com.peew.notesr.crypto.NotesCrypt;
+import com.peew.notesr.db.notes.table.DataBlocksTable;
+import com.peew.notesr.db.notes.table.FilesInfoTable;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
 
@@ -49,6 +51,14 @@ public class NotesManager extends BaseManager {
     }
 
     public void delete(Long id) {
+        FilesInfoTable filesInfoTable = getFilesInfoTable();
+        DataBlocksTable dataBlocksTable = getDataBlocksTable();
+
+        filesInfoTable.getByNoteId(id).forEach(fileInfo -> {
+            dataBlocksTable.deleteByFileId(fileInfo.getId());
+            filesInfoTable.delete(fileInfo.getId());
+        });
+
         getNotesTable().delete(id);
     }
 }
