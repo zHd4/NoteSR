@@ -31,6 +31,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
     private Uri selectedFileUri;
 
+    private ActivityResultLauncher<Intent> fileChooserLauncher;
     private ActionBar actionBar;
     private Button selectFileButton;
     private ProgressBar progressBar;
@@ -56,6 +57,10 @@ public class ImportActivity extends ExtendedAppCompatActivity {
         } else {
             actionBar.setTitle(R.string.importing);
         }
+
+        fileChooserLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                selectFileCallback());
 
         initViews(importRunning);
     }
@@ -84,15 +89,11 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener selectFileOnClick() {
         return view -> {
-            ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    selectFileCallback());
-
             Intent intent = new Intent()
                     .setType("application/x-trash")
                     .setAction(Intent.ACTION_GET_CONTENT);
 
-            resultLauncher.launch(Intent.createChooser(intent, getString(R.string.select_a_dump)));
+            fileChooserLauncher.launch(Intent.createChooser(intent, getString(R.string.select_a_dump)));
         };
     }
 
