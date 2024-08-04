@@ -175,7 +175,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
     private void startImport() {
         Intent intent = new Intent(this, ImportService.class)
-                .putExtra("sourceFileUri", selectedFileUri.toString());
+                .setData(selectedFileUri);
 
         startForegroundService(intent);
     }

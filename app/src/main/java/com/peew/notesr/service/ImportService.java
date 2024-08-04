@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -71,7 +72,9 @@ public class ImportService extends Service implements Runnable {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Context context = this;
-        File sourceFile = new File(intent.getStringExtra("sourceFileUri"));
+
+        Uri sourceUri = intent.getData();
+        File sourceFile = new File(sourceUri.getPath());
 
         importManager = new ImportManager(context, sourceFile);
 
