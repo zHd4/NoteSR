@@ -21,7 +21,7 @@ public class ImportService extends Service implements Runnable {
 
     private static final String TAG = ImportService.class.getName();
     private static final String CHANNEL_ID = "ImportChannel";
-    private static final int BROADCAST_DELAY = 100;
+    private static final int LOOP_DELAY = 100;
 
     private ImportManager importManager;
 
@@ -33,28 +33,22 @@ public class ImportService extends Service implements Runnable {
 
     @Override
     public void run() {
-        if (importManager == null) {
-            RuntimeException e = new UnsupportedOperationException("Service has not been started");
-
-            Log.e(TAG, "UnsupportedOperationException", e);
-            throw e;
+        try {
+            waitForImportManager();
+            importManager.start();
+            broadcastLoop();
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Thread interrupted", e);
         }
-
-        importManager.start();
-        broadcastLoop();
 
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
     }
 
-    private void broadcastLoop() {
+    private void broadcastLoop() throws InterruptedException {
         while (importManager.getResult() == ImportManager.NONE) {
-            try {
-                sendBroadcastData(importManager.getStatus(), false);
-                Thread.sleep(BROADCAST_DELAY);
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Thread interrupted", e);
-            }
+            sendBroadcastData(importManager.getStatus(), false);
+            Thread.sleep(LOOP_DELAY);
         }
 
         sendBroadcastData(importManager.getStatus(), true);
@@ -68,8 +62,19 @@ public class ImportService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
+    private void waitForImportManager() throws InterruptedException {
+        while (importManager == null) {
+            Thread.sleep(LOOP_DELAY);
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Context context = this;
+        File sourceFile = new File(intent.getStringExtra("sourceFileUri"));
+
+        importManager = new ImportManager(context, sourceFile);
+
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Importing",
                 NotificationManager.IMPORTANCE_NONE);
 
@@ -83,11 +88,6 @@ public class ImportService extends Service implements Runnable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
-
-        Context context = this;
-        File sourceFile = new File(intent.getStringExtra("sourceFileUri"));
-
-        importManager = new ImportManager(context, sourceFile);
 
         startForeground(startId, notification, type);
 
