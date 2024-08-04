@@ -10,8 +10,7 @@ import com.peew.notesr.crypto.BackupsCrypt;
 import com.peew.notesr.manager.BaseManager;
 import com.peew.notesr.tools.FileWiper;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.time.format.DateTimeFormatter;
 
 public class ImportManager extends BaseManager {
@@ -19,16 +18,16 @@ public class ImportManager extends BaseManager {
     public static final int NONE = 0;
     public static final int FINISHED_SUCCESSFULLY = 2;
 
-    private final File file;
+    private final FileInputStream sourceStream;
     private final Context context;
 
     private int result = NONE;
     private String status = "";
     private File jsonTempFile;
 
-    public ImportManager(Context context, File file) {
+    public ImportManager(Context context, FileInputStream sourceStream) {
         this.context = context;
-        this.file = file;
+        this.sourceStream = sourceStream;
     }
 
     public void start() {
@@ -36,7 +35,7 @@ public class ImportManager extends BaseManager {
             try {
                 jsonTempFile = File.createTempFile("import", ".json");
                 status = context.getString(R.string.decrypting_data);
-                decrypt(file, jsonTempFile);
+                decrypt(sourceStream, getOutputStream(jsonTempFile));
 
                 status = context.getString(R.string.importing);
                 importData(jsonTempFile);
@@ -62,10 +61,10 @@ public class ImportManager extends BaseManager {
         return status;
     }
 
-    private void decrypt(File input, File output) {
+    private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) {
         if (result == NONE) {
             try {
-                BackupsCrypt backupsCrypt = new BackupsCrypt(input, output);
+                BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
                 backupsCrypt.decrypt();
             } catch (IOException e) {
                 Log.e(TAG, "IOException", e);
@@ -102,5 +101,9 @@ public class ImportManager extends BaseManager {
 
     private DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
+    }
+
+    private FileOutputStream getOutputStream(File file) throws FileNotFoundException {
+        return new FileOutputStream(file);
     }
 }

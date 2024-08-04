@@ -17,6 +17,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.peew.notesr.manager.importer.ImportManager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public class ImportService extends Service implements Runnable {
 
@@ -69,14 +71,23 @@ public class ImportService extends Service implements Runnable {
         }
     }
 
+    private FileInputStream getFileStream(Uri uri) {
+        try {
+            return (FileInputStream) getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "FileNotFoundException", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Context context = this;
 
         Uri sourceUri = intent.getData();
-        File sourceFile = new File(sourceUri.getPath());
+        FileInputStream sourceStream = getFileStream(sourceUri);
 
-        importManager = new ImportManager(context, sourceFile);
+        importManager = new ImportManager(context, sourceStream);
 
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Importing",
                 NotificationManager.IMPORTANCE_NONE);

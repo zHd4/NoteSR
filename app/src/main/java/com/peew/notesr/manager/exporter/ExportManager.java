@@ -14,6 +14,8 @@ import com.peew.notesr.tools.FileWiper;
 import com.peew.notesr.tools.VersionFetcher;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
@@ -136,7 +138,10 @@ public class ExportManager extends BaseManager {
     private void encrypt(File input, File output) {
         if (result == NONE) {
             try {
-                BackupsCrypt backupsCrypt = new BackupsCrypt(input, output);
+                FileInputStream inputStream = new FileInputStream(input);
+                FileOutputStream outputStream = new FileOutputStream(output);
+
+                BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
                 backupsCrypt.encrypt();
             } catch (IOException e) {
                 Log.e(TAG, "IOException", e);

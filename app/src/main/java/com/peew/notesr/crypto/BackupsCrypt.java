@@ -5,7 +5,6 @@ import com.peew.notesr.App;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,13 +18,13 @@ public class BackupsCrypt {
     private static final int ENCRYPTION_MODE = 0;
     private static final int DECRYPTION_MODE = 1;
 
-    private final File source;
-    private final File output;
+    private final FileInputStream sourceStream;
+    private final FileOutputStream outputStream ;
     private final CryptoKey cryptoKey;
 
-    public BackupsCrypt(File source, File output) {
-        this.source = source;
-        this.output = output;
+    public BackupsCrypt(FileInputStream sourceStream, FileOutputStream outputStream) {
+        this.sourceStream = sourceStream;
+        this.outputStream = outputStream;
         this.cryptoKey = getCryptoKey();
     }
 
@@ -38,8 +37,8 @@ public class BackupsCrypt {
     }
 
     private void transform(int mode) throws IOException {
-        try (FileInputStream sourceStream = new FileInputStream(source)) {
-            try (FileOutputStream outputStream = new FileOutputStream(output)) {
+        try (sourceStream) {
+            try (outputStream) {
                 byte[] chunk = new byte[CHUNK_SIZE];
                 int bytesRead = sourceStream.read(chunk);
 
