@@ -17,6 +17,8 @@ import com.peew.notesr.model.Note;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
@@ -130,8 +132,21 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                getNotesManager().delete(note.getId());
-                startActivity(new Intent(App.getContext(), NotesListActivity.class));
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+                builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+
+                AlertDialog progressDialog = builder.create();
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+
+                executor.execute(() -> {
+                    runOnUiThread(progressDialog::show);
+                    getNotesManager().delete(note.getId());
+
+                    runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        startActivity(new Intent(App.getContext(), NotesListActivity.class));
+                    });
+                });
             }
         };
     }
