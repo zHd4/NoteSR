@@ -35,6 +35,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     private ActionBar actionBar;
     private Button selectFileButton;
     private ProgressBar progressBar;
+    private TextView selectedFileTextView;
     private TextView statusTextView;
     private TextView infoTextView;
 
@@ -68,6 +69,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     private void initViews(boolean importRunning) {
         progressBar = findViewById(R.id.importProgressBar);
         statusTextView = findViewById(R.id.statusTextView);
+        selectedFileTextView = findViewById(R.id.selectedFileTextView);
         selectFileButton = findViewById(R.id.selectFileToImportButton);
         infoTextView = findViewById(R.id.importInfoText);
 
@@ -112,8 +114,6 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
                     infoTextView.setVisibility(View.INVISIBLE);
 
-                    TextView selectedFileTextView = findViewById(R.id.selectedFileTextView);
-
                     selectedFileTextView.setVisibility(View.VISIBLE);
                     selectedFileTextView.setText(filename);
 
@@ -145,6 +145,8 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
             selectFileButton.setEnabled(false);
             selectFileButton.setVisibility(View.INVISIBLE);
+
+            selectedFileTextView.setVisibility(View.INVISIBLE);
 
             startImport();
 

@@ -65,9 +65,10 @@
         android:visibility="invisible"
         android:textAlignment="center"
         android:textSize="14sp"
+        android:text="example.notesr.bak"
         app:layout_constraintTop_toBottomOf="@+id/selectFileToImportButton"
         app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="12dp"
-        android:layout_marginStart="204dp"/>
+        android:layout_marginStart="144dp"/>
 
     <TextView
         android:id="@+id/importCannotBeCanceledLabel"
