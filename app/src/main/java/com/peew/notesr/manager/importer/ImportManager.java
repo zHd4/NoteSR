@@ -79,6 +79,7 @@ public class ImportManager extends BaseManager {
         JsonParser jsonParser = jsonFactory.createParser(file);
 
         jsonParser.nextToken();
+        jsonParser.nextToken();
 
         if (!jsonParser.getCurrentName().equals("version")) {
             InvalidDumpFormatException e = new InvalidDumpFormatException("'version' field not found");
