@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.BackupsCrypt;
+import com.peew.notesr.exception.InvalidDumpFormatException;
 import com.peew.notesr.manager.BaseManager;
 import com.peew.notesr.tools.FileWiper;
 
@@ -30,7 +31,7 @@ public class ImportManager extends BaseManager {
         this.sourceStream = sourceStream;
     }
 
-    public void start() {
+    public void start() throws InvalidDumpFormatException {
         Thread thread = new Thread(() -> {
             try {
                 jsonTempFile = File.createTempFile("import", ".json");
@@ -76,6 +77,15 @@ public class ImportManager extends BaseManager {
     private void importData(File file) throws IOException {
         JsonFactory jsonFactory = new JsonFactory();
         JsonParser jsonParser = jsonFactory.createParser(file);
+
+        jsonParser.nextToken();
+
+        if (!jsonParser.getCurrentName().equals("version")) {
+            InvalidDumpFormatException e = new InvalidDumpFormatException("'version' field not found");
+
+            Log.e(TAG, "InvalidDumpFormatException", e);
+            throw e;
+        }
 
         NotesImporter notesImporter = new NotesImporter(
                 jsonParser,
