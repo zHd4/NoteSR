@@ -34,7 +34,7 @@ class NotesImporter {
             field = parser.getCurrentName();
         }
 
-        while (parser.nextToken() != JsonToken.END_ARRAY) {
+        do {
             Note note = new Note();
 
             while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -59,6 +59,6 @@ class NotesImporter {
 
             EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
             notesTable.save(encryptedNote);
-        }
+        } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 }
