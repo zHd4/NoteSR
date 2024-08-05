@@ -19,7 +19,7 @@ public class BackupsCrypt {
     private static final int DECRYPTION_MODE = 1;
 
     private final FileInputStream sourceStream;
-    private final FileOutputStream outputStream ;
+    private final FileOutputStream outputStream;
     private final CryptoKey cryptoKey;
 
     public BackupsCrypt(FileInputStream sourceStream, FileOutputStream outputStream) {
