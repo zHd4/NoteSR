@@ -11,7 +11,11 @@ import com.peew.notesr.exception.InvalidDumpFormatException;
 import com.peew.notesr.manager.BaseManager;
 import com.peew.notesr.tools.FileWiper;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 public class ImportManager extends BaseManager {
