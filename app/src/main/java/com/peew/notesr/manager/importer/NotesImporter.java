@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 
 class NotesImporter {
 
-    private static final String TAG = NotesImporter.class.getName();
     private final JsonParser parser;
     private final NotesTable notesTable;
     private final DateTimeFormatter timestampFormatter;
@@ -41,19 +40,27 @@ class NotesImporter {
                 field = parser.getCurrentName();
 
                 switch (field) {
-                    case "id":
-                        note.setId(parser.getLongValue());
-                        break;
-                    case "name":
-                        note.setName(parser.getText());
-                        break;
-                    case "text":
-                        note.setText(parser.getText());
-                        break;
-                    case "updated_at":
-                        note.setUpdatedAt(LocalDateTime.parse(parser.getText(), timestampFormatter));
-                    default:
-                        break;
+                    case "id" -> {
+                        if (parser.getValueAsString().equals("id")) continue;
+                        note.setId(parser.getValueAsLong());
+                    }
+
+                    case "name" -> {
+                        if (parser.getValueAsString().equals("name")) continue;
+                        note.setName(parser.getValueAsString());
+                    }
+
+                    case "text" -> {
+                        if (parser.getValueAsString().equals("text")) continue;
+                        note.setText(parser.getValueAsString());
+                    }
+
+                    case "updated_at" -> {
+                        if (parser.getValueAsString().equals("updated_at")) continue;
+                        note.setUpdatedAt(LocalDateTime.parse(parser.getValueAsString(), timestampFormatter));
+                    }
+
+                    default -> {}
                 }
             }
 
