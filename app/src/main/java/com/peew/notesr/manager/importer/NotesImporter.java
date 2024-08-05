@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 class NotesImporter {
+
+    private static final String TAG = NotesImporter.class.getName();
     private final JsonParser parser;
     private final NotesTable notesTable;
     private final DateTimeFormatter timestampFormatter;
@@ -25,37 +27,38 @@ class NotesImporter {
     }
 
     public void importNotes() throws IOException {
-        while (parser.nextToken() != JsonToken.END_ARRAY) {
-            while (parser.nextToken() != JsonToken.END_OBJECT) {
-                String field = parser.getCurrentName();
+        String field = parser.getCurrentName();
 
-                Long id = null;
-                String name = null;
-                String text = null;
-                LocalDateTime updatedAt = null;
+        while (field == null || field.equals("version") || field.equals("notes")) {
+            parser.nextToken();
+            field = parser.getCurrentName();
+        }
+
+        while (parser.nextToken() != JsonToken.END_ARRAY) {
+            Note note = new Note();
+
+            while (parser.nextToken() != JsonToken.END_OBJECT) {
+                field = parser.getCurrentName();
 
                 switch (field) {
                     case "id":
-                        id = parser.getLongValue();
+                        note.setId(parser.getLongValue());
                         break;
                     case "name":
-                        name = parser.getText();
+                        note.setName(parser.getText());
                         break;
                     case "text":
-                        text = parser.getText();
+                        note.setText(parser.getText());
                         break;
                     case "updated_at":
-                        updatedAt = LocalDateTime.parse(parser.getText(), timestampFormatter);
+                        note.setUpdatedAt(LocalDateTime.parse(parser.getText(), timestampFormatter));
                     default:
                         break;
                 }
-
-                Note note = new Note(name, text, updatedAt);
-                note.setId(id);
-
-                EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
-                notesTable.save(encryptedNote);
             }
+
+            EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
+            notesTable.save(encryptedNote);
         }
     }
 }
