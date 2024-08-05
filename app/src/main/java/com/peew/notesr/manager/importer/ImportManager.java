@@ -82,23 +82,13 @@ public class ImportManager extends BaseManager {
         JsonFactory jsonFactory = new JsonFactory();
         JsonParser jsonParser = jsonFactory.createParser(file);
 
-        jsonParser.nextToken();
-        jsonParser.nextToken();
-
-        if (!jsonParser.getCurrentName().equals("version")) {
-            InvalidDumpFormatException e = new InvalidDumpFormatException("'version' field not found");
-
-            Log.e(TAG, "InvalidDumpFormatException", e);
-            throw e;
-        }
-
-        NotesImporter notesImporter = new NotesImporter(
-                jsonParser,
-                getNotesTable(),
-                getTimestampFormatter()
-        );
-
         try (jsonParser) {
+            NotesImporter notesImporter = new NotesImporter(
+                    jsonParser,
+                    getNotesTable(),
+                    getTimestampFormatter()
+            );
+
             notesImporter.importNotes();
         }
     }
