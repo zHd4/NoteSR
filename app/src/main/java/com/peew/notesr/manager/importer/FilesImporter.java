@@ -30,6 +30,7 @@ class FilesImporter extends BaseImporter {
 
     public void importFiles() throws IOException {
         importFilesInfo();
+        importFilesData();
     }
 
     private void importFilesInfo() throws IOException {
