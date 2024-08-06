@@ -6,6 +6,8 @@ public class DataBlock {
     private Long order;
     private byte[] data;
 
+    public DataBlock() {}
+
     public DataBlock(Long id, Long fileId, Long order, byte[] data) {
         this.id = id;
         this.fileId = fileId;
