@@ -89,7 +89,15 @@ public class ImportManager extends BaseManager {
                     getTimestampFormatter()
             );
 
+            FilesImporter filesImporter = new FilesImporter(
+                    jsonParser,
+                    getFilesInfoTable(),
+                    getDataBlocksTable(),
+                    getTimestampFormatter()
+            );
+
             notesImporter.importNotes();
+            filesImporter.importFiles();
         }
     }
 
