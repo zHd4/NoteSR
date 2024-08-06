@@ -44,7 +44,7 @@ public class BackupsCrypt {
         try (sourceCipherStream) {
             try (outputCipherStream) {
                 byte[] chunk = new byte[CHUNK_SIZE];
-                int bytesRead = sourceFileStream.read(chunk);
+                int bytesRead = sourceCipherStream.read(chunk);
 
                 while (bytesRead != -1) {
                     if (bytesRead != CHUNK_SIZE) {
@@ -54,11 +54,13 @@ public class BackupsCrypt {
                         chunk = subChunk;
                     }
 
-                    outputFileStream.write(chunk);
+                    outputCipherStream.write(chunk);
 
                     chunk = new byte[CHUNK_SIZE];
                     bytesRead = sourceFileStream.read(chunk);
                 }
+
+                outputCipherStream.flush();
             }
         }
     }
