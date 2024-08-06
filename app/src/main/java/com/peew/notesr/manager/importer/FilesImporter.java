@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.table.DataBlocksTable;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
+import com.peew.notesr.model.DataBlock;
 import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.FileInfo;
 
@@ -12,20 +13,19 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-class FilesImporter {
-    private final JsonParser parser;
+class FilesImporter extends BaseImporter {
+
     private final FilesInfoTable filesInfoTable;
     private final DataBlocksTable dataBlocksTable;
-    private final DateTimeFormatter timestampFormatter;
 
     public FilesImporter(JsonParser parser,
                          FilesInfoTable filesInfoTable,
                          DataBlocksTable dataBlocksTable,
                          DateTimeFormatter timestampFormatter) {
-        this.parser = parser;
+        super(parser, timestampFormatter);
+
         this.filesInfoTable = filesInfoTable;
         this.dataBlocksTable = dataBlocksTable;
-        this.timestampFormatter = timestampFormatter;
     }
 
     public void importFiles() throws IOException {
@@ -33,12 +33,8 @@ class FilesImporter {
     }
 
     private void importFilesInfo() throws IOException {
-        String field = parser.getCurrentName();
-
-        while (field == null || !field.equals("files_info")) {
-            parser.nextToken();
-            field = parser.getCurrentName();
-        }
+        String field;
+        skipTo("files_info");
 
         do {
             FileInfo fileInfo = new FileInfo();
@@ -90,6 +86,47 @@ class FilesImporter {
 
             EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
             filesInfoTable.save(encryptedFileInfo);
+        } while (parser.nextToken() != JsonToken.END_ARRAY);
+    }
+
+    private void importFilesData() throws IOException {
+        String field;
+        skipTo("files_data_blocks");
+
+        do {
+            DataBlock dataBlock = new DataBlock();
+
+            while (parser.nextToken() != JsonToken.END_OBJECT) {
+                field = parser.getCurrentName();
+
+                if (field != null) {
+                    switch (field) {
+                        case "id" -> {
+                            if (parser.getValueAsString().equals("id")) continue;
+                            dataBlock.setId(parser.getValueAsLong());
+                        }
+
+                        case "file_id" -> {
+                            if (parser.getValueAsString().equals("file_id")) continue;
+                            dataBlock.setFileId(parser.getValueAsLong());
+                        }
+
+                        case "order" -> {
+                            if (parser.getValueAsString().equals("order")) continue;
+                            dataBlock.setOrder(parser.getValueAsLong());
+                        }
+
+                        case "data" -> {
+                            byte[] data = parser.getBinaryValue();
+                            System.out.println();
+                        }
+
+                        default -> {}
+                    }
+                }
+
+                System.out.println();
+            }
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 }
