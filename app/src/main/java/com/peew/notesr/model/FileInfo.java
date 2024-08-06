@@ -18,6 +18,8 @@ public class FileInfo implements Serializable {
 
     private LocalDateTime updatedAt;
 
+    public FileInfo() {}
+
     public FileInfo(Long id,
                     Long noteId,
                     Long size,
