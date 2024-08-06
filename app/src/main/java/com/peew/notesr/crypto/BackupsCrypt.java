@@ -2,8 +2,9 @@ package com.peew.notesr.crypto;
 
 import com.peew.notesr.App;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,32 +16,35 @@ import java.security.NoSuchAlgorithmException;
 public class BackupsCrypt {
 
     private static final int CHUNK_SIZE = 100000;
-    private static final int ENCRYPTION_MODE = 0;
-    private static final int DECRYPTION_MODE = 1;
 
-    private final FileInputStream sourceStream;
-    private final FileOutputStream outputStream;
+    private final FileInputStream sourceFileStream;
+    private final FileOutputStream outputFileStream;
     private final CryptoKey cryptoKey;
 
-    public BackupsCrypt(FileInputStream sourceStream, FileOutputStream outputStream) {
-        this.sourceStream = sourceStream;
-        this.outputStream = outputStream;
+    public BackupsCrypt(FileInputStream sourceFileStream, FileOutputStream outputFileStream) {
+        this.sourceFileStream = sourceFileStream;
+        this.outputFileStream = outputFileStream;
         this.cryptoKey = getCryptoKey();
     }
 
     public void encrypt() throws IOException {
-        transform(ENCRYPTION_MODE);
+        transform(Cipher.ENCRYPT_MODE);
     }
 
     public void decrypt() throws IOException {
-        transform(DECRYPTION_MODE);
+        transform(Cipher.DECRYPT_MODE);
     }
 
     private void transform(int mode) throws IOException {
-        try (sourceStream) {
-            try (outputStream) {
+        Cipher cipher = getCipher(mode);
+
+        CipherInputStream sourceCipherStream = new CipherInputStream(sourceFileStream, cipher);
+        CipherOutputStream outputCipherStream = new CipherOutputStream(outputFileStream, cipher);
+
+        try (sourceCipherStream) {
+            try (outputCipherStream) {
                 byte[] chunk = new byte[CHUNK_SIZE];
-                int bytesRead = sourceStream.read(chunk);
+                int bytesRead = sourceFileStream.read(chunk);
 
                 while (bytesRead != -1) {
                     if (bytesRead != CHUNK_SIZE) {
@@ -50,39 +54,20 @@ public class BackupsCrypt {
                         chunk = subChunk;
                     }
 
-                    if (mode == ENCRYPTION_MODE) {
-                        chunk = encryptData(chunk);
-                    } else if (mode == DECRYPTION_MODE) {
-                        chunk = decryptData(chunk);
-                    } else {
-                        throw new IllegalArgumentException("Invalid mode " + mode);
-                    }
-
-                    outputStream.write(chunk);
+                    outputFileStream.write(chunk);
 
                     chunk = new byte[CHUNK_SIZE];
-                    bytesRead = sourceStream.read(chunk);
+                    bytesRead = sourceFileStream.read(chunk);
                 }
             }
         }
     }
 
-    private byte[] encryptData(byte[] data) {
+    private Cipher getCipher(int mode) {
         try {
-            Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
-            return aes.encrypt(data);
-        } catch (NoSuchPaddingException | InvalidAlgorithmParameterException | NoSuchAlgorithmException |
-                 InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private byte[] decryptData(byte[] data) {
-        try {
-            Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
-            return aes.decrypt(data);
-        } catch (NoSuchPaddingException | InvalidAlgorithmParameterException | NoSuchAlgorithmException |
-                 InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+            return Aes.createCipher(cryptoKey.key(), cryptoKey.salt(), mode);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
+                 InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }
