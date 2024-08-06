@@ -2,8 +2,10 @@ package com.peew.notesr.manager.importer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.peew.notesr.crypto.FilesCrypt;
 import com.peew.notesr.db.notes.table.DataBlocksTable;
 import com.peew.notesr.db.notes.table.FilesInfoTable;
+import com.peew.notesr.model.EncryptedFileInfo;
 import com.peew.notesr.model.FileInfo;
 
 import java.io.IOException;
@@ -27,7 +29,7 @@ class FilesImporter {
     }
 
     public void importFiles() throws IOException {
-
+        importFilesInfo();
     }
 
     private void importFilesInfo() throws IOException {
@@ -85,6 +87,9 @@ class FilesImporter {
                     }
                 }
             }
+
+            EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
+            filesInfoTable.save(encryptedFileInfo);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 }
