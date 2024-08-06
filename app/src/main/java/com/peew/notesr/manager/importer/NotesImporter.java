@@ -11,27 +11,20 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-class NotesImporter {
+class NotesImporter extends BaseImporter {
 
-    private final JsonParser parser;
     private final NotesTable notesTable;
-    private final DateTimeFormatter timestampFormatter;
 
     public NotesImporter(JsonParser parser,
                          NotesTable notesTable,
                          DateTimeFormatter timestampFormatter) {
-        this.parser = parser;
+        super(parser, timestampFormatter);
         this.notesTable = notesTable;
-        this.timestampFormatter = timestampFormatter;
     }
 
     public void importNotes() throws IOException {
-        String field = parser.getCurrentName();
-
-        while (field == null || !field.equals("notes")) {
-            parser.nextToken();
-            field = parser.getCurrentName();
-        }
+        String field;
+        skipTo("notes");
 
         do {
             Note note = new Note();
