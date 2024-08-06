@@ -28,7 +28,7 @@ class NotesImporter {
     public void importNotes() throws IOException {
         String field = parser.getCurrentName();
 
-        while (field == null || field.equals("version") || field.equals("notes")) {
+        while (field == null || !field.equals("notes")) {
             parser.nextToken();
             field = parser.getCurrentName();
         }
@@ -39,28 +39,30 @@ class NotesImporter {
             while (parser.nextToken() != JsonToken.END_OBJECT) {
                 field = parser.getCurrentName();
 
-                switch (field) {
-                    case "id" -> {
-                        if (parser.getValueAsString().equals("id")) continue;
-                        note.setId(parser.getValueAsLong());
-                    }
+                if (field != null) {
+                    switch (field) {
+                        case "id" -> {
+                            if (parser.getValueAsString().equals("id")) continue;
+                            note.setId(parser.getValueAsLong());
+                        }
 
-                    case "name" -> {
-                        if (parser.getValueAsString().equals("name")) continue;
-                        note.setName(parser.getValueAsString());
-                    }
+                        case "name" -> {
+                            if (parser.getValueAsString().equals("name")) continue;
+                            note.setName(parser.getValueAsString());
+                        }
 
-                    case "text" -> {
-                        if (parser.getValueAsString().equals("text")) continue;
-                        note.setText(parser.getValueAsString());
-                    }
+                        case "text" -> {
+                            if (parser.getValueAsString().equals("text")) continue;
+                            note.setText(parser.getValueAsString());
+                        }
 
-                    case "updated_at" -> {
-                        if (parser.getValueAsString().equals("updated_at")) continue;
-                        note.setUpdatedAt(LocalDateTime.parse(parser.getValueAsString(), timestampFormatter));
-                    }
+                        case "updated_at" -> {
+                            if (parser.getValueAsString().equals("updated_at")) continue;
+                            note.setUpdatedAt(LocalDateTime.parse(parser.getValueAsString(), timestampFormatter));
+                        }
 
-                    default -> {}
+                        default -> {}
+                    }
                 }
             }
 
