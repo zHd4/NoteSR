@@ -74,6 +74,11 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener startStopButtonOnClick() {
         return view -> {
+            if (getNotesCount() == 0) {
+                showToastMessage(getString(R.string.no_notes), Toast.LENGTH_SHORT);
+                return;
+            }
+
             if (!exportRunning()) {
                 actionBar.setDisplayHomeAsUpEnabled(false);
                 actionBar.setTitle(getString(R.string.exporting));
