@@ -38,30 +38,27 @@ public class BackupsCrypt {
     private void transform(int mode) throws IOException {
         Cipher cipher = getCipher(mode);
 
-        CipherInputStream sourceCipherStream = new CipherInputStream(sourceFileStream, cipher);
-        CipherOutputStream outputCipherStream = new CipherOutputStream(outputFileStream, cipher);
+        try (CipherInputStream sourceCipherStream = new CipherInputStream(sourceFileStream, cipher);
+             CipherOutputStream outputCipherStream = new CipherOutputStream(outputFileStream, cipher)) {
 
-        try (sourceCipherStream) {
-            try (outputCipherStream) {
-                byte[] chunk = new byte[CHUNK_SIZE];
-                int bytesRead = sourceCipherStream.read(chunk);
+            byte[] chunk = new byte[CHUNK_SIZE];
+            int bytesRead = sourceCipherStream.read(chunk);
 
-                while (bytesRead != -1) {
-                    if (bytesRead != CHUNK_SIZE) {
-                        byte[] subChunk = new byte[bytesRead];
-                        System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
+            while (bytesRead != -1) {
+                if (bytesRead != CHUNK_SIZE) {
+                    byte[] subChunk = new byte[bytesRead];
+                    System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
 
-                        chunk = subChunk;
-                    }
-
-                    outputCipherStream.write(chunk);
-
-                    chunk = new byte[CHUNK_SIZE];
-                    bytesRead = sourceFileStream.read(chunk);
+                    chunk = subChunk;
                 }
 
-                outputCipherStream.flush();
+                outputCipherStream.write(chunk);
+
+                chunk = new byte[CHUNK_SIZE];
+                bytesRead = sourceFileStream.read(chunk);
             }
+
+            outputCipherStream.flush();
         }
     }
 
