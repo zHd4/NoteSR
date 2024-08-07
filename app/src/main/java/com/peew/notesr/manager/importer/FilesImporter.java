@@ -85,8 +85,10 @@ class FilesImporter extends BaseImporter {
                 }
             }
 
-            EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
-            filesInfoTable.save(encryptedFileInfo);
+            if (fileInfo.getId() != null) {
+                EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
+                filesInfoTable.save(encryptedFileInfo);
+            }
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 
