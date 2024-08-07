@@ -44,6 +44,10 @@ public class ExportManager extends BaseManager {
     }
 
     public void start() {
+        if (getNotesTable().getRowsCount() == 0) {
+            throw new RuntimeException("No notes in table");
+        }
+
         thread = new Thread(() -> {
             try {
                 status = context.getString(R.string.exporting_data);
