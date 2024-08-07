@@ -28,21 +28,12 @@ public class BackupsCrypt {
     }
 
     public void encrypt() throws IOException {
-        transform(Cipher.ENCRYPT_MODE);
-    }
+        Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
+        CipherOutputStream outputCipherStream = new CipherOutputStream(outputFileStream, cipher);
 
-    public void decrypt() throws IOException {
-        transform(Cipher.DECRYPT_MODE);
-    }
-
-    private void transform(int mode) throws IOException {
-        Cipher cipher = getCipher(mode);
-
-        try (CipherInputStream sourceCipherStream = new CipherInputStream(sourceFileStream, cipher);
-             CipherOutputStream outputCipherStream = new CipherOutputStream(outputFileStream, cipher)) {
-
+        try (sourceFileStream; outputCipherStream) {
             byte[] chunk = new byte[CHUNK_SIZE];
-            int bytesRead = sourceCipherStream.read(chunk);
+            int bytesRead = sourceFileStream.read(chunk);
 
             while (bytesRead != -1) {
                 if (bytesRead != CHUNK_SIZE) {
@@ -59,6 +50,30 @@ public class BackupsCrypt {
             }
 
             outputCipherStream.flush();
+        }
+    }
+
+    public void decrypt() throws IOException {
+        Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
+        CipherInputStream cipherInputStream = new CipherInputStream(sourceFileStream, cipher);
+
+        try (cipherInputStream; outputFileStream) {
+            byte[] chunk = new byte[CHUNK_SIZE];
+            int bytesRead = cipherInputStream.read(chunk);
+
+            while (bytesRead != -1) {
+                if (bytesRead != CHUNK_SIZE) {
+                    byte[] subChunk = new byte[bytesRead];
+                    System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
+
+                    chunk = subChunk;
+                }
+
+                outputFileStream.write(chunk);
+
+                chunk = new byte[CHUNK_SIZE];
+                bytesRead = cipherInputStream.read(chunk);
+            }
         }
     }
 
