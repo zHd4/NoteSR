@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.peew.notesr.db.BaseTable;
 import com.peew.notesr.model.DataBlock;
+import com.peew.notesr.model.EncryptedFileInfo;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -44,6 +45,25 @@ public class DataBlocksTable extends BaseTable {
             db.update(name, values, "id = ?",
                     new String[] {String.valueOf(dataBlock.getId())});
         }
+    }
+
+    public void importDataBlock(DataBlock dataBlock) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("id", dataBlock.getId());
+        values.put("file_id", dataBlock.getFileId());
+
+        values.put("block_order", dataBlock.getOrder());
+        values.put("data", dataBlock.getData());
+
+        long id = db.insert(name, null, values);
+
+        if (id == -1) {
+            throw new RuntimeException("Cannot insert note in table '" + name + "'");
+        }
+
+        dataBlock.setId(id);
     }
 
     public DataBlock get(long id) {
