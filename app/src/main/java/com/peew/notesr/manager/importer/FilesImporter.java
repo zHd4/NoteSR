@@ -140,8 +140,10 @@ class FilesImporter extends BaseImporter {
                     }
 
                     case "data" -> {
-                        byte[] data = parser.getBinaryValue();
-                        System.out.println();
+                        if (!parser.getValueAsString().equals("data")) {
+                            byte[] data = parser.getBinaryValue();
+                            dataBlock.setData(data);
+                        }
                     }
 
                     default -> {}
