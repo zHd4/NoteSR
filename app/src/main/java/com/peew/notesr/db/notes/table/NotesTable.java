@@ -58,6 +58,27 @@ public final class NotesTable extends BaseTable {
         }
     }
 
+    public void importNote(EncryptedNote note) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("note_id", note.getId());
+
+        values.put("encrypted_data", note.getEncryptedText());
+        values.put("encrypted_data", note.getEncryptedText());
+
+        String updatedAt = note.getUpdatedAt().format(getTimestampFormatter());
+        values.put("updated_at", updatedAt);
+
+        long id = db.insert(name, null, values);
+
+        if (id == -1) {
+            throw new RuntimeException("Cannot insert note in table '" + name + "'");
+        }
+
+        note.setId(id);
+    }
+
     public List<EncryptedNote> getAll() {
         SQLiteDatabase db = helper.getReadableDatabase();
         List<EncryptedNote> notes = new ArrayList<>();
