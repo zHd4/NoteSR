@@ -39,6 +39,11 @@ public abstract class BaseTable {
         return count;
     }
 
+    public void deleteAll() {
+        helper.getWritableDatabase()
+                .delete(name, null, null);
+    }
+
     protected DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
     }
