@@ -46,7 +46,7 @@ class FilesImporter extends BaseImporter {
 
                 if (fileInfo.getId() != null) {
                     EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
-                    filesInfoTable.save(encryptedFileInfo);
+                    filesInfoTable.importFileInfo(encryptedFileInfo);
                 }
             } while (parser.nextToken() != JsonToken.END_ARRAY);
         }
@@ -66,7 +66,7 @@ class FilesImporter extends BaseImporter {
 
                 if (dataBlock.getId() != null) {
                     dataBlock.setData(FilesCrypt.encryptData(dataBlock.getData()));
-                    dataBlocksTable.save(dataBlock);
+                    dataBlocksTable.importDataBlock(dataBlock);
                 }
             } while (parser.nextToken() != JsonToken.END_ARRAY);
         }
