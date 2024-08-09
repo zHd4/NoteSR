@@ -82,7 +82,7 @@ public class ImportManager extends BaseManager {
     private void clearTables() {
         getDataBlocksTable().deleteAll();
         getFilesInfoTable().deleteAll();
-        getDataBlocksTable().deleteAll();
+        getNotesTable().deleteAll();
     }
 
     private void importData(File file) throws IOException {
