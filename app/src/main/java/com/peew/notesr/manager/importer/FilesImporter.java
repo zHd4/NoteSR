@@ -53,44 +53,18 @@ class FilesImporter extends BaseImporter {
     }
 
     private void importFilesData() throws IOException {
-        String field;
+
         skipTo("files_data_blocks");
 
-        do {
-            DataBlock dataBlock = new DataBlock();
+        if (parser.nextToken() == JsonToken.START_ARRAY) {
+            do {
+                DataBlock dataBlock = new DataBlock();
 
-            while (parser.nextToken() != JsonToken.END_OBJECT) {
-                field = parser.getCurrentName();
-
-                if (field != null) {
-                    switch (field) {
-                        case "id" -> {
-                            if (parser.getValueAsString().equals("id")) continue;
-                            dataBlock.setId(parser.getValueAsLong());
-                        }
-
-                        case "file_id" -> {
-                            if (parser.getValueAsString().equals("file_id")) continue;
-                            dataBlock.setFileId(parser.getValueAsLong());
-                        }
-
-                        case "order" -> {
-                            if (parser.getValueAsString().equals("order")) continue;
-                            dataBlock.setOrder(parser.getValueAsLong());
-                        }
-
-                        case "data" -> {
-                            byte[] data = parser.getBinaryValue();
-                            System.out.println();
-                        }
-
-                        default -> {}
-                    }
+                if (parser.nextToken() == JsonToken.START_OBJECT) {
+                    parseDataBlockObject(dataBlock);
                 }
-
-                System.out.println();
-            }
-        } while (parser.nextToken() != JsonToken.END_ARRAY);
+            } while (parser.nextToken() != JsonToken.END_ARRAY);
+        }
     }
 
     private void parseFileInfoObject(FileInfo fileInfo) throws IOException {
@@ -139,6 +113,42 @@ class FilesImporter extends BaseImporter {
                     default -> {}
                 }
             }
+        }
+    }
+
+    private void parseDataBlockObject(DataBlock dataBlock) throws IOException {
+        String field;
+
+        while (parser.nextToken() != JsonToken.END_OBJECT) {
+            field = parser.getCurrentName();
+
+            if (field != null) {
+                switch (field) {
+                    case "id" -> {
+                        if (parser.getValueAsString().equals("id")) continue;
+                        dataBlock.setId(parser.getValueAsLong());
+                    }
+
+                    case "file_id" -> {
+                        if (parser.getValueAsString().equals("file_id")) continue;
+                        dataBlock.setFileId(parser.getValueAsLong());
+                    }
+
+                    case "order" -> {
+                        if (parser.getValueAsString().equals("order")) continue;
+                        dataBlock.setOrder(parser.getValueAsLong());
+                    }
+
+                    case "data" -> {
+                        byte[] data = parser.getBinaryValue();
+                        System.out.println();
+                    }
+
+                    default -> {}
+                }
+            }
+
+            System.out.println();
         }
     }
 }
