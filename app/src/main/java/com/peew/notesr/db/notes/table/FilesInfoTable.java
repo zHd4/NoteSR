@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.peew.notesr.db.BaseTable;
 import com.peew.notesr.model.EncryptedFileInfo;
+import com.peew.notesr.model.EncryptedNote;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,6 +61,33 @@ public class FilesInfoTable extends BaseTable {
         }
 
         fileInfo.setUpdatedAt(now);
+    }
+
+    public void importFileInfo(EncryptedFileInfo fileInfo) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("id", fileInfo.getId());
+        values.put("note_id", fileInfo.getNoteId());
+
+        values.put("encrypted_name", fileInfo.getEncryptedName());
+        values.put("encrypted_type", fileInfo.getEncryptedType());
+
+        values.put("size", fileInfo.getSize());
+
+        String createdAt = fileInfo.getCreatedAt().format(getTimestampFormatter());
+        values.put("updated_at", createdAt);
+
+        String updatedAt = fileInfo.getUpdatedAt().format(getTimestampFormatter());
+        values.put("updated_at", updatedAt);
+
+        long id = db.insert(name, null, values);
+
+        if (id == -1) {
+            throw new RuntimeException("Cannot insert note in table '" + name + "'");
+        }
+
+        fileInfo.setId(id);
     }
 
     public EncryptedFileInfo get(long id) {
