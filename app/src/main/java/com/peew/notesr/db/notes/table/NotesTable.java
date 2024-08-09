@@ -64,7 +64,7 @@ public final class NotesTable extends BaseTable {
 
         values.put("note_id", note.getId());
 
-        values.put("encrypted_data", note.getEncryptedText());
+        values.put("encrypted_name", note.getEncryptedName());
         values.put("encrypted_data", note.getEncryptedText());
 
         String updatedAt = note.getUpdatedAt().format(getTimestampFormatter());
