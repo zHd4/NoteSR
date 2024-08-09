@@ -63,6 +63,11 @@ class FilesImporter extends BaseImporter {
                 if (parser.nextToken() == JsonToken.START_OBJECT) {
                     parseDataBlockObject(dataBlock);
                 }
+
+                if (dataBlock.getId() != null) {
+                    dataBlock.setData(FilesCrypt.encryptData(dataBlock.getData()));
+                    dataBlocksTable.save(dataBlock);
+                }
             } while (parser.nextToken() != JsonToken.END_ARRAY);
         }
     }
@@ -149,8 +154,6 @@ class FilesImporter extends BaseImporter {
                     default -> {}
                 }
             }
-
-            System.out.println();
         }
     }
 }
