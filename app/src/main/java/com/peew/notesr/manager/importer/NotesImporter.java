@@ -60,7 +60,7 @@ class NotesImporter extends BaseImporter {
             }
 
             EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
-            notesTable.save(encryptedNote);
+            notesTable.importNote(encryptedNote);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 }
