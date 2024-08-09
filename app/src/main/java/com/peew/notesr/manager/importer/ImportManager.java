@@ -43,6 +43,7 @@ public class ImportManager extends BaseManager {
                 decrypt(sourceStream, getOutputStream(jsonTempFile));
 
                 status = context.getString(R.string.importing);
+                clearTables();
                 importData(jsonTempFile);
 
                 status = context.getString(R.string.wiping_temp_data);
@@ -76,6 +77,12 @@ public class ImportManager extends BaseManager {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void clearTables() {
+        getDataBlocksTable().deleteAll();
+        getFilesInfoTable().deleteAll();
+        getDataBlocksTable().deleteAll();
     }
 
     private void importData(File file) throws IOException {
