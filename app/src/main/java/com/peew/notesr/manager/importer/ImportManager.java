@@ -8,7 +8,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.BackupsCrypt;
 import com.peew.notesr.exception.DecryptionFailedException;
-import com.peew.notesr.exception.InvalidDumpFormatException;
+import com.peew.notesr.exception.ImportFailedException;
 import com.peew.notesr.manager.BaseManager;
 import com.peew.notesr.tools.FileWiper;
 
@@ -35,7 +35,7 @@ public class ImportManager extends BaseManager {
         this.sourceStream = sourceStream;
     }
 
-    public void start() throws InvalidDumpFormatException {
+    public void start() {
         Thread thread = new Thread(() -> {
             try {
                 jsonTempFile = File.createTempFile("import", ".json");
@@ -63,6 +63,12 @@ public class ImportManager extends BaseManager {
 
                 status = context.getString(R.string.cannot_decrypt_file);
                 result = ImportResult.DECRYPTION_FAILED;
+            } catch (ImportFailedException e) {
+                if (transactionStarted) rollback();
+                wipeFile(jsonTempFile);
+
+                status = context.getString(R.string.cannot_import_data);
+                result = ImportResult.IMPORT_FAILED;
             }
         });
 
@@ -95,26 +101,31 @@ public class ImportManager extends BaseManager {
         getNotesTable().deleteAll();
     }
 
-    private void importData(File file) throws IOException {
-        JsonFactory jsonFactory = new JsonFactory();
-        JsonParser jsonParser = jsonFactory.createParser(file);
+    private void importData(File file) throws ImportFailedException {
+        try {
+            JsonFactory jsonFactory = new JsonFactory();
+            JsonParser jsonParser = jsonFactory.createParser(file);
 
-        try (jsonParser) {
-            NotesImporter notesImporter = new NotesImporter(
-                    jsonParser,
-                    getNotesTable(),
-                    getTimestampFormatter()
-            );
+            try (jsonParser) {
+                NotesImporter notesImporter = new NotesImporter(
+                        jsonParser,
+                        getNotesTable(),
+                        getTimestampFormatter()
+                );
 
-            FilesImporter filesImporter = new FilesImporter(
-                    jsonParser,
-                    getFilesInfoTable(),
-                    getDataBlocksTable(),
-                    getTimestampFormatter()
-            );
+                FilesImporter filesImporter = new FilesImporter(
+                        jsonParser,
+                        getFilesInfoTable(),
+                        getDataBlocksTable(),
+                        getTimestampFormatter()
+                );
 
-            notesImporter.importNotes();
-            filesImporter.importFiles();
+                notesImporter.importNotes();
+                filesImporter.importFiles();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception", e);
+            throw new ImportFailedException();
         }
     }
 
