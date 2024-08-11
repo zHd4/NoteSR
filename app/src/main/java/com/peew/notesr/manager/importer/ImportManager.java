@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.crypto.BackupsCrypt;
+import com.peew.notesr.exception.DecryptionFailedException;
 import com.peew.notesr.exception.InvalidDumpFormatException;
 import com.peew.notesr.manager.BaseManager;
 import com.peew.notesr.tools.FileWiper;
@@ -56,6 +57,12 @@ public class ImportManager extends BaseManager {
             } catch (IOException e) {
                 if (transactionStarted) rollback();
                 throw new RuntimeException(e);
+            } catch (DecryptionFailedException e) {
+                if (transactionStarted) rollback();
+                wipeFile(jsonTempFile);
+
+                status = context.getString(R.string.cannot_decrypt_file);
+                result = ImportResult.DECRYPTION_FAILED;
             }
         });
 
@@ -70,14 +77,14 @@ public class ImportManager extends BaseManager {
         return status;
     }
 
-    private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) {
+    private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws DecryptionFailedException {
         if (result == ImportResult.NONE) {
             try {
                 BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
                 backupsCrypt.decrypt();
             } catch (IOException e) {
                 Log.e(TAG, "IOException", e);
-                throw new RuntimeException(e);
+                throw new DecryptionFailedException();
             }
         }
     }
@@ -111,13 +118,19 @@ public class ImportManager extends BaseManager {
         }
     }
 
-    private void wipeFile(File file) throws IOException {
+    private void wipeFile(File file) {
         if (result == ImportResult.NONE) {
             FileWiper wiper = new FileWiper(file);
-            boolean success = wiper.wipeFile();
 
-            if (!success) {
-                throw new RuntimeException("Filed to wipe file");
+            try {
+                boolean success = wiper.wipeFile();
+
+                if (!success) {
+                    throw new RuntimeException("Filed to wipe file");
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException(e);
             }
         }
     }
