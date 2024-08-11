@@ -20,6 +20,18 @@ public abstract class BaseDB extends SQLiteOpenHelper {
         return (T) tables.get(tableClass);
     }
 
+    public void beginTransaction() {
+        getWritableDatabase().beginTransaction();
+    }
+
+    public void rollbackTransaction() {
+        getWritableDatabase().endTransaction();
+    }
+
+    public void commitTransaction() {
+        getWritableDatabase().setTransactionSuccessful();
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {}
 
