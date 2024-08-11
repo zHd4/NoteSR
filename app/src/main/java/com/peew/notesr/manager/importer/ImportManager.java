@@ -20,13 +20,11 @@ import java.time.format.DateTimeFormatter;
 
 public class ImportManager extends BaseManager {
     private static final String TAG = BaseManager.class.getName();
-    public static final int NONE = 0;
-    public static final int FINISHED_SUCCESSFULLY = 2;
 
     private final FileInputStream sourceStream;
     private final Context context;
 
-    private int result = NONE;
+    private ImportResult result = ImportResult.NONE;
     private String status = "";
     private File jsonTempFile;
     private boolean transactionStarted = false;
@@ -54,8 +52,7 @@ public class ImportManager extends BaseManager {
                 status = context.getString(R.string.wiping_temp_data);
                 wipeFile(jsonTempFile);
 
-                status = "";
-                result = FINISHED_SUCCESSFULLY;
+                result = ImportResult.FINISHED_SUCCESSFULLY;
             } catch (IOException e) {
                 if (transactionStarted) rollback();
                 throw new RuntimeException(e);
@@ -65,7 +62,7 @@ public class ImportManager extends BaseManager {
         thread.start();
     }
 
-    public int getResult() {
+    public ImportResult getResult() {
         return result;
     }
 
@@ -74,7 +71,7 @@ public class ImportManager extends BaseManager {
     }
 
     private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) {
-        if (result == NONE) {
+        if (result == ImportResult.NONE) {
             try {
                 BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
                 backupsCrypt.decrypt();
@@ -115,7 +112,7 @@ public class ImportManager extends BaseManager {
     }
 
     private void wipeFile(File file) throws IOException {
-        if (result == NONE) {
+        if (result == ImportResult.NONE) {
             FileWiper wiper = new FileWiper(file);
             boolean success = wiper.wipeFile();
 
@@ -146,5 +143,9 @@ public class ImportManager extends BaseManager {
 
     private FileOutputStream getOutputStream(File file) throws FileNotFoundException {
         return new FileOutputStream(file);
+    }
+
+    public enum ImportResult {
+        NONE, FINISHED_SUCCESSFULLY, DECRYPTION_FAILED, IMPORT_FAILED
     }
 }

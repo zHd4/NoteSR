@@ -16,7 +16,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.peew.notesr.manager.importer.ImportManager;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -49,7 +48,7 @@ public class ImportService extends Service implements Runnable {
     }
 
     private void broadcastLoop() throws InterruptedException {
-        while (importManager.getResult() == ImportManager.NONE) {
+        while (importManager.getResult() == ImportManager.ImportResult.NONE) {
             sendBroadcastData(importManager.getStatus(), false);
             Thread.sleep(LOOP_DELAY);
         }
