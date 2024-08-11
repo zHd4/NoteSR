@@ -44,6 +44,18 @@ public abstract class BaseTable {
                 .delete(name, null, null);
     }
 
+    public void beginTransaction() {
+        helper.getWritableDatabase().beginTransaction();
+    }
+
+    public void rollbackTransaction() {
+        helper.getWritableDatabase().endTransaction();
+    }
+
+    public void commitTransaction() {
+        helper.getWritableDatabase().setTransactionSuccessful();
+    }
+
     protected DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
     }
