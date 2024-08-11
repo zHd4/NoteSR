@@ -98,4 +98,5 @@
     <string name="import_cannot_be_canceled">Import cannot be canceled</string>
     <string name="select_file">Select file</string>
     <string name="start">Start</string>
+    <string name="cannot_import_data">Cannot import data, possible corrupted</string>
 </resources>
