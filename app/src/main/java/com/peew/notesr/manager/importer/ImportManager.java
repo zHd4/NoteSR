@@ -29,6 +29,7 @@ public class ImportManager extends BaseManager {
     private int result = NONE;
     private String status = "";
     private File jsonTempFile;
+    private boolean transactionStarted = false;
 
     public ImportManager(Context context, FileInputStream sourceStream) {
         this.context = context;
@@ -43,8 +44,12 @@ public class ImportManager extends BaseManager {
                 decrypt(sourceStream, getOutputStream(jsonTempFile));
 
                 status = context.getString(R.string.importing);
+                begin();
+
                 clearTables();
                 importData(jsonTempFile);
+
+                end();
 
                 status = context.getString(R.string.wiping_temp_data);
                 wipeFile(jsonTempFile);
@@ -52,6 +57,7 @@ public class ImportManager extends BaseManager {
                 status = "";
                 result = FINISHED_SUCCESSFULLY;
             } catch (IOException e) {
+                if (transactionStarted) rollback();
                 throw new RuntimeException(e);
             }
         });
@@ -117,6 +123,21 @@ public class ImportManager extends BaseManager {
                 throw new RuntimeException("Filed to wipe file");
             }
         }
+    }
+
+    private void begin() {
+        App.getAppContainer().getNotesDB().beginTransaction();
+        transactionStarted = true;
+    }
+
+    private void rollback() {
+        App.getAppContainer().getNotesDB().rollbackTransaction();
+        transactionStarted = false;
+    }
+
+    private void end() {
+        App.getAppContainer().getNotesDB().commitTransaction();
+        transactionStarted = false;
     }
 
     private DateTimeFormatter getTimestampFormatter() {
