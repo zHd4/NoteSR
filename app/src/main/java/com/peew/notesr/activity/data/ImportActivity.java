@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -66,6 +67,19 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                 selectFileCallback());
 
         initViews(importRunning);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(this, NotesListActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void initViews(boolean importRunning) {
@@ -180,6 +194,8 @@ public class ImportActivity extends ExtendedAppCompatActivity {
         } else {
             progressBar.setVisibility(View.INVISIBLE);
             statusTextView.setTextColor(getColor(android.R.color.holo_red_light));
+
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
