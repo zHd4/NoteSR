@@ -9,12 +9,12 @@ import java.time.format.DateTimeFormatter;
 
 public abstract class BaseTable {
 
+    protected final BaseDB db;
     protected final String name;
-    protected final BaseDB.Databases databases;
 
-    public BaseTable(BaseDB.Databases databases, String name) {
+    public BaseTable(BaseDB db, String name) {
+        this.db = db;
         this.name = name;
-        this.databases = databases;
     }
 
     public String getName() {
@@ -22,7 +22,7 @@ public abstract class BaseTable {
     }
 
     public long getRowsCount() {
-        Cursor cursor = databases.readable.rawQuery("SELECT COUNT(*) FROM " + getName(), null);
+        Cursor cursor = db.readableDatabase.rawQuery("SELECT COUNT(*) FROM " + getName(), null);
         Long count = null;
 
         try (cursor) {
@@ -39,7 +39,7 @@ public abstract class BaseTable {
     }
 
     public void deleteAll() {
-        databases.writable.delete(name, null, null);
+        db.writableDatabase.delete(name, null, null);
     }
 
     protected DateTimeFormatter getTimestampFormatter() {
