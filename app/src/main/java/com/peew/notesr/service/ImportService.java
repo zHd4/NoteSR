@@ -50,17 +50,17 @@ public class ImportService extends Service implements Runnable {
 
     private void broadcastLoop() throws InterruptedException {
         while (importManager.getResult() == ImportResult.NONE) {
-            sendBroadcastData(importManager.getStatus(), false);
+            sendBroadcastData(importManager.getStatus(), ImportResult.NONE);
             Thread.sleep(LOOP_DELAY);
         }
 
-        sendBroadcastData(importManager.getStatus(), true);
+        sendBroadcastData(importManager.getStatus(), importManager.getResult());
     }
 
-    private void sendBroadcastData(String status, boolean finished) {
+    private void sendBroadcastData(String status, ImportResult result) {
         Intent intent = new Intent("importDataBroadcast")
                 .putExtra("status", status)
-                .putExtra("finished", finished);
+                .putExtra("result", result);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }

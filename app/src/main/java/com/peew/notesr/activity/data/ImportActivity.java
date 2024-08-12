@@ -22,6 +22,7 @@ import com.peew.notesr.App;
 import com.peew.notesr.R;
 import com.peew.notesr.activity.ExtendedAppCompatActivity;
 import com.peew.notesr.activity.notes.NotesListActivity;
+import com.peew.notesr.manager.importer.ImportResult;
 import com.peew.notesr.service.ImportService;
 import com.peew.notesr.tools.FileExifDataResolver;
 
@@ -160,12 +161,14 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String status = intent.getStringExtra("status");
-                boolean finished = intent.getBooleanExtra("finished", false);
+                ImportResult result = ImportResult.valueOf(intent.getStringExtra("result"));
 
-                if (finished) {
-                    startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-                    finish();
-                    return;
+                if (result != ImportResult.NONE) {
+                    if (result == ImportResult.FINISHED_SUCCESSFULLY) {
+                        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+                        finish();
+                        return;
+                    }
                 }
 
                 statusTextView.setText(status);
