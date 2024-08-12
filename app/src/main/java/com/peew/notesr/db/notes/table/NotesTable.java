@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class NotesTable extends BaseTable {
-    public NotesTable(SQLiteOpenHelper helper, BaseDB.Databases databases, String name) {
-        super(helper, databases, name);
+    public NotesTable(BaseDB.Databases databases, String name) {
+        super(databases, name);
 
         databases.writable.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
