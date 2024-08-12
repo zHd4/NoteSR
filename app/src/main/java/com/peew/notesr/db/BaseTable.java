@@ -8,12 +8,14 @@ import com.peew.notesr.App;
 import java.time.format.DateTimeFormatter;
 
 public abstract class BaseTable {
-    protected SQLiteOpenHelper helper;
-    protected String name;
+    protected final SQLiteOpenHelper helper;
+    protected final String name;
+    protected final BaseDB.Databases databases;
 
-    public BaseTable(SQLiteOpenHelper helper, String name) {
+    public BaseTable(SQLiteOpenHelper helper, BaseDB.Databases databases, String name) {
         this.helper = helper;
         this.name = name;
+        this.databases = databases;
     }
 
     public String getName() {
