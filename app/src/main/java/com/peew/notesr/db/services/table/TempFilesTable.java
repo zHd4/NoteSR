@@ -35,7 +35,8 @@ public class TempFilesTable extends BaseTable {
 
             tempFile.setId(id);
         } else {
-            db.writableDatabase.update(getName(), values, "id = ?", new String[] { tempFile.getId().toString() });
+            db.writableDatabase
+                    .update(getName(), values, "id = ?", new String[] { tempFile.getId().toString() });
         }
     }
 
