@@ -8,12 +8,11 @@ import com.peew.notesr.App;
 import java.time.format.DateTimeFormatter;
 
 public abstract class BaseTable {
-    protected final SQLiteOpenHelper helper;
+
     protected final String name;
     protected final BaseDB.Databases databases;
 
-    public BaseTable(SQLiteOpenHelper helper, BaseDB.Databases databases, String name) {
-        this.helper = helper;
+    public BaseTable(BaseDB.Databases databases, String name) {
         this.name = name;
         this.databases = databases;
     }
@@ -23,9 +22,7 @@ public abstract class BaseTable {
     }
 
     public long getRowsCount() {
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + getName(), null);
+        Cursor cursor = databases.readable.rawQuery("SELECT COUNT(*) FROM " + getName(), null);
         Long count = null;
 
         try (cursor) {
@@ -42,8 +39,7 @@ public abstract class BaseTable {
     }
 
     public void deleteAll() {
-        helper.getWritableDatabase()
-                .delete(name, null, null);
+        databases.writable.delete(name, null, null);
     }
 
     protected DateTimeFormatter getTimestampFormatter() {
