@@ -75,7 +75,7 @@ public class FilesInfoTable extends BaseTable {
         values.put("size", fileInfo.getSize());
 
         String createdAt = fileInfo.getCreatedAt().format(getTimestampFormatter());
-        values.put("updated_at", createdAt);
+        values.put("created_at", createdAt);
 
         String updatedAt = fileInfo.getUpdatedAt().format(getTimestampFormatter());
         values.put("updated_at", updatedAt);
