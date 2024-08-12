@@ -16,7 +16,7 @@ public abstract class BaseDB extends SQLiteOpenHelper {
 
     public BaseDB(String name) {
         super(App.getContext(), name, null, DATABASE_VERSION);
-        this.databases = new Databases(getReadableDatabase(), getWritableDatabase());
+        this.databases = new Databases(this);
     }
 
     public <T extends BaseTable> T getTable(Class<? extends BaseTable> tableClass) {
@@ -42,12 +42,14 @@ public abstract class BaseDB extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
     public static class Databases {
+        public final SQLiteOpenHelper helper;
         public final SQLiteDatabase readable;
         public final SQLiteDatabase writable;
 
-        Databases(SQLiteDatabase readable, SQLiteDatabase writable) {
-            this.readable = readable;
-            this.writable = writable;
+        Databases(SQLiteOpenHelper helper) {
+            this.helper = helper;
+            this.readable = helper.getReadableDatabase();
+            this.writable = helper.getWritableDatabase();
         }
     }
 }
