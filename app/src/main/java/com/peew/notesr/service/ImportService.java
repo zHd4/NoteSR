@@ -60,7 +60,7 @@ public class ImportService extends Service implements Runnable {
     private void sendBroadcastData(String status, ImportResult result) {
         Intent intent = new Intent("importDataBroadcast")
                 .putExtra("status", status)
-                .putExtra("result", result);
+                .putExtra("result", result.toString());
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
