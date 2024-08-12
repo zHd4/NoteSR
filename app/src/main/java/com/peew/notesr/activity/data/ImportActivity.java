@@ -163,17 +163,23 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                 String status = intent.getStringExtra("status");
                 ImportResult result = ImportResult.valueOf(intent.getStringExtra("result"));
 
-                if (result != ImportResult.NONE) {
-                    if (result == ImportResult.FINISHED_SUCCESSFULLY) {
-                        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-                        finish();
-                        return;
-                    }
-                }
-
                 statusTextView.setText(status);
+
+                if (result != ImportResult.NONE) {
+                    onImportFinished(result);
+                }
             }
         };
+    }
+
+    private void onImportFinished(ImportResult result) {
+        if (result == ImportResult.FINISHED_SUCCESSFULLY) {
+            startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+            finish();
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+            statusTextView.setTextColor(getColor(android.R.color.holo_red_light));
+        }
     }
 
     private void startImport() {
