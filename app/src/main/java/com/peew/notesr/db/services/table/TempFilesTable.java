@@ -2,20 +2,19 @@ package com.peew.notesr.db.services.table;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import com.peew.notesr.db.BaseTable;
+import com.peew.notesr.db.services.ServicesDB;
 import com.peew.notesr.model.TempFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TempFilesTable extends BaseTable {
-    public TempFilesTable(SQLiteOpenHelper helper, String name) {
-        super(helper, name);
+    public TempFilesTable(ServicesDB db, String name) {
+        super(db, name);
 
-        helper.getWritableDatabase().execSQL(
+        db.writableDatabase.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
                         "id integer PRIMARY KEY AUTOINCREMENT, " +
                         "uri text NOT NULL UNIQUE)"
@@ -23,13 +22,12 @@ public class TempFilesTable extends BaseTable {
     }
 
     public void save(TempFile tempFile) {
-        SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put("uri", tempFile.getUri().toString());
 
         if (tempFile.getId() == null || get(tempFile.getId()) == null) {
-            long id = db.insert(getName(), null, values);
+            long id = db.writableDatabase.insert(getName(), null, values);
 
             if (id == -1) {
                 throw new RuntimeException("Cannot insert temp file in table '" + getName() + "'");
@@ -37,14 +35,12 @@ public class TempFilesTable extends BaseTable {
 
             tempFile.setId(id);
         } else {
-            db.update(getName(), values, "id = ?", new String[] { tempFile.getId().toString() });
+            db.writableDatabase.update(getName(), values, "id = ?", new String[] { tempFile.getId().toString() });
         }
     }
 
     public TempFile get(long id) {
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT uri" +
+        Cursor cursor = db.readableDatabase.rawQuery("SELECT uri" +
                 " FROM " + getName() +
                 " WHERE id = ?",
                 new String[] { String.valueOf(id) });
@@ -60,9 +56,7 @@ public class TempFilesTable extends BaseTable {
     }
 
     public List<TempFile> getAll() {
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + getName(), null);
+        Cursor cursor = db.readableDatabase.rawQuery("SELECT * FROM " + getName(), null);
         List<TempFile> files = new ArrayList<>();
 
         try (cursor) {
@@ -80,7 +74,6 @@ public class TempFilesTable extends BaseTable {
     }
 
     public void delete(Long id) {
-        helper.getWritableDatabase()
-                .delete(getName(), "id = ?", new String[] { id.toString() });
+        db.writableDatabase.delete(getName(), "id = ?", new String[] { id.toString() });
     }
 }
