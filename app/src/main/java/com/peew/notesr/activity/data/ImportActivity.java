@@ -31,6 +31,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     private static final String TAG = ImportActivity.class.getName();
 
     private Uri selectedFileUri;
+    private ImportResult result;
 
     private ActivityResultLauncher<Intent> fileChooserLauncher;
     private ActionBar actionBar;
@@ -161,18 +162,18 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String status = intent.getStringExtra("status");
-                ImportResult result = ImportResult.valueOf(intent.getStringExtra("result"));
+                result = ImportResult.valueOf(intent.getStringExtra("result"));
 
                 statusTextView.setText(status);
 
                 if (result != ImportResult.NONE) {
-                    onImportFinished(result);
+                    onImportFinished();
                 }
             }
         };
     }
 
-    private void onImportFinished(ImportResult result) {
+    private void onImportFinished() {
         if (result == ImportResult.FINISHED_SUCCESSFULLY) {
             startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
             finish();
