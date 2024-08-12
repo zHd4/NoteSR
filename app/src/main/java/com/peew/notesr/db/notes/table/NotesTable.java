@@ -2,9 +2,9 @@ package com.peew.notesr.db.notes.table;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.peew.notesr.db.BaseDB;
 import com.peew.notesr.db.BaseTable;
 import com.peew.notesr.model.EncryptedNote;
 
@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class NotesTable extends BaseTable {
-    public NotesTable(SQLiteOpenHelper helper, String name) {
-        super(helper, name);
+    public NotesTable(SQLiteOpenHelper helper, BaseDB.Databases databases, String name) {
+        super(helper, databases, name);
 
-        helper.getWritableDatabase().execSQL(
+        databases.writable.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
                 "note_id integer PRIMARY KEY AUTOINCREMENT, " +
                 "encrypted_name blob NOT NULL, " +
@@ -26,8 +26,6 @@ public final class NotesTable extends BaseTable {
     }
 
     public void save(EncryptedNote note) {
-        SQLiteDatabase db = helper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
 
         values.put("encrypted_name", note.getEncryptedName());
@@ -45,7 +43,7 @@ public final class NotesTable extends BaseTable {
         }
 
         if (note.getId() == null || get(note.getId()) == null) {
-            long id = db.insert(name, null, values);
+            long id = databases.writable.insert(name, null, values);
 
             if (id == -1) {
                 throw new RuntimeException("Cannot insert note in table '" + name + "'");
@@ -53,13 +51,12 @@ public final class NotesTable extends BaseTable {
 
             note.setId(id);
         } else {
-            db.update(name, values, "note_id = ?" ,
+            databases.writable.update(name, values, "note_id = ?" ,
                     new String[] { String.valueOf(note.getId()) });
         }
     }
 
     public void importNote(EncryptedNote note) {
-        SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put("note_id", note.getId());
@@ -70,7 +67,7 @@ public final class NotesTable extends BaseTable {
         String updatedAt = note.getUpdatedAt().format(getTimestampFormatter());
         values.put("updated_at", updatedAt);
 
-        long id = db.insert(name, null, values);
+        long id = databases.writable.insert(name, null, values);
 
         if (id == -1) {
             throw new RuntimeException("Cannot insert note in table '" + name + "'");
@@ -80,10 +77,9 @@ public final class NotesTable extends BaseTable {
     }
 
     public List<EncryptedNote> getAll() {
-        SQLiteDatabase db = helper.getReadableDatabase();
         List<EncryptedNote> notes = new ArrayList<>();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + name + " ORDER BY updated_at DESC",
+        Cursor cursor = databases.readable.rawQuery("SELECT * FROM " + name + " ORDER BY updated_at DESC",
                 new String[0]);
 
         try (cursor) {
@@ -109,9 +105,7 @@ public final class NotesTable extends BaseTable {
     }
 
     public EncryptedNote get(long id) {
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(
+        Cursor cursor = databases.readable.rawQuery(
                 "SELECT encrypted_name, encrypted_data, updated_at" +
                         " FROM " + name + " WHERE note_id = ?",
                 new String[] { String.valueOf(id) });
@@ -135,7 +129,6 @@ public final class NotesTable extends BaseTable {
     }
 
     public void delete(long id) {
-        helper.getWritableDatabase()
-                .delete(name, "note_id" + "=" + id, null);
+        databases.writable.delete(name, "note_id" + "=" + id, null);
     }
 }
