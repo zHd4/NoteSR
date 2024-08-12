@@ -180,7 +180,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
                 result = resultStr != null ? ImportResult.valueOf(resultStr) : null;
 
-                if (result != ImportResult.NONE) {
+                if (result != null && result != ImportResult.NONE) {
                     onImportFinished();
                 } else {
                     statusTextView.setText(status);
