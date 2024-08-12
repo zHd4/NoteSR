@@ -168,8 +168,4 @@ public class ImportManager extends BaseManager {
     private FileOutputStream getOutputStream(File file) throws FileNotFoundException {
         return new FileOutputStream(file);
     }
-
-    public enum ImportResult {
-        NONE, FINISHED_SUCCESSFULLY, DECRYPTION_FAILED, IMPORT_FAILED
-    }
 }
