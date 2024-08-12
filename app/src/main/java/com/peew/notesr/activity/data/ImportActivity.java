@@ -179,10 +179,11 @@ public class ImportActivity extends ExtendedAppCompatActivity {
                 String resultStr = intent.getStringExtra("result");
 
                 result = resultStr != null ? ImportResult.valueOf(resultStr) : null;
-                statusTextView.setText(status);
 
                 if (result != ImportResult.NONE) {
                     onImportFinished();
+                } else {
+                    statusTextView.setText(status);
                 }
             }
         };
@@ -196,7 +197,14 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             progressBar.setVisibility(View.INVISIBLE);
             statusTextView.setTextColor(getColor(android.R.color.holo_red_light));
 
+            if (result == ImportResult.DECRYPTION_FAILED) {
+                statusTextView.setText(R.string.cannot_decrypt_file);
+            } else if (result == ImportResult.IMPORT_FAILED) {
+                statusTextView.setText(R.string.cannot_import_data);
+            }
+
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.import_text);
         }
     }
 
