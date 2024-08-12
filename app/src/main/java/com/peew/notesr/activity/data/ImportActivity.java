@@ -194,6 +194,8 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
             finish();
         } else {
+            findViewById(R.id.importCannotBeCanceledLabel).setVisibility(View.INVISIBLE);
+
             progressBar.setVisibility(View.INVISIBLE);
             statusTextView.setTextColor(getColor(android.R.color.holo_red_light));
 
