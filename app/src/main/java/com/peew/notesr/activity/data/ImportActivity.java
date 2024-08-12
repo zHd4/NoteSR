@@ -176,8 +176,9 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String status = intent.getStringExtra("status");
-                result = ImportResult.valueOf(intent.getStringExtra("result"));
+                String resultStr = intent.getStringExtra("result");
 
+                result = resultStr != null ? ImportResult.valueOf(resultStr) : null;
                 statusTextView.setText(status);
 
                 if (result != ImportResult.NONE) {
