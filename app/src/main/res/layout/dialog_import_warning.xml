@@ -15,6 +15,7 @@
         android:paddingEnd="0dp"
         android:layout_gravity="center_vertical"
         android:text="@string/import_warning"
-        android:textAppearance="?android:textAppearanceSmall" />
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="@android:color/holo_red_light"/>
 
 </LinearLayout>
