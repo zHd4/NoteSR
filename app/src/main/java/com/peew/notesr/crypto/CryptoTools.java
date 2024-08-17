@@ -39,6 +39,10 @@ public class CryptoTools {
     }
 
     public static CryptoKey hexToCryptoKey(String hex, String password) throws Exception {
+        return hexToCryptoKey(hex, password, false);
+    }
+
+    public static CryptoKey hexToCryptoKey(String hex, String password, boolean newKey) throws Exception {
         String[] hexArray = hex.toLowerCase()
                 .replace("\n", "")
                 .split(" ");
@@ -60,7 +64,7 @@ public class CryptoTools {
 
         return App.getAppContainer()
                 .getCryptoManager()
-                .createCryptoKey(keyBytes, salt, password);
+                .createCryptoKey(keyBytes, salt, password, !newKey);
     }
 
     private static String byteToHex(byte value) {

@@ -87,15 +87,15 @@ public class CryptoManager {
         return new CryptoKey(mainKey, mainSalt, password);
     }
 
-    public CryptoKey createCryptoKey(byte[] keyBytes, byte[] salt, String password) throws
+    public CryptoKey createCryptoKey(byte[] keyBytes, byte[] salt, String password, boolean checkKey) throws
             Exception {
         SecretKey newKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
                 Aes.KEY_GENERATOR_ALGORITHM);
-        if (checkImportedKey(newKey, salt)) {
-            return new CryptoKey(newKey, salt, password);
+        if (checkKey && !checkImportedKey(newKey, salt)) {
+            throw new Exception("Wrong key");
         }
 
-        throw new Exception("Wrong key");
+        return new CryptoKey(newKey, salt, password);
     }
 
     public void applyNewKey(CryptoKey newKey) throws

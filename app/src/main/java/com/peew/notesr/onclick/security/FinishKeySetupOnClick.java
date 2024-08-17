@@ -43,7 +43,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
         if (!hexKeyToImport.isBlank()) {
             try {
-                key = CryptoTools.hexToCryptoKey(hexKeyToImport, password);
+                key = CryptoTools.hexToCryptoKey(hexKeyToImport, password, true);
             } catch (Exception e) {
                 Log.e("hexToCryptoKey" , e.toString());
                 proceedKeyImportFail(importKeyField);
