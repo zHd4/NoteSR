@@ -61,6 +61,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
             actionBar.setTitle(R.string.import_text);
         } else {
             actionBar.setTitle(R.string.importing);
+            disableBackButton();
         }
 
         fileChooserLauncher = registerForActivityResult(
@@ -170,6 +171,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
                         selectedFileTextView.setVisibility(View.INVISIBLE);
 
+                        disableBackButton();
                         startImport();
 
                         progressBar.setVisibility(View.VISIBLE);
