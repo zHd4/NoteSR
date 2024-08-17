@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.peew.notesr.crypto.NotesCrypt;
 import com.peew.notesr.db.notes.table.NotesTable;
+import com.peew.notesr.exception.ImportFailedException;
 import com.peew.notesr.model.EncryptedNote;
 import com.peew.notesr.model.Note;
 
@@ -22,9 +23,12 @@ class NotesImporter extends BaseImporter {
         this.notesTable = notesTable;
     }
 
-    public void importNotes() throws IOException {
+    public void importNotes() throws IOException, ImportFailedException {
         String field;
-        skipTo("notes");
+
+        if (!skipTo("notes")) {
+            throw new ImportFailedException("'notes' field not found in json");
+        }
 
         do {
             Note note = new Note();

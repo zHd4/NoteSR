@@ -1,7 +1,11 @@
 package com.peew.notesr.exception;
 
 public class ImportFailedException extends Exception {
-    public ImportFailedException() {}
+
+    public ImportFailedException(String message) {
+        super(message);
+    }
+
     public ImportFailedException(Exception e) {
         super(e);
     }
