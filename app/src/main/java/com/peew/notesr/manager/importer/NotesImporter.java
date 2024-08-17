@@ -59,6 +59,10 @@ class NotesImporter extends BaseImporter {
                 }
             }
 
+            if (note.getUpdatedAt() == null) {
+                note.setUpdatedAt(LocalDateTime.now());
+            }
+
             EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
             notesTable.importNote(encryptedNote);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
