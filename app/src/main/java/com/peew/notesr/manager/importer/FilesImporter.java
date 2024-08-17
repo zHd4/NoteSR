@@ -34,34 +34,34 @@ class FilesImporter extends BaseImporter {
     }
 
     private void importFilesInfo() throws IOException {
-        skipTo("files_info");
+        if (skipTo("files_info")) {
+            if (parser.nextToken() == JsonToken.START_ARRAY) {
+                do {
+                    FileInfo fileInfo = new FileInfo();
+                    parseFileInfoObject(fileInfo);
 
-        if (parser.nextToken() == JsonToken.START_ARRAY) {
-            do {
-                FileInfo fileInfo = new FileInfo();
-                parseFileInfoObject(fileInfo);
-
-                if (fileInfo.getId() != null) {
-                    EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
-                    filesInfoTable.importFileInfo(encryptedFileInfo);
-                }
-            } while (parser.nextToken() != JsonToken.END_ARRAY);
+                    if (fileInfo.getId() != null) {
+                        EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
+                        filesInfoTable.importFileInfo(encryptedFileInfo);
+                    }
+                } while (parser.nextToken() != JsonToken.END_ARRAY);
+            }
         }
     }
 
     private void importFilesData() throws IOException {
-        skipTo("files_data_blocks");
+        if (skipTo("files_data_blocks")) {
+            if (parser.nextToken() == JsonToken.START_ARRAY) {
+                do {
+                    DataBlock dataBlock = new DataBlock();
+                    parseDataBlockObject(dataBlock);
 
-        if (parser.nextToken() == JsonToken.START_ARRAY) {
-            do {
-                DataBlock dataBlock = new DataBlock();
-                parseDataBlockObject(dataBlock);
-
-                if (dataBlock.getId() != null) {
-                    dataBlock.setData(FilesCrypt.encryptData(dataBlock.getData()));
-                    dataBlocksTable.importDataBlock(dataBlock);
-                }
-            } while (parser.nextToken() != JsonToken.END_ARRAY);
+                    if (dataBlock.getId() != null) {
+                        dataBlock.setData(FilesCrypt.encryptData(dataBlock.getData()));
+                        dataBlocksTable.importDataBlock(dataBlock);
+                    }
+                } while (parser.nextToken() != JsonToken.END_ARRAY);
+            }
         }
     }
 

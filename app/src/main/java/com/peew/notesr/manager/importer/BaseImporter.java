@@ -14,12 +14,17 @@ class BaseImporter {
         this.timestampFormatter = timestampFormatter;
     }
 
-    protected void skipTo(String targetField) throws IOException {
+    protected boolean skipTo(String targetField) throws IOException {
         String currentField = parser.getCurrentName();
 
         while (currentField == null || !currentField.equals(targetField)) {
-            parser.nextToken();
+            if (parser.nextToken() == null) {
+                return false;
+            }
+
             currentField = parser.getCurrentName();
         }
+
+        return true;
     }
 }
