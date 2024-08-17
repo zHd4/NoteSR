@@ -125,7 +125,7 @@ public class ImportManager extends BaseManager {
             }
         } catch (Exception e) {
             Log.e(TAG, "Exception", e);
-            throw new ImportFailedException();
+            throw new ImportFailedException(e);
         }
     }
 
