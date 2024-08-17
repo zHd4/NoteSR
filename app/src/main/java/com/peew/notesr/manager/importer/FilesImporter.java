@@ -39,10 +39,7 @@ class FilesImporter extends BaseImporter {
         if (parser.nextToken() == JsonToken.START_ARRAY) {
             do {
                 FileInfo fileInfo = new FileInfo();
-
-                if (parser.nextToken() == JsonToken.START_OBJECT) {
-                    parseFileInfoObject(fileInfo);
-                }
+                parseFileInfoObject(fileInfo);
 
                 if (fileInfo.getId() != null) {
                     EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
@@ -53,7 +50,6 @@ class FilesImporter extends BaseImporter {
     }
 
     private void importFilesData() throws IOException {
-
         skipTo("files_data_blocks");
 
         if (parser.nextToken() == JsonToken.START_ARRAY) {
