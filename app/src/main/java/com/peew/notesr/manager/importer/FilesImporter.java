@@ -55,10 +55,7 @@ class FilesImporter extends BaseImporter {
         if (parser.nextToken() == JsonToken.START_ARRAY) {
             do {
                 DataBlock dataBlock = new DataBlock();
-
-                if (parser.nextToken() == JsonToken.START_OBJECT) {
-                    parseDataBlockObject(dataBlock);
-                }
+                parseDataBlockObject(dataBlock);
 
                 if (dataBlock.getId() != null) {
                     dataBlock.setData(FilesCrypt.encryptData(dataBlock.getData()));
