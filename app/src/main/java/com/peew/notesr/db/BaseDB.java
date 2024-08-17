@@ -36,6 +36,7 @@ public abstract class BaseDB extends SQLiteOpenHelper {
 
     public void commitTransaction() {
         writableDatabase.setTransactionSuccessful();
+        writableDatabase.endTransaction();
     }
 
     @Override
