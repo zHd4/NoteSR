@@ -8,18 +8,17 @@
     android:background="@color/activity_background">
 
     <TextView
-        android:id="@+id/importInfoText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="240dp"
-        android:text="@string/select_the_data_file"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+            android:id="@+id/importInfoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:text="@string/select_the_data_file"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
     <ProgressBar
         android:id="@+id/importProgressBar"
         style="?android:attr/progressBarStyle"
@@ -32,19 +31,18 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/statusTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/importing"
-        android:visibility="invisible"
-        android:textAlignment="center"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.627" />
-
+            android:id="@+id/statusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/importing"
+            android:visibility="invisible"
+            android:textAlignment="center"
+            android:textSize="28sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.643"/>
     <Button
         android:id="@+id/selectFileToImportButton"
         android:layout_width="152dp"
