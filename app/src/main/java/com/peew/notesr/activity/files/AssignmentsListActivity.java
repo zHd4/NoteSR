@@ -44,11 +44,8 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
             throw new RuntimeException("Note with id " + noteId + " not found");
         }
 
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Files of: " + note.getName());
+        configureActionBar();
+        loadFiles();
 
         FloatingActionButton addFileButton = findViewById(R.id.addFileButton);
 
@@ -59,10 +56,18 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
             startActivity(intent);
         });
 
-        loadFiles();
-
         ListView filesListView = findViewById(R.id.filesListView);
         filesListView.setOnItemClickListener(new OpenFileOnClick(this));
+    }
+
+    private void configureActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+
+        long filesCount = getAssignmentsManager().getFilesCount(note.getId());
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("(" + filesCount + ") Files of: " + note.getName());
     }
 
     private void loadFiles() {
