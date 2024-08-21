@@ -16,6 +16,16 @@ import java.util.function.Consumer;
 public class AssignmentsManager extends BaseManager {
     private static final int CHUNK_SIZE = 500000;
 
+    public long getFilesCount(long noteId) {
+        Long count = getFilesInfoTable().getCountByNoteId(noteId);
+
+        if (count == null) {
+            throw new NullPointerException("Files count is null");
+        }
+
+        return count;
+    }
+
     public List<FileInfo> getFilesInfo(Long noteId) {
         List<EncryptedFileInfo> encryptedFilesInfo = getFilesInfoTable()
                 .getByNoteId(noteId);
