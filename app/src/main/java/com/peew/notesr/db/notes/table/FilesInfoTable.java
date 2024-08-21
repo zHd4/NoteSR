@@ -162,6 +162,22 @@ public class FilesInfoTable extends BaseTable {
         return files;
     }
 
+    public long getCountByNoteId(long noteId) {
+        Cursor cursor = db.readableDatabase.rawQuery(
+                "SELECT COUNT(*) FROM " + name + " WHERE note_id = ?",
+                new String[] { String.valueOf(noteId) });
+
+        long count = 0;
+
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                count = cursor.getLong(0);
+            }
+        }
+
+        return count;
+    }
+
     public Set<Long> getAllIds() {
         Set<Long> ids = new HashSet<>();
 
