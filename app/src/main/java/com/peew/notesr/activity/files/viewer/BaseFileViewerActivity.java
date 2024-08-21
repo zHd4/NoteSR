@@ -79,9 +79,9 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void executeTask(Runnable task) {
+    private void executeTask(Runnable task, int dialogLayoutResId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setView(R.layout.progress_dialog_loading)
+                .setView(dialogLayoutResId)
                 .setCancelable(false);
 
         AlertDialog progressDialog = builder.create();
@@ -114,7 +114,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
 
     protected void saveFileOnClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setView(R.layout.dialog_action_cannot_be_undo)
+                .setView(R.layout.dialog_are_you_sure)
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.save, (dialog, result) -> saveFile())
                 .setNegativeButton(R.string.no, (dialog, result) -> {});
@@ -126,17 +126,19 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
         File destFile = Paths.get(saveDir.toPath().toString(), fileInfo.getName()).toFile();
         Runnable saveRunnable = getSaveRunnable(destFile);
 
+        int dialogLayoutId = R.layout.progress_dialog_saving;
+
         if (destFile.exists()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                     .setView(R.layout.dialog_file_already_exists)
                     .setTitle(R.string.warning)
-                    .setPositiveButton(R.string.overwrite, (dialog, result) -> executeTask(saveRunnable))
+                    .setPositiveButton(R.string.overwrite, (dialog, result) -> executeTask(saveRunnable, dialogLayoutId))
                     .setNegativeButton(R.string.no, (dialog, result) ->
                             showToastMessage(getResources().getString(R.string.saving_canceled), Toast.LENGTH_SHORT));
 
             builder.create().show();
         } else {
-            executeTask(saveRunnable);
+            executeTask(saveRunnable, dialogLayoutId);
         }
     }
 
@@ -174,7 +176,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
                 .setPositiveButton(R.string.delete, (dialog, result) -> executeTask(() -> {
                     deleteFile();
                     returnToListActivity();
-                }));
+                }, R.layout.progress_dialog_deleting));
 
         builder.create().show();
     }
