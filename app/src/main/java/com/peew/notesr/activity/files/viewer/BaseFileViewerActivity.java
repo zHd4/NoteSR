@@ -2,8 +2,6 @@ package com.peew.notesr.activity.files.viewer;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -81,13 +79,12 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
     }
 
     private void executeTask(Runnable task) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setView(R.layout.progress_dialog_loading)
+                .setCancelable(false);
 
         AlertDialog progressDialog = builder.create();
-
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
@@ -168,13 +165,11 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setView(R.layout.dialog_action_cannot_be_undo)
                 .setTitle(R.string.warning)
-                .setPositiveButton(R.string.delete, (dialog, result) -> {
-                    executeTask(() -> {
-                        deleteFile();
-                        returnToListActivity();
-                    });
-                })
-                .setNegativeButton(R.string.no, (dialog, result) -> {});
+                .setNegativeButton(R.string.no, (dialog, result) -> {})
+                .setPositiveButton(R.string.delete, (dialog, result) -> executeTask(() -> {
+                    deleteFile();
+                    returnToListActivity();
+                }));
 
         builder.create().show();
     }
