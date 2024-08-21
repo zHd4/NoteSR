@@ -15,8 +15,8 @@ It is a note-taking application with all data encrypting using AES-256 symmetric
 
 <div align="center">
     <h2 style="">Download</h2>
-    <span>Lastest version: <a href="(https://github.com/zHd4/NoteSR/releases/tag/4.9">4.9</a></span>
-    <a href="https://github.com/zHd4/NoteSR/releases/download/4.9/NoteSR_v4.9.apk">Download APK</a>
+    <span>Lastest version: <a href="(https://github.com/zHd4/NoteSR/releases/tag/4.9">5.0</a></span>
+    <a href="https://github.com/zHd4/NoteSR/releases/download/5.0/NoteSR_v5.0.apk">Download APK</a>
 </div>
 
 <h1></h1>
