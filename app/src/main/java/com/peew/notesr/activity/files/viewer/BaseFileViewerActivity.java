@@ -2,6 +2,7 @@ package com.peew.notesr.activity.files.viewer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -153,9 +154,13 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
                 });
 
                 String messageFormat = getResources().getString(R.string.saved_to);
+
+                Looper.prepare();
                 showToastMessage(String.format(messageFormat, destFile.getAbsolutePath()), Toast.LENGTH_LONG);
             } catch (RuntimeException e) {
                 Log.e("NoteSR", e.toString());
+
+                Looper.prepare();
                 showToastMessage(getResources().getString(R.string.cannot_save_file), Toast.LENGTH_SHORT);
             }
         };
