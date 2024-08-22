@@ -15,6 +15,7 @@ import com.peew.notesr.activity.files.AssignmentsListActivity;
 import com.peew.notesr.manager.NotesManager;
 import com.peew.notesr.model.Note;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -98,11 +99,14 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         String text = textField.getText().toString();
 
         if (!name.isBlank() && !text.isBlank()) {
+            LocalDateTime now = LocalDateTime.now();
+
             if (note != null) {
                 note.setName(name);
                 note.setText(text);
+                note.setUpdatedAt(now);
             } else {
-                note = new Note(name, text);
+                note = new Note(name, text, now);
             }
 
             getNotesManager().save(note);
