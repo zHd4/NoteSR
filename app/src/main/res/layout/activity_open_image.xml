@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activity_background"
+    android:background="@android:color/black"
     tools:context=".activity.files.viewer.OpenImageActivity">
 
     <ImageView
