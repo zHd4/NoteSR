@@ -54,7 +54,7 @@ public class SetupKeyTest {
         String actual = CryptoTools.cryptoKeyToHex(cryptoKey);
         assertThat(actual, is(cryptoKeyHex));
 
-        CryptoKey actualCryptoKey = CryptoTools.hexToCryptoKey(cryptoKeyHex, password);
+        CryptoKey actualCryptoKey = CryptoTools.hexToCryptoKey(cryptoKeyHex, password, true);
         assertThat(actualCryptoKey, is(cryptoKey));
     }
 }
