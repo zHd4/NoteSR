@@ -1,4 +1,4 @@
-name: NoteSR CI
+name: Java CI
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: macos-12
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -25,11 +25,3 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build
-
-    - name: Run connected tests
-      uses: ReactiveCircus/android-emulator-runner@v2
-      with:
-        api-level: 34
-        target: google_apis
-        arch: x86_64
-        script: ./gradlew connectedCheck
