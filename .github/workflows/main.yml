@@ -31,5 +31,5 @@ jobs:
       with:
         api-level: 29
         target: google_apis
-        arch: aarch64
+        arch: arm64-v8a
         script: ./gradlew connectedCheck
