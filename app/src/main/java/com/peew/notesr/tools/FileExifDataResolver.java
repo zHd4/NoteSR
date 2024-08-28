@@ -42,7 +42,7 @@ public class FileExifDataResolver {
                 .query(uri, null, null, null, null);
 
         if (cursor == null) {
-            throw new RuntimeException(new NullPointerException("Cursor is null"));
+            throw new NullPointerException("Cursor is null");
         }
 
         return cursor;
