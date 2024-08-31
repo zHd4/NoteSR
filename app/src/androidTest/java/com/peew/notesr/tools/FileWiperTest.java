@@ -37,6 +37,5 @@ public class FileWiperTest {
         boolean result = wiper.wipeFile();
 
         Assert.assertTrue("File has not been wiped", result);
-        throw new RuntimeException();
     }
 }
