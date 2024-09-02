@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
@@ -18,10 +20,10 @@ public class FileExifDataResolverTest {
     private static final int MAX_FILE_SIZE = 100000;
 
     private static final Map<String, String> TYPES = Map.of(
-            "txt", "text",
-            "jpg", "image",
-            "mp4", "video",
-            "mp3", "audio");
+            "txt", "text/plain",
+            "jpg", "image/jpeg",
+            "mp4", "video/mp4",
+            "mp3", "audio/mpeg");
 
     private static final Random random = new Random();
 
@@ -45,6 +47,16 @@ public class FileExifDataResolverTest {
         }
 
         resolver = new FileExifDataResolver(Uri.fromFile(testFile));
+    }
+
+    @Test
+    public void testGetMimeType() {
+        String extension = new LinkedList<>(Arrays.asList(testFile.getName().split("\\."))).getLast();
+
+        String expected = TYPES.get(extension);
+        String actual = resolver.getMimeType();
+
+        Assert.assertEquals("Mime type are different", expected, actual);
     }
 
     @Test
