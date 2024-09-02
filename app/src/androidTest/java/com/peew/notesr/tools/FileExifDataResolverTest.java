@@ -2,7 +2,9 @@ package com.peew.notesr.tools;
 
 import android.net.Uri;
 import com.peew.notesr.App;
+import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,5 +43,13 @@ public class FileExifDataResolverTest {
         }
 
         resolver = new FileExifDataResolver(Uri.fromFile(testFile));
+    }
+
+    @Test
+    public void testGetFileName() {
+        String expected = testFile.getName();
+        String actual = resolver.getFileName();
+
+        Assert.assertEquals("Names are different", expected, actual);
     }
 }
