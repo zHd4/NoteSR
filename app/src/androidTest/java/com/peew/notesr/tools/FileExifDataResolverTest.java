@@ -26,6 +26,7 @@ public class FileExifDataResolverTest {
     private static final Random random = new Random();
 
     private static File testFile;
+    private static int testFileSize;
     private static FileExifDataResolver resolver;
 
     @BeforeClass
@@ -34,8 +35,9 @@ public class FileExifDataResolverTest {
         String extension = new ArrayList<>(TYPES.keySet()).get(random.nextInt(TYPES.size()));
 
         testFile = File.createTempFile("test", "." + extension, cacheDir);
+        testFileSize = random.nextInt(MAX_FILE_SIZE);
 
-        byte[] testFileData = new byte[random.nextInt(MAX_FILE_SIZE)];
+        byte[] testFileData = new byte[testFileSize];
         random.nextBytes(testFileData);
 
         try (FileOutputStream outputStream = new FileOutputStream(testFile)) {
@@ -51,5 +53,11 @@ public class FileExifDataResolverTest {
         String actual = resolver.getFileName();
 
         Assert.assertEquals("Names are different", expected, actual);
+    }
+
+    @Test
+    public void testGetFileSize() {
+        int actual = (int) resolver.getFileSize();
+        Assert.assertEquals("Size are different", testFileSize, actual);
     }
 }
