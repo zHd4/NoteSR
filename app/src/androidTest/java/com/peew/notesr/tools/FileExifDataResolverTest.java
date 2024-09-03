@@ -3,7 +3,6 @@ package com.peew.notesr.tools;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -17,13 +16,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Random;
 
 public class FileExifDataResolverTest {
-
-    private static final Random RANDOM = new Random();
 
     private static File testFile;
     private static int testFileSize;
@@ -56,8 +50,6 @@ public class FileExifDataResolverTest {
 
     @Test
     public void testGetMimeType() {
-        String extension = new LinkedList<>(Arrays.asList(testFile.getName().split("\\."))).getLast();
-
         String expected = "image/jpeg";
         String actual = resolver.getMimeType();
 
@@ -85,21 +77,22 @@ public class FileExifDataResolverTest {
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 new String[] { MediaStore.Images.Media._ID },
-                MediaStore.Images.Media.DATA + "=? ",
+                MediaStore.Images.Media.DATA + " = ?",
                 new String[] { filePath }, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
             cursor.close();
 
-            return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + id);
+            return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(id));
         } else {
             if (imageFile.exists()) {
                 ContentValues values = new ContentValues();
+
                 values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
                 values.put(MediaStore.Images.Media.SIZE, size);
-                return context.getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                return context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
             } else {
                 return null;
             }
