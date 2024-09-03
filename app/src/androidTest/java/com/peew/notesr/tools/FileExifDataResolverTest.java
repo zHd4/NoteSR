@@ -2,9 +2,12 @@ package com.peew.notesr.tools;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import androidx.test.platform.app.InstrumentationRegistry;
 import com.peew.notesr.App;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -13,13 +16,13 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 
 public class FileExifDataResolverTest {
 
-    private static final int MAX_FILE_SIZE = 100000;
     private static final Random RANDOM = new Random();
 
     private static File testFile;
@@ -32,16 +35,22 @@ public class FileExifDataResolverTest {
         File cacheDir = context.getCacheDir();
 
         testFile = File.createTempFile("image", ".jpg", cacheDir);
-        testFileSize = RANDOM.nextInt(MAX_FILE_SIZE);
 
-        byte[] testFileData = new byte[testFileSize];
-        RANDOM.nextBytes(testFileData);
+        AssetManager assets = InstrumentationRegistry.getInstrumentation()
+                .getContext()
+                .getResources()
+                .getAssets();
 
-        try (FileOutputStream outputStream = new FileOutputStream(testFile)) {
-            outputStream.write(testFileData);
+        try (InputStream inputStream = assets.open("test-image.jpg")) {
+            try (FileOutputStream outputStream = new FileOutputStream(testFile)) {
+                byte[] imageBytes = inputStream.readAllBytes();
+                testFileSize = imageBytes.length;
+
+                outputStream.write(imageBytes);
+            }
         }
 
-        Uri uri = getImageContentUri(context, testFile);
+        Uri uri = getImageContentUri(context, testFile, testFileSize);
         resolver = new FileExifDataResolver(uri);
     }
 
@@ -69,11 +78,12 @@ public class FileExifDataResolverTest {
         Assert.assertEquals("Size are different", testFileSize, actual);
     }
 
-    public static Uri getImageContentUri(Context context, File imageFile) {
+    public static Uri getImageContentUri(Context context, File imageFile, int size) {
         String filePath = imageFile.getAbsolutePath();
+        String fileName = imageFile.getName();
 
         Cursor cursor = context.getContentResolver().query(
-                MediaStore.Images.Media.INTERNAL_CONTENT_URI,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 new String[] { MediaStore.Images.Media._ID },
                 MediaStore.Images.Media.DATA + "=? ",
                 new String[] { filePath }, null);
@@ -86,7 +96,8 @@ public class FileExifDataResolverTest {
         } else {
             if (imageFile.exists()) {
                 ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.DATA, filePath);
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                values.put(MediaStore.Images.Media.SIZE, size);
                 return context.getContentResolver().insert(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
             } else {
