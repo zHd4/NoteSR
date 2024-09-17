@@ -34,15 +34,15 @@ public class NotesManager extends BaseManager {
     public List<Long> search(String query) {
         return getAll().stream()
                 .filter(note -> {
-                    String lowerCaseQuery = query.toLowerCase();
+                    String formattedQuery = query.trim().toLowerCase();
 
                     boolean foundInName = note.getName()
                             .toLowerCase()
-                            .contains(lowerCaseQuery);
+                            .contains(formattedQuery);
 
                     boolean foundInText = note.getText()
                             .toLowerCase()
-                            .contains(lowerCaseQuery);
+                            .contains(formattedQuery);
 
                     return foundInName || foundInText;
                 })
