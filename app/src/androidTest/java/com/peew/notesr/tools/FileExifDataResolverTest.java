@@ -1,9 +1,9 @@
 package com.peew.notesr.tools;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -71,31 +71,16 @@ public class FileExifDataResolverTest {
     }
 
     public static Uri getImageContentUri(Context context, File imageFile, int size) {
-        String filePath = imageFile.getAbsolutePath();
         String fileName = imageFile.getName();
 
-        Cursor cursor = context.getContentResolver().query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] { MediaStore.Images.Media._ID },
-                MediaStore.Images.Media.DATA + " = ?",
-                new String[] { filePath }, null);
+        ContentResolver contentResolver = context.getContentResolver();
+        Uri imagesCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
-            cursor.close();
+        ContentValues values = new ContentValues();
 
-            return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(id));
-        } else {
-            if (imageFile.exists()) {
-                ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+        values.put(MediaStore.Images.Media.SIZE, size);
 
-                values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
-                values.put(MediaStore.Images.Media.SIZE, size);
-
-                return context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            } else {
-                return null;
-            }
-        }
+        return contentResolver.insert(imagesCollection, values);
     }
 }
