@@ -136,7 +136,9 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this,
+                        R.style.AlertDialogTheme);
+
                 builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
                 AlertDialog progressDialog = builder.create();
