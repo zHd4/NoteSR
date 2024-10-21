@@ -22,10 +22,13 @@ import java.util.Arrays;
 public class Aes {
     public static final int KEY_SIZE = 256;
     public static final int SALT_SIZE = 16;
-    public static final String KEY_GENERATOR_ALGORITHM = "AES";
+
     private static final int DEFAULT_ITERATION_COUNT = 65536;
-    private static final String MAIN_ALGORITHM = "AES/CBC/PKCS5Padding";
+
+    public static final String KEY_GENERATOR_ALGORITHM = "AES";
+    private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String PBE_ALGORITHM = "PBKDF2WithHmacSHA256";
+
     private final SecretKey key;
     private final byte[] salt;
 
@@ -42,7 +45,7 @@ public class Aes {
 
     public static Cipher createCipher(SecretKey key, byte[] iv, int mode) throws NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
-        Cipher cipher = Cipher.getInstance(MAIN_ALGORITHM);
+        Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
         SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(), KEY_GENERATOR_ALGORITHM);
 
         IvParameterSpec ivSpec = new IvParameterSpec(iv);
@@ -70,7 +73,7 @@ public class Aes {
                 salt, DEFAULT_ITERATION_COUNT, KEY_SIZE);
         SecretKey pbeKey = SecretKeyFactory.getInstance(PBE_ALGORITHM).generateSecret(keySpec);
 
-        return new SecretKeySpec(pbeKey.getEncoded(), MAIN_ALGORITHM);
+        return new SecretKeySpec(pbeKey.getEncoded(), CIPHER_ALGORITHM);
     }
 
     public static byte[] generateRandomSalt() {
