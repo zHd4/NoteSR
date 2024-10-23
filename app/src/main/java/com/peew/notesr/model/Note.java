@@ -1,64 +1,31 @@
 package com.peew.notesr.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Getter
+@Setter
 public final class Note {
     @JsonProperty("id")
     private Long id;
 
+    @NotNull
     @JsonProperty("name")
     private String name;
 
+    @NotNull
     @JsonProperty("text")
     private String text;
 
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
-
-    public Note() {}
-
-    public Note(String name, String text, LocalDateTime updatedAt) {
-        this.name = name;
-        this.text = text;
-        this.updatedAt = updatedAt;
-    }
-
-    public Note(String name, String text) {
-        this.name = name;
-        this.text = text;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }
