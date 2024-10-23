@@ -34,7 +34,7 @@ public class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
                 String password = App.getAppContainer()
                         .getCryptoManager()
                         .getCryptoKeyInstance()
-                        .password();
+                        .getPassword();
 
                 setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.REGENERATION_MODE);
                 setupKeyActivityIntent.putExtra("password", password);
