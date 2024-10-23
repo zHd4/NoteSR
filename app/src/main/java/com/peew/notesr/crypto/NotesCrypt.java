@@ -34,8 +34,8 @@ public class NotesCrypt {
         byte[] encryptedName = encryptValue(note.getName(), cryptoKey);
         byte[] encryptedText = encryptValue(note.getText(), cryptoKey);
 
-        EncryptedNote encryptedNote = new EncryptedNote(
-                encryptedName, encryptedText, note.getUpdatedAt());
+        EncryptedNote encryptedNote = new EncryptedNote(encryptedName, encryptedText);
+        encryptedNote.setUpdatedAt(note.getUpdatedAt());
 
         encryptedNote.setId(note.getId());
         return encryptedNote;
