@@ -19,6 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+import lombok.Getter;
+
 public class ExportManager extends BaseManager {
 
     public static final int NONE = 0;
@@ -35,7 +37,11 @@ public class ExportManager extends BaseManager {
     private FilesWriter filesWriter;
 
     private File jsonTempFile;
+
+    @Getter
     private int result = NONE;
+
+    @Getter
     private String status = "";
 
     public ExportManager(Context context, File outputFile) {
@@ -104,14 +110,6 @@ public class ExportManager extends BaseManager {
         long exported = notesWriter.getExported() + filesWriter.getExported();
 
         return Math.round((exported * 99.0f) / total);
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public int getResult() {
-        return result;
     }
 
     private void generateJson(File output) {
