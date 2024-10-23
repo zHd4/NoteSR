@@ -48,7 +48,7 @@ public class FilesCrypt {
 
     public static byte[] encryptData(byte[] data, CryptoKey cryptoKey) {
         try {
-            Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
+            Aes aes = new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
             return aes.encrypt(data);
         } catch (Exception e) {
             Log.e("Cannot encrypt file data", e.toString());
@@ -58,7 +58,7 @@ public class FilesCrypt {
 
     public static byte[] decryptData(byte[] data, CryptoKey cryptoKey) {
         try {
-            Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
+            Aes aes = new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
             return aes.decrypt(data);
         } catch (Exception e) {
             Log.e("Cannot decrypt file data", e.toString());
@@ -67,7 +67,7 @@ public class FilesCrypt {
     }
 
     public static EncryptedFileInfo encryptInfo(FileInfo fileInfo, CryptoKey cryptoKey) {
-        Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
+        Aes aes = new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
 
         try {
             byte[] name = aes.encrypt(fileInfo.getName().getBytes(StandardCharsets.UTF_8));
@@ -92,7 +92,7 @@ public class FilesCrypt {
     }
 
     public static FileInfo decryptInfo(EncryptedFileInfo encryptedFileInfo, CryptoKey cryptoKey) {
-        Aes aes = new Aes(cryptoKey.key(), cryptoKey.salt());
+        Aes aes = new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
 
         try {
             byte[] encryptedName = encryptedFileInfo.getEncryptedName();
