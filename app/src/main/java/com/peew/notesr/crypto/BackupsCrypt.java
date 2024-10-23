@@ -79,7 +79,7 @@ public class BackupsCrypt {
 
     private Cipher getCipher(int mode) {
         try {
-            return Aes.createCipher(cryptoKey.key(), cryptoKey.salt(), mode);
+            return Aes.createCipher(cryptoKey.getKey(), cryptoKey.getSalt(), mode);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
                  InvalidKeyException e) {
             throw new RuntimeException(e);
