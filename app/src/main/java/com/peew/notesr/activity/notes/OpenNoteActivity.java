@@ -104,10 +104,11 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
             if (note != null) {
                 note.setName(name);
                 note.setText(text);
-                note.setUpdatedAt(now);
             } else {
-                note = new Note(name, text, now);
+                note = new Note(name, text);
             }
+
+            note.setUpdatedAt(now);
 
             getNotesManager().save(note);
             startActivity(new Intent(App.getContext(), NotesListActivity.class));
