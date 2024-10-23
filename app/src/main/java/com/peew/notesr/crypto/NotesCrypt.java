@@ -45,7 +45,8 @@ public class NotesCrypt {
         String name = decryptValue(encryptedNote.getEncryptedName(), cryptoKey);
         String text = decryptValue(encryptedNote.getEncryptedText(), cryptoKey);
 
-        Note note = new Note(name, text, encryptedNote.getUpdatedAt());
+        Note note = new Note(name, text);
+        note.setUpdatedAt(encryptedNote.getUpdatedAt());
 
         note.setId(encryptedNote.getId());
         return note;
