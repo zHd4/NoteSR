@@ -103,10 +103,10 @@ public class CryptoManager {
             InvalidAlgorithmParameterException, NoSuchPaddingException,
             IllegalBlockSizeException, BadPaddingException,
             InvalidKeyException, IOException {
-        String password = newKey.password();
+        String password = newKey.getPassword();
 
-        byte[] mainKey = newKey.key().getEncoded();
-        byte[] mainSalt = newKey.salt();
+        byte[] mainKey = newKey.getKey().getEncoded();
+        byte[] mainSalt = newKey.getSalt();
 
         byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
         byte[] keyFileData = new byte[KEY_BYTES_COUNT + Aes.SALT_SIZE];
@@ -133,7 +133,7 @@ public class CryptoManager {
             NoSuchPaddingException, IllegalBlockSizeException,
             BadPaddingException, InvalidKeyException {
         File keyFile = getEncryptedKeyFile();
-        String currentPassword = cryptoKeyInstance.password();
+        String currentPassword = cryptoKeyInstance.getPassword();
 
         byte[] currentSecondarySalt = Aes.generatePasswordBasedSalt(currentPassword);
         byte[] newSecondarySalt = Aes.generatePasswordBasedSalt(newPassword);
@@ -145,8 +145,8 @@ public class CryptoManager {
         FileManager.writeFileBytes(keyFile, aesInstance.encrypt(keyFileData));
 
         cryptoKeyInstance = new CryptoKey(
-                cryptoKeyInstance.key(),
-                cryptoKeyInstance.salt(),
+                cryptoKeyInstance.getKey(),
+                cryptoKeyInstance.getSalt(),
                 newPassword);
     }
 
