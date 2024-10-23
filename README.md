@@ -27,7 +27,4 @@ It is a note-taking application with all data encrypting using AES-256 symmetric
         <img alt="Notes list screenshot" src=".images/notes.jpg" width="350" height="797">
         <img alt="New note screenshot" src=".images/new-note.jpg" width="350" height="797">
     </div>
-    <div>
-        <img alt="Image view screenshot" src=".images/view-image.jpg" width="350" height="797">
-    </div>
 </div>
