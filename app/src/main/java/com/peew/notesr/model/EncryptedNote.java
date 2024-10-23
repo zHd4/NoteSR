@@ -20,7 +20,6 @@ public final class EncryptedNote {
     @NotNull
     private final byte[] encryptedText;
 
-    @NotNull
     @Setter
     private LocalDateTime updatedAt;
 }
