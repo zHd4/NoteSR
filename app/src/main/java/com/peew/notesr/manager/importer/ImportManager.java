@@ -19,14 +19,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+import lombok.Getter;
+
 public class ImportManager extends BaseManager {
     private static final String TAG = BaseManager.class.getName();
 
     private final FileInputStream sourceStream;
     private final Context context;
 
+    @Getter
     private ImportResult result = ImportResult.NONE;
+
+    @Getter
     private String status = "";
+
     private File jsonTempFile;
     private boolean transactionStarted = false;
 
@@ -73,14 +79,6 @@ public class ImportManager extends BaseManager {
         });
 
         thread.start();
-    }
-
-    public ImportResult getResult() {
-        return result;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws DecryptionFailedException {
