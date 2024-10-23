@@ -1,101 +1,36 @@
 package com.peew.notesr.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Setter
+@Getter
 public class FileInfo implements Serializable {
     private Long id;
 
+    @NotNull
     private Long noteId;
 
+    @NotNull
     private Long size;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private String type;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
-    public FileInfo() {}
-
-    public FileInfo(Long id,
-                    Long noteId,
-                    Long size,
-                    String name,
-                    String type,
-                    LocalDateTime createdAt,
-                    LocalDateTime updatedAt) {
-        this.id = id;
-        this.noteId = noteId;
-        this.size = size;
-        this.name = name;
-        this.type = type;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public FileInfo(Long noteId, Long size, String name, String type) {
-        this.noteId = noteId;
-        this.size = size;
-        this.name = name;
-        this.type = type;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getNoteId() {
-        return noteId;
-    }
-
-    public void setNoteId(Long noteId) {
-        this.noteId = noteId;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public void setSize(Long size) {
-        this.size = size;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }
