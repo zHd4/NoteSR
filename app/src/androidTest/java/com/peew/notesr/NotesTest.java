@@ -113,7 +113,12 @@ public class NotesTest {
         String fileName = faker.lorem.word();
         long fileSize = testFileData.length;
 
-        FileInfo fileInfo = new FileInfo(testNote.getId(), fileSize, fileName, null);
+        FileInfo fileInfo = new FileInfo();
+
+        fileInfo.setNoteId(testNote.getId());
+        fileInfo.setSize(fileSize);
+        fileInfo.setName(fileName);
+
         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo, cryptoKey);
 
         filesInfoTable.save(encryptedFileInfo);
