@@ -1,41 +1,26 @@
 package com.peew.notesr.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDateTime;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+@RequiredArgsConstructor
+@Getter
 public final class EncryptedNote {
+    @Setter
     private Long id;
+
+    @NotNull
     private final byte[] encryptedName;
+
+    @NotNull
     private final byte[] encryptedText;
 
+    @NotNull
+    @Setter
     private LocalDateTime updatedAt;
-
-    public EncryptedNote(byte[] encryptedName, byte[] encryptedText, LocalDateTime updatedAt) {
-        this.encryptedName = encryptedName;
-        this.encryptedText = encryptedText;
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public byte[] getEncryptedName() {
-        return encryptedName;
-    }
-
-    public byte[] getEncryptedText() {
-        return encryptedText;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }
