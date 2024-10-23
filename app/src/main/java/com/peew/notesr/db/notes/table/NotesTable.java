@@ -91,9 +91,11 @@ public final class NotesTable extends BaseTable {
                     String updatedAtStr = cursor.getString(3);
                     LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, getTimestampFormatter());
 
-                    EncryptedNote note = new EncryptedNote(name, text, updatedAt);
+                    EncryptedNote note = new EncryptedNote(name, text);
 
                     note.setId(id);
+                    note.setUpdatedAt(updatedAt);
+
                     notes.add(note);
                 } while (cursor.moveToNext());
             }
@@ -116,9 +118,11 @@ public final class NotesTable extends BaseTable {
                 String updatedAtStr = cursor.getString(2);
                 LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, getTimestampFormatter());
 
-                EncryptedNote note = new EncryptedNote(name, text, updatedAt);
+                EncryptedNote note = new EncryptedNote(name, text);
 
                 note.setId(id);
+                note.setUpdatedAt(updatedAt);
+
                 return note;
             }
         }
