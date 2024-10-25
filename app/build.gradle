@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'notesr'
+    namespace 'com.peew.notesr'
     compileSdk 34
 
     defaultConfig {
-        applicationId "notesr"
+        applicationId "com.peew.notesr"
         minSdk 29
         targetSdk 34
         versionCode 50
