@@ -2,22 +2,18 @@ package app.notesr.db;
 
 import android.database.Cursor;
 import app.notesr.App;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.format.DateTimeFormatter;
 
+@AllArgsConstructor
 public abstract class BaseTable {
 
     protected final BaseDB db;
+
+    @Getter
     protected final String name;
-
-    public BaseTable(BaseDB db, String name) {
-        this.db = db;
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
 
     public long getRowsCount() {
         Cursor cursor = db.readableDatabase.rawQuery("SELECT COUNT(*) FROM " + getName(), null);
