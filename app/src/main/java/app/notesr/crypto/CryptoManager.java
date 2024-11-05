@@ -6,6 +6,7 @@ import app.notesr.App;
 import app.notesr.model.CryptoKey;
 import app.notesr.tools.FileManager;
 import app.notesr.tools.HashHelper;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+@Getter
 public class CryptoManager {
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
     private static final String HASHED_CRYPTO_KEY_FILENAME = "key.sha256";
@@ -63,10 +65,6 @@ public class CryptoManager {
 
     public boolean isFirstRun() {
         return !getEncryptedKeyFile().exists() && !getBlockFile().exists();
-    }
-
-    public CryptoKey getCryptoKeyInstance() {
-        return cryptoKeyInstance;
     }
 
     private File getEncryptedKeyFile() {
