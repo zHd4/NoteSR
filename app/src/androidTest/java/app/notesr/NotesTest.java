@@ -1,6 +1,6 @@
 package app.notesr;
 
-import app.notesr.crypto.CryptoKey;
+import app.notesr.model.CryptoKey;
 import app.notesr.crypto.FilesCrypt;
 import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;

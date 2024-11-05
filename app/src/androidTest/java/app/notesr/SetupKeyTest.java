@@ -4,7 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import app.notesr.crypto.Aes;
-import app.notesr.crypto.CryptoKey;
+import app.notesr.model.CryptoKey;
 import app.notesr.crypto.CryptoTools;
 
 import org.junit.Test;

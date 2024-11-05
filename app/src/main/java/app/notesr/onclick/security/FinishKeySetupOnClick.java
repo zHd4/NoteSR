@@ -15,7 +15,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.notes.NotesListActivity;
 import app.notesr.activity.security.SetupKeyActivity;
-import app.notesr.crypto.CryptoKey;
+import app.notesr.model.CryptoKey;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.CryptoTools;
 import app.notesr.manager.KeyUpdateManager;

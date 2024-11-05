@@ -2,6 +2,7 @@ package app.notesr.crypto;
 
 import android.util.Log;
 import app.notesr.App;
+import app.notesr.model.CryptoKey;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
 

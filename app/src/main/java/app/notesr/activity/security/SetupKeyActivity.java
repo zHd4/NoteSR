@@ -12,7 +12,7 @@ import android.widget.Toast;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.crypto.CryptoKey;
+import app.notesr.model.CryptoKey;
 import app.notesr.crypto.CryptoTools;
 import app.notesr.onclick.security.FinishKeySetupOnClick;
 

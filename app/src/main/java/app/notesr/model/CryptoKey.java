@@ -1,4 +1,4 @@
-package app.notesr.crypto;
+package app.notesr.model;
 
 import javax.crypto.SecretKey;
 
