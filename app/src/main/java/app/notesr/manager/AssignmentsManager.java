@@ -44,6 +44,8 @@ public class AssignmentsManager extends BaseManager {
         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
 
         getFilesInfoTable().save(encryptedFileInfo);
+        getNotesTable().markAsModified(encryptedFileInfo.getNoteId());
+
         return encryptedFileInfo.getId();
     }
 
