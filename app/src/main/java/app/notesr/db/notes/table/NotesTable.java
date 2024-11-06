@@ -82,7 +82,7 @@ public final class NotesTable extends BaseTable {
         String updatedAt = now.format(getTimestampFormatter());
 
         values.put("updated_at", updatedAt);
-        db.writableDatabase.update(name, values, "noted_id = ?",
+        db.writableDatabase.update(name, values, "note_id = ?",
                 new String[]{String.valueOf(id)});
     }
 
