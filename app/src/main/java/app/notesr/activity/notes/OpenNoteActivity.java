@@ -91,7 +91,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
         if (id == android.R.id.home) {
             if (noteModified) {
-                Intent intent = new Intent(App.getContext(), OpenNoteActivity.class);
+                Intent intent = new Intent(App.getContext(), NotesListActivity.class);
                 startActivity(intent);
             } else {
                 finish();
