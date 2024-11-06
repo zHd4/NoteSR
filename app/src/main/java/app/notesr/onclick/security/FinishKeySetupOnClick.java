@@ -81,7 +81,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
                 CryptoManager cryptoManager = getCryptoManager();
                 KeyUpdateManager keyUpdateManager = getKeyUpdateManager();
 
-                CryptoKey oldKey = cryptoManager.getCryptoKeyInstance().copy();
+                CryptoKey oldKey = cryptoManager.getCryptoKeyInstance().clone();
 
                 cryptoManager.applyNewKey(key);
                 keyUpdateManager.updateEncryptedData(oldKey, key);
