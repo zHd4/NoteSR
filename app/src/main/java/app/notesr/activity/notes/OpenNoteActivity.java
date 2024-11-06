@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
@@ -25,10 +27,15 @@ import java.util.function.Consumer;
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 public class OpenNoteActivity extends ExtendedAppCompatActivity {
+
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
     private Note note;
 
-    /** @noinspection DataFlowIssue*/
+    private boolean noteModified;
+
+    /**
+     * @noinspection DataFlowIssue
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +43,8 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
         long noteId = getIntent().getLongExtra("noteId", -1);
         note = getNotesManager().get(noteId);
+
+        noteModified = getIntent().getBooleanExtra("modified", false);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -81,7 +90,12 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            finish();
+            if (noteModified) {
+                Intent intent = new Intent(App.getContext(), OpenNoteActivity.class);
+                startActivity(intent);
+            } else {
+                finish();
+            }
             return true;
         }
 
@@ -162,7 +176,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         item.setEnabled(false);
         item.setVisible(false);
     }
-    
+
     private NotesManager getNotesManager() {
         return App.getAppContainer().getNotesManager();
     }
