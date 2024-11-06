@@ -7,8 +7,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
@@ -94,10 +96,10 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
     }
 
     private void returnToListActivity() {
-        Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
-
-        intent.putExtra("noteId", fileInfo.getNoteId());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class)
+                .putExtra("noteId", fileInfo.getNoteId())
+                .putExtra("modified", true)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivity(intent);
     }
@@ -171,7 +173,8 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setView(R.layout.dialog_action_cannot_be_undo)
                 .setTitle(R.string.warning)
-                .setNegativeButton(R.string.no, (dialog, result) -> {})
+                .setNegativeButton(R.string.no, (dialog, result) -> {
+                })
                 .setPositiveButton(R.string.delete, (dialog, result) -> executeTask(() -> {
                     deleteFile();
                     returnToListActivity();
