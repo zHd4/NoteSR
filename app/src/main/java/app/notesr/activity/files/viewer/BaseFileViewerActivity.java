@@ -105,7 +105,6 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
     }
 
     protected void loadFileInfo() {
-        //noinspection deprecation
         fileInfo = (FileInfo) getIntent().getSerializableExtra("fileInfo");
 
         if (fileInfo == null) {
