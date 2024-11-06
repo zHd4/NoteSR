@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.notes.OpenNoteActivity;
 import app.notesr.adapter.FilesListAdapter;
 import app.notesr.manager.AssignmentsManager;
 import app.notesr.manager.NotesManager;
@@ -26,6 +28,7 @@ import java.util.concurrent.Executors;
 
 public class AssignmentsListActivity extends ExtendedAppCompatActivity {
     private Note note;
+    private boolean noteModified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
             throw new RuntimeException("Note id didn't provided");
         }
 
+        noteModified = getIntent().getBooleanExtra("modified", false);
         note = getNotesManager().get(noteId);
 
         if (note == null) {
@@ -58,6 +62,26 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
 
         ListView filesListView = findViewById(R.id.filesListView);
         filesListView.setOnItemClickListener(new OpenFileOnClick(this));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            if (noteModified) {
+                Intent intent = new Intent(App.getContext(), OpenNoteActivity.class)
+                        .putExtra("noteId", note.getId())
+                        .putExtra("modified", true)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                startActivity(intent);
+            } else {
+                finish();
+            }
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void configureActionBar() {
