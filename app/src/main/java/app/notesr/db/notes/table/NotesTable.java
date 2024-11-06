@@ -2,6 +2,7 @@ package app.notesr.db.notes.table;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+
 import app.notesr.db.BaseTable;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.model.EncryptedNote;
@@ -16,10 +17,10 @@ public final class NotesTable extends BaseTable {
 
         db.writableDatabase.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
-                "note_id integer PRIMARY KEY AUTOINCREMENT, " +
-                "encrypted_name blob NOT NULL, " +
-                "encrypted_data blob NOT NULL, " +
-                "updated_at varchar(255) NOT NULL)"
+                        "note_id integer PRIMARY KEY AUTOINCREMENT, " +
+                        "encrypted_name blob NOT NULL, " +
+                        "encrypted_data blob NOT NULL, " +
+                        "updated_at varchar(255) NOT NULL)"
         );
     }
 
@@ -49,8 +50,8 @@ public final class NotesTable extends BaseTable {
 
             note.setId(id);
         } else {
-            db.writableDatabase.update(name, values, "note_id = ?" ,
-                    new String[] { String.valueOf(note.getId()) });
+            db.writableDatabase.update(name, values, "note_id = ?",
+                    new String[]{String.valueOf(note.getId())});
         }
     }
 
@@ -119,7 +120,7 @@ public final class NotesTable extends BaseTable {
         Cursor cursor = db.readableDatabase.rawQuery(
                 "SELECT encrypted_name, encrypted_data, updated_at" +
                         " FROM " + name + " WHERE note_id = ?",
-                new String[] { String.valueOf(id) });
+                new String[]{String.valueOf(id)});
 
         try (cursor) {
             if (cursor.moveToFirst()) {
