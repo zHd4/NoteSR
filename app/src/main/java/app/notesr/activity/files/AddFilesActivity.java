@@ -76,9 +76,9 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                finish();
             }
+
+            finish();
         };
     }
 
@@ -103,10 +103,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
                 }
             });
 
-            runOnUiThread(() -> {
-                progressDialog.dismiss();
-                finish();
-            });
+            runOnUiThread(progressDialog::dismiss);
         });
     }
 
