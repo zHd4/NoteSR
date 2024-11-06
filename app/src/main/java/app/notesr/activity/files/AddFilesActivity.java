@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 
 public class AddFilesActivity extends ExtendedAppCompatActivity {
     private long noteId;
+    private boolean noteModified = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
 
         intent.putExtra("noteId", noteId);
+        intent.putExtra("modified", noteModified);
         startActivity(intent);
 
         super.finish();
@@ -70,6 +72,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 if (result.getData() != null) {
                     addFiles(result.getData());
+                    noteModified = true;
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
