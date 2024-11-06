@@ -16,6 +16,7 @@ import app.notesr.activity.files.AssignmentsListActivity;
 import app.notesr.manager.AssignmentsManager;
 import app.notesr.model.FileInfo;
 import app.notesr.tools.FileManager;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,11 +27,9 @@ import java.util.concurrent.Executors;
 public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
     protected FileInfo fileInfo;
     protected java.io.File saveDir;
-    protected static boolean running;
 
-    public static boolean isRunning() {
-        return running;
-    }
+    @Getter
+    protected static boolean running;
 
     @Override
     protected void onStart() {
