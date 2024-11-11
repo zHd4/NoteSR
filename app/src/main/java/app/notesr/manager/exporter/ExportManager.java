@@ -37,7 +37,7 @@ public class ExportManager extends BaseManager {
     private Thread thread;
 
     private NotesWriter notesWriter;
-    private FilesWriter filesInfoWriter;
+    private FilesInfoWriter filesInfoWriter;
 
     @Getter
     private int result = NONE;
@@ -197,8 +197,8 @@ public class ExportManager extends BaseManager {
         );
     }
 
-    private FilesWriter createFilesInfoWriter(JsonGenerator jsonGenerator) {
-        return new FilesWriter(
+    private FilesInfoWriter createFilesInfoWriter(JsonGenerator jsonGenerator) {
+        return new FilesInfoWriter(
                 jsonGenerator,
                 getFilesInfoTable(),
                 getDataBlocksTable(),
