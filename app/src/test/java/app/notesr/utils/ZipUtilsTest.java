@@ -40,7 +40,10 @@ class ZipUtilsTest {
         return Path.of(System.getProperty("java.io.tmpdir"), pathPart).toString();
     }
 
-    private static boolean isDirsIdentical(File dir1, File dir2) {
+    private static boolean isDirsIdentical(String path1, String path2) {
+        File dir1 = new File(path1);
+        File dir2 = new File(path2);
+
         if (!dir1.isDirectory() || !dir2.isDirectory()) {
             throw new IllegalArgumentException("Both inputs must be directories");
         }
