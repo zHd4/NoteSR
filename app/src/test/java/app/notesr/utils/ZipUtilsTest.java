@@ -3,6 +3,7 @@ package app.notesr.utils;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static java.util.UUID.randomUUID;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -35,6 +36,14 @@ class ZipUtilsTest {
 
         assertTrue(dir.exists(), "Extract directory not found");
         assertTrue(isDirsIdentical(DIR_PATH, TEMP_EXTRACTED_DIR_PATH));
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        File tempZipFile = new File(TEMP_ZIP_PATH);
+
+        tempZipFile.delete();
+        removeDir(new File(TEMP_EXTRACTED_DIR_PATH));
     }
 
     private static String generateFixturePath(String pathPart) {
@@ -105,5 +114,19 @@ class ZipUtilsTest {
         }
 
         return hex.toString();
+    }
+
+    private static void removeDir(File dir) {
+        if (dir.isDirectory()) {
+            File[] children = dir.listFiles();
+
+            if (children != null) {
+                for (File child : children) {
+                    removeDir(child);
+                }
+            }
+        }
+
+        dir.delete();
     }
 }
