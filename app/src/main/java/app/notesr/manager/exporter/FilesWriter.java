@@ -38,7 +38,7 @@ class FilesWriter implements Writer {
         Set<Long> filesId = filesInfoTable.getAllIds();
 
         writeFilesInfo(filesId);
-        writeFilesData(filesId);
+        writeDataBlocksInfo(filesId);
         jsonGenerator.writeEndObject();
     }
 
@@ -55,7 +55,7 @@ class FilesWriter implements Writer {
         jsonGenerator.writeEndArray();
     }
 
-    private void writeFilesData(Set<Long> filesId) throws IOException {
+    private void writeDataBlocksInfo(Set<Long> filesId) throws IOException {
         jsonGenerator.writeArrayFieldStart("files_data_blocks");
 
         for (Long fileId : filesId) {
@@ -65,7 +65,7 @@ class FilesWriter implements Writer {
                 DataBlock block = dataBlocksTable.get(blockId);
 
                 block.setData(FilesCrypt.decryptData(block.getData()));
-                writeDataBlock(block);
+                writeDataBlockInfo(block);
 
                 exported++;
             }
@@ -93,14 +93,12 @@ class FilesWriter implements Writer {
         jsonGenerator.writeEndObject();
     }
 
-    private void writeDataBlock(DataBlock dataBlock) throws IOException {
+    private void writeDataBlockInfo(DataBlock dataBlock) throws IOException {
         jsonGenerator.writeStartObject();
 
         jsonGenerator.writeNumberField("id", dataBlock.getId());
         jsonGenerator.writeNumberField("file_id", dataBlock.getFileId());
         jsonGenerator.writeNumberField("order", dataBlock.getOrder());
-
-        jsonGenerator.writeBinaryField("data", dataBlock.getData());
 
         jsonGenerator.writeEndObject();
     }
