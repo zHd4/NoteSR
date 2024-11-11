@@ -1,6 +1,7 @@
 package app.notesr.utils;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static java.util.UUID.randomUUID;
 
 import org.junit.jupiter.api.Test;
@@ -20,11 +21,16 @@ class ZipUtilsTest {
     private static final String TEMP_ZIP_PATH = generateTempPath(randomUUID().toString() + ".zip");
 
     @Test
-    public void testZipDirectory() throws IOException {
+    public void testZipDirectory() throws IOException, NoSuchAlgorithmException {
         ZipUtils.zipDirectory(DIR_PATH, TEMP_ZIP_PATH);
         File zipFile = new File(TEMP_ZIP_PATH);
 
         assertTrue(zipFile.exists(), "Zip file not found");
+
+        String expectedHash = sha256OfFile(ZIP_PATH);
+        String actualHash = sha256OfFile(TEMP_ZIP_PATH);
+
+        assertEquals(expectedHash, actualHash, "Hash mismatch");
     }
 
     @Test
