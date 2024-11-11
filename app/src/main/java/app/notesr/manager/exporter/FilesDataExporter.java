@@ -18,6 +18,12 @@ class FilesDataExporter {
     private final DataBlocksTable dataBlocksTable;
 
     public void export() throws IOException {
+        if (!outputDir.exists()) {
+            if (!outputDir.mkdir()) {
+                throw new RuntimeException("Failed to create temporary directory to export data blocks");
+            }
+        }
+
         for (Long fileId : filesInfoTable.getAllIds()) {
             Set<Long> blocksId = dataBlocksTable.getBlocksIdsByFileId(fileId);
 
