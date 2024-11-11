@@ -119,7 +119,7 @@ public class ExportManager extends BaseManager {
         return Math.round((exported * 99.0f) / total);
     }
 
-    private void exportJson(Writer writer) {
+    private void exportJson(JsonWriter writer) {
         try {
             if (result == NONE) {
                 JsonGenerator generator = writer.getJsonGenerator();

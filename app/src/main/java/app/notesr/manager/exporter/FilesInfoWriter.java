@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 @RequiredArgsConstructor
-class FilesInfoWriter implements Writer {
+class FilesInfoWriter implements JsonWriter {
     @NonNull
     @Getter
     private final JsonGenerator jsonGenerator;

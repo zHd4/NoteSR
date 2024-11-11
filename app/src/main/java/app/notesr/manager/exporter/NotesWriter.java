@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 @RequiredArgsConstructor
-class NotesWriter implements Writer {
+class NotesWriter implements JsonWriter {
     @NonNull
     @Getter
     private final JsonGenerator jsonGenerator;
