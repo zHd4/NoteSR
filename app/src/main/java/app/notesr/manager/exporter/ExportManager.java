@@ -71,6 +71,7 @@ public class ExportManager extends BaseManager {
 
                 exportJson(notesWriter);
                 exportJson(filesInfoWriter);
+                exportFilesData(new File(tempDir, "data_blocks"));
 
                 status = context.getString(R.string.encrypting_data);
                 status = context.getString(R.string.wiping_temp_data);
@@ -132,6 +133,11 @@ public class ExportManager extends BaseManager {
             Log.e(TAG, "IOException", e);
             throw new RuntimeException(e);
         }
+    }
+
+    private void exportFilesData(File dir) throws IOException {
+        FilesDataExporter exporter = new FilesDataExporter(dir, getFilesInfoTable(), getDataBlocksTable());
+        exporter.export();
     }
 
     private void encrypt(File input, File output) {
