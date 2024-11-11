@@ -59,7 +59,8 @@ class ZipUtilsTest {
             File file2 = new File(dir2, file1.getName());
 
             if (file1.isDirectory()) {
-                if (!file2.exists() || !file2.isDirectory() || !isDirsIdentical(file1, file2)) {
+                if (!file2.exists() || !file2.isDirectory()
+                        || !isDirsIdentical(file1.getPath(), file2.getPath())) {
                     return false;
                 }
             } else {
