@@ -29,8 +29,12 @@ class ZipUtilsTest {
     }
 
     @Test
-    public void testUnzip() {
+    public void testUnzip() throws IOException, NoSuchAlgorithmException {
+        ZipUtils.unzip(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH);
+        File dir = new File(TEMP_EXTRACTED_DIR_PATH);
 
+        assertTrue(dir.exists(), "Extract directory not found");
+        assertTrue(isDirsIdentical(DIR_PATH, TEMP_EXTRACTED_DIR_PATH));
     }
 
     private static String generateFixturePath(String pathPart) {
