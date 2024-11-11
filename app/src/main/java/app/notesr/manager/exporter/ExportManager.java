@@ -1,5 +1,7 @@
 package app.notesr.manager.exporter;
 
+import static java.util.UUID.randomUUID;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
@@ -10,6 +12,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.crypto.BackupsCrypt;
 import app.notesr.manager.BaseManager;
+import app.notesr.tools.FileManager;
 import app.notesr.tools.FileWiper;
 import app.notesr.tools.VersionFetcher;
 
@@ -36,8 +39,6 @@ public class ExportManager extends BaseManager {
     private NotesWriter notesWriter;
     private FilesWriter filesWriter;
 
-    private File jsonTempFile;
-
     @Getter
     private int result = NONE;
 
@@ -57,16 +58,18 @@ public class ExportManager extends BaseManager {
         thread = new Thread(() -> {
             try {
                 status = context.getString(R.string.exporting_data);
-                jsonTempFile = File.createTempFile("export", ".json");
+                File tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
-                generateJson(jsonTempFile);
+                if (!tempDir.mkdir()) {
+                    throw new RuntimeException("Failed to create temporary directory to export");
+                }
+
+                writeVersion(tempDir);
+                exportJson(createNotesWriter(createJsonGenerator(tempDir, "notes.json")));
+                exportJson(createFilesInfoWriter(createJsonGenerator(tempDir, "files_info.json")));
 
                 status = context.getString(R.string.encrypting_data);
-                encrypt(jsonTempFile, outputFile);
-
                 status = context.getString(R.string.wiping_temp_data);
-                wipe(jsonTempFile);
-
                 status = "";
                 result = FINISHED_SUCCESSFULLY;
             } catch (IOException e) {
@@ -85,9 +88,9 @@ public class ExportManager extends BaseManager {
         status = context.getString(R.string.canceling);
         thread.interrupt();
 
-        if (jsonTempFile.exists()) {
-            wipe(jsonTempFile);
-        }
+//        if (jsonTempFile.exists()) {
+//            wipe(jsonTempFile);
+//        }
 
         if (outputFile.exists()) {
             delete(outputFile);
@@ -112,23 +115,13 @@ public class ExportManager extends BaseManager {
         return Math.round((exported * 99.0f) / total);
     }
 
-    private void generateJson(File output) {
+    private void exportJson(Writer writer) {
         try {
             if (result == NONE) {
-                JsonFactory jsonFactory = new JsonFactory();
-                JsonGenerator jsonGenerator = jsonFactory.createGenerator(output, JsonEncoding.UTF8);
+                JsonGenerator generator = writer.getJsonGenerator();
 
-                notesWriter = getNotesWriter(jsonGenerator);
-                filesWriter = getFilesWriter(jsonGenerator);
-
-                try (jsonGenerator) {
-                    jsonGenerator.writeStartObject();
-                    writeVersion(jsonGenerator);
-
-                    notesWriter.writeNotes();
-                    filesWriter.writeFiles();
-
-                    jsonGenerator.writeEndObject();
+                try (generator) {
+                    writer.write();
                 }
             }
         } catch (IOException e) {
@@ -174,16 +167,25 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void writeVersion(JsonGenerator jsonGenerator) throws IOException {
+    private void writeVersion(File dir) throws IOException {
         try {
             String version = VersionFetcher.fetchVersionName(context, false);
-            jsonGenerator.writeStringField("version", version);
+            File targetFile = new File(dir, "version");
+
+            FileManager.writeFileBytes(targetFile, version.getBytes());
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private NotesWriter getNotesWriter(JsonGenerator jsonGenerator) {
+    private JsonGenerator createJsonGenerator(File tempDir, String filename) throws IOException {
+        File file = new File(tempDir, filename);
+        JsonFactory jsonFactory = new JsonFactory();
+
+        return jsonFactory.createGenerator(file, JsonEncoding.UTF8);
+    }
+
+    private NotesWriter createNotesWriter(JsonGenerator jsonGenerator) {
         return new NotesWriter(
                 jsonGenerator,
                 getNotesTable(),
@@ -191,7 +193,7 @@ public class ExportManager extends BaseManager {
         );
     }
 
-    private FilesWriter getFilesWriter(JsonGenerator jsonGenerator) {
+    private FilesWriter createFilesInfoWriter(JsonGenerator jsonGenerator) {
         return new FilesWriter(
                 jsonGenerator,
                 getFilesInfoTable(),
