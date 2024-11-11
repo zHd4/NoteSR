@@ -20,8 +20,8 @@ import app.notesr.manager.AssignmentsManager;
 import app.notesr.model.FileInfo;
 import app.notesr.model.TempFile;
 import app.notesr.service.CacheCleanerService;
-import app.notesr.tools.FileManager;
-import app.notesr.tools.HashHelper;
+import app.notesr.utils.FileManager;
+import app.notesr.utils.HashHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;

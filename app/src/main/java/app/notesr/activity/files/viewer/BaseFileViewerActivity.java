@@ -17,7 +17,7 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.AssignmentsListActivity;
 import app.notesr.manager.AssignmentsManager;
 import app.notesr.model.FileInfo;
-import app.notesr.tools.FileManager;
+import app.notesr.utils.FileManager;
 import lombok.Getter;
 
 import java.io.File;

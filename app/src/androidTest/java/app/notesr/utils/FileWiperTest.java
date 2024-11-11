@@ -1,4 +1,4 @@
-package app.notesr.tools;
+package app.notesr.utils;
 
 
 import app.notesr.App;

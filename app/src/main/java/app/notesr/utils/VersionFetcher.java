@@ -1,4 +1,4 @@
-package app.notesr.tools;
+package app.notesr.utils;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

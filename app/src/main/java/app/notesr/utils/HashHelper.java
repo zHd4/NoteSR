@@ -1,4 +1,4 @@
-package app.notesr.tools;
+package app.notesr.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

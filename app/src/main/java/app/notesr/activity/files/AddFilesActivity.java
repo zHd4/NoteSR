@@ -15,7 +15,7 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.manager.AssignmentsManager;
 import app.notesr.model.FileInfo;
-import app.notesr.tools.FileExifDataResolver;
+import app.notesr.utils.FileExifDataResolver;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

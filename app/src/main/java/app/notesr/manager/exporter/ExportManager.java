@@ -12,9 +12,9 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.crypto.BackupsCrypt;
 import app.notesr.manager.BaseManager;
-import app.notesr.tools.FileManager;
-import app.notesr.tools.FileWiper;
-import app.notesr.tools.VersionFetcher;
+import app.notesr.utils.FileManager;
+import app.notesr.utils.FileWiper;
+import app.notesr.utils.VersionFetcher;
 
 import java.io.File;
 import java.io.FileInputStream;
