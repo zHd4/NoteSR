@@ -25,7 +25,7 @@ class ZipUtilsTest {
         File zipFile = new File(TEMP_ZIP_PATH);
 
         assertTrue(zipFile.exists(), "Zip file not found");
-        assertTrue(checkFilesIdentical(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH), "Hash mismatch");
+        assertTrue(isFilesIdentical(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH), "Hash mismatch");
     }
 
     @Test
@@ -74,7 +74,7 @@ class ZipUtilsTest {
         return true;
     }
 
-    private static boolean checkFilesIdentical(String path1, String path2) throws IOException,
+    private static boolean isFilesIdentical(String path1, String path2) throws IOException,
             NoSuchAlgorithmException {
         return sha256OfFile(path1).equals(sha256OfFile(path2));
     }
