@@ -6,37 +6,40 @@ import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.FileInfo;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
+@RequiredArgsConstructor
 class FilesWriter implements Writer {
+    @NonNull
+    @Getter
     private final JsonGenerator jsonGenerator;
-    private final FilesInfoTable filesInfoTable;
-    private final DataBlocksTable dataBlocksTable;
-    private final DateTimeFormatter timestampFormatter;
-    private final long total;
 
+    @NonNull
+    private final FilesInfoTable filesInfoTable;
+
+    @NonNull
+    private final DataBlocksTable dataBlocksTable;
+
+    @NonNull
+    private final DateTimeFormatter timestampFormatter;
+
+    @Getter
     private long exported = 0;
 
-    public FilesWriter(JsonGenerator jsonGenerator,
-                       FilesInfoTable filesInfoTable,
-                       DataBlocksTable dataBlocksTable,
-                       DateTimeFormatter timestampFormatter) {
-        this.jsonGenerator = jsonGenerator;
-        this.filesInfoTable = filesInfoTable;
-        this.dataBlocksTable = dataBlocksTable;
-        this.timestampFormatter = timestampFormatter;
-
-        this.total = filesInfoTable.getRowsCount() + dataBlocksTable.getRowsCount();
-    }
-
-    public void writeFiles() throws IOException {
+    @Override
+    public void write() throws IOException {
+        jsonGenerator.writeStartObject();
         Set<Long> filesId = filesInfoTable.getAllIds();
 
         writeFilesInfo(filesId);
         writeFilesData(filesId);
+        jsonGenerator.writeEndObject();
     }
 
     private void writeFilesInfo(Set<Long> filesId) throws IOException {
@@ -104,11 +107,6 @@ class FilesWriter implements Writer {
 
     @Override
     public long getTotal() {
-        return total;
-    }
-
-    @Override
-    public long getExported() {
-        return exported;
+        return filesInfoTable.getRowsCount() + dataBlocksTable.getRowsCount();
     }
 }
