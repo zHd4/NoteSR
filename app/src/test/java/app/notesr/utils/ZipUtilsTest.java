@@ -79,6 +79,11 @@ class ZipUtilsTest {
         return true;
     }
 
+    private static boolean checkFilesIdentical(String path1, String path2) throws IOException,
+            NoSuchAlgorithmException {
+        return sha256OfFile(path1).equals(sha256OfFile(path2))
+    }
+
     private static String sha256OfFile(String path) throws IOException, NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
