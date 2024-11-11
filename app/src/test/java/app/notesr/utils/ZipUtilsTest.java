@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.io.FileInputStream;
 
 class ZipUtilsTest {
     private static final String DIR_PATH = generateFixturePath("exported");
@@ -37,7 +40,7 @@ class ZipUtilsTest {
         return Path.of(System.getProperty("java.io.tmpdir"), pathPart).toString();
     }
 
-    public static boolean compareDirectories(File dir1, File dir2) {
+    private static boolean isDirsIdentical(File dir1, File dir2) {
         if (!dir1.isDirectory() || !dir2.isDirectory()) {
             throw new IllegalArgumentException("Both inputs must be directories");
         }
@@ -53,7 +56,7 @@ class ZipUtilsTest {
             File file2 = new File(dir2, file1.getName());
 
             if (file1.isDirectory()) {
-                if (!file2.exists() || !file2.isDirectory() || !compareDirectories(file1, file2)) {
+                if (!file2.exists() || !file2.isDirectory() || !isDirsIdentical(file1, file2)) {
                     return false;
                 }
             } else {
@@ -64,5 +67,27 @@ class ZipUtilsTest {
         }
 
         return true;
+    }
+
+    private static String sha256OfFile(Path filePath) throws IOException, NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+        try (FileInputStream inputStream = new FileInputStream(filePath.toFile())) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                digest.update(buffer, 0, bytesRead);
+            }
+        }
+
+        byte[] hashBytes = digest.digest();
+        StringBuilder hex = new StringBuilder(hashBytes.length * 2);
+
+        for (byte b : hashBytes) {
+            hex.append(String.format("%02x", b & 0xFF));
+        }
+
+        return hex.toString();
     }
 }
