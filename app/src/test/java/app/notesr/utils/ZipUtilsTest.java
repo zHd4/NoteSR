@@ -25,7 +25,7 @@ class ZipUtilsTest {
         File zipFile = new File(TEMP_ZIP_PATH);
 
         assertTrue(zipFile.exists(), "Zip file not found");
-        assertTrue(isFilesIdentical(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH), "Hash mismatch");
+        assertTrue(isFilesIdentical(ZIP_PATH, TEMP_ZIP_PATH), "Hash mismatch");
     }
 
     @Test
