@@ -1,7 +1,6 @@
 package app.notesr.utils;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static java.util.UUID.randomUUID;
 
 import org.junit.jupiter.api.Test;
@@ -26,11 +25,7 @@ class ZipUtilsTest {
         File zipFile = new File(TEMP_ZIP_PATH);
 
         assertTrue(zipFile.exists(), "Zip file not found");
-
-        String expectedHash = sha256OfFile(ZIP_PATH);
-        String actualHash = sha256OfFile(TEMP_ZIP_PATH);
-
-        assertEquals(expectedHash, actualHash, "Hash mismatch");
+        assertTrue(checkFilesIdentical(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH), "Hash mismatch");
     }
 
     @Test
