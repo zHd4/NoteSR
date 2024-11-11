@@ -5,28 +5,31 @@ import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+@RequiredArgsConstructor
 class NotesWriter implements Writer {
-
+    @NonNull
+    @Getter
     private final JsonGenerator jsonGenerator;
-    private final NotesTable notesTable;
-    private final DateTimeFormatter timestampFormatter;
-    private final long totalNotes;
 
+    @NonNull
+    private final NotesTable notesTable;
+
+    @NonNull
+    private final DateTimeFormatter timestampFormatter;
+
+    @Getter
     private long exported;
 
-    public NotesWriter(JsonGenerator jsonGenerator, NotesTable notesTable, DateTimeFormatter timestampFormatter) {
-        this.jsonGenerator = jsonGenerator;
-        this.notesTable = notesTable;
-        this.timestampFormatter = timestampFormatter;
-
-        this.totalNotes = notesTable.getRowsCount();
-    }
-
-    public void writeNotes() throws IOException {
+    @Override
+    public void write() throws IOException {
+        jsonGenerator.writeStartObject();
         jsonGenerator.writeArrayFieldStart("notes");
 
         for (EncryptedNote encryptedNote : notesTable.getAll()) {
@@ -37,6 +40,7 @@ class NotesWriter implements Writer {
         }
 
         jsonGenerator.writeEndArray();
+        jsonGenerator.writeEndObject();
     }
 
     private void writeNote(Note note) throws IOException {
@@ -55,11 +59,6 @@ class NotesWriter implements Writer {
 
     @Override
     public long getTotal() {
-        return totalNotes;
-    }
-
-    @Override
-    public long getExported() {
-        return exported;
+        return notesTable.getRowsCount();
     }
 }
