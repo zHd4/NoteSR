@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-public class FileManager {
+public class FilesUtils {
     /** @noinspection ResultOfMethodCallIgnored*/
     public static byte[] readFileBytes(File file) throws IOException {
         byte[] data = new byte[(int) file.length()];

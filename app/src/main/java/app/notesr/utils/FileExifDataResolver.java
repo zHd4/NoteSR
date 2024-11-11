@@ -50,7 +50,7 @@ public class FileExifDataResolver {
 
     private static String getMimeType(String filename) {
         String type = null;
-        String extension = FileManager.getFileExtension(filename);
+        String extension = FilesUtils.getFileExtension(filename);
 
         if (extension != null) {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);

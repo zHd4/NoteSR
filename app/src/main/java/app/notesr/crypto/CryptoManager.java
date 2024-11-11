@@ -4,7 +4,7 @@ import android.util.Log;
 
 import app.notesr.App;
 import app.notesr.model.CryptoKey;
-import app.notesr.utils.FileManager;
+import app.notesr.utils.FilesUtils;
 import app.notesr.utils.HashHelper;
 import lombok.Getter;
 
@@ -35,7 +35,7 @@ public class CryptoManager {
             byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
             Aes aesInstance = new Aes(password, secondarySalt);
 
-            byte[] encryptedKeyFileBytes = FileManager.readFileBytes(getEncryptedKeyFile());
+            byte[] encryptedKeyFileBytes = FilesUtils.readFileBytes(getEncryptedKeyFile());
             byte[] keyFileBytes = aesInstance.decrypt(encryptedKeyFileBytes);
 
             byte[] mainKeyBytes = new byte[KEY_BYTES_COUNT];
@@ -68,15 +68,15 @@ public class CryptoManager {
     }
 
     private File getEncryptedKeyFile() {
-        return FileManager.getInternalFile(ENCRYPTED_KEY_FILENAME);
+        return FilesUtils.getInternalFile(ENCRYPTED_KEY_FILENAME);
     }
 
     private File getBlockFile() {
-        return FileManager.getInternalFile(BLOCKED_FILENAME);
+        return FilesUtils.getInternalFile(BLOCKED_FILENAME);
     }
 
     private File getHashedCryptoKeyFile() {
-        return FileManager.getInternalFile(HASHED_CRYPTO_KEY_FILENAME);
+        return FilesUtils.getInternalFile(HASHED_CRYPTO_KEY_FILENAME);
     }
 
     public CryptoKey generateNewKey(String password) throws NoSuchAlgorithmException {
@@ -114,7 +114,7 @@ public class CryptoManager {
         System.arraycopy(mainSalt, 0, keyFileData, mainKey.length, mainSalt.length);
 
         Aes aesInstance = new Aes(password, secondarySalt);
-        FileManager.writeFileBytes(getEncryptedKeyFile(), aesInstance.encrypt(keyFileData));
+        FilesUtils.writeFileBytes(getEncryptedKeyFile(), aesInstance.encrypt(keyFileData));
 
         cryptoKeyInstance = newKey;
         File blockFile = getBlockFile();
@@ -124,7 +124,7 @@ public class CryptoManager {
             blockFile.delete();
         }
 
-        FileManager.writeFileBytes(getHashedCryptoKeyFile(), hashCryptoKeyData(mainKey, mainSalt));
+        FilesUtils.writeFileBytes(getHashedCryptoKeyFile(), hashCryptoKeyData(mainKey, mainSalt));
     }
 
     public void changePassword(String newPassword) throws NoSuchAlgorithmException, IOException,
@@ -138,10 +138,10 @@ public class CryptoManager {
         byte[] newSecondarySalt = Aes.generatePasswordBasedSalt(newPassword);
 
         Aes aesInstance = new Aes(currentPassword, currentSecondarySalt);
-        byte[] keyFileData = aesInstance.decrypt(FileManager.readFileBytes(keyFile));
+        byte[] keyFileData = aesInstance.decrypt(FilesUtils.readFileBytes(keyFile));
 
         aesInstance = new Aes(newPassword, newSecondarySalt);
-        FileManager.writeFileBytes(keyFile, aesInstance.encrypt(keyFileData));
+        FilesUtils.writeFileBytes(keyFile, aesInstance.encrypt(keyFileData));
 
         cryptoKeyInstance = new CryptoKey(
                 cryptoKeyInstance.getKey(),
@@ -164,7 +164,7 @@ public class CryptoManager {
                 File hashedKeyFile = getHashedCryptoKeyFile();
 
                 if (hashedKeyFile.exists()) {
-                    byte[] originalCryptoKeyHash = FileManager.readFileBytes(hashedKeyFile);
+                    byte[] originalCryptoKeyHash = FilesUtils.readFileBytes(hashedKeyFile);
                     byte[] hashedUserCryptoKey = hashCryptoKeyData(key.getEncoded(), salt);
 
                     return Arrays.equals(originalCryptoKeyHash, hashedUserCryptoKey);
@@ -183,7 +183,7 @@ public class CryptoManager {
 
     public void block() {
         try {
-            FileManager.writeFileBytes(getBlockFile(), new byte[0]);
+            FilesUtils.writeFileBytes(getBlockFile(), new byte[0]);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -12,7 +12,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.crypto.BackupsCrypt;
 import app.notesr.manager.BaseManager;
-import app.notesr.utils.FileManager;
+import app.notesr.utils.FilesUtils;
 import app.notesr.utils.FileWiper;
 import app.notesr.utils.VersionFetcher;
 
@@ -176,7 +176,7 @@ public class ExportManager extends BaseManager {
             String version = VersionFetcher.fetchVersionName(context, false);
             File targetFile = new File(dir, "version");
 
-            FileManager.writeFileBytes(targetFile, version.getBytes());
+            FilesUtils.writeFileBytes(targetFile, version.getBytes());
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }

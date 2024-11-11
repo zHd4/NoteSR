@@ -20,7 +20,7 @@ import app.notesr.manager.AssignmentsManager;
 import app.notesr.model.FileInfo;
 import app.notesr.model.TempFile;
 import app.notesr.service.CacheCleanerService;
-import app.notesr.utils.FileManager;
+import app.notesr.utils.FilesUtils;
 import app.notesr.utils.HashHelper;
 
 import java.io.File;
@@ -120,7 +120,7 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
     private File dropToCache(FileInfo fileInfo) {
         try {
             String name = generateTempName(fileInfo.getId(), fileInfo.getName());
-            String extension = FileManager.getFileExtension(fileInfo.getName());
+            String extension = FilesUtils.getFileExtension(fileInfo.getName());
 
             File tempDir = getCacheDir();
             File tempVideo = File.createTempFile(name, "." + extension, tempDir);

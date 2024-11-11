@@ -17,7 +17,7 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.AssignmentsListActivity;
 import app.notesr.manager.AssignmentsManager;
 import app.notesr.model.FileInfo;
-import app.notesr.utils.FileManager;
+import app.notesr.utils.FilesUtils;
 import lombok.Getter;
 
 import java.io.File;
@@ -149,7 +149,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
             try {
                 assignmentsManager.read(fileInfo.getId(), chunk -> {
                     try {
-                        FileManager.writeFileBytes(destFile, chunk, true);
+                        FilesUtils.writeFileBytes(destFile, chunk, true);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
