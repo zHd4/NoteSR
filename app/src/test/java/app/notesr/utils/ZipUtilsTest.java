@@ -69,10 +69,10 @@ class ZipUtilsTest {
         return true;
     }
 
-    private static String sha256OfFile(Path filePath) throws IOException, NoSuchAlgorithmException {
+    private static String sha256OfFile(String path) throws IOException, NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-        try (FileInputStream inputStream = new FileInputStream(filePath.toFile())) {
+        try (FileInputStream inputStream = new FileInputStream(path)) {
             byte[] buffer = new byte[8192];
             int bytesRead;
 
