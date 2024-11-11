@@ -41,7 +41,8 @@ class ZipUtilsTest {
         return Path.of(System.getProperty("java.io.tmpdir"), pathPart).toString();
     }
 
-    private static boolean isDirsIdentical(String path1, String path2) {
+    private static boolean isDirsIdentical(String path1, String path2) throws IOException,
+            NoSuchAlgorithmException {
         File dir1 = new File(path1);
         File dir2 = new File(path2);
 
@@ -65,7 +66,8 @@ class ZipUtilsTest {
                     return false;
                 }
             } else {
-                if (!file2.exists() || !file2.isFile()) {
+                if (!file2.exists() || !file2.isFile()
+                        || !isFilesIdentical(file1.getPath(), file2.getPath())) {
                     return false;
                 }
             }
