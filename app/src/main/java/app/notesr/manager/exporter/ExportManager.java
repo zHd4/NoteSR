@@ -37,7 +37,7 @@ public class ExportManager extends BaseManager {
     private Thread thread;
 
     private NotesWriter notesWriter;
-    private FilesWriter filesWriter;
+    private FilesWriter filesInfoWriter;
 
     @Getter
     private int result = NONE;
@@ -65,8 +65,12 @@ public class ExportManager extends BaseManager {
                 }
 
                 writeVersion(tempDir);
-                exportJson(createNotesWriter(createJsonGenerator(tempDir, "notes.json")));
-                exportJson(createFilesInfoWriter(createJsonGenerator(tempDir, "files_info.json")));
+
+                notesWriter = createNotesWriter(createJsonGenerator(tempDir, "notes.json"));
+                filesInfoWriter = createFilesInfoWriter(createJsonGenerator(tempDir, "files_info.json"));
+
+                exportJson(notesWriter);
+                exportJson(filesInfoWriter);
 
                 status = context.getString(R.string.encrypting_data);
                 status = context.getString(R.string.wiping_temp_data);
@@ -101,7 +105,7 @@ public class ExportManager extends BaseManager {
     }
 
     public int calculateProgress() {
-        if (notesWriter == null || filesWriter == null) {
+        if (notesWriter == null || filesInfoWriter == null) {
             return 0;
         }
 
@@ -109,8 +113,8 @@ public class ExportManager extends BaseManager {
             return 100;
         }
 
-        long total = notesWriter.getTotal() + filesWriter.getTotal();
-        long exported = notesWriter.getExported() + filesWriter.getExported();
+        long total = notesWriter.getTotal() + filesInfoWriter.getTotal();
+        long exported = notesWriter.getExported() + filesInfoWriter.getExported();
 
         return Math.round((exported * 99.0f) / total);
     }
