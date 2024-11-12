@@ -23,6 +23,8 @@ public class Wiper {
                 wipeFile(file);
             }
         }
+
+        dir.delete();
     }
 
     public static boolean wipeFile(File file) throws IOException {
