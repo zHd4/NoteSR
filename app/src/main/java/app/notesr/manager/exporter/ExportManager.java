@@ -80,7 +80,7 @@ public class ExportManager extends BaseManager {
                 File tempArchive = archiveDir(tempDir);
 
                 status = context.getString(R.string.encrypting_data);
-                encrypt(tempArchive, outputFile);
+                encryptFile(tempArchive, outputFile);
 
                 status = context.getString(R.string.wiping_temp_data);
                 status = "";
@@ -155,7 +155,7 @@ public class ExportManager extends BaseManager {
         return archiveFile;
     }
 
-    private void encrypt(File input, File output) {
+    private void encryptFile(File input, File output) {
         if (result == NONE) {
             try {
                 FileInputStream inputStream = new FileInputStream(input);
