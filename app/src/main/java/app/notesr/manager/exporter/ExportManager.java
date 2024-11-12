@@ -21,6 +21,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import app.notesr.utils.ZipUtils;
 import lombok.Getter;
@@ -167,19 +170,34 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void wipe(File file) {
+    private void wipeTempData(List<File> targets) {
         if (result == NONE) {
-            try {
-                FileWiper fileWiper = new FileWiper(file);
-                boolean success = fileWiper.wipeFile();
+            for (File target : targets) {
+                if (target.isDirectory()) {
+                    List<File> dirFiles = Arrays.asList(Objects.requireNonNull(target.listFiles()));
 
-                if (!success) {
-                    throw new RuntimeException("Filed to wipe file");
+                    wipeTempData(dirFiles);
+                    target.delete();
+
+                    return;
                 }
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-                throw new RuntimeException(e);
+
+                wipeFile(target);
             }
+        }
+    }
+
+    private void wipeFile(File file) {
+        try {
+            FileWiper fileWiper = new FileWiper(file);
+            boolean success = fileWiper.wipeFile();
+
+            if (!success) {
+                throw new RuntimeException("Filed to wipe file");
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException", e);
+            throw new RuntimeException(e);
         }
     }
 
