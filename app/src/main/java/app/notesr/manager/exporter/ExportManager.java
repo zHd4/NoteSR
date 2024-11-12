@@ -24,7 +24,10 @@ import java.time.format.DateTimeFormatter;
 
 import app.notesr.utils.ZipUtils;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class ExportManager extends BaseManager {
 
     public static final int NONE = 0;
@@ -32,7 +35,10 @@ public class ExportManager extends BaseManager {
     public static final int CANCELED = -1;
     private static final String TAG = ExportManager.class.getName();
 
+    @NonNull
     private final Context context;
+
+    @NonNull
     private final File outputFile;
 
     private Thread thread;
@@ -48,11 +54,6 @@ public class ExportManager extends BaseManager {
 
     @Getter
     private String status = "";
-
-    public ExportManager(Context context, File outputFile) {
-        this.context = context;
-        this.outputFile = outputFile;
-    }
 
     public void start() {
         if (getNotesTable().getRowsCount() == 0) {
