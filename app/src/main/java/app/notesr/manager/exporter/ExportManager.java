@@ -103,9 +103,9 @@ public class ExportManager extends BaseManager {
         status = context.getString(R.string.canceling);
         thread.interrupt();
 
-//        if (jsonTempFile.exists()) {
-//            wipe(jsonTempFile);
-//        }
+        if (tempDir.exists() || tempArchive.exists()) {
+            wipeTempData();
+        }
 
         if (outputFile.exists()) {
             delete(outputFile);
