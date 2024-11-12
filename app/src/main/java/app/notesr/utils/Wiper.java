@@ -17,8 +17,8 @@ public class Wiper {
     public static void wipeDir(File dir) throws IOException {
         for (File file : listDirFiles(dir)) {
             if (file.isDirectory()) {
-                wipeDir(dir);
-                dir.delete();
+                wipeDir(file);
+                file.delete();
             } else {
                 wipeFile(file);
             }
