@@ -14,7 +14,7 @@ public class ZipUtils {
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
             File sourceDir = new File(sourceDirPath);
-            zipFilesRecursively(sourceDir, sourceDir.getName(), zipOutputStream);
+            zipFilesRecursively(sourceDir, "", zipOutputStream);
         }
     }
 
