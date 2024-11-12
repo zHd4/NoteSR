@@ -5,11 +5,25 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class Wiper {
 
     private static final String TAG = Wiper.class.getName();
     private static final int LOOPS_COUNT = 6;
+
+    public static void wipeDir(File dir) throws IOException {
+        for (File file : listDirFiles(dir)) {
+            if (file.isDirectory()) {
+                wipeDir(dir);
+                dir.delete();
+            } else {
+                wipeFile(file);
+            }
+        }
+    }
 
     public static boolean wipeFile(File file) throws IOException {
         for (int i = 0; i < LOOPS_COUNT; i++) {
@@ -41,6 +55,10 @@ public class Wiper {
                 } while (bytesWrite < fileSize);
             }
         }
+    }
+
+    private static List<File> listDirFiles(File dir) {
+        return Arrays.asList(Objects.requireNonNull(dir.listFiles()));
     }
 
     private static long getAvailableMemory() {
