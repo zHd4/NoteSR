@@ -74,7 +74,11 @@ public class ExportManager extends BaseManager {
                 exportJson(filesInfoWriter);
                 exportFilesData(new File(tempDir, "data_blocks"));
 
+                File tempArchive = archiveDir(tempDir);
+
                 status = context.getString(R.string.encrypting_data);
+                encrypt(tempArchive, outputFile);
+
                 status = context.getString(R.string.wiping_temp_data);
                 status = "";
                 result = FINISHED_SUCCESSFULLY;
