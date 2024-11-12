@@ -33,9 +33,7 @@ public class WiperTest {
 
     @Test
     public void testWipeFile() throws IOException {
-        Wiper wiper = new Wiper(testFile);
-        boolean result = wiper.wipeFile();
-
+        boolean result = Wiper.wipeFile(testFile);
         Assert.assertTrue("File has not been wiped", result);
     }
 }
