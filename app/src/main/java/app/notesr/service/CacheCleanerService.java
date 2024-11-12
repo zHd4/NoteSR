@@ -80,8 +80,7 @@ public class CacheCleanerService extends Service implements Runnable {
 
             if (file.exists()) {
                 try {
-                    Wiper wiper = new Wiper(file);
-                    boolean removed = wiper.wipeFile();
+                    boolean removed = Wiper.wipeFile(file);
 
                     if (!removed) {
                         Log.e(TAG, "File " + file + " not removed");
