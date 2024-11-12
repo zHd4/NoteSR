@@ -21,9 +21,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 import app.notesr.utils.ZipUtils;
 import lombok.Getter;
@@ -86,7 +83,7 @@ public class ExportManager extends BaseManager {
                 encryptTempArchive();
 
                 status = context.getString(R.string.wiping_temp_data);
-                wipeTempData(List.of(tempArchive, tempDir));
+                wipeTempData();
 
                 status = "";
                 result = FINISHED_SUCCESSFULLY;
@@ -177,34 +174,15 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void wipeTempData(List<File> targets) {
+    private void wipeTempData() {
         if (result == NONE) {
-            for (File target : targets) {
-                if (target.isDirectory()) {
-                    List<File> dirFiles = Arrays.asList(Objects.requireNonNull(target.listFiles()));
-
-                    wipeTempData(dirFiles);
-                    target.delete();
-
-                    return;
-                }
-
-                wipeFile(target);
+            try {
+                Wiper.wipeFile(tempArchive);
+                Wiper.wipeDir(tempDir);
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException(e);
             }
-        }
-    }
-
-    private void wipeFile(File file) {
-        try {
-            Wiper wiper = new Wiper(file);
-            boolean success = wiper.wipeFile();
-
-            if (!success) {
-                throw new RuntimeException("Filed to wipe file");
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "IOException", e);
-            throw new RuntimeException(e);
         }
     }
 
