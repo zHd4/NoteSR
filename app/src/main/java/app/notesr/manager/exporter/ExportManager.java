@@ -43,6 +43,9 @@ public class ExportManager extends BaseManager {
     private NotesWriter notesWriter;
     private FilesInfoWriter filesInfoWriter;
 
+    private File tempDir;
+    private File tempArchive;
+
     @Getter
     private int result = NONE;
 
@@ -62,25 +65,25 @@ public class ExportManager extends BaseManager {
         thread = new Thread(() -> {
             try {
                 status = context.getString(R.string.exporting_data);
-                File tempDir = new File(context.getCacheDir(), randomUUID().toString());
+                tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
                 if (!tempDir.mkdir()) {
                     throw new RuntimeException("Failed to create temporary directory to export");
                 }
 
-                writeVersion(tempDir);
+                writeVersionFile(tempDir);
 
                 notesWriter = createNotesWriter(createJsonGenerator(tempDir, "notes.json"));
                 filesInfoWriter = createFilesInfoWriter(createJsonGenerator(tempDir, "files_info.json"));
 
                 exportJson(notesWriter);
                 exportJson(filesInfoWriter);
-                exportFilesData(new File(tempDir, "data_blocks"));
+                exportFilesData();
 
-                File tempArchive = archiveDir(tempDir);
+                tempArchive = archiveTempDir();
 
                 status = context.getString(R.string.encrypting_data);
-                encryptFile(tempArchive, outputFile);
+                encryptTempArchive();
 
                 status = context.getString(R.string.wiping_temp_data);
                 wipeTempData(List.of(tempArchive, tempDir));
@@ -145,23 +148,25 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void exportFilesData(File dir) throws IOException {
+    private void exportFilesData() throws IOException {
+        File dir = new File(tempDir, "data_blocks");
         FilesDataExporter exporter = new FilesDataExporter(dir, getFilesInfoTable(), getDataBlocksTable());
+
         exporter.export();
     }
 
-    private File archiveDir(File dir) throws IOException {
-        File archiveFile = new File(context.getCacheDir(), dir.getName() + ".zip");
-        ZipUtils.zipDirectory(dir.getAbsolutePath(), archiveFile.getAbsolutePath());
+    private File archiveTempDir() throws IOException {
+        File archiveFile = new File(context.getCacheDir(), tempDir.getName() + ".zip");
+        ZipUtils.zipDirectory(tempDir.getAbsolutePath(), archiveFile.getAbsolutePath());
 
         return archiveFile;
     }
 
-    private void encryptFile(File input, File output) {
+    private void encryptTempArchive() {
         if (result == NONE) {
             try {
-                FileInputStream inputStream = new FileInputStream(input);
-                FileOutputStream outputStream = new FileOutputStream(output);
+                FileInputStream inputStream = new FileInputStream(tempDir);
+                FileOutputStream outputStream = new FileOutputStream(outputFile);
 
                 BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
                 backupsCrypt.encrypt();
@@ -209,10 +214,10 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void writeVersion(File dir) throws IOException {
+    private void writeVersionFile(File outputDir) throws IOException {
         try {
             String version = VersionFetcher.fetchVersionName(context, false);
-            File targetFile = new File(dir, "version");
+            File targetFile = new File(outputDir, "version");
 
             FilesUtils.writeFileBytes(targetFile, version.getBytes());
         } catch (PackageManager.NameNotFoundException e) {
