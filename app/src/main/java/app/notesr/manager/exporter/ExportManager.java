@@ -83,7 +83,7 @@ public class ExportManager extends BaseManager {
                 encryptFile(tempArchive, outputFile);
 
                 status = context.getString(R.string.wiping_temp_data);
-                wipeTempData(List.of(tempDir, tempArchive));
+                wipeTempData(List.of(tempArchive, tempDir));
 
                 status = "";
                 result = FINISHED_SUCCESSFULLY;
