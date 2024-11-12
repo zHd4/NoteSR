@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
 
 class ZipUtilsTest {
     private static final String DIR_PATH = generateFixturePath("exported");
@@ -19,7 +18,7 @@ class ZipUtilsTest {
     private static final String TEMP_ZIP_PATH = generateTempPath(randomUUID().toString() + ".zip");
 
     @Test
-    public void testZipDirectory() throws IOException, NoSuchAlgorithmException {
+    public void testZipDirectory() throws IOException {
         ZipUtils.zipDirectory(DIR_PATH, TEMP_ZIP_PATH);
         File zipFile = new File(TEMP_ZIP_PATH);
 
@@ -27,7 +26,7 @@ class ZipUtilsTest {
     }
 
     @Test
-    public void testUnzip() throws IOException, NoSuchAlgorithmException {
+    public void testUnzip() throws IOException {
         ZipUtils.unzip(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH);
         File dir = new File(TEMP_EXTRACTED_DIR_PATH);
 
