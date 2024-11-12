@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+import app.notesr.utils.ZipUtils;
 import lombok.Getter;
 
 public class ExportManager extends BaseManager {
@@ -138,6 +139,13 @@ public class ExportManager extends BaseManager {
     private void exportFilesData(File dir) throws IOException {
         FilesDataExporter exporter = new FilesDataExporter(dir, getFilesInfoTable(), getDataBlocksTable());
         exporter.export();
+    }
+
+    private File archiveDir(File dir) throws IOException {
+        File archiveFile = new File(context.getCacheDir(), dir.getName() + ".zip");
+        ZipUtils.zipDirectory(dir.getAbsolutePath(), archiveFile.getAbsolutePath());
+
+        return archiveFile;
     }
 
     private void encrypt(File input, File output) {
