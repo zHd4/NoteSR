@@ -129,10 +129,8 @@ public class ImportManager extends BaseManager {
 
     private void wipeFile(File file) {
         if (result == ImportResult.NONE) {
-            Wiper wiper = new Wiper(file);
-
             try {
-                boolean success = wiper.wipeFile();
+                boolean success = Wiper.wipeFile(file);
 
                 if (!success) {
                     throw new RuntimeException("Filed to wipe file");
