@@ -6,14 +6,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class FileWiper {
+public class Wiper {
 
-    private static final String TAG = FileWiper.class.getName();
+    private static final String TAG = Wiper.class.getName();
     private static final int LOOPS_COUNT = 6;
 
     private final File file;
 
-    public FileWiper(File file) {
+    public Wiper(File file) {
         this.file = file;
     }
 

@@ -10,7 +10,7 @@ import app.notesr.crypto.BackupsCrypt;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.manager.BaseManager;
-import app.notesr.utils.FileWiper;
+import app.notesr.utils.Wiper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -129,7 +129,7 @@ public class ImportManager extends BaseManager {
 
     private void wipeFile(File file) {
         if (result == ImportResult.NONE) {
-            FileWiper wiper = new FileWiper(file);
+            Wiper wiper = new Wiper(file);
 
             try {
                 boolean success = wiper.wipeFile();

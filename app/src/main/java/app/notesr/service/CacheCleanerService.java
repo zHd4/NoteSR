@@ -15,7 +15,7 @@ import app.notesr.App;
 import app.notesr.activity.files.viewer.BaseFileViewerActivity;
 import app.notesr.db.services.table.TempFilesTable;
 import app.notesr.model.TempFile;
-import app.notesr.utils.FileWiper;
+import app.notesr.utils.Wiper;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class CacheCleanerService extends Service implements Runnable {
 
             if (file.exists()) {
                 try {
-                    FileWiper wiper = new FileWiper(file);
+                    Wiper wiper = new Wiper(file);
                     boolean removed = wiper.wipeFile();
 
                     if (!removed) {

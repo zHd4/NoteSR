@@ -13,7 +13,7 @@ import app.notesr.R;
 import app.notesr.crypto.BackupsCrypt;
 import app.notesr.manager.BaseManager;
 import app.notesr.utils.FilesUtils;
-import app.notesr.utils.FileWiper;
+import app.notesr.utils.Wiper;
 import app.notesr.utils.VersionFetcher;
 
 import java.io.File;
@@ -196,8 +196,8 @@ public class ExportManager extends BaseManager {
 
     private void wipeFile(File file) {
         try {
-            FileWiper fileWiper = new FileWiper(file);
-            boolean success = fileWiper.wipeFile();
+            Wiper wiper = new Wiper(file);
+            boolean success = wiper.wipeFile();
 
             if (!success) {
                 throw new RuntimeException("Filed to wipe file");

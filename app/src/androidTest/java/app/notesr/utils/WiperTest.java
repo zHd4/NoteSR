@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-public class FileWiperTest {
+public class WiperTest {
 
     private static final int MAX_FILE_SIZE = 100000;
     private final Random random = new Random();
@@ -33,7 +33,7 @@ public class FileWiperTest {
 
     @Test
     public void testWipeFile() throws IOException {
-        FileWiper wiper = new FileWiper(testFile);
+        Wiper wiper = new Wiper(testFile);
         boolean result = wiper.wipeFile();
 
         Assert.assertTrue("File has not been wiped", result);
