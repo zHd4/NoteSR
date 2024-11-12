@@ -162,7 +162,7 @@ public class ExportManager extends BaseManager {
     private void encryptTempArchive() {
         if (result == NONE) {
             try {
-                FileInputStream inputStream = new FileInputStream(tempDir);
+                FileInputStream inputStream = new FileInputStream(tempArchive);
                 FileOutputStream outputStream = new FileOutputStream(outputFile);
 
                 BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
