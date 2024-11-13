@@ -24,10 +24,7 @@ class ExportThread extends Thread {
     public void run() {
         try {
             init();
-
-            File tempDir = manager.getTempDir();
-
-            export(tempDir);
+            export();
             archive();
             encrypt();
             wipe();
@@ -57,8 +54,10 @@ class ExportThread extends Thread {
         }
     }
 
-    private void export(File tempDir) throws IOException {
+    private void export() throws IOException {
         if (!isInterrupted()) {
+            File tempDir = manager.getTempDir();
+
             JsonGenerator notesGenerator = manager.createJsonGenerator(tempDir, "notes.json");
             JsonGenerator filesInfoGenerator = manager.createJsonGenerator(tempDir, "files_info.json");
 
