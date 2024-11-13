@@ -18,6 +18,7 @@ import app.notesr.utils.VersionFetcher;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -78,7 +79,12 @@ public class ExportManager extends BaseManager {
                 exportJson(filesInfoWriter);
                 exportFilesData();
 
-                tempArchive = archiveTempDir();
+                try {
+                    tempArchive = archiveTempDir();
+                } catch (FileNotFoundException e) {
+                    Log.i(TAG, "Seems export has been canceled", e);
+                    return;
+                }
 
                 status = context.getString(R.string.encrypting_data);
                 encryptTempArchive();
