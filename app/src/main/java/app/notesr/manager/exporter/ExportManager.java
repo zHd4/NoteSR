@@ -60,39 +60,7 @@ public class ExportManager extends BaseManager {
             throw new RuntimeException("No notes in table");
         }
 
-        thread = new Thread(() -> {
-            try {
-                status = context.getString(R.string.exporting_data);
-                tempDir = new File(context.getCacheDir(), randomUUID().toString());
-
-                if (!tempDir.mkdir()) {
-                    throw new RuntimeException("Failed to create temporary directory to export");
-                }
-
-                writeVersionFile(tempDir);
-
-                notesWriter = createNotesWriter(createJsonGenerator(tempDir, "notes.json"));
-                filesInfoWriter = createFilesInfoWriter(createJsonGenerator(tempDir, "files_info.json"));
-
-                exportJson(notesWriter);
-                exportJson(filesInfoWriter);
-                exportFilesData();
-
-                tempArchive = archiveTempDir();
-
-                status = context.getString(R.string.encrypting_data);
-                encryptTempArchive();
-
-                status = context.getString(R.string.wiping_temp_data);
-                wipeTempData();
-
-                status = "";
-                result = FINISHED_SUCCESSFULLY;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
+        thread = new ExportThread();
         thread.start();
     }
 
@@ -239,5 +207,41 @@ public class ExportManager extends BaseManager {
 
     private boolean isFileExists(File file) {
         return file != null && file.exists();
+    }
+
+    class ExportThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                status = context.getString(R.string.exporting_data);
+                tempDir = new File(context.getCacheDir(), randomUUID().toString());
+
+                if (!tempDir.mkdir()) {
+                    throw new RuntimeException("Failed to create temporary directory to export");
+                }
+
+                writeVersionFile(tempDir);
+
+                notesWriter = createNotesWriter(createJsonGenerator(tempDir, "notes.json"));
+                filesInfoWriter = createFilesInfoWriter(createJsonGenerator(tempDir, "files_info.json"));
+
+                exportJson(notesWriter);
+                exportJson(filesInfoWriter);
+                exportFilesData();
+
+                tempArchive = archiveTempDir();
+
+                status = context.getString(R.string.encrypting_data);
+                encryptTempArchive();
+
+                status = context.getString(R.string.wiping_temp_data);
+                wipeTempData();
+
+                status = "";
+                result = FINISHED_SUCCESSFULLY;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
