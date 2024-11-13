@@ -175,12 +175,6 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void delete(File file) {
-        if (!file.delete()) {
-            throw new RuntimeException("Cannot delete file " + file.getAbsolutePath());
-        }
-    }
-
     void writeVersionFile(File outputDir) throws IOException {
         try {
             String version = VersionFetcher.fetchVersionName(context, false);
@@ -218,6 +212,12 @@ public class ExportManager extends BaseManager {
 
     DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
+    }
+
+    private void delete(File file) {
+        if (!file.delete()) {
+            throw new RuntimeException("Cannot delete file " + file.getAbsolutePath());
+        }
     }
 
     private boolean isFileExists(File file) {
