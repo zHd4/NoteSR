@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
 
-public interface JsonWriter {
+interface JsonWriter {
     void write() throws IOException;
     JsonGenerator getJsonGenerator();
     long getTotal();
