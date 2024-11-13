@@ -104,7 +104,7 @@ public class ExportManager extends BaseManager {
         status = context.getString(R.string.canceling);
         thread.interrupt();
 
-        if (tempDir.exists() || tempArchive.exists()) {
+        if (isFileExists(tempDir) || isFileExists(tempArchive)) {
             wipeTempData();
         }
 
