@@ -236,4 +236,8 @@ public class ExportManager extends BaseManager {
     private DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
     }
+
+    private boolean isFileExists(File file) {
+        return file != null && file.exists();
+    }
 }
