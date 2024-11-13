@@ -64,6 +64,9 @@ class ExportThread extends Thread {
             NotesWriter notesWriter = manager.createNotesWriter(notesGenerator);
             FilesInfoWriter filesInfoWriter = manager.createFilesInfoWriter(filesInfoGenerator);
 
+            manager.setNotesWriter(notesWriter);
+            manager.setFilesInfoWriter(filesInfoWriter);
+
             manager.exportJson(notesWriter);
             manager.exportJson(filesInfoWriter);
 
