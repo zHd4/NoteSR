@@ -240,7 +240,11 @@ public class ExportManager extends BaseManager {
                 status = "";
                 result = FINISHED_SUCCESSFULLY;
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                if (isInterrupted()) {
+                    Log.i(TAG, "Seems export has been canceled", e);
+                } else {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
