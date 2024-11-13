@@ -13,12 +13,35 @@ import java.io.File;
 import java.io.IOException;
 
 import app.notesr.R;
-import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 class ExportThread extends Thread {
     private static final String TAG = ExportThread.class.getName();
+
+    @NonNull
     private final ExportManager manager;
+
+    private boolean running = false;
+
+    @Override
+    public void start() {
+        running = true;
+        super.start();
+    }
+
+    @Override
+    public void interrupt() {
+        running = false;
+        super.interrupt();
+    }
+
+    @Override
+    public boolean isInterrupted() {
+        boolean interrupted = super.isInterrupted();
+        return !running || interrupted;
+    }
 
     @Override
     public void run() {
