@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 import app.notesr.utils.ZipUtils;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @RequiredArgsConstructor
 public class ExportManager extends BaseManager {
@@ -36,31 +38,44 @@ public class ExportManager extends BaseManager {
     private static final String TAG = ExportManager.class.getName();
 
     @NonNull
+    @Getter(AccessLevel.PACKAGE)
     private final Context context;
 
     @NonNull
     private final File outputFile;
 
-    private Thread thread;
-
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
     private NotesWriter notesWriter;
+
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
     private FilesInfoWriter filesInfoWriter;
 
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
     private File tempDir;
+
+    @Getter(AccessLevel.PACKAGE)
+    @Setter(AccessLevel.PACKAGE)
     private File tempArchive;
 
     @Getter
+    @Setter(AccessLevel.PACKAGE)
     private int result = NONE;
 
     @Getter
+    @Setter(AccessLevel.PACKAGE)
     private String status = "";
+
+    private Thread thread;
 
     public void start() {
         if (getNotesTable().getRowsCount() == 0) {
             throw new RuntimeException("No notes in table");
         }
 
-        thread = new ExportThread();
+        thread = new ExportThread(this);
         thread.start();
     }
 
@@ -99,7 +114,7 @@ public class ExportManager extends BaseManager {
         return Math.round((exported * 99.0f) / total);
     }
 
-    private void exportJson(JsonWriter writer) {
+    void exportJson(JsonWriter writer) {
         try {
             if (result == NONE) {
                 JsonGenerator generator = writer.getJsonGenerator();
@@ -114,21 +129,21 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void exportFilesData() throws IOException {
+    void exportFilesData() throws IOException {
         File dir = new File(tempDir, "data_blocks");
         FilesDataExporter exporter = new FilesDataExporter(dir, getFilesInfoTable(), getDataBlocksTable());
 
         exporter.export();
     }
 
-    private File archiveTempDir() throws IOException {
+    File archiveTempDir() throws IOException {
         File archiveFile = new File(context.getCacheDir(), tempDir.getName() + ".zip");
         ZipUtils.zipDirectory(tempDir.getAbsolutePath(), archiveFile.getAbsolutePath());
 
         return archiveFile;
     }
 
-    private void encryptTempArchive() {
+    void encryptTempArchive() {
         if (result == NONE) {
             try {
                 FileInputStream inputStream = new FileInputStream(tempArchive);
@@ -143,7 +158,7 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void wipeTempData() {
+    void wipeTempData() {
         if (result == NONE) {
             try {
                 if (isFileExists(tempArchive)) {
@@ -166,7 +181,7 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private void writeVersionFile(File outputDir) throws IOException {
+    void writeVersionFile(File outputDir) throws IOException {
         try {
             String version = VersionFetcher.fetchVersionName(context, false);
             File targetFile = new File(outputDir, "version");
@@ -177,14 +192,14 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    private JsonGenerator createJsonGenerator(File tempDir, String filename) throws IOException {
+    JsonGenerator createJsonGenerator(File tempDir, String filename) throws IOException {
         File file = new File(tempDir, filename);
         JsonFactory jsonFactory = new JsonFactory();
 
         return jsonFactory.createGenerator(file, JsonEncoding.UTF8);
     }
 
-    private NotesWriter createNotesWriter(JsonGenerator jsonGenerator) {
+    NotesWriter createNotesWriter(JsonGenerator jsonGenerator) {
         return new NotesWriter(
                 jsonGenerator,
                 getNotesTable(),
@@ -192,7 +207,7 @@ public class ExportManager extends BaseManager {
         );
     }
 
-    private FilesInfoWriter createFilesInfoWriter(JsonGenerator jsonGenerator) {
+    FilesInfoWriter createFilesInfoWriter(JsonGenerator jsonGenerator) {
         return new FilesInfoWriter(
                 jsonGenerator,
                 getFilesInfoTable(),
@@ -201,80 +216,11 @@ public class ExportManager extends BaseManager {
         );
     }
 
-    private DateTimeFormatter getTimestampFormatter() {
+    DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
     }
 
     private boolean isFileExists(File file) {
         return file != null && file.exists();
-    }
-
-    class ExportThread extends Thread {
-        @Override
-        public void run() {
-            try {
-                init();
-                export();
-                archive();
-                encrypt();
-                wipe();
-                finish();
-            } catch (IOException e) {
-                if (isInterrupted()) {
-                    Log.i(TAG, "Seems export has been canceled", e);
-                } else {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        private void init() throws IOException {
-            if (!isInterrupted()) {
-                status = context.getString(R.string.exporting_data);
-                tempDir = new File(context.getCacheDir(), randomUUID().toString());
-
-                if (!tempDir.mkdir()) {
-                    throw new RuntimeException("Failed to create temporary directory to export");
-                }
-
-                writeVersionFile(tempDir);
-            }
-        }
-
-        private void export() throws IOException {
-            if (!isInterrupted()) {
-                notesWriter = createNotesWriter(createJsonGenerator(tempDir, "notes.json"));
-                filesInfoWriter = createFilesInfoWriter(createJsonGenerator(tempDir, "files_info.json"));
-
-                exportJson(notesWriter);
-                exportJson(filesInfoWriter);
-                exportFilesData();
-            }
-        }
-
-        private void archive() throws IOException {
-            if (!isInterrupted()) {
-                tempArchive = archiveTempDir();
-            }
-        }
-
-        private void encrypt() {
-            if (!isInterrupted()) {
-                status = context.getString(R.string.encrypting_data);
-                encryptTempArchive();
-            }
-        }
-
-        private void wipe() {
-            if (!isInterrupted()) {
-                status = context.getString(R.string.wiping_temp_data);
-                wipeTempData();
-            }
-        }
-
-        private void finish() {
-            status = "";
-            result = FINISHED_SUCCESSFULLY;
-        }
     }
 }
