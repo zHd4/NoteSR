@@ -213,6 +213,23 @@ public class ExportManager extends BaseManager {
         @Override
         public void run() {
             try {
+                init();
+                export();
+                archive();
+                encrypt();
+                wipe();
+                finish();
+            } catch (IOException e) {
+                if (isInterrupted()) {
+                    Log.i(TAG, "Seems export has been canceled", e);
+                } else {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        private void init() throws IOException {
+            if (!isInterrupted()) {
                 status = context.getString(R.string.exporting_data);
                 tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
@@ -221,31 +238,43 @@ public class ExportManager extends BaseManager {
                 }
 
                 writeVersionFile(tempDir);
+            }
+        }
 
+        private void export() throws IOException {
+            if (!isInterrupted()) {
                 notesWriter = createNotesWriter(createJsonGenerator(tempDir, "notes.json"));
                 filesInfoWriter = createFilesInfoWriter(createJsonGenerator(tempDir, "files_info.json"));
 
                 exportJson(notesWriter);
                 exportJson(filesInfoWriter);
                 exportFilesData();
+            }
+        }
 
+        private void archive() throws IOException {
+            if (!isInterrupted()) {
                 tempArchive = archiveTempDir();
+            }
+        }
 
+        private void encrypt() {
+            if (!isInterrupted()) {
                 status = context.getString(R.string.encrypting_data);
                 encryptTempArchive();
+            }
+        }
 
+        private void wipe() {
+            if (!isInterrupted()) {
                 status = context.getString(R.string.wiping_temp_data);
                 wipeTempData();
-
-                status = "";
-                result = FINISHED_SUCCESSFULLY;
-            } catch (IOException e) {
-                if (isInterrupted()) {
-                    Log.i(TAG, "Seems export has been canceled", e);
-                } else {
-                    throw new RuntimeException(e);
-                }
             }
+        }
+
+        private void finish() {
+            status = "";
+            result = FINISHED_SUCCESSFULLY;
         }
     }
 }
