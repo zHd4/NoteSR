@@ -20,7 +20,7 @@ class FilesDataExporter {
     public void export() throws IOException {
         if (!outputDir.exists()) {
             if (!outputDir.mkdir()) {
-                throw new RuntimeException("Failed to create temporary directory to export data blocks");
+                throw new IOException("Failed to create temporary directory to export data blocks");
             }
         }
 
