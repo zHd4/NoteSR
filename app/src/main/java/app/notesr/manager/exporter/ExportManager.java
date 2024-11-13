@@ -1,7 +1,5 @@
 package app.notesr.manager.exporter;
 
-import static java.util.UUID.randomUUID;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
