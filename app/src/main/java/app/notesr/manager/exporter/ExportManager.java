@@ -178,11 +178,11 @@ public class ExportManager extends BaseManager {
     private void wipeTempData() {
         if (result == NONE) {
             try {
-                if (tempArchive.exists()) {
+                if (isFileExists(tempArchive)) {
                     Wiper.wipeFile(tempArchive);
                 }
 
-                if (tempDir.exists()) {
+                if (isFileExists(tempDir)) {
                     Wiper.wipeDir(tempDir);
                 }
             } catch (IOException e) {
