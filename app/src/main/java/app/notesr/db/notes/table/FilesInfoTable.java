@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import app.notesr.db.BaseTable;
 import app.notesr.db.notes.NotesDB;
+import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 
 import java.time.LocalDateTime;
@@ -57,6 +58,45 @@ public class FilesInfoTable extends BaseTable {
         }
 
         fileInfo.setUpdatedAt(now);
+    }
+
+    public List<EncryptedFileInfo> getAll() {
+        List<EncryptedFileInfo> filesInfo = new ArrayList<>();
+
+        Cursor cursor = db.readableDatabase.rawQuery(
+                "SELECT " +
+                        "id, " +
+                        "note_id, " +
+                        "encrypted_name, " +
+                        "encrypted_type, " +
+                        "size, " +
+                        "created_at, " +
+                        "updated_at " +
+                        " FROM " + name +
+                        " ORDER BY id",
+                new String[] {});
+
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                do {
+                    EncryptedFileInfo fileInfo = EncryptedFileInfo.builder()
+                            .id(cursor.getLong(0))
+                            .noteId(cursor.getLong(1))
+                            .encryptedName(cursor.getBlob(2))
+                            .encryptedType(cursor.getBlob(3))
+                            .size(cursor.getLong(4))
+                            .createdAt(LocalDateTime.parse(cursor.getString(5),
+                                    getTimestampFormatter()))
+                            .updatedAt(LocalDateTime.parse(cursor.getString(6),
+                                    getTimestampFormatter()))
+                            .build();
+
+                    filesInfo.add(fileInfo);
+                } while (cursor.moveToNext());
+            }
+        }
+
+        return filesInfo;
     }
 
     public void importFileInfo(EncryptedFileInfo fileInfo) {
@@ -176,22 +216,6 @@ public class FilesInfoTable extends BaseTable {
         }
 
         return count;
-    }
-
-    public Set<Long> getAllIds() {
-        Set<Long> ids = new HashSet<>();
-
-        Cursor cursor = db.readableDatabase.rawQuery("SELECT id FROM " + name + " ORDER BY id", new String[] { });
-
-        try (cursor) {
-            if (cursor.moveToFirst()) {
-                do {
-                    ids.add(cursor.getLong(0));
-                } while (cursor.moveToNext());
-            }
-        }
-
-        return ids;
     }
 
     public void delete(long id) {
