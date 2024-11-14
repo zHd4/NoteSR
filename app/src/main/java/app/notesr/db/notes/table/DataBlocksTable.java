@@ -6,6 +6,8 @@ import app.notesr.db.BaseTable;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.model.DataBlock;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -21,6 +23,33 @@ public class DataBlocksTable extends BaseTable {
                         "data blob NOT NULL, " +
                         "FOREIGN KEY(file_id) REFERENCES " + filesInfoTable.getName() + "(id))"
         );
+    }
+
+    public List<DataBlock> getAllWithoutData() {
+        List<DataBlock> dataBlocks = new LinkedList<>();
+
+        Cursor cursor = db.readableDatabase.rawQuery(
+                "SELECT " +
+                        "id, " +
+                        "file_id, " +
+                        "block_order " +
+                        " FROM " + name +
+                        " ORDER BY id",
+                new String[] {});
+
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                DataBlock dataBlock = DataBlock.builder()
+                        .id(cursor.getLong(0))
+                        .fileId(cursor.getLong(1))
+                        .order(cursor.getLong(2))
+                        .build();
+
+                dataBlocks.add(dataBlock);
+            }
+        }
+
+        return dataBlocks;
     }
 
     public void save(DataBlock dataBlock) {
