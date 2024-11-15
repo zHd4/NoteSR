@@ -35,36 +35,26 @@ public class ExportManager extends BaseManager {
     public static final int NONE = 0;
     public static final int FINISHED_SUCCESSFULLY = 2;
     public static final int CANCELED = -1;
+
     private static final String TAG = ExportManager.class.getName();
 
-    @NonNull
-    @Getter(AccessLevel.PACKAGE)
     private final Context context;
-
-    @NonNull
     private final File outputFile;
 
     private NotesExporter notesExporter;
     private FilesInfoExporter filesInfoExporter;
     private FilesDataExporter filesDataExporter;
 
-    @Getter(AccessLevel.PACKAGE)
-    @Setter(AccessLevel.PACKAGE)
     private File tempDir;
-
-    @Getter(AccessLevel.PACKAGE)
-    @Setter(AccessLevel.PACKAGE)
     private File tempArchive;
 
+    private ExportThread thread;
+
     @Getter
-    @Setter(AccessLevel.PACKAGE)
     private int result = NONE;
 
     @Getter
-    @Setter(AccessLevel.PACKAGE)
     private String status = "";
-
-    private ExportThread thread;
 
     public void start() {
         if (getNotesTable().getRowsCount() == 0) {
@@ -148,8 +138,8 @@ public class ExportManager extends BaseManager {
     void archive() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
 
-        File archiveFile = new File(context.getCacheDir(), tempDir.getName() + ".zip");
-        ZipUtils.zipDirectory(tempDir.getAbsolutePath(), archiveFile.getAbsolutePath());
+        tempArchive = new File(context.getCacheDir(), tempDir.getName() + ".zip");
+        ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath());
     }
 
     void encrypt() throws InterruptedException, IOException {
@@ -194,7 +184,7 @@ public class ExportManager extends BaseManager {
         }
     }
 
-    JsonGenerator createJsonGenerator(File tempDir, String filename) throws IOException {
+    private JsonGenerator createJsonGenerator(File tempDir, String filename) throws IOException {
         File file = new File(tempDir, filename);
         JsonFactory jsonFactory = new JsonFactory();
 
@@ -225,7 +215,7 @@ public class ExportManager extends BaseManager {
         return new FilesDataExporter(thread, dir, getDataBlocksTable());
     }
 
-    DateTimeFormatter getTimestampFormatter() {
+    private DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
     }
 
