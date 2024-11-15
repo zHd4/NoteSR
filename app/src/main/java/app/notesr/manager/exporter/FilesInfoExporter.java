@@ -9,15 +9,18 @@ import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@RequiredArgsConstructor
+@SuperBuilder
 class FilesInfoExporter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
+
+    private ExportThread thread;
 
     private final FilesInfoTable filesInfoTable;
     private final DataBlocksTable dataBlocksTable;
@@ -32,6 +35,11 @@ class FilesInfoExporter extends Exporter {
         writeDataBlocksInfo(dataBlocksTable.getAllWithoutData());
 
         jsonGenerator.writeEndObject();
+    }
+
+    @Override
+    long getTotal() {
+        return filesInfoTable.getRowsCount() + dataBlocksTable.getRowsCount();
     }
 
     private void writeFilesInfo(List<EncryptedFileInfo> encryptedFilesInfo) throws IOException {
