@@ -8,16 +8,14 @@ import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
-class FilesInfoWriter extends Exporter {
+class FilesInfoExporter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
