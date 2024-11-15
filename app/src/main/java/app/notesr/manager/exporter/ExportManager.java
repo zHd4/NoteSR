@@ -93,8 +93,13 @@ public class ExportManager extends BaseManager {
             return 100;
         }
 
-        long total = notesExporter.getTotal() + filesInfoExporter.getTotal();
-        long exported = notesExporter.getExported() + filesInfoExporter.getExported();
+        long total = notesExporter.getTotal()
+                + filesInfoExporter.getTotal()
+                + filesDataExporter.getTotal();
+
+        long exported = notesExporter.getExported()
+                + filesInfoExporter.getExported()
+                + filesDataExporter.getExported();
 
         return Math.round((exported * 99.0f) / total);
     }
