@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 @RequiredArgsConstructor
-class NotesWriter implements JsonWriter {
+class NotesExporter extends Exporter {
     @NonNull
     @Getter
     private final JsonGenerator jsonGenerator;
@@ -24,19 +24,16 @@ class NotesWriter implements JsonWriter {
     @NonNull
     private final DateTimeFormatter timestampFormatter;
 
-    @Getter
-    private long exported;
-
     @Override
-    public void write() throws IOException {
+    public void export() throws IOException {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeArrayFieldStart("notes");
 
         for (EncryptedNote encryptedNote : notesTable.getAll()) {
             Note note = NotesCrypt.decrypt(encryptedNote);
-            writeNote(note);
 
-            exported++;
+            writeNote(note);
+            increaseExported();
         }
 
         jsonGenerator.writeEndArray();
@@ -55,10 +52,5 @@ class NotesWriter implements JsonWriter {
         jsonGenerator.writeStringField("updated_at", updatedAt);
 
         jsonGenerator.writeEndObject();
-    }
-
-    @Override
-    public long getTotal() {
-        return notesTable.getRowsCount();
     }
 }
