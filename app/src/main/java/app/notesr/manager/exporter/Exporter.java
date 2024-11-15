@@ -4,18 +4,18 @@ import java.io.IOException;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
 abstract class Exporter {
-    @NonNull
-    @Getter(AccessLevel.PROTECTED)
-    private ExportThread thread;
+    @Getter(AccessLevel.PACKAGE)
+    private final ExportThread thread;
 
     @Getter(AccessLevel.PACKAGE)
-    private long exported;
+    private long exported = 0;
+
+    Exporter(ExportThread thread) {
+        this.thread = thread;
+    }
 
     protected void increaseExported() {
         exported++;
