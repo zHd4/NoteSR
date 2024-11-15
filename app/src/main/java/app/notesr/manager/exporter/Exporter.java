@@ -5,12 +5,9 @@ import java.io.IOException;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-@Getter
+@Getter(AccessLevel.PACKAGE)
 abstract class Exporter {
-    @Getter(AccessLevel.PACKAGE)
     private final ExportThread thread;
-
-    @Getter(AccessLevel.PACKAGE)
     private long exported = 0;
 
     Exporter(ExportThread thread) {
