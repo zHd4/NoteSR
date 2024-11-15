@@ -2,16 +2,14 @@ package app.notesr.manager.exporter;
 
 import android.util.Log;
 import java.io.IOException;
-import lombok.NonNull;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 class ExportThread extends Thread {
     private static final String TAG = ExportThread.class.getName();
 
-    @NonNull
     private final ExportManager manager;
-
     private boolean running = false;
 
     @Override
