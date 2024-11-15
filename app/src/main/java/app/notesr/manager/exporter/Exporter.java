@@ -23,7 +23,7 @@ abstract class Exporter {
 
     protected void breakOnInterrupted() throws InterruptedException {
         if (thread.isInterrupted()) {
-            throw new InterruptedException();
+            throw new InterruptedException(thread.getClass().getName() + " interrupted");
         }
     }
 
