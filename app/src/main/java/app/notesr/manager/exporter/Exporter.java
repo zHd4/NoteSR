@@ -18,12 +18,6 @@ abstract class Exporter {
         exported++;
     }
 
-    protected void breakOnInterrupted() throws InterruptedException {
-        if (thread.isInterrupted()) {
-            throw new InterruptedException(thread.getClass().getName() + " interrupted");
-        }
-    }
-
     abstract void export() throws IOException, InterruptedException;
     abstract long getTotal();
 }
