@@ -59,7 +59,7 @@ class FilesInfoExporter extends Exporter {
             writeFileInfo(fileInfo);
 
             increaseExported();
-            breakOnInterrupted();
+            getThread().breakOnInterrupted();
         }
 
         jsonGenerator.writeEndArray();
@@ -73,7 +73,7 @@ class FilesInfoExporter extends Exporter {
             writeDataBlockInfo(dataBlock);
 
             increaseExported();
-            breakOnInterrupted();
+            getThread().breakOnInterrupted();
         }
 
         jsonGenerator.writeEndArray();
