@@ -8,7 +8,6 @@ import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.io.IOException;
@@ -20,15 +19,13 @@ class FilesInfoExporter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    private ExportThread thread;
-
     private final FilesInfoTable filesInfoTable;
     private final DataBlocksTable dataBlocksTable;
 
     private final DateTimeFormatter timestampFormatter;
 
     @Override
-    public void export() throws IOException {
+    public void export() throws IOException, InterruptedException {
         jsonGenerator.writeStartObject();
 
         writeFilesInfo(filesInfoTable.getAll());
@@ -42,25 +39,30 @@ class FilesInfoExporter extends Exporter {
         return filesInfoTable.getRowsCount() + dataBlocksTable.getRowsCount();
     }
 
-    private void writeFilesInfo(List<EncryptedFileInfo> encryptedFilesInfo) throws IOException {
+    private void writeFilesInfo(List<EncryptedFileInfo> encryptedFilesInfo) throws IOException,
+            InterruptedException {
         jsonGenerator.writeArrayFieldStart("files_info");
 
         for (EncryptedFileInfo encryptedFileInfo : encryptedFilesInfo) {
             FileInfo fileInfo = FilesCrypt.decryptInfo(encryptedFileInfo);
-
             writeFileInfo(fileInfo);
+
             increaseExported();
+            breakOnInterrupted();
         }
 
         jsonGenerator.writeEndArray();
     }
 
-    private void writeDataBlocksInfo(List<DataBlock> dataBlocks) throws IOException {
+    private void writeDataBlocksInfo(List<DataBlock> dataBlocks) throws IOException,
+            InterruptedException {
         jsonGenerator.writeArrayFieldStart("files_data_blocks");
 
         for (DataBlock dataBlock : dataBlocks) {
             writeDataBlockInfo(dataBlock);
+
             increaseExported();
+            breakOnInterrupted();
         }
 
         jsonGenerator.writeEndArray();
