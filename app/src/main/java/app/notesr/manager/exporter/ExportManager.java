@@ -176,11 +176,9 @@ public class ExportManager extends BaseManager {
         return this;
     }
 
-    ExportManager finish() {
+    void finish() {
         status = "";
         result = FINISHED_SUCCESSFULLY;
-
-        return this;
     }
 
     private void wipeTempData() {
