@@ -5,6 +5,7 @@ import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
+import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
 import lombok.Getter;
 import lombok.NonNull;
@@ -12,63 +13,48 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
-class FilesInfoWriter implements JsonWriter {
-    @NonNull
+class FilesInfoWriter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    @NonNull
     private final FilesInfoTable filesInfoTable;
-
-    @NonNull
     private final DataBlocksTable dataBlocksTable;
 
-    @NonNull
     private final DateTimeFormatter timestampFormatter;
 
-    @Getter
-    private long exported = 0;
-
     @Override
-    public void write() throws IOException {
+    public void export() throws IOException {
         jsonGenerator.writeStartObject();
-        Set<Long> filesId = filesInfoTable.getAllIds();
 
-        writeFilesInfo(filesId);
-        writeDataBlocksInfo(filesId);
+        writeFilesInfo(filesInfoTable.getAll());
+        writeDataBlocksInfo(dataBlocksTable.getAllWithoutData());
+
         jsonGenerator.writeEndObject();
     }
 
-    private void writeFilesInfo(Set<Long> filesId) throws IOException {
+    private void writeFilesInfo(List<EncryptedFileInfo> encryptedFilesInfo) throws IOException {
         jsonGenerator.writeArrayFieldStart("files_info");
 
-        for (Long id : filesId) {
-            FileInfo fileInfo = FilesCrypt.decryptInfo(filesInfoTable.get(id));
-            writeFileInfo(fileInfo);
+        for (EncryptedFileInfo encryptedFileInfo : encryptedFilesInfo) {
+            FileInfo fileInfo = FilesCrypt.decryptInfo(encryptedFileInfo);
 
-            exported++;
+            writeFileInfo(fileInfo);
+            increaseExported();
         }
 
         jsonGenerator.writeEndArray();
     }
 
-    private void writeDataBlocksInfo(Set<Long> filesId) throws IOException {
+    private void writeDataBlocksInfo(List<DataBlock> dataBlocks) throws IOException {
         jsonGenerator.writeArrayFieldStart("files_data_blocks");
 
-        for (Long fileId : filesId) {
-            Set<Long> blocksId = dataBlocksTable.getBlocksIdsByFileId(fileId);
-
-            for (Long blockId : blocksId) {
-                DataBlock block = dataBlocksTable.get(blockId);
-
-                block.setData(FilesCrypt.decryptData(block.getData()));
-                writeDataBlockInfo(block);
-
-                exported++;
-            }
+        for (DataBlock dataBlock : dataBlocks) {
+            writeDataBlockInfo(dataBlock);
+            increaseExported();
         }
 
         jsonGenerator.writeEndArray();
@@ -101,10 +87,5 @@ class FilesInfoWriter implements JsonWriter {
         jsonGenerator.writeNumberField("order", dataBlock.getOrder());
 
         jsonGenerator.writeEndObject();
-    }
-
-    @Override
-    public long getTotal() {
-        return filesInfoTable.getRowsCount() + dataBlocksTable.getRowsCount();
     }
 }
