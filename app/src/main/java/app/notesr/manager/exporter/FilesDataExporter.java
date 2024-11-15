@@ -7,12 +7,17 @@ import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.model.DataBlock;
 import app.notesr.utils.FilesUtils;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
 class FilesDataExporter extends Exporter {
     private final File outputDir;
     private final DataBlocksTable dataBlocksTable;
+
+    FilesDataExporter(ExportThread thread, File outputDir, DataBlocksTable dataBlocksTable) {
+        super(thread);
+
+        this.outputDir = outputDir;
+        this.dataBlocksTable = dataBlocksTable;
+    }
 
     public void export() throws IOException, InterruptedException {
         if (!outputDir.exists()) {
