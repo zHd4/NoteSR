@@ -23,11 +23,8 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 import app.notesr.utils.ZipUtils;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @RequiredArgsConstructor
 public class ExportManager extends BaseManager {
@@ -72,7 +69,9 @@ public class ExportManager extends BaseManager {
 
         status = context.getString(R.string.canceling);
         thread.interrupt();
+    }
 
+    public void onThreadInterrupted() {
         if (isFileExists(tempDir) || isFileExists(tempArchive)) {
             wipeTempData();
         }
