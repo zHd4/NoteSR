@@ -6,13 +6,12 @@ import app.notesr.db.notes.table.NotesTable;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-@RequiredArgsConstructor
+@SuperBuilder
 class NotesExporter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
@@ -21,15 +20,16 @@ class NotesExporter extends Exporter {
     private final DateTimeFormatter timestampFormatter;
 
     @Override
-    public void export() throws IOException {
+    public void export() throws IOException, InterruptedException {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeArrayFieldStart("notes");
 
         for (EncryptedNote encryptedNote : notesTable.getAll()) {
             Note note = NotesCrypt.decrypt(encryptedNote);
-
             writeNote(note);
+
             increaseExported();
+            breakOnInterrupted();
         }
 
         jsonGenerator.writeEndArray();
@@ -48,5 +48,10 @@ class NotesExporter extends Exporter {
         jsonGenerator.writeStringField("updated_at", updatedAt);
 
         jsonGenerator.writeEndObject();
+    }
+
+    @Override
+    long getTotal() {
+        return notesTable.getRowsCount();
     }
 }
