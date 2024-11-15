@@ -104,7 +104,7 @@ public class ExportManager extends BaseManager {
         return Math.round((exported * 99.0f) / total);
     }
 
-    void init() throws IOException, InterruptedException {
+    ExportManager init() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
         status = context.getString(R.string.exporting_data);
 
@@ -129,24 +129,30 @@ public class ExportManager extends BaseManager {
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+        return this;
     }
 
-    void export() throws IOException, InterruptedException {
+    ExportManager export() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
 
         notesExporter.export();
         filesInfoExporter.export();
         filesDataExporter.export();
+
+        return this;
     }
 
-    void archive() throws IOException, InterruptedException {
+    ExportManager archive() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
 
         tempArchive = new File(context.getCacheDir(), tempDir.getName() + ".zip");
         ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath());
+
+        return this;
     }
 
-    void encrypt() throws InterruptedException, IOException {
+    ExportManager encrypt() throws InterruptedException, IOException {
         thread.breakOnInterrupted();
         status = context.getString(R.string.encrypting_data);
 
@@ -157,18 +163,24 @@ public class ExportManager extends BaseManager {
             BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
             backupsCrypt.encrypt();
         }
+
+        return this;
     }
 
-    void wipe() throws InterruptedException {
+    ExportManager wipe() throws InterruptedException {
         thread.breakOnInterrupted();
         status = context.getString(R.string.wiping_temp_data);
 
         wipeTempData();
+
+        return this;
     }
 
-    void finish() {
+    ExportManager finish() {
         status = "";
         result = FINISHED_SUCCESSFULLY;
+
+        return this;
     }
 
     private void wipeTempData() {
