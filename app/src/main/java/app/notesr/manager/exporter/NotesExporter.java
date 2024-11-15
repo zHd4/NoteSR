@@ -14,14 +14,10 @@ import java.time.format.DateTimeFormatter;
 
 @RequiredArgsConstructor
 class NotesExporter extends Exporter {
-    @NonNull
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    @NonNull
     private final NotesTable notesTable;
-
-    @NonNull
     private final DateTimeFormatter timestampFormatter;
 
     @Override
