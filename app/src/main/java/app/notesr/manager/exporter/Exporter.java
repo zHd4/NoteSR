@@ -2,18 +2,14 @@ package app.notesr.manager.exporter;
 
 import java.io.IOException;
 
-import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @RequiredArgsConstructor
 @Getter
 abstract class Exporter {
-    @Setter(AccessLevel.PACKAGE)
-    private long total;
-
-    @Setter(AccessLevel.PACKAGE)
+    @NonNull
     private ExportThread thread;
 
     private long exported;
@@ -22,5 +18,6 @@ abstract class Exporter {
         exported++;
     }
 
-    abstract void export() throws IOException;
+    abstract void export() throws IOException, InterruptedException;
+    abstract long getTotal();
 }
