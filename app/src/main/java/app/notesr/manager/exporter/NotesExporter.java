@@ -6,18 +6,27 @@ import app.notesr.db.notes.table.NotesTable;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-@SuperBuilder
 class NotesExporter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
     private final NotesTable notesTable;
     private final DateTimeFormatter timestampFormatter;
+
+    NotesExporter(ExportThread thread,
+                  JsonGenerator jsonGenerator,
+                  NotesTable notesTable,
+                  DateTimeFormatter timestampFormatter) {
+        super(thread);
+
+        this.jsonGenerator = jsonGenerator;
+        this.notesTable = notesTable;
+        this.timestampFormatter = timestampFormatter;
+    }
 
     @Override
     public void export() throws IOException, InterruptedException {
