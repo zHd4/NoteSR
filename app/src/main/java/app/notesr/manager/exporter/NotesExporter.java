@@ -38,7 +38,7 @@ class NotesExporter extends Exporter {
             writeNote(note);
 
             increaseExported();
-            breakOnInterrupted();
+            getThread().breakOnInterrupted();
         }
 
         jsonGenerator.writeEndArray();
