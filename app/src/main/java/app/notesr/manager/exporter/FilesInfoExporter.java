@@ -8,13 +8,11 @@ import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@SuperBuilder
 class FilesInfoExporter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
@@ -23,6 +21,19 @@ class FilesInfoExporter extends Exporter {
     private final DataBlocksTable dataBlocksTable;
 
     private final DateTimeFormatter timestampFormatter;
+
+    FilesInfoExporter(ExportThread thread,
+                      JsonGenerator jsonGenerator,
+                      FilesInfoTable filesInfoTable,
+                      DataBlocksTable dataBlocksTable,
+                      DateTimeFormatter timestampFormatter) {
+        super(thread);
+
+        this.jsonGenerator = jsonGenerator;
+        this.filesInfoTable = filesInfoTable;
+        this.dataBlocksTable = dataBlocksTable;
+        this.timestampFormatter = timestampFormatter;
+    }
 
     @Override
     public void export() throws IOException, InterruptedException {
