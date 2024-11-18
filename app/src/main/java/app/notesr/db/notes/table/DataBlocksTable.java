@@ -32,20 +32,22 @@ public class DataBlocksTable extends BaseTable {
                 "SELECT " +
                         "id, " +
                         "file_id, " +
-                        "block_order " +
+                        "block_order" +
                         " FROM " + name +
                         " ORDER BY id",
                 new String[] {});
 
         try (cursor) {
             if (cursor.moveToFirst()) {
-                DataBlock dataBlock = DataBlock.builder()
-                        .id(cursor.getLong(0))
-                        .fileId(cursor.getLong(1))
-                        .order(cursor.getLong(2))
-                        .build();
+                do {
+                    DataBlock dataBlock = DataBlock.builder()
+                            .id(cursor.getLong(0))
+                            .fileId(cursor.getLong(1))
+                            .order(cursor.getLong(2))
+                            .build();
 
-                dataBlocks.add(dataBlock);
+                    dataBlocks.add(dataBlock);
+                } while (cursor.moveToNext());
             }
         }
 
