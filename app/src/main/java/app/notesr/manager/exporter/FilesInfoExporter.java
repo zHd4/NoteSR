@@ -37,12 +37,14 @@ class FilesInfoExporter extends Exporter {
 
     @Override
     public void export() throws IOException, InterruptedException {
-        jsonGenerator.writeStartObject();
+        try (jsonGenerator) {
+            jsonGenerator.writeStartObject();
 
-        writeFilesInfo(filesInfoTable.getAll());
-        writeDataBlocksInfo(dataBlocksTable.getAllWithoutData());
+            writeFilesInfo(filesInfoTable.getAll());
+            writeDataBlocksInfo(dataBlocksTable.getAllWithoutData());
 
-        jsonGenerator.writeEndObject();
+            jsonGenerator.writeEndObject();
+        }
     }
 
     @Override
