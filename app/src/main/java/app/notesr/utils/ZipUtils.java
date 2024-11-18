@@ -18,40 +18,6 @@ public class ZipUtils {
         }
     }
 
-    private static void zipFilesRecursively(File file, String fileName, ZipOutputStream zipOutputStream)
-            throws IOException {
-        if (file.isDirectory()) {
-            if (!fileName.endsWith("/")) {
-                fileName += "/";
-            }
-
-            zipOutputStream.putNextEntry(new ZipEntry(fileName));
-            zipOutputStream.closeEntry();
-
-            File[] children = file.listFiles();
-
-            if (children != null) {
-                for (File childFile : children) {
-                    zipFilesRecursively(childFile, fileName + childFile.getName(), zipOutputStream);
-                }
-            }
-
-            return;
-        }
-
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            ZipEntry entry = new ZipEntry(fileName);
-            zipOutputStream.putNextEntry(entry);
-
-            byte[] bytes = new byte[1024];
-            int length;
-
-            while ((length = fileInputStream.read(bytes)) >= 0) {
-                zipOutputStream.write(bytes, 0, length);
-            }
-        }
-    }
-
     public static void unzip(String sourcePath, String destDir) throws IOException {
         File dir = new File(destDir);
         if (!dir.exists()) dir.mkdirs();
@@ -82,6 +48,40 @@ public class ZipUtils {
 
                 zipInputStream.closeEntry();
                 entry = zipInputStream.getNextEntry();
+            }
+        }
+    }
+
+    private static void zipFilesRecursively(File file, String fileName, ZipOutputStream zipOutputStream)
+            throws IOException {
+        if (file.isDirectory()) {
+            if (!fileName.endsWith("/")) {
+                fileName += "/";
+            }
+
+            zipOutputStream.putNextEntry(new ZipEntry(fileName));
+            zipOutputStream.closeEntry();
+
+            File[] children = file.listFiles();
+
+            if (children != null) {
+                for (File childFile : children) {
+                    zipFilesRecursively(childFile, fileName + childFile.getName(), zipOutputStream);
+                }
+            }
+
+            return;
+        }
+
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            ZipEntry entry = new ZipEntry(fileName);
+            zipOutputStream.putNextEntry(entry);
+
+            byte[] bytes = new byte[1024];
+            int length;
+
+            while ((length = fileInputStream.read(bytes)) >= 0) {
+                zipOutputStream.write(bytes, 0, length);
             }
         }
     }
