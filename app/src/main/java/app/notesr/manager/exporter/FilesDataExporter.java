@@ -34,6 +34,8 @@ class FilesDataExporter extends Exporter {
             byte[] data = FilesCrypt.decryptData(dataBlock.getData());
 
             FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId().toString()), data);
+
+            increaseExported();
             getThread().breakOnInterrupted();
         }
     }
