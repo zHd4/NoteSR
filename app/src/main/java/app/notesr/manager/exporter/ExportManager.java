@@ -135,6 +135,7 @@ public class ExportManager extends BaseManager {
 
     ExportManager export() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
+        status = context.getString(R.string.exporting_data);
 
         notesExporter.export();
         filesInfoExporter.export();
