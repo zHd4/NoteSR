@@ -1,4 +1,4 @@
-package app.notesr.manager.importer;
+package app.notesr.manager.importer.v1;
 
 import com.fasterxml.jackson.core.JsonParser;
 

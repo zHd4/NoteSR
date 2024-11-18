@@ -1,4 +1,4 @@
-package app.notesr.manager.importer;
+package app.notesr.manager.importer.v1;
 
 import android.content.Context;
 import android.util.Log;
