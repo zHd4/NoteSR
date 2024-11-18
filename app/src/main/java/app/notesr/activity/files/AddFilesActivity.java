@@ -1,6 +1,7 @@
 package app.notesr.activity.files;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
@@ -72,13 +73,12 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 if (result.getData() != null) {
                     addFiles(result.getData());
-                    noteModified = true;
                 } else {
                     throw new RuntimeException("Activity result is 'OK', but data not provided");
                 }
+            } else {
+                finish();
             }
-
-            finish();
         };
     }
 
@@ -103,8 +103,16 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
                 }
             });
 
-            runOnUiThread(progressDialog::dismiss);
+            runOnUiThread(() -> {
+                progressDialog.dismiss();
+                onFilesAddedCallback();
+            });
         });
+    }
+
+    private void onFilesAddedCallback() {
+        noteModified = true;
+        finish();
     }
 
     private List<Uri> getFilesUri(Intent data) {
