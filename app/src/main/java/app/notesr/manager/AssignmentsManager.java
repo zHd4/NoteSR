@@ -65,7 +65,14 @@ public class AssignmentsManager extends BaseManager {
             }
 
             chunk = FilesCrypt.encryptData(chunk);
-            dataBlocksTable.save(new DataBlock(fileId, order, chunk));
+
+            DataBlock dataBlock = DataBlock.builder()
+                    .fileId(fileId)
+                    .order(order)
+                    .data(chunk)
+                    .build();
+
+            dataBlocksTable.save(dataBlock);
 
             chunk = new byte[CHUNK_SIZE];
             bytesRead = stream.read(chunk);
