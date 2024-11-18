@@ -1,7 +1,6 @@
 package app.notesr.activity.files;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
