@@ -9,16 +9,17 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
-    public static void zipDirectory(String sourceDirPath, String output) throws IOException {
+    public static void zipDirectory(String sourceDirPath, String output, Thread thread) throws
+            IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(output);
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
             File sourceDir = new File(sourceDirPath);
-            zipFilesRecursively(sourceDir, "", zipOutputStream);
+            zipFilesRecursively(sourceDir, "", zipOutputStream, thread);
         }
     }
 
-    public static void unzip(String sourcePath, String destDir) throws IOException {
+    public static void unzip(String sourcePath, String destDir, Thread thread) throws IOException {
         File dir = new File(destDir);
         if (!dir.exists()) dir.mkdirs();
 
@@ -28,6 +29,10 @@ public class ZipUtils {
             ZipEntry entry = zipInputStream.getNextEntry();
 
             while (entry != null) {
+                if (thread != null && thread.isInterrupted()) {
+                    return;
+                }
+
                 String filePath = destDir + File.separator + entry.getName();
 
                 if (entry.isDirectory()) {
@@ -52,8 +57,16 @@ public class ZipUtils {
         }
     }
 
-    private static void zipFilesRecursively(File file, String fileName, ZipOutputStream zipOutputStream)
+    private static void zipFilesRecursively(
+            File file,
+            String fileName,
+            ZipOutputStream zipOutputStream,
+            Thread thread)
             throws IOException {
+        if (thread != null && thread.isInterrupted()) {
+            return;
+        }
+
         if (file.isDirectory()) {
             if (!fileName.endsWith("/")) {
                 fileName += "/";
@@ -66,7 +79,12 @@ public class ZipUtils {
 
             if (children != null) {
                 for (File childFile : children) {
-                    zipFilesRecursively(childFile, fileName + childFile.getName(), zipOutputStream);
+                    zipFilesRecursively(
+                            childFile,
+                            fileName + childFile.getName(),
+                            zipOutputStream,
+                            thread
+                    );
                 }
             }
 
