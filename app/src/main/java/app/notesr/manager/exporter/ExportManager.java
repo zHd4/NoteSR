@@ -147,7 +147,7 @@ public class ExportManager extends BaseManager {
         thread.breakOnInterrupted();
 
         tempArchive = new File(context.getCacheDir(), tempDir.getName() + ".zip");
-        ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath());
+        ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath(), thread);
 
         return this;
     }
