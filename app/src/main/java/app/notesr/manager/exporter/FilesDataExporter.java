@@ -2,6 +2,7 @@ package app.notesr.manager.exporter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
@@ -26,7 +27,9 @@ class FilesDataExporter extends Exporter {
             }
         }
 
-        for (DataBlock blockWithoutData : dataBlocksTable.getAllWithoutData()) {
+        List<DataBlock> dataBlocksWithoutData = dataBlocksTable.getAllWithoutData();
+
+        for (DataBlock blockWithoutData : dataBlocksWithoutData) {
             DataBlock dataBlock = dataBlocksTable.get(blockWithoutData.getId());
             byte[] data = FilesCrypt.decryptData(dataBlock.getData());
 
