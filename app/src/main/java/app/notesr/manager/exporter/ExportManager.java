@@ -106,7 +106,7 @@ public class ExportManager extends BaseManager {
 
     ExportManager init() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
-        status = context.getString(R.string.exporting_data);
+        status = context.getString(R.string.initializing);
 
         tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
