@@ -24,7 +24,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NotesListActivity;
-import app.notesr.manager.importer.ImportResult;
+import app.notesr.manager.importer.v1.ImportResult;
 import app.notesr.service.ImportService;
 import app.notesr.utils.FileExifDataResolver;
 
