@@ -73,10 +73,10 @@ public class ZipUtils {
             return;
         }
 
-        addFile(file, zipOutputStream);
+        zipFile(file, zipOutputStream);
     }
 
-    private static void addFile(File file, ZipOutputStream zipOutputStream) {
+    private static void zipFile(File file, ZipOutputStream zipOutputStream) {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             ZipEntry entry = new ZipEntry(file.getName());
             zipOutputStream.putNextEntry(entry);
