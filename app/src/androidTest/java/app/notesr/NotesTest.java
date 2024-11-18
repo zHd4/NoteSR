@@ -6,6 +6,7 @@ import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.db.notes.table.NotesTable;
+import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.FileInfo;
@@ -17,11 +18,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 public class NotesTest {
-    private static final Faker faker = new Faker();
+    private static final Faker FAKER = new Faker();
+    private static final Random RANDOM = new Random();
+
     private static CryptoKey cryptoKey;
 
     private final NotesTable notesTable = App.getAppContainer()
@@ -41,14 +44,14 @@ public class NotesTest {
 
     @BeforeClass
     public static void beforeAll() throws NoSuchAlgorithmException {
-        String password = faker.internet.password();
+        String password = FAKER.internet.password();
         cryptoKey = App.getAppContainer().getCryptoManager().generateNewKey(password);
     }
 
     @Before
     public void before() {
-        String noteName = faker.lorem.word();
-        String noteText = faker.lorem.paragraph();
+        String noteName = FAKER.lorem.word();
+        String noteText = FAKER.lorem.paragraph();
 
         testNote = new Note(noteName, noteText);
     }
@@ -85,8 +88,8 @@ public class NotesTest {
         saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
-        String newName = faker.lorem.word();
-        String newText = faker.lorem.paragraph();
+        String newName = FAKER.lorem.word();
+        String newText = FAKER.lorem.paragraph();
 
         Note note = new Note(newName, newText);
         note.setId(testNote.getId());
@@ -108,9 +111,10 @@ public class NotesTest {
         saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
-        byte[] testFileData = faker.lorem.paragraph().getBytes(StandardCharsets.UTF_8);
+        byte[] testFileData = new byte[1024];
+        RANDOM.nextBytes(testFileData);
 
-        String fileName = faker.lorem.word();
+        String fileName = FAKER.lorem.word();
         long fileSize = testFileData.length;
 
         FileInfo fileInfo = new FileInfo();
@@ -120,9 +124,20 @@ public class NotesTest {
         fileInfo.setName(fileName);
 
         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo, cryptoKey);
-
         filesInfoTable.save(encryptedFileInfo);
+
+        DataBlock dataBlock = DataBlock.builder()
+                .fileId(encryptedFileInfo.getId())
+                .order(1L).data(testFileData)
+                .build();
+
+        dataBlocksTable.save(dataBlock);
+
         Assert.assertNotNull(encryptedFileInfo.getId());
+        Assert.assertNotNull(dataBlock.getId());
+
+        Assert.assertEquals(encryptedFileInfo.getId(), dataBlock.getFileId());
+        Assert.assertArrayEquals(dataBlocksTable.get(dataBlock.getId()).getData(), dataBlock.getData());
     }
 
     @Test
