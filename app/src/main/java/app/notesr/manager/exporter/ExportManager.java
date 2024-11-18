@@ -146,6 +146,7 @@ public class ExportManager extends BaseManager {
 
     ExportManager archive() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
+        status = context.getString(R.string.compressing);
 
         tempArchive = new File(context.getCacheDir(), tempDir.getName() + ".zip");
         ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath(), thread);
