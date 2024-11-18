@@ -59,6 +59,7 @@
     <string name="re_encrypting_data">Re-encrypting data…</string>
     <string name="warning">Warning</string>
     <string name="loading">Loading…</string>
+    <string name="initializing">Initializing…</string>
     <string name="exporting">Exporting…</string>
     <string name="exporting_data">Exporting data…</string>
     <string name="importing_data">Importing data…</string>
