@@ -73,8 +73,12 @@ public class ZipUtils {
             return;
         }
 
+        addFile(file, zipOutputStream);
+    }
+
+    private static void addFile(File file, ZipOutputStream zipOutputStream) {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            ZipEntry entry = new ZipEntry(fileName);
+            ZipEntry entry = new ZipEntry(file.getName());
             zipOutputStream.putNextEntry(entry);
 
             byte[] bytes = new byte[1024];
@@ -83,6 +87,8 @@ public class ZipUtils {
             while ((length = fileInputStream.read(bytes)) >= 0) {
                 zipOutputStream.write(bytes, 0, length);
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
