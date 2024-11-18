@@ -30,19 +30,21 @@ class NotesExporter extends Exporter {
 
     @Override
     public void export() throws IOException, InterruptedException {
-        jsonGenerator.writeStartObject();
-        jsonGenerator.writeArrayFieldStart("notes");
+        try (jsonGenerator) {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeArrayFieldStart("notes");
 
-        for (EncryptedNote encryptedNote : notesTable.getAll()) {
-            Note note = NotesCrypt.decrypt(encryptedNote);
-            writeNote(note);
+            for (EncryptedNote encryptedNote : notesTable.getAll()) {
+                Note note = NotesCrypt.decrypt(encryptedNote);
+                writeNote(note);
 
-            increaseExported();
-            getThread().breakOnInterrupted();
+                increaseExported();
+                getThread().breakOnInterrupted();
+            }
+
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
         }
-
-        jsonGenerator.writeEndArray();
-        jsonGenerator.writeEndObject();
     }
 
     private void writeNote(Note note) throws IOException {
