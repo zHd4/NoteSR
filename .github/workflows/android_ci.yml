@@ -32,6 +32,10 @@ jobs:
         run: |
           yes | sdkmanager --licenses
 
+      - name: Install System Image
+        run: |
+          sdkmanager "system-images;android-31;google_apis;x86_64"
+
       - name: Create and Start Emulator
         run: |
           avdmanager create avd -n test -k "system-images;android-31;google_apis;x86_64" --device "pixel"
