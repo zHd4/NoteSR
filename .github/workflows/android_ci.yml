@@ -46,9 +46,8 @@ jobs:
       - name: Create and Start Emulator
         run: |
           avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel"
-          nohup emulator -avd test -no-window -no-audio -no-boot-anim -accel off &
-          timeout 5m
-          adb wait-for-device
+          nohup emulator -avd test -no-snapshot -gpu swiftshader_indirect -accel off -no-window -no-audio -no-boot-anim &
+          timeout 10m adb wait-for-device || (echo "Emulator did not start in time" && exit 1)
           adb shell input keyevent 82
         env:
           DISPLAY: ":0"
