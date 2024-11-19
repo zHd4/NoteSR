@@ -9,6 +9,25 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
+    public static boolean isZipArchive(String path) throws IOException {
+        File file = new File(path);
+
+        if (!file.exists() || file.isDirectory()) {
+            return false;
+        }
+
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            byte[] signature = new byte[4];
+
+            if (fileInputStream.read(signature) == 4) {
+                return (signature[0] == 0x50 && signature[1] == 0x4B &&
+                        signature[2] == 0x03 && signature[3] == 0x04);
+            }
+        }
+
+        return false;
+    }
+
     public static void zipDirectory(String sourceDirPath, String output, Thread thread) throws
             IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(output);
