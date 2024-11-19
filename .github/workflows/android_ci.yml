@@ -15,11 +15,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
-          java-version: '11'
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
@@ -34,7 +35,7 @@ jobs:
 
       - name: Install System Image
         run: |
-          sdkmanager "system-images;android-31;google_apis_playstore;arm64-v8a"
+          sdkmanager "system-images;android-30;google_apis;x86"
 
       - name: Install Emulator
         run: sdkmanager "emulator"
@@ -44,9 +45,10 @@ jobs:
 
       - name: Create and Start Emulator
         run: |
-          avdmanager create avd -n test -k "system-images;android-31;google_apis_playstore;arm64-v8a" --device "pixel"
-          nohup emulator -avd test -no-window -no-audio -no-boot-anim &
-          timeout 5m adb wait-for-device
+          avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel"
+          nohup emulator -avd test -no-window -no-audio -no-boot-anim -accel off &
+          timeout 5m
+          adb wait-for-device
           adb shell input keyevent 82
         env:
           DISPLAY: ":0"
