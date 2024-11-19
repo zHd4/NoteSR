@@ -1,5 +1,6 @@
 package app.notesr.utils;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static java.util.UUID.randomUUID;
 
@@ -8,9 +9,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Random;
 
 class ZipUtilsTest {
+    private static final Random RANDOM = new Random();
+
     private static final String DIR_PATH = generateFixturePath("exported");
     private static final String ZIP_PATH = generateFixturePath("exported.zip");
 
@@ -32,6 +37,21 @@ class ZipUtilsTest {
 
         assertTrue(dir.exists(), "Extract directory not found");
         assertTrue(isDirsIdentical(DIR_PATH, TEMP_EXTRACTED_DIR_PATH));
+    }
+
+    @Test
+    public void testIsZipArchive() throws IOException {
+        File nonZipFile = new File(generateTempPath(randomUUID().toString()));
+        byte[] nonZipFileData = new byte[1024];
+
+        RANDOM.nextBytes(nonZipFileData);
+        Files.write(Path.of(nonZipFile.getAbsolutePath()), nonZipFileData);
+
+        assertFalse(ZipUtils.isZipArchive(nonZipFile.getAbsolutePath()));
+        assertTrue(ZipUtils.isZipArchive(ZIP_PATH));
+
+        boolean nonZipFileDeleted =  nonZipFile.delete();
+        assertTrue(nonZipFileDeleted);
     }
 
     @AfterAll
