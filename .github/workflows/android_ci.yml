@@ -55,9 +55,5 @@ jobs:
         run: |
           adb shell "while ! getprop sys.boot_completed | grep -m 1 '1'; do sleep 1; done"
 
-      - name: Send keyevent to unlock the emulator
-        run: |
-          adb shell input keyevent 82
-
       - name: Run Instrumented Tests
         run: ./gradlew connectedAndroidTest
