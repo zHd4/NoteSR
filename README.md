@@ -7,7 +7,6 @@
 
 <p align="center">
     <a href="https://github.com/zHd4/NoteSR/actions/workflows/java_ci.yml"><img src="https://github.com/zHd4/NoteSR/actions/workflows/java_ci.yml/badge.svg" /></a>
-    <a href="https://github.com/zHd4/NoteSR/actions/workflows/android_ci.yml"><img src="https://github.com/zHd4/NoteSR/actions/workflows/android_ci.yml/badge.svg" /></a>
     <a href="https://codeclimate.com/github/zHd4/NoteSR/maintainability"><img src="https://api.codeclimate.com/v1/badges/ea8a3c789f19d60b1ca1/maintainability" /></a>
 </p>
 
