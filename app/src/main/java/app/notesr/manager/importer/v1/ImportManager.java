@@ -10,6 +10,7 @@ import app.notesr.crypto.BackupsCrypt;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.manager.BaseManager;
+import app.notesr.manager.importer.ImportResult;
 import app.notesr.utils.Wiper;
 
 import java.io.File;
