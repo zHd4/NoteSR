@@ -35,6 +35,9 @@ jobs:
       - name: Add Emulator to PATH
         run: echo "${ANDROID_HOME}/emulator" >> $GITHUB_PATH
 
+      - name: Set ADB server port
+        run: export ANDROID_ADB_SERVER_PORT=5038
+
       - name: Create and Start Emulator
         run: |
           avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel"
