@@ -14,7 +14,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import app.notesr.manager.importer.v1.ImportManager;
+import app.notesr.manager.importer.ImportManager;
 import app.notesr.manager.importer.ImportResult;
 
 import java.io.FileInputStream;
