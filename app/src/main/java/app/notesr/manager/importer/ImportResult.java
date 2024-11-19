@@ -1,4 +1,4 @@
-package app.notesr.manager.importer.v1;
+package app.notesr.manager.importer;
 
 public enum ImportResult {
     NONE("none"),
