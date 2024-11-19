@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter;
 
 import lombok.Getter;
 
-public class ImportManager extends BaseManager {
+public class ImportManagerV1 extends BaseManager {
     private static final String TAG = BaseManager.class.getName();
 
     private final FileInputStream sourceStream;
@@ -37,7 +37,7 @@ public class ImportManager extends BaseManager {
     private File jsonTempFile;
     private boolean transactionStarted = false;
 
-    public ImportManager(Context context, FileInputStream sourceStream) {
+    public ImportManagerV1(Context context, FileInputStream sourceStream) {
         this.context = context;
         this.sourceStream = sourceStream;
     }
