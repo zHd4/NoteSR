@@ -51,7 +51,7 @@ class ZipUtilsTest {
         assertFalse(ZipUtils.isZipArchive(DIR_PATH));
         assertTrue(ZipUtils.isZipArchive(ZIP_PATH));
 
-        boolean nonZipFileDeleted =  nonZipFile.delete();
+        boolean nonZipFileDeleted = nonZipFile.delete();
         assertTrue(nonZipFileDeleted);
     }
 
