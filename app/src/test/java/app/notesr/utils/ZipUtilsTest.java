@@ -48,6 +48,7 @@ class ZipUtilsTest {
         Files.write(Path.of(nonZipFile.getAbsolutePath()), nonZipFileData);
 
         assertFalse(ZipUtils.isZipArchive(nonZipFile.getAbsolutePath()));
+        assertFalse(ZipUtils.isZipArchive(DIR_PATH));
         assertTrue(ZipUtils.isZipArchive(ZIP_PATH));
 
         boolean nonZipFileDeleted =  nonZipFile.delete();
