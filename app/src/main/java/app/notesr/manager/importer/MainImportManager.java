@@ -13,25 +13,26 @@ import java.io.IOException;
 import app.notesr.R;
 import app.notesr.crypto.BackupsCrypt;
 import app.notesr.exception.DecryptionFailedException;
+import app.notesr.manager.BaseManager;
 import app.notesr.manager.importer.v1.ImportManagerV1;
 import app.notesr.manager.importer.v2.ImportManagerV2;
 import app.notesr.utils.Wiper;
 import app.notesr.utils.ZipUtils;
+import lombok.RequiredArgsConstructor;
 
-public class MainImportManager extends BaseImportManager {
+@RequiredArgsConstructor
+public class MainImportManager extends BaseManager {
 
     private static final String TAG = MainImportManager.class.getName();
+
+    private final Context context;
+    private final FileInputStream sourceStream;
 
     private ImportResult result = ImportResult.NONE;
     private String status = "";
 
     private BaseImportManager usingManager;
 
-    public MainImportManager(Context context, FileInputStream sourceStream) {
-        super(context, sourceStream);
-    }
-
-    @Override
     public void start() {
         Thread thread = new Thread(() -> {
             File tempDecryptedFile = new File(context.getCacheDir(), randomUUID().toString());
@@ -63,7 +64,6 @@ public class MainImportManager extends BaseImportManager {
         thread.start();
     }
 
-    @Override
     public ImportResult getResult() {
         if (usingManager != null) {
             return usingManager.getResult();
@@ -72,7 +72,6 @@ public class MainImportManager extends BaseImportManager {
         return result;
     }
 
-    @Override
     public String getStatus() {
         if (usingManager != null) {
             return usingManager.getStatus();
