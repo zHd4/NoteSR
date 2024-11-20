@@ -22,6 +22,9 @@ public class ImportManager extends BaseImportManager {
 
     private static final String TAG = ImportManager.class.getName();
 
+    private ImportResult result = ImportResult.NONE;
+    private String status = "";
+
     private BaseImportManager usingManager;
 
     public ImportManager(Context context, FileInputStream sourceStream) {
@@ -58,6 +61,24 @@ public class ImportManager extends BaseImportManager {
         });
 
         thread.start();
+    }
+
+    @Override
+    public ImportResult getResult() {
+        if (usingManager != null) {
+            return usingManager.getResult();
+        }
+
+        return result;
+    }
+
+    @Override
+    public String getStatus() {
+        if (usingManager != null) {
+            return usingManager.getStatus();
+        }
+
+        return status;
     }
 
     private static void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws
