@@ -18,16 +18,16 @@ import app.notesr.manager.importer.v2.ImportManagerV2;
 import app.notesr.utils.Wiper;
 import app.notesr.utils.ZipUtils;
 
-public class ImportManager extends BaseImportManager {
+public class MainImportManager extends BaseImportManager {
 
-    private static final String TAG = ImportManager.class.getName();
+    private static final String TAG = MainImportManager.class.getName();
 
     private ImportResult result = ImportResult.NONE;
     private String status = "";
 
     private BaseImportManager usingManager;
 
-    public ImportManager(Context context, FileInputStream sourceStream) {
+    public MainImportManager(Context context, FileInputStream sourceStream) {
         super(context, sourceStream);
     }
 
