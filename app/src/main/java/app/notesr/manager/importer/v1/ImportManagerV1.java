@@ -6,27 +6,19 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.crypto.BackupsCrypt;
-import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.ImportFailedException;
-import app.notesr.manager.BaseManager;
+import app.notesr.manager.importer.BaseImportManager;
 import app.notesr.manager.importer.ImportResult;
 import app.notesr.utils.Wiper;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 import lombok.Getter;
 
-public class ImportManagerV1 extends BaseManager {
-    private static final String TAG = BaseManager.class.getName();
-
-    private final FileInputStream sourceStream;
-    private final Context context;
+public class ImportManagerV1 extends BaseImportManager {
+    private static final String TAG = ImportManagerV1.class.getName();
 
     @Getter
     private ImportResult result = ImportResult.NONE;
@@ -34,45 +26,31 @@ public class ImportManagerV1 extends BaseManager {
     @Getter
     private String status = "";
 
-    private File jsonTempFile;
     private boolean transactionStarted = false;
 
-    public ImportManagerV1(Context context, FileInputStream sourceStream) {
-        this.context = context;
-        this.sourceStream = sourceStream;
+    public ImportManagerV1(Context context, File file) {
+        super(context, file);
     }
 
+    @Override
     public void start() {
         Thread thread = new Thread(() -> {
             try {
-                jsonTempFile = File.createTempFile("import", ".json");
-                status = context.getString(R.string.decrypting_data);
-                decrypt(sourceStream, getOutputStream(jsonTempFile));
-
                 status = context.getString(R.string.importing);
                 begin();
 
                 clearTables();
-                importData(jsonTempFile);
+                importData(file);
 
                 end();
 
                 status = context.getString(R.string.wiping_temp_data);
-                wipeFile(jsonTempFile);
+                wipeFile(file);
 
                 result = ImportResult.FINISHED_SUCCESSFULLY;
-            } catch (IOException e) {
-                if (transactionStarted) rollback();
-                throw new RuntimeException(e);
-            } catch (DecryptionFailedException e) {
-                if (transactionStarted) rollback();
-                wipeFile(jsonTempFile);
-
-                status = context.getString(R.string.cannot_decrypt_file);
-                result = ImportResult.DECRYPTION_FAILED;
             } catch (ImportFailedException e) {
                 if (transactionStarted) rollback();
-                wipeFile(jsonTempFile);
+                wipeFile(file);
 
                 status = context.getString(R.string.cannot_import_data);
                 result = ImportResult.IMPORT_FAILED;
@@ -80,18 +58,6 @@ public class ImportManagerV1 extends BaseManager {
         });
 
         thread.start();
-    }
-
-    private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws DecryptionFailedException {
-        if (result == ImportResult.NONE) {
-            try {
-                BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
-                backupsCrypt.decrypt();
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-                throw new DecryptionFailedException();
-            }
-        }
     }
 
     private void clearTables() {
@@ -160,9 +126,5 @@ public class ImportManagerV1 extends BaseManager {
 
     private DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
-    }
-
-    private FileOutputStream getOutputStream(File file) throws FileNotFoundException {
-        return new FileOutputStream(file);
     }
 }
