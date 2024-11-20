@@ -13,7 +13,10 @@ import java.io.IOException;
 import app.notesr.R;
 import app.notesr.crypto.BackupsCrypt;
 import app.notesr.exception.DecryptionFailedException;
+import app.notesr.manager.importer.v1.ImportManagerV1;
+import app.notesr.manager.importer.v2.ImportManagerV2;
 import app.notesr.utils.Wiper;
+import app.notesr.utils.ZipUtils;
 
 public class ImportManager extends BaseImportManager {
     private static final String TAG = ImportManager.class.getName();
@@ -30,6 +33,17 @@ public class ImportManager extends BaseImportManager {
             try {
                 FileOutputStream outputStream = new FileOutputStream(tempDecryptedFile);
                 decrypt(sourceStream, outputStream);
+                FileInputStream inputStream = new FileInputStream(tempDecryptedFile);
+
+                BaseImportManager target;
+
+                if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
+                    target = new ImportManagerV2(context, inputStream);
+                } else {
+                    target = new ImportManagerV1(context, inputStream);
+                }
+
+                target.start();
             } catch (DecryptionFailedException e) {
                 if (tempDecryptedFile.exists()) {
                     wipeFile(tempDecryptedFile);
