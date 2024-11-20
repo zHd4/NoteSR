@@ -19,7 +19,10 @@ import app.notesr.utils.Wiper;
 import app.notesr.utils.ZipUtils;
 
 public class ImportManager extends BaseImportManager {
+
     private static final String TAG = ImportManager.class.getName();
+
+    private BaseImportManager usingManager;
 
     public ImportManager(Context context, FileInputStream sourceStream) {
         super(context, sourceStream);
@@ -35,15 +38,13 @@ public class ImportManager extends BaseImportManager {
                 decrypt(sourceStream, outputStream);
                 FileInputStream inputStream = new FileInputStream(tempDecryptedFile);
 
-                BaseImportManager target;
-
                 if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
-                    target = new ImportManagerV2(context, inputStream);
+                    usingManager = new ImportManagerV2(context, inputStream);
                 } else {
-                    target = new ImportManagerV1(context, inputStream);
+                    usingManager = new ImportManagerV1(context, inputStream);
                 }
 
-                target.start();
+                usingManager.start();
             } catch (DecryptionFailedException e) {
                 if (tempDecryptedFile.exists()) {
                     wipeFile(tempDecryptedFile);
