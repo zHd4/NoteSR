@@ -3,7 +3,9 @@ package app.notesr.manager.importer;
 import android.content.Context;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 
+import app.notesr.App;
 import app.notesr.manager.BaseManager;
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +18,10 @@ public abstract class BaseImportManager extends BaseManager {
         getDataBlocksTable().deleteAll();
         getFilesInfoTable().deleteAll();
         getNotesTable().deleteAll();
+    }
+
+    protected DateTimeFormatter getTimestampFormatter() {
+        return App.getAppContainer().getTimestampFormatter();
     }
 
     public abstract void start();
