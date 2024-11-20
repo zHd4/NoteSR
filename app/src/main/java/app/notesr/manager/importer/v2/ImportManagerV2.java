@@ -6,6 +6,7 @@ import android.content.Context;
 import java.io.File;
 import java.io.IOException;
 
+import app.notesr.R;
 import app.notesr.manager.importer.BaseImportManager;
 import app.notesr.manager.importer.ImportResult;
 import app.notesr.utils.ZipUtils;
@@ -30,7 +31,10 @@ public class ImportManagerV2 extends BaseImportManager {
         Thread thread = new Thread(() -> {
             try {
                 tempDir = new File(context.getCacheDir(), randomUUID().toString());
+                status = context.getString(R.string.importing);
+
                 ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath(), null);
+                result = ImportResult.FINISHED_SUCCESSFULLY;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
