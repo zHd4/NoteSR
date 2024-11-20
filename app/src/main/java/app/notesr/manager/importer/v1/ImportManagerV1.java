@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
-import app.notesr.App;
+
 import app.notesr.R;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.manager.importer.BaseImportManager;
@@ -16,16 +16,12 @@ import java.io.IOException;
 
 import lombok.Getter;
 
+@Getter
 public class ImportManagerV1 extends BaseImportManager {
     private static final String TAG = ImportManagerV1.class.getName();
 
-    @Getter
     private ImportResult result = ImportResult.NONE;
-
-    @Getter
     private String status = "";
-
-    private boolean transactionStarted = false;
 
     public ImportManagerV1(Context context, File file) {
         super(context, file);
@@ -48,7 +44,10 @@ public class ImportManagerV1 extends BaseImportManager {
 
                 result = ImportResult.FINISHED_SUCCESSFULLY;
             } catch (ImportFailedException e) {
-                if (transactionStarted) rollback();
+                if (isTransactionStarted()) {
+                    rollback();
+                }
+
                 wipeFile(file);
 
                 status = context.getString(R.string.cannot_import_data);
@@ -100,20 +99,5 @@ public class ImportManagerV1 extends BaseImportManager {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private void begin() {
-        App.getAppContainer().getNotesDB().beginTransaction();
-        transactionStarted = true;
-    }
-
-    private void rollback() {
-        App.getAppContainer().getNotesDB().rollbackTransaction();
-        transactionStarted = false;
-    }
-
-    private void end() {
-        App.getAppContainer().getNotesDB().commitTransaction();
-        transactionStarted = false;
     }
 }
