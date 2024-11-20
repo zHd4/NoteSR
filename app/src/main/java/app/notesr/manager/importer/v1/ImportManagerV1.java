@@ -60,12 +60,6 @@ public class ImportManagerV1 extends BaseImportManager {
         thread.start();
     }
 
-    private void clearTables() {
-        getDataBlocksTable().deleteAll();
-        getFilesInfoTable().deleteAll();
-        getNotesTable().deleteAll();
-    }
-
     private void importData(File file) throws ImportFailedException {
         try {
             JsonFactory jsonFactory = new JsonFactory();
