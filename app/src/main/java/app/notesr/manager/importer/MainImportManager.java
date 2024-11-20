@@ -40,12 +40,11 @@ public class MainImportManager extends BaseManager {
             try {
                 FileOutputStream outputStream = new FileOutputStream(tempDecryptedFile);
                 decrypt(sourceStream, outputStream);
-                FileInputStream inputStream = new FileInputStream(tempDecryptedFile);
 
                 if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
-                    usingManager = new ImportManagerV2(context, inputStream);
+                    usingManager = new ImportManagerV2(context, tempDecryptedFile);
                 } else {
-                    usingManager = new ImportManagerV1(context, inputStream);
+                    usingManager = new ImportManagerV1(context, tempDecryptedFile);
                 }
 
                 usingManager.start();
