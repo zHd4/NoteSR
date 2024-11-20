@@ -35,6 +35,7 @@ public class MainImportManager extends BaseManager {
 
     public void start() {
         Thread thread = new Thread(() -> {
+            status = context.getString(R.string.decrypting_data);
             File tempDecryptedFile = new File(context.getCacheDir(), randomUUID().toString());
 
             try {
