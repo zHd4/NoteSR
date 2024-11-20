@@ -104,7 +104,16 @@ public class ExportManager extends BaseManager {
         return Math.round((exported * 99.0f) / total);
     }
 
-    ExportManager init() throws IOException, InterruptedException {
+    void doExport() throws IOException, InterruptedException {
+        init();
+        export();
+        archive();
+        encrypt();
+        wipe();
+        finish();
+    }
+
+    private void init() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
         status = context.getString(R.string.initializing);
 
@@ -129,32 +138,26 @@ public class ExportManager extends BaseManager {
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
-
-        return this;
     }
 
-    ExportManager export() throws IOException, InterruptedException {
+    private void export() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
         status = context.getString(R.string.exporting_data);
 
         notesExporter.export();
         filesInfoExporter.export();
         filesDataExporter.export();
-
-        return this;
     }
 
-    ExportManager archive() throws IOException, InterruptedException {
+    private void archive() throws IOException, InterruptedException {
         thread.breakOnInterrupted();
         status = context.getString(R.string.compressing);
 
         tempArchive = new File(context.getCacheDir(), tempDir.getName() + ".zip");
         ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath(), thread);
-
-        return this;
     }
 
-    ExportManager encrypt() throws InterruptedException, IOException {
+    private void encrypt() throws InterruptedException, IOException {
         thread.breakOnInterrupted();
         status = context.getString(R.string.encrypting_data);
 
@@ -165,17 +168,13 @@ public class ExportManager extends BaseManager {
             BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
             backupsCrypt.encrypt();
         }
-
-        return this;
     }
 
-    ExportManager wipe() throws InterruptedException {
+    private void wipe() throws InterruptedException {
         thread.breakOnInterrupted();
         status = context.getString(R.string.wiping_temp_data);
 
         wipeTempData();
-
-        return this;
     }
 
     void finish() {
