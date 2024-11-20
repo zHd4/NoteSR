@@ -13,7 +13,6 @@ import app.notesr.utils.Wiper;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 
 import lombok.Getter;
 
@@ -116,9 +115,5 @@ public class ImportManagerV1 extends BaseImportManager {
     private void end() {
         App.getAppContainer().getNotesDB().commitTransaction();
         transactionStarted = false;
-    }
-
-    private DateTimeFormatter getTimestampFormatter() {
-        return App.getAppContainer().getTimestampFormatter();
     }
 }
