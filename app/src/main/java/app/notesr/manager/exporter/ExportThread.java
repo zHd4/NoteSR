@@ -39,12 +39,7 @@ class ExportThread extends Thread {
     @Override
     public void run() {
         try {
-            manager.init()
-                    .export()
-                    .archive()
-                    .encrypt()
-                    .wipe()
-                    .finish();
+            manager.doExport();
         } catch (IOException e) {
             Log.e(TAG, "IOException", e);
             throw new RuntimeException(e);
