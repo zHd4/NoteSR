@@ -2,7 +2,7 @@ package app.notesr.manager.importer;
 
 import android.content.Context;
 
-import java.io.FileInputStream;
+import java.io.File;
 
 import app.notesr.manager.BaseManager;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public abstract class BaseImportManager extends BaseManager {
     protected final Context context;
-    protected final FileInputStream sourceStream;
+    protected final File file;
 
     public abstract void start();
     public abstract ImportResult getResult();
