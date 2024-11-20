@@ -4,10 +4,11 @@ import android.content.Context;
 
 import java.io.FileInputStream;
 
+import app.notesr.manager.BaseManager;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public abstract class BaseImportManager {
+public abstract class BaseImportManager extends BaseManager {
     protected final Context context;
     protected final FileInputStream sourceStream;
 
