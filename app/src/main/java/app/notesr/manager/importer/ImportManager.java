@@ -30,8 +30,6 @@ public class ImportManager extends BaseImportManager {
             try {
                 FileOutputStream outputStream = new FileOutputStream(tempDecryptedFile);
                 decrypt(sourceStream, outputStream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             } catch (DecryptionFailedException e) {
                 if (tempDecryptedFile.exists()) {
                     wipeFile(tempDecryptedFile);
@@ -39,6 +37,8 @@ public class ImportManager extends BaseImportManager {
 
                 status = context.getString(R.string.cannot_decrypt_file);
                 result = ImportResult.DECRYPTION_FAILED;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
 
