@@ -36,7 +36,7 @@ class ZipUtilsTest {
         File dir = new File(TEMP_EXTRACTED_DIR_PATH);
 
         assertTrue(dir.exists(), "Extract directory not found");
-        assertTrue(isDirsIdentical(DIR_PATH, TEMP_EXTRACTED_DIR_PATH));
+        assertTrue(isDirsIdentical(DIR_PATH, TEMP_EXTRACTED_DIR_PATH), "Dirs not identical");
     }
 
     @Test
