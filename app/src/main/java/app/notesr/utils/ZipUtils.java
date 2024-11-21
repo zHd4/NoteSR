@@ -46,15 +46,18 @@ public class ZipUtils {
 
     public static void unzip(String zipPath, String destDir, Thread thread) throws IOException {
         File destDirectory = new File(destDir);
+
         if (!destDirectory.exists()) {
             destDirectory.mkdirs();
         }
 
-        try (FileInputStream fis = new FileInputStream(zipPath);
-             ZipInputStream zis = new ZipInputStream(fis)) {
+        FileInputStream fileInputStream = new FileInputStream(zipPath);
+        ZipInputStream zipInputStream = new ZipInputStream(fileInputStream);
 
+        try (fileInputStream; zipInputStream) {
             ZipEntry zipEntry;
-            while ((zipEntry = zis.getNextEntry()) != null) {
+
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (thread != null && thread.isInterrupted()) {
                     break;
                 }
@@ -72,15 +75,17 @@ public class ZipUtils {
                         throw new IOException("Cannot create directory: " + parent);
                     }
 
-                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(newFile)) {
                         byte[] buffer = new byte[1024];
                         int len;
-                        while ((len = zis.read(buffer)) > 0) {
-                            fos.write(buffer, 0, len);
+
+                        while ((len = zipInputStream.read(buffer)) > 0) {
+                            fileOutputStream.write(buffer, 0, len);
                         }
                     }
                 }
-                zis.closeEntry();
+
+                zipInputStream.closeEntry();
             }
         }
     }
