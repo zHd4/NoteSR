@@ -31,8 +31,9 @@ public class ZipUtils {
     public static void zipDirectory(String sourceDirPath, String output, Thread thread) throws
             IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(output);
+        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
 
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
+        try (fileOutputStream; zipOutputStream) {
             File sourceDir = new File(sourceDirPath);
             zipFilesRecursively(sourceDir, "", zipOutputStream, thread);
         }
@@ -77,8 +78,8 @@ public class ZipUtils {
     }
 
     private static void zipFilesRecursively(
-            File file,
-            String fileName,
+            File dir,
+            String parentDirName,
             ZipOutputStream zipOutputStream,
             Thread thread)
             throws IOException {
@@ -86,46 +87,37 @@ public class ZipUtils {
             return;
         }
 
-        if (file.isDirectory()) {
-            if (!fileName.endsWith("/")) {
-                fileName += "/";
-            }
+        File[] files = dir.listFiles();
 
-            zipOutputStream.putNextEntry(new ZipEntry(fileName));
-            zipOutputStream.closeEntry();
-
-            File[] children = file.listFiles();
-
-            if (children != null) {
-                for (File childFile : children) {
-                    zipFilesRecursively(
-                            childFile,
-                            fileName + childFile.getName(),
-                            zipOutputStream,
-                            thread
-                    );
-                }
-            }
-
+        if (files == null) {
             return;
         }
 
-        zipFile(file, zipOutputStream);
+        for (File file : files) {
+            String zipEntryName = parentDirName + "/" + file.getName();
+
+            if (!file.isDirectory()) {
+                zipFile(file, zipEntryName, zipOutputStream);
+            } else {
+                zipFilesRecursively(file, zipEntryName, zipOutputStream, thread);
+            }
+        }
     }
 
-    private static void zipFile(File file, ZipOutputStream zipOutputStream) {
+    private static void zipFile(File file, String zipEntryName, ZipOutputStream zipOutputStream)
+            throws IOException {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            ZipEntry entry = new ZipEntry(file.getName());
-            zipOutputStream.putNextEntry(entry);
+            ZipEntry zipEntry = new ZipEntry(zipEntryName);
+            zipOutputStream.putNextEntry(zipEntry);
 
-            byte[] bytes = new byte[1024];
-            int length;
+            byte[] buffer = new byte[1024];
+            int bytesRead;
 
-            while ((length = fileInputStream.read(bytes)) >= 0) {
-                zipOutputStream.write(bytes, 0, length);
+            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                zipOutputStream.write(buffer, 0, bytesRead);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+            zipOutputStream.closeEntry();
         }
     }
 }
