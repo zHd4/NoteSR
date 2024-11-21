@@ -35,7 +35,12 @@ public class ZipUtils {
 
         try (fileOutputStream; zipOutputStream) {
             File sourceDir = new File(sourceDirPath);
-            zipFilesRecursively(sourceDir, "", zipOutputStream, thread);
+
+            if (!sourceDir.isDirectory()) {
+                throw new IllegalArgumentException("sourceDirPath must be a directory");
+            }
+
+            zipFilesRecursively(sourceDir, sourceDir, zipOutputStream, thread);
         }
     }
 
@@ -78,8 +83,8 @@ public class ZipUtils {
     }
 
     private static void zipFilesRecursively(
-            File dir,
-            String parentDirName,
+            File rootDir,
+            File currentDir,
             ZipOutputStream zipOutputStream,
             Thread thread)
             throws IOException {
@@ -87,19 +92,19 @@ public class ZipUtils {
             return;
         }
 
-        File[] files = dir.listFiles();
+        File[] files = currentDir.listFiles();
 
         if (files == null) {
             return;
         }
 
         for (File file : files) {
-            String zipEntryName = parentDirName + "/" + file.getName();
+            String relativePath = rootDir.toURI().relativize(file.toURI()).getPath();
 
-            if (!file.isDirectory()) {
-                zipFile(file, zipEntryName, zipOutputStream);
+            if (file.isDirectory()) {
+                zipFilesRecursively(rootDir, file, zipOutputStream, thread);
             } else {
-                zipFilesRecursively(file, zipEntryName, zipOutputStream, thread);
+                zipFile(file, relativePath, zipOutputStream);
             }
         }
     }
