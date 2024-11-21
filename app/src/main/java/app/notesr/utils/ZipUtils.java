@@ -44,40 +44,43 @@ public class ZipUtils {
         }
     }
 
-    public static void unzip(String sourcePath, String destDir, Thread thread) throws IOException {
-        File dir = new File(destDir);
-        if (!dir.exists()) dir.mkdirs();
+    public static void unzip(String zipPath, String destDir, Thread thread) throws IOException {
+        File destDirectory = new File(destDir);
+        if (!destDirectory.exists()) {
+            destDirectory.mkdirs();
+        }
 
-        try (FileInputStream fileInputStream = new FileInputStream(sourcePath);
-             ZipInputStream zipInputStream = new ZipInputStream(fileInputStream)) {
+        try (FileInputStream fis = new FileInputStream(zipPath);
+             ZipInputStream zis = new ZipInputStream(fis)) {
 
-            ZipEntry entry = zipInputStream.getNextEntry();
-
-            while (entry != null) {
+            ZipEntry zipEntry;
+            while ((zipEntry = zis.getNextEntry()) != null) {
                 if (thread != null && thread.isInterrupted()) {
-                    return;
+                    break;
                 }
 
-                String filePath = destDir + File.separator + entry.getName();
+                File newFile = unzipFile(destDirectory, zipEntry);
 
-                if (entry.isDirectory()) {
-                    new File(filePath).mkdirs();
+                if (zipEntry.isDirectory()) {
+                    if (!newFile.isDirectory() && !newFile.mkdirs()) {
+                        throw new IOException("Cannot create directory: " + newFile);
+                    }
                 } else {
-                    File file = new File(filePath);
-                    file.getParentFile().mkdirs();
+                    File parent = newFile.getParentFile();
 
-                    try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                    if (parent == null || (!parent.isDirectory() && !parent.mkdirs())) {
+                        throw new IOException("Cannot create directory: " + parent);
+                    }
+
+                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
                         byte[] buffer = new byte[1024];
-                        int length;
-
-                        while ((length = zipInputStream.read(buffer)) > 0) {
-                            fileOutputStream.write(buffer, 0, length);
+                        int len;
+                        while ((len = zis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, len);
                         }
                     }
                 }
-
-                zipInputStream.closeEntry();
-                entry = zipInputStream.getNextEntry();
+                zis.closeEntry();
             }
         }
     }
@@ -124,5 +127,18 @@ public class ZipUtils {
 
             zipOutputStream.closeEntry();
         }
+    }
+
+    private static File unzipFile(File destDir, ZipEntry zipEntry) throws IOException {
+        File destFile = new File(destDir, zipEntry.getName());
+
+        String destDirPath = destDir.getCanonicalPath();
+        String destFilePath = destFile.getCanonicalPath();
+
+        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            throw new IOException("Invalid record in archive: " + zipEntry.getName());
+        }
+
+        return destFile;
     }
 }
