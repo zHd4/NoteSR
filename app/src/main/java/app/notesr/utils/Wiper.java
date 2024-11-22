@@ -29,23 +29,16 @@ public class Wiper {
     }
 
     public static boolean wipeDir(File dir) throws IOException {
-        boolean contentDeleted = true;
-
         for (File file : listDirFiles(dir)) {
             if (file.isDirectory()) {
                 wipeDir(file);
-
-                if (!file.delete()) {
-                    contentDeleted = false;
-                }
+                file.delete();
             } else {
-                if (!wipeFile(file)) {
-                    contentDeleted = false;
-                }
+                wipeFile(file);
             }
         }
 
-        return contentDeleted && dir.delete();
+        return dir.delete();
     }
 
     public static boolean wipeFile(File file) throws IOException {
