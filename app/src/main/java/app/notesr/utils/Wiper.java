@@ -14,7 +14,7 @@ public class Wiper {
     private static final String TAG = Wiper.class.getName();
     private static final int LOOPS_COUNT = 6;
 
-    public static void wipeDir(File dir) throws IOException {
+    public static boolean wipeDir(File dir) throws IOException {
         for (File file : listDirFiles(dir)) {
             if (file.isDirectory()) {
                 wipeDir(file);
@@ -24,7 +24,7 @@ public class Wiper {
             }
         }
 
-        dir.delete();
+        return dir.delete();
     }
 
     public static boolean wipeFile(File file) throws IOException {
