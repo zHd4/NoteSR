@@ -14,6 +14,16 @@ public class Wiper {
     private static final String TAG = Wiper.class.getName();
     private static final int LOOPS_COUNT = 6;
 
+    public static boolean wipeAny(List<File> any) throws IOException {
+        boolean success = true;
+
+        for (File file : any) {
+            success = file.isDirectory() ? wipeDir(file) : wipeFile(file);
+        }
+
+        return success;
+    }
+
     public static boolean wipeDir(File dir) throws IOException {
         for (File file : listDirFiles(dir)) {
             if (file.isDirectory()) {
