@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.manager.exporter.ExportManager;
+import app.notesr.manager.exporter.ExportResult;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -65,7 +66,7 @@ public class ExportService extends Service implements Runnable {
 
         int progress = exportManager.calculateProgress();
 
-        while (exportManager.getResult() == ExportManager.NONE) {
+        while (exportManager.getResult() == ExportResult.NONE) {
             try {
                 status = exportManager.getStatus();
                 progress = exportManager.calculateProgress();
@@ -78,9 +79,9 @@ public class ExportService extends Service implements Runnable {
             }
         }
 
-        if (exportManager.getResult() == ExportManager.FINISHED_SUCCESSFULLY) {
+        if (exportManager.getResult() == ExportResult.FINISHED_SUCCESSFULLY) {
             sendBroadcastData(100, status, outputPath, false);
-        } else if (exportManager.getResult() == ExportManager.CANCELED) {
+        } else if (exportManager.getResult() == ExportResult.CANCELED) {
             sendBroadcastData(progress, status, outputPath, true);
         }
     }
