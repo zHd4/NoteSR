@@ -18,8 +18,10 @@ public class Wiper {
         boolean success = true;
 
         for (File file : any) {
-            if (!(file.isDirectory() ? wipeDir(file) : wipeFile(file))) {
-                success = false;
+            if (file.exists()) {
+                if (!(file.isDirectory() ? wipeDir(file) : wipeFile(file))) {
+                    success = false;
+                }
             }
         }
 
