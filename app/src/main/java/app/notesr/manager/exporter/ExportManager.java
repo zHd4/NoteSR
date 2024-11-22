@@ -30,10 +30,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ExportManager extends BaseManager {
 
-    public static final int NONE = 0;
-    public static final int FINISHED_SUCCESSFULLY = 2;
-    public static final int CANCELED = -1;
-
     private static final String TAG = ExportManager.class.getName();
 
     private final Context context;
@@ -49,7 +45,7 @@ public class ExportManager extends BaseManager {
     private ExportThread thread;
 
     @Getter
-    private int result = NONE;
+    private ExportResult result = ExportResult.NONE;
 
     @Getter
     private String status = "";
@@ -82,7 +78,7 @@ public class ExportManager extends BaseManager {
         }
 
         status = "";
-        result = CANCELED;
+        result = ExportResult.CANCELED;
     }
 
     public int calculateProgress() {
@@ -90,7 +86,7 @@ public class ExportManager extends BaseManager {
             return 0;
         }
 
-        if (result == FINISHED_SUCCESSFULLY) {
+        if (result == ExportResult.FINISHED_SUCCESSFULLY) {
             return 100;
         }
 
@@ -162,7 +158,7 @@ public class ExportManager extends BaseManager {
         thread.breakOnInterrupted();
         status = context.getString(R.string.encrypting_data);
 
-        if (result == NONE) {
+        if (result == ExportResult.NONE) {
             FileInputStream inputStream = new FileInputStream(tempArchive);
             FileOutputStream outputStream = new FileOutputStream(outputFile);
 
@@ -180,11 +176,11 @@ public class ExportManager extends BaseManager {
 
     void finish() {
         status = "";
-        result = FINISHED_SUCCESSFULLY;
+        result = ExportResult.FINISHED_SUCCESSFULLY;
     }
 
     private void wipeTempData() {
-        if (result == NONE) {
+        if (result == ExportResult.NONE) {
             try {
                 if (!Wiper.wipeAny(List.of(tempArchive, tempDir))) {
                     throw new IllegalStateException("Temp data has not been wiped");
