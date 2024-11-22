@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import app.notesr.utils.ZipUtils;
 import lombok.Getter;
@@ -185,12 +186,8 @@ public class ExportManager extends BaseManager {
     private void wipeTempData() {
         if (result == NONE) {
             try {
-                if (isFileExists(tempArchive)) {
-                    Wiper.wipeFile(tempArchive);
-                }
-
-                if (isFileExists(tempDir)) {
-                    Wiper.wipeDir(tempDir);
+                if (!Wiper.wipeAny(List.of(tempArchive, tempDir))) {
+                    throw new IllegalStateException("Temp data has not been wiped");
                 }
             } catch (IOException e) {
                 Log.e(TAG, "IOException", e);
