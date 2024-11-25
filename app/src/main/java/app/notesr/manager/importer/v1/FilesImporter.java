@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.manager.importer.BaseImporter;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;

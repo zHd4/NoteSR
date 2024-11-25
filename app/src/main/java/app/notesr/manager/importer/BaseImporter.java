@@ -1,4 +1,4 @@
-package app.notesr.manager.importer.v1;
+package app.notesr.manager.importer;
 
 import com.fasterxml.jackson.core.JsonParser;
 
@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-class BaseImporter {
+public class BaseImporter {
     protected final JsonParser parser;
     protected final DateTimeFormatter timestampFormatter;
 

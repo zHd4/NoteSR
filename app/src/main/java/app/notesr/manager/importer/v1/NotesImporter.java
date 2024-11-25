@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.exception.ImportFailedException;
+import app.notesr.manager.importer.BaseImporter;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
 
