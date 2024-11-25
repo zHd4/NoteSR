@@ -62,23 +62,19 @@ public class ImportManagerV2 extends BaseImportManager {
         thread.start();
     }
 
-    private void importData() throws ImportFailedException {
-        try {
-            File notesJsonFile = new File(tempDir, NOTES_JSON_FILE_NAME);
-            File fileInfoJsonFile = new File(tempDir, FILES_INFO_JSON_FILE_NAME);
-            File dataBlocksDir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
+    private void importData() throws ImportFailedException, IOException {
+        File notesJsonFile = new File(tempDir, NOTES_JSON_FILE_NAME);
+        File fileInfoJsonFile = new File(tempDir, FILES_INFO_JSON_FILE_NAME);
+        File dataBlocksDir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
 
-            JsonParser notesParser = createJsonParser(notesJsonFile);
-            JsonParser filesInfoParser = createJsonParser(fileInfoJsonFile);
+        JsonParser notesParser = createJsonParser(notesJsonFile);
+        JsonParser filesInfoParser = createJsonParser(fileInfoJsonFile);
 
-            NotesImporter notesImporter = createNotesImporter(notesParser);
-            FilesImporter filesImporter = createFilesImporter(filesInfoParser, dataBlocksDir);
+        NotesImporter notesImporter = createNotesImporter(notesParser);
+        FilesImporter filesImporter = createFilesImporter(filesInfoParser, dataBlocksDir);
 
-            notesImporter.importNotes();
-            filesImporter.importFilesData();
-        } catch (IOException e) {
-            throw new ImportFailedException(e);
-        }
+        notesImporter.importNotes();
+        filesImporter.importFilesData();
     }
 
     private JsonParser createJsonParser(File file) throws IOException {
