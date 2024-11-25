@@ -50,12 +50,26 @@ public class ImportManagerV2 extends BaseImportManager {
                 status = context.getString(R.string.importing);
                 ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath(), null);
 
+                begin();
+
+                clearTables();
+                importData();
+
+                end();
+
                 status = context.getString(R.string.wiping_temp_data);
                 wipeTempData();
 
                 result = ImportResult.FINISHED_SUCCESSFULLY;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException | ImportFailedException e) {
+                if (isTransactionStarted()) {
+                    rollback();
+                }
+
+                wipeTempData();
+
+                status = context.getString(R.string.cannot_import_data);
+                result = ImportResult.IMPORT_FAILED;
             }
         });
 
