@@ -5,19 +5,16 @@ import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
-import app.notesr.manager.importer.BaseImporter;
-import app.notesr.model.FileInfo;
+import app.notesr.manager.importer.BaseFilesImporter;
+import app.notesr.model.DataBlock;
 import app.notesr.utils.FilesUtils;
 
-class FilesImporter extends BaseImporter {
-
-    private final FilesInfoTable filesInfoTable;
-    private final DataBlocksTable dataBlocksTable;
+class FilesImporter extends BaseFilesImporter {
 
     private final File dataBlocksDir;
 
@@ -26,14 +23,30 @@ class FilesImporter extends BaseImporter {
                          DataBlocksTable dataBlocksTable,
                          File dataBlocksDir,
                          DateTimeFormatter timestampFormatter) {
-        super(parser, timestampFormatter);
-
-        this.filesInfoTable = filesInfoTable;
-        this.dataBlocksTable = dataBlocksTable;
+        super(parser, filesInfoTable, dataBlocksTable, timestampFormatter);
         this.dataBlocksDir = dataBlocksDir;
     }
 
-    private void parseFileInfoObject(FileInfo fileInfo) throws IOException {
+    @Override
+    protected void importFilesData() throws IOException {
+        if (skipTo("files_data_blocks")) {
+            if (parser.nextToken() == JsonToken.START_ARRAY) {
+                do {
+                    DataBlock dataBlock = new DataBlock();
+                    parseDataBlockObject(dataBlock);
+
+                    if (dataBlock.getId() != null) {
+                        byte[] data = FilesCrypt.encryptData(readDataBlock(dataBlock.getId()));
+
+                        dataBlock.setData(data);
+                        dataBlocksTable.importDataBlock(dataBlock);
+                    }
+                } while (parser.nextToken() != JsonToken.END_ARRAY);
+            }
+        }
+    }
+
+    protected void parseDataBlockObject(DataBlock dataBlock) throws IOException {
         String field;
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -43,43 +56,17 @@ class FilesImporter extends BaseImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        fileInfo.setId(parser.getValueAsLong());
+                        dataBlock.setId(parser.getValueAsLong());
                     }
 
-                    case "note_id" -> {
-                        if (parser.getValueAsString().equals("note_id")) continue;
-                        fileInfo.setNoteId(parser.getValueAsLong());
+                    case "file_id" -> {
+                        if (parser.getValueAsString().equals("file_id")) continue;
+                        dataBlock.setFileId(parser.getValueAsLong());
                     }
 
-                    case "size" -> {
-                        if (parser.getValueAsString().equals("size")) continue;
-                        fileInfo.setSize(parser.getValueAsLong());
-                    }
-
-                    case "name" -> {
-                        if (parser.getValueAsString().equals("name")) continue;
-                        fileInfo.setName(parser.getValueAsString());
-                    }
-
-                    case "type" -> {
-                        if (parser.getValueAsString().equals("type")) continue;
-                        fileInfo.setType(parser.getValueAsString());
-                    }
-
-                    case "created_at" -> {
-                        if (parser.getValueAsString().equals("created_at")) continue;
-
-                        fileInfo.setCreatedAt(
-                                LocalDateTime.parse(parser.getValueAsString(), timestampFormatter)
-                        );
-                    }
-
-                    case "updated_at" -> {
-                        if (parser.getValueAsString().equals("updated_at")) continue;
-
-                        fileInfo.setUpdatedAt(
-                                LocalDateTime.parse(parser.getValueAsString(), timestampFormatter)
-                        );
+                    case "order" -> {
+                        if (parser.getValueAsString().equals("order")) continue;
+                        dataBlock.setOrder(parser.getValueAsLong());
                     }
 
                     default -> {}
