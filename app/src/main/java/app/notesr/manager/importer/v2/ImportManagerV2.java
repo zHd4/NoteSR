@@ -66,6 +66,18 @@ public class ImportManagerV2 extends BaseImportManager {
         return new NotesImporter(parser, getNotesTable(), getTimestampFormatter());
     }
 
+    private FilesImporter createFilesImporter(JsonParser parser) {
+        File dataBlocksDir = new File(tempDir, "data_blocks");
+
+        return new FilesImporter(
+                parser,
+                getFilesInfoTable(),
+                getDataBlocksTable(),
+                dataBlocksDir,
+                getTimestampFormatter()
+        );
+    }
+
     private void wipeTempData() {
         try {
             if (!Wiper.wipeAny(List.of(file, tempDir))) {
