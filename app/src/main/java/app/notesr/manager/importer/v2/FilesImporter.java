@@ -46,6 +46,7 @@ class FilesImporter extends BaseFilesImporter {
         }
     }
 
+    @Override
     protected void parseDataBlockObject(DataBlock dataBlock) throws IOException {
         String field;
 
