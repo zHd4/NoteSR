@@ -3,6 +3,7 @@ package app.notesr.manager.importer.v2;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,20 +12,25 @@ import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.manager.importer.BaseImporter;
 import app.notesr.model.FileInfo;
+import app.notesr.utils.FilesUtils;
 
 class FilesImporter extends BaseImporter {
 
     private final FilesInfoTable filesInfoTable;
     private final DataBlocksTable dataBlocksTable;
 
+    private final File dataBlocksDir;
+
     public FilesImporter(JsonParser parser,
                          FilesInfoTable filesInfoTable,
                          DataBlocksTable dataBlocksTable,
+                         File dataBlocksDir,
                          DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
 
         this.filesInfoTable = filesInfoTable;
         this.dataBlocksTable = dataBlocksTable;
+        this.dataBlocksDir = dataBlocksDir;
     }
 
     private void parseFileInfoObject(FileInfo fileInfo) throws IOException {
@@ -80,5 +86,9 @@ class FilesImporter extends BaseImporter {
                 }
             }
         }
+    }
+
+    private byte[] readDataBlock(Long id) throws IOException {
+        return FilesUtils.readFileBytes(new File(dataBlocksDir, id.toString()));
     }
 }
