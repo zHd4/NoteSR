@@ -66,12 +66,13 @@ public class ImportManagerV2 extends BaseImportManager {
         try {
             File notesJsonFile = new File(tempDir, NOTES_JSON_FILE_NAME);
             File fileInfoJsonFile = new File(tempDir, FILES_INFO_JSON_FILE_NAME);
+            File dataBlocksDir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
 
             JsonParser notesParser = createJsonParser(notesJsonFile);
             JsonParser filesInfoParser = createJsonParser(fileInfoJsonFile);
 
             NotesImporter notesImporter = createNotesImporter(notesParser);
-            FilesImporter filesImporter = createFilesImporter(filesInfoParser);
+            FilesImporter filesImporter = createFilesImporter(filesInfoParser, dataBlocksDir);
 
             notesImporter.importNotes();
             filesImporter.importFilesData();
@@ -89,9 +90,7 @@ public class ImportManagerV2 extends BaseImportManager {
         return new NotesImporter(parser, getNotesTable(), getTimestampFormatter());
     }
 
-    private FilesImporter createFilesImporter(JsonParser parser) {
-        File dataBlocksDir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
-
+    private FilesImporter createFilesImporter(JsonParser parser, File dataBlocksDir) {
         return new FilesImporter(
                 parser,
                 getFilesInfoTable(),
