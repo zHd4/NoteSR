@@ -9,6 +9,7 @@ import app.notesr.R;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.manager.importer.BaseImportManager;
 import app.notesr.manager.importer.ImportResult;
+import app.notesr.manager.importer.NotesImporter;
 import app.notesr.utils.Wiper;
 
 import java.io.File;

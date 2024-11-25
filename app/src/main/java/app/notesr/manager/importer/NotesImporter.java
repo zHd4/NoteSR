@@ -1,11 +1,10 @@
-package app.notesr.manager.importer.v1;
+package app.notesr.manager.importer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.exception.ImportFailedException;
-import app.notesr.manager.importer.BaseImporter;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
 
@@ -13,7 +12,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-class NotesImporter extends BaseImporter {
+public class NotesImporter extends BaseImporter {
 
     private final NotesTable notesTable;
 
