@@ -23,6 +23,7 @@ import lombok.Getter;
 public class ImportManagerV2 extends BaseImportManager {
 
     private static final String TAG = ImportManagerV2.class.getName();
+    private static final String DATA_BLOCKS_DIR_NAME = "data_blocks";
 
     @Getter
     private ImportResult result = ImportResult.NONE;
@@ -67,7 +68,7 @@ public class ImportManagerV2 extends BaseImportManager {
     }
 
     private FilesImporter createFilesImporter(JsonParser parser) {
-        File dataBlocksDir = new File(tempDir, "data_blocks");
+        File dataBlocksDir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
 
         return new FilesImporter(
                 parser,
