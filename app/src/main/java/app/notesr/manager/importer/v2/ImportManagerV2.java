@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 import app.notesr.R;
+import app.notesr.exception.ImportFailedException;
 import app.notesr.manager.importer.BaseImportManager;
 import app.notesr.manager.importer.ImportResult;
 import app.notesr.manager.importer.NotesImporter;
@@ -23,6 +24,9 @@ import lombok.Getter;
 public class ImportManagerV2 extends BaseImportManager {
 
     private static final String TAG = ImportManagerV2.class.getName();
+
+    private static final String NOTES_JSON_FILE_NAME = "notes.json";
+    private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
     private static final String DATA_BLOCKS_DIR_NAME = "data_blocks";
 
     @Getter
@@ -56,6 +60,24 @@ public class ImportManagerV2 extends BaseImportManager {
         });
 
         thread.start();
+    }
+
+    private void importData() throws ImportFailedException {
+        try {
+            File notesJsonFile = new File(tempDir, NOTES_JSON_FILE_NAME);
+            File fileInfoJsonFile = new File(tempDir, FILES_INFO_JSON_FILE_NAME);
+
+            JsonParser notesParser = createJsonParser(notesJsonFile);
+            JsonParser filesInfoParser = createJsonParser(fileInfoJsonFile);
+
+            NotesImporter notesImporter = createNotesImporter(notesParser);
+            FilesImporter filesImporter = createFilesImporter(filesInfoParser);
+
+            notesImporter.importNotes();
+            filesImporter.importFilesData();
+        } catch (IOException e) {
+            throw new ImportFailedException(e);
+        }
     }
 
     private JsonParser createJsonParser(File file) throws IOException {
