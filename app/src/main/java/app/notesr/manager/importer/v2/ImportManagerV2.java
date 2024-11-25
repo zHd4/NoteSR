@@ -5,6 +5,9 @@ import static java.util.UUID.randomUUID;
 import android.content.Context;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -51,6 +54,11 @@ public class ImportManagerV2 extends BaseImportManager {
         });
 
         thread.start();
+    }
+
+    private JsonParser createJsonParser(File file) throws IOException {
+        JsonFactory factory = new JsonFactory();
+        return factory.createParser(file);
     }
 
     private void wipeTempData() {
