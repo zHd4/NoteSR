@@ -55,7 +55,13 @@ public class NotesImporter extends BaseImporter {
 
                         case "updated_at" -> {
                             if (parser.getValueAsString().equals("updated_at")) continue;
-                            note.setUpdatedAt(LocalDateTime.parse(parser.getValueAsString(), timestampFormatter));
+
+                            LocalDateTime updatedAt = LocalDateTime.parse(
+                                    parser.getValueAsString(),
+                                    timestampFormatter
+                            );
+
+                            note.setUpdatedAt(updatedAt);
                         }
 
                         default -> {}
