@@ -15,6 +15,7 @@ import java.util.List;
 import app.notesr.R;
 import app.notesr.manager.importer.BaseImportManager;
 import app.notesr.manager.importer.ImportResult;
+import app.notesr.manager.importer.NotesImporter;
 import app.notesr.utils.Wiper;
 import app.notesr.utils.ZipUtils;
 import lombok.Getter;
@@ -59,6 +60,10 @@ public class ImportManagerV2 extends BaseImportManager {
     private JsonParser createJsonParser(File file) throws IOException {
         JsonFactory factory = new JsonFactory();
         return factory.createParser(file);
+    }
+
+    private NotesImporter createNotesImporter(JsonParser parser) {
+        return new NotesImporter(parser, getNotesTable(), getTimestampFormatter());
     }
 
     private void wipeTempData() {
