@@ -31,6 +31,11 @@ import lombok.RequiredArgsConstructor;
 public class ExportManager extends BaseManager {
 
     private static final String TAG = ExportManager.class.getName();
+    
+    private static final String VERSION_FILE_NAME = "version";
+    private static final String NOTES_JSON_FILE_NAME = "notes.json";
+    private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
+    private static final String DATA_BLOCKS_DIR_NAME = "data_blocks";
 
     private final Context context;
     private final File outputFile;
@@ -121,15 +126,15 @@ public class ExportManager extends BaseManager {
         }
 
         filesDataExporter = createFilesDataExporter();
-        notesExporter = createNotesExporter(createJsonGenerator(tempDir, "notes.json"));
+        notesExporter = createNotesExporter(createJsonGenerator(tempDir, NOTES_JSON_FILE_NAME));
 
         filesInfoExporter = createFilesInfoExporter(
-                createJsonGenerator(tempDir, "files_info.json")
+                createJsonGenerator(tempDir, FILES_INFO_JSON_FILE_NAME)
         );
 
         try {
             String version = VersionFetcher.fetchVersionName(context, false);
-            File targetFile = new File(tempDir, "version");
+            File targetFile = new File(tempDir, VERSION_FILE_NAME);
 
             FilesUtils.writeFileBytes(targetFile, version.getBytes());
         } catch (PackageManager.NameNotFoundException e) {
@@ -219,7 +224,7 @@ public class ExportManager extends BaseManager {
     }
 
     private FilesDataExporter createFilesDataExporter() {
-        File dir = new File(tempDir, "data_blocks");
+        File dir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
         return new FilesDataExporter(thread, dir, getDataBlocksTable());
     }
 
