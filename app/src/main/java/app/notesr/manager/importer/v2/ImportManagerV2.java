@@ -88,7 +88,7 @@ public class ImportManagerV2 extends BaseImportManager {
         FilesImporter filesImporter = createFilesImporter(filesInfoParser, dataBlocksDir);
 
         notesImporter.importNotes();
-        filesImporter.importFilesData();
+        filesImporter.importFiles();
     }
 
     private JsonParser createJsonParser(File file) throws IOException {
