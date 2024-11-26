@@ -1,4 +1,4 @@
-package app.notesr.manager.exporter;
+package app.notesr.manager.data.exporter;
 
 import java.io.File;
 import java.io.IOException;

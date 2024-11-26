@@ -16,8 +16,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import app.notesr.manager.exporter.ExportManager;
-import app.notesr.manager.exporter.ExportResult;
+import app.notesr.manager.data.exporter.ExportManager;
+import app.notesr.manager.data.exporter.ExportResult;
 
 import java.io.File;
 import java.nio.file.Path;
