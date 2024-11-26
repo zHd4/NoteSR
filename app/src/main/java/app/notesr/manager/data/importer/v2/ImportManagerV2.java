@@ -1,29 +1,25 @@
 package app.notesr.manager.data.importer.v2;
 
 import static java.util.UUID.randomUUID;
+import static app.notesr.manager.data.TempDataWiper.wipeTempData;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import app.notesr.R;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.manager.data.importer.BaseImportManager;
 import app.notesr.manager.data.importer.ImportResult;
 import app.notesr.manager.data.importer.NotesImporter;
-import app.notesr.utils.Wiper;
 import app.notesr.utils.ZipUtils;
 import lombok.Getter;
 
 public class ImportManagerV2 extends BaseImportManager {
-
-    private static final String TAG = ImportManagerV2.class.getName();
 
     private static final String NOTES_JSON_FILE_NAME = "notes.json";
     private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
@@ -58,7 +54,7 @@ public class ImportManagerV2 extends BaseImportManager {
                 end();
 
                 status = context.getString(R.string.wiping_temp_data);
-                wipeTempData();
+                wipeTempData(file, tempDir);
 
                 result = ImportResult.FINISHED_SUCCESSFULLY;
             } catch (IOException | ImportFailedException e) {
@@ -66,7 +62,7 @@ public class ImportManagerV2 extends BaseImportManager {
                     rollback();
                 }
 
-                wipeTempData();
+                wipeTempData(file, tempDir);
 
                 status = context.getString(R.string.cannot_import_data);
                 result = ImportResult.IMPORT_FAILED;
@@ -108,16 +104,5 @@ public class ImportManagerV2 extends BaseImportManager {
                 dataBlocksDir,
                 getTimestampFormatter()
         );
-    }
-
-    private void wipeTempData() {
-        try {
-            if (!Wiper.wipeAny(List.of(file, tempDir))) {
-                throw new IllegalStateException("Temp data has not been wiped");
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "IOException", e);
-            throw new RuntimeException(e);
-        }
     }
 }
