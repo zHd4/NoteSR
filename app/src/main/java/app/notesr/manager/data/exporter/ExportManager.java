@@ -30,8 +30,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ExportManager extends BaseManager {
-
-    private static final String TAG = ExportManager.class.getName();
     
     private static final String VERSION_FILE_NAME = "version";
     private static final String NOTES_JSON_FILE_NAME = "notes.json";
