@@ -1,4 +1,4 @@
-package app.notesr.manager.importer;
+package app.notesr.manager.data.importer;
 
 import static java.util.UUID.randomUUID;
 
@@ -14,8 +14,8 @@ import app.notesr.R;
 import app.notesr.crypto.BackupsCrypt;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.manager.BaseManager;
-import app.notesr.manager.importer.v1.ImportManagerV1;
-import app.notesr.manager.importer.v2.ImportManagerV2;
+import app.notesr.manager.data.importer.v1.ImportManagerV1;
+import app.notesr.manager.data.importer.v2.ImportManagerV2;
 import app.notesr.utils.Wiper;
 import app.notesr.utils.ZipUtils;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package app.notesr.manager.importer.v2;
+package app.notesr.manager.data.importer.v2;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
-import app.notesr.manager.importer.BaseFilesImporter;
+import app.notesr.manager.data.importer.BaseFilesImporter;
 import app.notesr.model.DataBlock;
 import app.notesr.utils.FilesUtils;
 

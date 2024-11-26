@@ -1,4 +1,4 @@
-package app.notesr.manager.importer.v2;
+package app.notesr.manager.data.importer.v2;
 
 import static java.util.UUID.randomUUID;
 
@@ -14,9 +14,9 @@ import java.util.List;
 
 import app.notesr.R;
 import app.notesr.exception.ImportFailedException;
-import app.notesr.manager.importer.BaseImportManager;
-import app.notesr.manager.importer.ImportResult;
-import app.notesr.manager.importer.NotesImporter;
+import app.notesr.manager.data.importer.BaseImportManager;
+import app.notesr.manager.data.importer.ImportResult;
+import app.notesr.manager.data.importer.NotesImporter;
 import app.notesr.utils.Wiper;
 import app.notesr.utils.ZipUtils;
 import lombok.Getter;

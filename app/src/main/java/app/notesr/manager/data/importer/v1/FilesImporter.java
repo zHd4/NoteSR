@@ -1,4 +1,4 @@
-package app.notesr.manager.importer.v1;
+package app.notesr.manager.data.importer.v1;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
-import app.notesr.manager.importer.BaseFilesImporter;
+import app.notesr.manager.data.importer.BaseFilesImporter;
 import app.notesr.model.DataBlock;
 
 import java.io.IOException;

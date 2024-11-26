@@ -1,4 +1,4 @@
-package app.notesr.manager.importer;
+package app.notesr.manager.data.importer;
 
 import lombok.AllArgsConstructor;
 

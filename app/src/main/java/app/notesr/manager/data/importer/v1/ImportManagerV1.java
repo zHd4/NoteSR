@@ -1,4 +1,4 @@
-package app.notesr.manager.importer.v1;
+package app.notesr.manager.data.importer.v1;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonParser;
 
 import app.notesr.R;
 import app.notesr.exception.ImportFailedException;
-import app.notesr.manager.importer.BaseImportManager;
-import app.notesr.manager.importer.ImportResult;
-import app.notesr.manager.importer.NotesImporter;
+import app.notesr.manager.data.importer.BaseImportManager;
+import app.notesr.manager.data.importer.ImportResult;
+import app.notesr.manager.data.importer.NotesImporter;
 import app.notesr.utils.Wiper;
 
 import java.io.File;
