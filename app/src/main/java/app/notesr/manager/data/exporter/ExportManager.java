@@ -12,6 +12,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.crypto.BackupsCrypt;
 import app.notesr.manager.BaseManager;
+import app.notesr.manager.data.TempDataWiper;
 import app.notesr.utils.FilesUtils;
 import app.notesr.utils.Wiper;
 import app.notesr.utils.VersionFetcher;
@@ -186,14 +187,7 @@ public class ExportManager extends BaseManager {
 
     private void wipeTempData() {
         if (result == ExportResult.NONE) {
-            try {
-                if (!Wiper.wipeAny(List.of(tempArchive, tempDir))) {
-                    throw new IllegalStateException("Temp data has not been wiped");
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-                throw new RuntimeException(e);
-            }
+            TempDataWiper.wipeTempData(tempArchive, tempDir);
         }
     }
 
