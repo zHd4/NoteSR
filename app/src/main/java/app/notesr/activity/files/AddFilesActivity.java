@@ -142,12 +142,12 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
 
             long size = resolver.getFileSize();
 
-            FileInfo fileInfo = new FileInfo();
-
-            fileInfo.setNoteId(noteId);
-            fileInfo.setSize(size);
-            fileInfo.setName(filename);
-            fileInfo.setType(type);
+            FileInfo fileInfo = FileInfo.builder()
+                    .noteId(noteId)
+                    .size(size)
+                    .name(filename)
+                    .type(type)
+                    .build();
 
             try {
                 InputStream stream = getContentResolver().openInputStream(uri);
