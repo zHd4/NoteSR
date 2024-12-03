@@ -26,6 +26,8 @@
         android:layout_height="fill_parent"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
