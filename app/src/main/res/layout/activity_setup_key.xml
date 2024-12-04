@@ -9,8 +9,9 @@
 
     <EditText
         android:id="@+id/importKeyField"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="53dp"
+        android:layout_margin="4dp"
         android:backgroundTint="@color/edit_text_background_tint"
         android:ems="10"
         android:hint="@string/or_enter_key_here_to_import"
@@ -20,27 +21,11 @@
         android:textColorHighlight="@color/select_text"
         android:textColorHint="#8F8F8F"
         android:textColorLink="@color/text_color"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/copyAesKeyHex"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.768"
         tools:ignore="Autofill" />
-
-    <TextView
-        android:id="@+id/lose_key_warning"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/without_key_you_cannot_restore_your_notes"
-        android:textColor="@android:color/holo_red_light"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.103" />
 
     <TextView
         android:id="@+id/top_label"
@@ -49,11 +34,25 @@
         android:text="@string/backup_this_private_key_to_safe_place"
         android:textColor="@color/text_color"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/lose_key_warning"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.07" />
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/lose_key_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/without_key_you_cannot_restore_your_notes"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/aesKeyHex"
@@ -63,34 +62,36 @@
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3"/>
+        app:layout_constraintVertical_bias="0.36" />
 
     <Button
         android:id="@+id/copyAesKeyHex"
-        android:layout_width="317dp"
+        android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_margin="4dp"
         android:background="@drawable/button"
         android:text="@string/copy_to_clipboard"
         android:textColor="@color/text_color"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/keySetupNextButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.87" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/keySetupNextButton"
-        android:layout_width="317dp"
+        android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_margin="4dp"
         android:background="@drawable/button"
         android:text="@string/next"
         android:textColor="@color/text_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.958" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
