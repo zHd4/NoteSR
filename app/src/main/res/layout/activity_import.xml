@@ -11,12 +11,11 @@
         android:id="@+id/importInfoText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         android:text="@string/select_the_data_file"
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,8 +61,9 @@
 
     <Button
         android:id="@+id/startImportButton"
-        android:layout_width="378dp"
+        android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_margin="4dp"
         android:background="@drawable/button"
         android:enabled="false"
         android:text="@string/start"
@@ -80,7 +80,7 @@
         android:id="@+id/selectedFileTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="4dp"
         android:layout_marginBottom="16dp"
         android:text="example.notesr.bak"
         android:textAlignment="center"
