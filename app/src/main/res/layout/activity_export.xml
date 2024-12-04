@@ -19,73 +19,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/note_export_image_view"
-        android:layout_width="87dp"
-        android:layout_height="101dp"
-        android:layout_marginStart="92dp"
-        android:layout_marginTop="204dp"
-        android:contentDescription="@string/note"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/note" />
-
-    <TextView
-        android:id="@+id/filesCountLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="376dp"
-        android:text="@string/d_files"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.096"
-        app:layout_constraintStart_toEndOf="@+id/file_export_image_view"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/notesCountLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="224dp"
-        android:text="@string/d_notes"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.091"
-        app:layout_constraintStart_toEndOf="@+id/note_export_image_view"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/file_export_image_view"
-        android:layout_width="93dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="92dp"
-        android:layout_marginTop="52dp"
-        android:contentDescription="@string/file"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/note_export_image_view"
-        app:srcCompat="@drawable/file" />
-
     <ProgressBar
         android:id="@+id/exportProgressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="378dp"
+        android:layout_width="match_parent"
         android:layout_height="13dp"
+        android:layout_margin="4dp"
         android:max="100"
         android:progress="0"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/startStopExportButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.484"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.877" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/exportStatusLabel"
@@ -111,16 +56,16 @@
 
     <Button
         android:id="@+id/startStopExportButton"
-        android:layout_width="378dp"
+        android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_margin="4dp"
         android:background="@drawable/button"
         android:text="@string/export"
         android:textColor="@color/text_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.961" />
+        app:layout_constraintHorizontal_bias="0.515"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/exportOutputPathLabel"
@@ -132,5 +77,65 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/exportProgressBar"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="409dp"
+        android:layout_height="274dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/note_export_image_view"
+            android:layout_width="87dp"
+            android:layout_height="101dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/note"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.26"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/note" />
+
+        <TextView
+            android:id="@+id/filesCountLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="69dp"
+            android:text="@string/d_files"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/file_export_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/notesCountLabel" />
+
+        <ImageView
+            android:id="@+id/file_export_image_view"
+            android:layout_width="93dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="76dp"
+            android:layout_marginTop="28dp"
+            android:contentDescription="@string/file"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/note_export_image_view"
+            app:srcCompat="@drawable/file" />
+
+        <TextView
+            android:id="@+id/notesCountLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/d_notes"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/note_export_image_view"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
