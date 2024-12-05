@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import java.util.UUID;
 
 public class HashHelperTest {
 
@@ -21,5 +22,15 @@ public class HashHelperTest {
         byte[] actual = HashHelper.toSha256Bytes(data);
 
         Assert.assertArrayEquals("Actual hash different", expected, actual);
+    }
+
+    @Test
+    public void testGetUUIDHash() {
+        UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+
+        long expected = 3121068470L;
+        long actual = HashHelper.getUUIDHash(uuid);
+
+        Assert.assertEquals("Actual hash different", expected, actual);
     }
 }
