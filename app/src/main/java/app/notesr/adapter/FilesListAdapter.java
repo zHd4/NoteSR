@@ -81,6 +81,6 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
 
     @Override
     public long getItemId(int position) {
-        return Objects.requireNonNull(getItem(position)).getId();
+        return Objects.requireNonNull(getItem(position)).getId().hashCode();
     }
 }
