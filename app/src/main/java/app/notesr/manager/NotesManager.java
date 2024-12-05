@@ -23,7 +23,7 @@ public class NotesManager extends BaseManager {
                 .collect(Collectors.toList());
     }
 
-    public Note get(Long id) {
+    public Note get(String id) {
         EncryptedNote encryptedNote = getNotesTable().get(id);
 
         return encryptedNote != null
@@ -31,7 +31,7 @@ public class NotesManager extends BaseManager {
                 : null;
     }
 
-    public List<Long> search(String query) {
+    public List<String> search(String query) {
         return getAll().stream()
                 .filter(note -> {
                     String formattedQuery = query.trim().toLowerCase();
@@ -50,7 +50,7 @@ public class NotesManager extends BaseManager {
                 .collect(Collectors.toList());
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         FilesInfoTable filesInfoTable = getFilesInfoTable();
         DataBlocksTable dataBlocksTable = getDataBlocksTable();
 
