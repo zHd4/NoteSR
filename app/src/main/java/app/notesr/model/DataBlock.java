@@ -12,8 +12,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class DataBlock {
-    private Long id;
-    private Long fileId;
+    private String id;
+    private String fileId;
     private Long order;
     private byte[] data;
 }
