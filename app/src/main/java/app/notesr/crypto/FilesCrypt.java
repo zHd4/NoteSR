@@ -106,14 +106,15 @@ public class FilesCrypt {
                 decryptedType = new String(aes.decrypt(encryptedType));
             }
 
-            return new FileInfo(
-                    encryptedFileInfo.getId(),
-                    encryptedFileInfo.getNoteId(),
-                    encryptedFileInfo.getSize(),
-                    decryptedName,
-                    decryptedType,
-                    encryptedFileInfo.getCreatedAt(),
-                    encryptedFileInfo.getUpdatedAt());
+            return FileInfo.builder()
+                    .id(encryptedFileInfo.getId())
+                    .noteId(encryptedFileInfo.getNoteId())
+                    .size(encryptedFileInfo.getSize())
+                    .name(decryptedName)
+                    .type(decryptedType)
+                    .createdAt(encryptedFileInfo.getCreatedAt())
+                    .updatedAt(encryptedFileInfo.getUpdatedAt())
+                    .build();
         } catch (Exception e) {
             Log.e("Cannot decrypt file info", e.toString());
             throw new RuntimeException(e);
