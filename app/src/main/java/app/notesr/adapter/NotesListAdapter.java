@@ -48,6 +48,6 @@ public class NotesListAdapter extends ElementsListAdapter<Note> {
 
     @Override
     public long getItemId(int position) {
-        return Objects.requireNonNull(getItem(position)).getId().hashCode();
+        return Objects.requireNonNull(getItem(position)).getDecimalId();
     }
 }
