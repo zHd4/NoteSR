@@ -31,7 +31,7 @@ class FilesImporter extends BaseFilesImporter {
 
                     if (dataBlock.getId() != null) {
                         dataBlock.setData(FilesCrypt.encryptData(dataBlock.getData()));
-                        dataBlocksTable.importDataBlock(dataBlock);
+                        dataBlocksTable.save(dataBlock);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
@@ -49,12 +49,12 @@ class FilesImporter extends BaseFilesImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        dataBlock.setId(parser.getValueAsLong());
+                        dataBlock.setId(parser.getValueAsString());
                     }
 
                     case "file_id" -> {
                         if (parser.getValueAsString().equals("file_id")) continue;
-                        dataBlock.setFileId(parser.getValueAsLong());
+                        dataBlock.setFileId(parser.getValueAsString());
                     }
 
                     case "order" -> {
