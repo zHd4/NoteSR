@@ -41,7 +41,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_note);
 
-        long noteId = getIntent().getLongExtra("noteId", -1);
+        String noteId = getIntent().getStringExtra("noteId");
         note = getNotesManager().get(noteId);
 
         noteModified = getIntent().getBooleanExtra("modified", false);
