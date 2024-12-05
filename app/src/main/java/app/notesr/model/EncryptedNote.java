@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Getter
 public final class EncryptedNote {
     @Setter
-    private Long id;
+    private String id;
 
     @NotNull
     private final byte[] encryptedName;
