@@ -6,12 +6,16 @@ import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
+import app.notesr.model.Note;
+import app.notesr.utils.HashHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class AssignmentsManager extends BaseManager {
     private static final int CHUNK_SIZE = 500000;
@@ -28,12 +32,15 @@ public class AssignmentsManager extends BaseManager {
 
     public List<FileInfo> getFilesInfo(String noteId) {
         List<EncryptedFileInfo> encryptedFilesInfo = getFilesInfoTable().getByNoteId(noteId);
-        return FilesCrypt.decryptInfo(encryptedFilesInfo);
+
+        return FilesCrypt.decryptInfo(encryptedFilesInfo).stream()
+                .map(this::setDecimalId)
+                .collect(Collectors.toList());
     }
 
     public FileInfo getInfo(String fileId) {
         EncryptedFileInfo encryptedFileInfo = getFilesInfoTable().get(fileId);
-        return FilesCrypt.decryptInfo(encryptedFileInfo);
+        return setDecimalId(FilesCrypt.decryptInfo(encryptedFileInfo));
     }
 
     public String saveInfo(FileInfo fileInfo) {
@@ -120,5 +127,14 @@ public class AssignmentsManager extends BaseManager {
         getDataBlocksTable().deleteByFileId(fileId);
         getNotesTable().markAsModified(getFilesInfoTable().get(fileId).getNoteId());
         getFilesInfoTable().delete(fileId);
+    }
+
+    private FileInfo setDecimalId(FileInfo fileInfo) {
+        UUID uuid = UUID.fromString(fileInfo.getId());
+        long hash = HashHelper.getUUIDHash(uuid);
+
+        fileInfo.setDecimalId(hash);
+
+        return fileInfo;
     }
 }
