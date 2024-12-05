@@ -19,7 +19,7 @@ public final class NotesTable extends BaseTable {
 
         db.writableDatabase.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
-                        "id varchar(50) PRIMARY KEY, " +
+                        "id varchar(36) PRIMARY KEY CHECK(LENGTH(id) = 36), " +
                         "encrypted_name blob NOT NULL, " +
                         "encrypted_data blob NOT NULL, " +
                         "updated_at varchar(255) NOT NULL)"
