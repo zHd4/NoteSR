@@ -19,8 +19,8 @@ public class DataBlocksTable extends BaseTable {
 
         db.writableDatabase.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
-                        "id varchar(50) PRIMARY KEY, " +
-                        "file_id varchar(50) NOT NULL, " +
+                        "id varchar(36) PRIMARY KEY CHECK(LENGTH(id) = 36), " +
+                        "file_id varchar(36) NOT NULL, " +
                         "block_order bigint NOT NULL, " +
                         "data blob NOT NULL, " +
                         "FOREIGN KEY(file_id) REFERENCES " + filesInfoTable.getName() + "(id))"
