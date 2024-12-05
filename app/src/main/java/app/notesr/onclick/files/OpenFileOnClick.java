@@ -11,9 +11,11 @@ import app.notesr.activity.files.viewer.OpenTextFileActivity;
 import app.notesr.activity.files.viewer.OpenUnknownFileActivity;
 import app.notesr.activity.files.viewer.OpenVideoActivity;
 import app.notesr.model.FileInfo;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
+@RequiredArgsConstructor
 public class OpenFileOnClick implements AdapterView.OnItemClickListener {
     private static final Map<String, Class<? extends BaseFileViewerActivity>> FILES_VIEWERS =
             Map.of(
@@ -24,16 +26,15 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
             );
 
     private final AssignmentsListActivity activity;
-
-    public OpenFileOnClick(AssignmentsListActivity activity) {
-        this.activity = activity;
-    }
+    private final Map<Long, String> filesIdsMap;
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String fileId = filesIdsMap.get(id);
+
         FileInfo fileInfo = App.getAppContainer()
                 .getAssignmentsManager()
-                .getInfo(id);
+                .getInfo(fileId);
 
         String type = getFileType(fileInfo);
 
