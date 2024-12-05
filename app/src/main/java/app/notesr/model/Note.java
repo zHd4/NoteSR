@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 public final class Note {
     @JsonProperty("id")
-    private Long id;
+    private String id;
 
     @NotNull
     @JsonProperty("name")
