@@ -18,8 +18,8 @@ public class FilesInfoTable extends BaseTable {
 
         db.writableDatabase.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
-                        "id varchar(50) PRIMARY KEY, " +
-                        "note_id varchar(50) NOT NULL, " +
+                        "id varchar(36) PRIMARY KEY CHECK(LENGTH(id) = 36), " +
+                        "note_id varchar(36) NOT NULL, " +
                         "encrypted_name blob NOT NULL, " +
                         "encrypted_type blob, " +
                         "size bigint NOT NULL, " +
