@@ -22,11 +22,15 @@ import app.notesr.model.FileInfo;
 import app.notesr.model.Note;
 import app.notesr.onclick.files.OpenFileOnClick;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class AssignmentsListActivity extends ExtendedAppCompatActivity {
+    private final Map<Long, String> filesIdsMap = new HashMap<>();
+
     private Note note;
     private boolean noteModified;
 
@@ -61,7 +65,7 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
         });
 
         ListView filesListView = findViewById(R.id.filesListView);
-        filesListView.setOnItemClickListener(new OpenFileOnClick(this));
+        filesListView.setOnItemClickListener(new OpenFileOnClick(this, filesIdsMap));
     }
 
     @Override
@@ -105,21 +109,28 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
 
         executor.execute(() -> {
             handler.post(progressDialog::show);
-            fillFilesListView(getAssignmentsManager().getFilesInfo(note.getId()));
+
+            List<FileInfo> filesInfo = getAssignmentsManager().getFilesInfo(note.getId());
+
+            filesInfo.forEach(
+                    fileInfo -> filesIdsMap.put(fileInfo.getDecimalId(), fileInfo.getId())
+            );
+
+            fillFilesListView(filesInfo);
             progressDialog.dismiss();
         });
     }
 
-    private void fillFilesListView(List<FileInfo> files) {
+    private void fillFilesListView(List<FileInfo> filesInfo) {
         ListView filesView = findViewById(R.id.filesListView);
         TextView missingFilesLabel = findViewById(R.id.missingFilesLabel);
 
-        if (!files.isEmpty()) {
+        if (!filesInfo.isEmpty()) {
             missingFilesLabel.setVisibility(View.INVISIBLE);
             FilesListAdapter adapter = new FilesListAdapter(
                     App.getContext(),
                     R.layout.files_list_item,
-                    files);
+                    filesInfo);
 
             runOnUiThread(() -> filesView.setAdapter(adapter));
         }
