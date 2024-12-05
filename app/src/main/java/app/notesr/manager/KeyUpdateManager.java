@@ -34,9 +34,9 @@ public class KeyUpdateManager extends BaseManager {
             DataBlocksTable dataBlocksTable = getDataBlocksTable();
 
             EncryptedFileInfo updatedFileInfo = FilesCrypt.updateKey(fileInfo, oldKey, newKey);
-            Set<Long> blockIds = dataBlocksTable.getBlocksIdsByFileId(updatedFileInfo.getId());
+            Set<String> blockIds = dataBlocksTable.getBlocksIdsByFileId(updatedFileInfo.getId());
 
-            for (Long blockId : blockIds) {
+            for (String blockId : blockIds) {
                 DataBlock block = dataBlocksTable.get(blockId);
 
                 block.setData(FilesCrypt.updateKey(block.getData(), oldKey, newKey));
