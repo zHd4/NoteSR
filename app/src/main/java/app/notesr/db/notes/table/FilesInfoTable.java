@@ -1,17 +1,16 @@
 package app.notesr.db.notes.table;
 
+import static java.util.UUID.randomUUID;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import app.notesr.db.BaseTable;
 import app.notesr.db.notes.NotesDB;
-import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class FilesInfoTable extends BaseTable {
     public FilesInfoTable(NotesDB db, String name, NotesTable notesTable) {
@@ -19,14 +18,14 @@ public class FilesInfoTable extends BaseTable {
 
         db.writableDatabase.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
-                        "id integer PRIMARY KEY AUTOINCREMENT, " +
+                        "id varchar(50) PRIMARY KEY, " +
                         "note_id integer NOT NULL, " +
                         "encrypted_name blob NOT NULL, " +
                         "encrypted_type blob, " +
                         "size bigint NOT NULL, " +
                         "created_at varchar(255) NOT NULL, " +
                         "updated_at varchar(255) NOT NULL, " +
-                        "FOREIGN KEY(note_id) REFERENCES " + notesTable.getName() + "(note_id))"
+                        "FOREIGN KEY(note_id) REFERENCES " + notesTable.getName() + "(id))"
         );
     }
 
@@ -43,10 +42,12 @@ public class FilesInfoTable extends BaseTable {
         values.put("updated_at", nowStr);
 
         if (fileInfo.getId() == null || get(fileInfo.getId()) == null) {
-            values.put("created_at", nowStr);
-            long id = db.writableDatabase.insert(name, null, values);
+            String id = randomUUID().toString();
 
-            if (id == -1) {
+            values.put("id", id);
+            values.put("created_at", nowStr);
+
+            if (db.writableDatabase.insert(name, null, values) == -1) {
                 throw new RuntimeException("Cannot insert file info in table '" + name + "'");
             }
 
@@ -80,8 +81,8 @@ public class FilesInfoTable extends BaseTable {
             if (cursor.moveToFirst()) {
                 do {
                     EncryptedFileInfo fileInfo = EncryptedFileInfo.builder()
-                            .id(cursor.getLong(0))
-                            .noteId(cursor.getLong(1))
+                            .id(cursor.getString(0))
+                            .noteId(cursor.getString(1))
                             .encryptedName(cursor.getBlob(2))
                             .encryptedType(cursor.getBlob(3))
                             .size(cursor.getLong(4))
@@ -99,33 +100,7 @@ public class FilesInfoTable extends BaseTable {
         return filesInfo;
     }
 
-    public void importFileInfo(EncryptedFileInfo fileInfo) {
-        ContentValues values = new ContentValues();
-
-        values.put("id", fileInfo.getId());
-        values.put("note_id", fileInfo.getNoteId());
-
-        values.put("encrypted_name", fileInfo.getEncryptedName());
-        values.put("encrypted_type", fileInfo.getEncryptedType());
-
-        values.put("size", fileInfo.getSize());
-
-        String createdAt = fileInfo.getCreatedAt().format(getTimestampFormatter());
-        values.put("created_at", createdAt);
-
-        String updatedAt = fileInfo.getUpdatedAt().format(getTimestampFormatter());
-        values.put("updated_at", updatedAt);
-
-        long id = db.writableDatabase.insert(name, null, values);
-
-        if (id == -1) {
-            throw new RuntimeException("Cannot insert note in table '" + name + "'");
-        }
-
-        fileInfo.setId(id);
-    }
-
-    public EncryptedFileInfo get(long id) {
+    public EncryptedFileInfo get(String id) {
         Cursor cursor = db.readableDatabase.rawQuery(
                 "SELECT " +
                         "note_id, " +
@@ -140,7 +115,7 @@ public class FilesInfoTable extends BaseTable {
 
         try (cursor) {
             if (cursor.moveToFirst()) {
-                Long noteId = cursor.getLong(0);
+                String noteId = cursor.getString(0);
 
                 byte[] name = cursor.getBlob(1);
                 byte[] type = cursor.getBlob(2);
@@ -164,7 +139,7 @@ public class FilesInfoTable extends BaseTable {
         return null;
     }
 
-    public List<EncryptedFileInfo> getByNoteId(long noteId) {
+    public List<EncryptedFileInfo> getByNoteId(String noteId) {
         List<EncryptedFileInfo> files = new ArrayList<>();
 
         Cursor cursor = db.readableDatabase.rawQuery(
@@ -177,7 +152,7 @@ public class FilesInfoTable extends BaseTable {
         try (cursor) {
             if (cursor.moveToFirst()) {
                 do {
-                    Long id = cursor.getLong(0);
+                    String id = cursor.getString(0);
 
                     byte[] name = cursor.getBlob(1);
                     byte[] type = cursor.getBlob(2);
@@ -202,10 +177,10 @@ public class FilesInfoTable extends BaseTable {
         return files;
     }
 
-    public Long getCountByNoteId(long noteId) {
+    public Long getCountByNoteId(String noteId) {
         Cursor cursor = db.readableDatabase.rawQuery(
                 "SELECT COUNT(*) FROM " + name + " WHERE note_id = ?",
-                new String[] { String.valueOf(noteId) });
+                new String[] {noteId});
 
         Long count = null;
 
@@ -218,7 +193,7 @@ public class FilesInfoTable extends BaseTable {
         return count;
     }
 
-    public void delete(long id) {
-        db.writableDatabase.delete(name, "id = ?", new String[]{ String.valueOf(id) });
+    public void delete(String id) {
+        db.writableDatabase.delete(name, "id = ?", new String[]{id});
     }
 }
