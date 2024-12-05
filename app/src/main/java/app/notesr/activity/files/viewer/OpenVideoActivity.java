@@ -143,9 +143,9 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
         }
     }
 
-    private static String generateTempName(Long id, String name) {
+    private static String generateTempName(String id, String name) {
         try {
-            return HashHelper.toSha256String(id.toString() + "$" + name);
+            return HashHelper.toSha256String(id + "$" + name);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
