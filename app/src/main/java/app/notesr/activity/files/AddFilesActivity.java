@@ -93,7 +93,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
             AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
 
             filesMap.forEach((info, stream) -> {
-                Long fileId = manager.saveInfo(info);
+                String fileId = manager.saveInfo(info);
 
                 try {
                     manager.saveData(fileId, stream);
