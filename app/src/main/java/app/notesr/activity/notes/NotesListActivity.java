@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 
 public class NotesListActivity extends ExtendedAppCompatActivity {
     private final Map<Integer, Consumer<NotesListActivity>> menuItemsMap = new HashMap<>();
+    private final Map<Long, String> notesIdsMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
 
         loadNotes();
 
-        notesView.setOnItemClickListener(new OpenNoteOnClick(this));
+        notesView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
         newNoteButton.setOnClickListener(new NewNoteOnClick(this));
     }
 
@@ -102,6 +103,7 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
                     .getNotesManager()
                     .getAll();
 
+            notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
             fillNotesListView(notes);
 
             progressDialog.dismiss();
