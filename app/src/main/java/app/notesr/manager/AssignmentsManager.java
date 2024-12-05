@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public class AssignmentsManager extends BaseManager {
     private static final int CHUNK_SIZE = 500000;
 
-    public long getFilesCount(long noteId) {
+    public long getFilesCount(String noteId) {
         Long count = getFilesInfoTable().getCountByNoteId(noteId);
 
         if (count == null) {
@@ -26,21 +26,17 @@ public class AssignmentsManager extends BaseManager {
         return count;
     }
 
-    public List<FileInfo> getFilesInfo(Long noteId) {
-        List<EncryptedFileInfo> encryptedFilesInfo = getFilesInfoTable()
-                .getByNoteId(noteId);
-
+    public List<FileInfo> getFilesInfo(String noteId) {
+        List<EncryptedFileInfo> encryptedFilesInfo = getFilesInfoTable().getByNoteId(noteId);
         return FilesCrypt.decryptInfo(encryptedFilesInfo);
     }
 
-    public FileInfo getInfo(Long fileId) {
-        EncryptedFileInfo encryptedFileInfo = getFilesInfoTable()
-                .get(fileId);
-
+    public FileInfo getInfo(String fileId) {
+        EncryptedFileInfo encryptedFileInfo = getFilesInfoTable().get(fileId);
         return FilesCrypt.decryptInfo(encryptedFileInfo);
     }
 
-    public Long saveInfo(FileInfo fileInfo) {
+    public String saveInfo(FileInfo fileInfo) {
         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
 
         getFilesInfoTable().save(encryptedFileInfo);
@@ -49,50 +45,50 @@ public class AssignmentsManager extends BaseManager {
         return encryptedFileInfo.getId();
     }
 
-    public void saveData(Long fileId, InputStream stream) throws IOException {
-        DataBlocksTable dataBlocksTable = getDataBlocksTable();
+    public void saveData(String fileId, InputStream stream) throws IOException {
+        try (stream) {
+            DataBlocksTable dataBlocksTable = getDataBlocksTable();
 
-        byte[] chunk = new byte[CHUNK_SIZE];
+            byte[] chunk = new byte[CHUNK_SIZE];
 
-        long order = 0;
-        int bytesRead = stream.read(chunk);
+            long order = 0;
+            int bytesRead = stream.read(chunk);
 
-        while (bytesRead != -1) {
-            if (bytesRead != CHUNK_SIZE) {
-                byte[] subChunk = new byte[bytesRead];
-                System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
-                chunk = subChunk;
+            while (bytesRead != -1) {
+                if (bytesRead != CHUNK_SIZE) {
+                    byte[] subChunk = new byte[bytesRead];
+                    System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
+                    chunk = subChunk;
+                }
+
+                chunk = FilesCrypt.encryptData(chunk);
+
+                DataBlock dataBlock = DataBlock.builder()
+                        .fileId(fileId)
+                        .order(order)
+                        .data(chunk)
+                        .build();
+
+                dataBlocksTable.save(dataBlock);
+
+                chunk = new byte[CHUNK_SIZE];
+                bytesRead = stream.read(chunk);
+
+                order++;
             }
-
-            chunk = FilesCrypt.encryptData(chunk);
-
-            DataBlock dataBlock = DataBlock.builder()
-                    .fileId(fileId)
-                    .order(order)
-                    .data(chunk)
-                    .build();
-
-            dataBlocksTable.save(dataBlock);
-
-            chunk = new byte[CHUNK_SIZE];
-            bytesRead = stream.read(chunk);
-
-            order++;
         }
-
-        stream.close();
     }
 
-    public byte[] read(Long fileId) {
+    public byte[] read(String fileId) {
         FilesInfoTable filesInfoTable = getFilesInfoTable();
         DataBlocksTable dataBlocksTable = getDataBlocksTable();
 
-        Set<Long> ids = dataBlocksTable.getBlocksIdsByFileId(fileId);
+        Set<String> ids = dataBlocksTable.getBlocksIdsByFileId(fileId);
 
         byte[] data = new byte[Math.toIntExact(filesInfoTable.get(fileId).getSize())];
         int readBytes = 0;
 
-        for (Long id : ids) {
+        for (String id : ids) {
             DataBlock dataBlock = dataBlocksTable.get(id);
             byte[] blockData = FilesCrypt.decryptData(dataBlock.getData());
 
@@ -103,13 +99,13 @@ public class AssignmentsManager extends BaseManager {
         return data;
     }
 
-    public long read(Long fileId, Consumer<byte[]> actionPerChunk) {
+    public long read(String fileId, Consumer<byte[]> actionPerChunk) {
         DataBlocksTable dataBlocksTable = getDataBlocksTable();
-        Set<Long> ids = dataBlocksTable.getBlocksIdsByFileId(fileId);
+        Set<String> ids = dataBlocksTable.getBlocksIdsByFileId(fileId);
 
         long readBytes = 0;
 
-        for (Long id : ids) {
+        for (String id : ids) {
             DataBlock dataBlock = dataBlocksTable.get(id);
             byte[] data = FilesCrypt.decryptData(dataBlock.getData());
 
@@ -120,7 +116,7 @@ public class AssignmentsManager extends BaseManager {
         return readBytes;
     }
 
-    public void delete(Long fileId) {
+    public void delete(String fileId) {
         getDataBlocksTable().deleteByFileId(fileId);
         getNotesTable().markAsModified(getFilesInfoTable().get(fileId).getNoteId());
         getFilesInfoTable().delete(fileId);
