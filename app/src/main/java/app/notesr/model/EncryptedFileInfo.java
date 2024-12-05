@@ -12,8 +12,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class EncryptedFileInfo {
-    private Long id;
-    private Long noteId;
+    private String id;
+    private String noteId;
     private Long size;
     private byte[] encryptedName;
     private byte[] encryptedType;
