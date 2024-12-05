@@ -50,7 +50,7 @@ class NotesExporter extends Exporter {
     private void writeNote(Note note) throws IOException {
         jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeNumberField("id", note.getId());
+        jsonGenerator.writeStringField("id", note.getId());
 
         jsonGenerator.writeStringField("name", note.getName());
         jsonGenerator.writeStringField("text", note.getText());
