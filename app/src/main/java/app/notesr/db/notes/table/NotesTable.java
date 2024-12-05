@@ -72,8 +72,9 @@ public final class NotesTable extends BaseTable {
     public List<EncryptedNote> getAll() {
         List<EncryptedNote> notes = new ArrayList<>();
 
-        Cursor cursor = db.readableDatabase.rawQuery("SELECT * FROM " + name + " ORDER BY updated_at DESC",
-                new String[0]);
+        Cursor cursor = db.readableDatabase.rawQuery(
+                "SELECT * FROM " + name + " ORDER BY updated_at DESC", new String[0]
+        );
 
         try (cursor) {
             if (cursor.moveToFirst()) {
