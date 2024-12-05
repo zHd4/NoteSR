@@ -58,7 +58,7 @@ public final class NotesTable extends BaseTable {
         }
     }
 
-    public void markAsModified(long id) {
+    public void markAsModified(String id) {
         ContentValues values = new ContentValues();
 
         LocalDateTime now = LocalDateTime.now();
@@ -66,7 +66,7 @@ public final class NotesTable extends BaseTable {
 
         values.put("updated_at", updatedAt);
         db.writableDatabase.update(name, values, "id = ?",
-                new String[]{String.valueOf(id)});
+                new String[]{id});
     }
 
     public List<EncryptedNote> getAll() {
