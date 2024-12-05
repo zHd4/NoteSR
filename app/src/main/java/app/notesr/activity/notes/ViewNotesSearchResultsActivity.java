@@ -12,11 +12,14 @@ import app.notesr.model.Note;
 import app.notesr.model.SearchNotesResults;
 import app.notesr.onclick.notes.OpenNoteOnClick;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
     private SearchNotesResults results;
+    private final Map<Long, String> notesIdsMap = new HashMap<>();
 
     /** @noinspection DataFlowIssue*/
     @Override
@@ -37,7 +40,7 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
 
         fillResultsList(resultsView);
 
-        resultsView.setOnItemClickListener(new OpenNoteOnClick(this));
+        resultsView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
     }
 
     /** @noinspection deprecation*/
@@ -54,6 +57,8 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
                 .stream()
                 .map(manager::get)
                 .collect(Collectors.toList());
+
+        notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
 
         NotesListAdapter adapter = new NotesListAdapter(
                 App.getContext(),
