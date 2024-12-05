@@ -84,8 +84,8 @@ class FilesInfoExporter extends Exporter {
     private void writeFileInfo(FileInfo fileInfo) throws IOException {
         jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeNumberField("id", fileInfo.getId());
-        jsonGenerator.writeNumberField("note_id", fileInfo.getNoteId());
+        jsonGenerator.writeStringField("id", fileInfo.getId());
+        jsonGenerator.writeStringField("note_id", fileInfo.getNoteId());
         jsonGenerator.writeNumberField("size", fileInfo.getSize());
 
         jsonGenerator.writeStringField("name", fileInfo.getName());
@@ -103,8 +103,8 @@ class FilesInfoExporter extends Exporter {
     private void writeDataBlockInfo(DataBlock dataBlock) throws IOException {
         jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeNumberField("id", dataBlock.getId());
-        jsonGenerator.writeNumberField("file_id", dataBlock.getFileId());
+        jsonGenerator.writeStringField("id", dataBlock.getId());
+        jsonGenerator.writeStringField("file_id", dataBlock.getFileId());
         jsonGenerator.writeNumberField("order", dataBlock.getOrder());
 
         jsonGenerator.writeEndObject();
