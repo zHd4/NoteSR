@@ -39,7 +39,7 @@ class FilesImporter extends BaseFilesImporter {
                         byte[] data = FilesCrypt.encryptData(readDataBlock(dataBlock.getId()));
 
                         dataBlock.setData(data);
-                        dataBlocksTable.importDataBlock(dataBlock);
+                        dataBlocksTable.save(dataBlock);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
@@ -57,12 +57,12 @@ class FilesImporter extends BaseFilesImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        dataBlock.setId(parser.getValueAsLong());
+                        dataBlock.setId(parser.getValueAsString());
                     }
 
                     case "file_id" -> {
                         if (parser.getValueAsString().equals("file_id")) continue;
-                        dataBlock.setFileId(parser.getValueAsLong());
+                        dataBlock.setFileId(parser.getValueAsString());
                     }
 
                     case "order" -> {
@@ -76,7 +76,7 @@ class FilesImporter extends BaseFilesImporter {
         }
     }
 
-    private byte[] readDataBlock(Long id) throws IOException {
-        return FilesUtils.readFileBytes(new File(dataBlocksDir, id.toString()));
+    private byte[] readDataBlock(String id) throws IOException {
+        return FilesUtils.readFileBytes(new File(dataBlocksDir, id));
     }
 }
