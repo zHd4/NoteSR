@@ -28,4 +28,6 @@ public final class Note {
 
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
+
+    private Long decimalId;
 }
