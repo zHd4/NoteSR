@@ -43,7 +43,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
 
                     if (fileInfo.getId() != null) {
                         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
-                        filesInfoTable.importFileInfo(encryptedFileInfo);
+                        filesInfoTable.save(encryptedFileInfo);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
@@ -60,12 +60,12 @@ public abstract class BaseFilesImporter extends BaseImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        fileInfo.setId(parser.getValueAsLong());
+                        fileInfo.setId(parser.getValueAsString());
                     }
 
                     case "note_id" -> {
                         if (parser.getValueAsString().equals("note_id")) continue;
-                        fileInfo.setNoteId(parser.getValueAsLong());
+                        fileInfo.setNoteId(parser.getValueAsString());
                     }
 
                     case "size" -> {
