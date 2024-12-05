@@ -1,5 +1,7 @@
 package app.notesr.db.notes.table;
 
+import static java.util.UUID.randomUUID;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import app.notesr.db.BaseTable;
@@ -17,8 +19,8 @@ public class DataBlocksTable extends BaseTable {
 
         db.writableDatabase.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
-                        "id integer PRIMARY KEY AUTOINCREMENT, " +
-                        "file_id integer NOT NULL, " +
+                        "id varchar(50) PRIMARY KEY, " +
+                        "file_id varchar(50) NOT NULL, " +
                         "block_order bigint NOT NULL, " +
                         "data blob NOT NULL, " +
                         "FOREIGN KEY(file_id) REFERENCES " + filesInfoTable.getName() + "(id))"
@@ -41,8 +43,8 @@ public class DataBlocksTable extends BaseTable {
             if (cursor.moveToFirst()) {
                 do {
                     DataBlock dataBlock = DataBlock.builder()
-                            .id(cursor.getLong(0))
-                            .fileId(cursor.getLong(1))
+                            .id(cursor.getString(0))
+                            .fileId(cursor.getString(1))
                             .order(cursor.getLong(2))
                             .build();
 
@@ -62,9 +64,10 @@ public class DataBlocksTable extends BaseTable {
         values.put("data", dataBlock.getData());
 
         if (dataBlock.getId() == null || get(dataBlock.getId()) == null) {
-            long id = db.writableDatabase.insert(name, null, values);
+            String id = randomUUID().toString();
+            values.put("id", id);
 
-            if (id == -1) {
+            if (db.writableDatabase.insert(name, null, values) == -1) {
                 throw new RuntimeException("Cannot insert data block in table '" + name + "'");
             }
 
@@ -75,25 +78,7 @@ public class DataBlocksTable extends BaseTable {
         }
     }
 
-    public void importDataBlock(DataBlock dataBlock) {
-        ContentValues values = new ContentValues();
-
-        values.put("id", dataBlock.getId());
-        values.put("file_id", dataBlock.getFileId());
-
-        values.put("block_order", dataBlock.getOrder());
-        values.put("data", dataBlock.getData());
-
-        long id = db.writableDatabase.insert(name, null, values);
-
-        if (id == -1) {
-            throw new RuntimeException("Cannot insert note in table '" + name + "'");
-        }
-
-        dataBlock.setId(id);
-    }
-
-    public DataBlock get(long id) {
+    public DataBlock get(String id) {
         Cursor cursor = db.readableDatabase.rawQuery(
                 "SELECT " +
                         "file_id, " +
@@ -101,11 +86,11 @@ public class DataBlocksTable extends BaseTable {
                         "data " +
                         " FROM " + name +
                         " WHERE id = ?",
-                new String[] { String.valueOf(id) });
+                new String[] {id});
 
         try (cursor) {
             if (cursor.moveToFirst()) {
-                Long fileId = cursor.getLong(0);
+                String fileId = cursor.getString(0);
                 Long order = cursor.getLong(1);
 
                 byte[] data = cursor.getBlob(2);
@@ -117,20 +102,20 @@ public class DataBlocksTable extends BaseTable {
         return null;
     }
 
-    public Set<Long> getBlocksIdsByFileId(long fileId) {
-        Set<Long> ids = new TreeSet<>();
+    public Set<String> getBlocksIdsByFileId(String fileId) {
+        Set<String> ids = new TreeSet<>();
 
         Cursor cursor = db.readableDatabase.rawQuery(
                 "SELECT id" +
                         " FROM " + name +
                         " WHERE file_id = ?" +
                         " ORDER BY block_order",
-                new String[] { String.valueOf(fileId) });
+                new String[] {fileId});
 
         try (cursor) {
             if (cursor.moveToFirst()) {
                 do {
-                    ids.add(cursor.getLong(0));
+                    ids.add(cursor.getString(0));
                 } while (cursor.moveToNext());
             }
         }
@@ -138,11 +123,11 @@ public class DataBlocksTable extends BaseTable {
         return ids;
     }
 
-    public void delete(long id) {
-        db.writableDatabase.delete(name, "id = ?", new String[]{ String.valueOf(id) });
+    public void delete(String id) {
+        db.writableDatabase.delete(name, "id = ?", new String[]{id});
     }
 
-    public void deleteByFileId(long fileId) {
-        db.writableDatabase.delete(name, "file_id = ?", new String[]{ String.valueOf(fileId) });
+    public void deleteByFileId(String fileId) {
+        db.writableDatabase.delete(name, "file_id = ?", new String[]{fileId});
     }
 }
