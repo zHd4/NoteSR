@@ -22,4 +22,6 @@ public class FileInfo implements Serializable {
     private String type;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private Long decimalId;
 }
