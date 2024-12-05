@@ -3,6 +3,8 @@ package app.notesr.utils;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
+import java.util.zip.CRC32;
 
 public class HashHelper {
     public static byte[] toSha256Bytes(byte[] raw) throws NoSuchAlgorithmException {
@@ -20,6 +22,13 @@ public class HashHelper {
         }
 
         return hex.toString();
+    }
+
+    public static long getUUIDHash(UUID uuid) {
+        CRC32 crc = new CRC32();
+        crc.update(uuid.toString().getBytes());
+
+        return crc.getValue();
     }
 
     private static MessageDigest getSha256Instance() throws NoSuchAlgorithmException {
