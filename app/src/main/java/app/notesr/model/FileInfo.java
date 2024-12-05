@@ -15,8 +15,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class FileInfo implements Serializable {
-    private Long id;
-    private Long noteId;
+    private String id;
+    private String noteId;
     private Long size;
     private String name;
     private String type;
