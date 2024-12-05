@@ -1,5 +1,7 @@
 package app.notesr.db.notes.table;
 
+import static java.util.UUID.randomUUID;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -17,7 +19,7 @@ public final class NotesTable extends BaseTable {
 
         db.writableDatabase.execSQL(
                 "CREATE TABLE IF NOT EXISTS " + name + "(" +
-                        "note_id integer PRIMARY KEY AUTOINCREMENT, " +
+                        "id varchar(50) PRIMARY KEY, " +
                         "encrypted_name blob NOT NULL, " +
                         "encrypted_data blob NOT NULL, " +
                         "updated_at varchar(255) NOT NULL)"
@@ -42,37 +44,18 @@ public final class NotesTable extends BaseTable {
         }
 
         if (note.getId() == null || get(note.getId()) == null) {
-            long id = db.writableDatabase.insert(name, null, values);
+            String id = randomUUID().toString();
+            values.put("id", id);
 
-            if (id == -1) {
+            if (db.writableDatabase.insert(name, null, values) == -1) {
                 throw new RuntimeException("Cannot insert note in table '" + name + "'");
             }
 
             note.setId(id);
         } else {
-            db.writableDatabase.update(name, values, "note_id = ?",
-                    new String[]{String.valueOf(note.getId())});
+            db.writableDatabase.update(name, values, "id = ?",
+                    new String[]{note.getId()});
         }
-    }
-
-    public void importNote(EncryptedNote note) {
-        ContentValues values = new ContentValues();
-
-        values.put("note_id", note.getId());
-
-        values.put("encrypted_name", note.getEncryptedName());
-        values.put("encrypted_data", note.getEncryptedText());
-
-        String updatedAt = note.getUpdatedAt().format(getTimestampFormatter());
-        values.put("updated_at", updatedAt);
-
-        long id = db.writableDatabase.insert(name, null, values);
-
-        if (id == -1) {
-            throw new RuntimeException("Cannot insert note in table '" + name + "'");
-        }
-
-        note.setId(id);
     }
 
     public void markAsModified(long id) {
@@ -82,7 +65,7 @@ public final class NotesTable extends BaseTable {
         String updatedAt = now.format(getTimestampFormatter());
 
         values.put("updated_at", updatedAt);
-        db.writableDatabase.update(name, values, "note_id = ?",
+        db.writableDatabase.update(name, values, "id = ?",
                 new String[]{String.valueOf(id)});
     }
 
@@ -95,7 +78,7 @@ public final class NotesTable extends BaseTable {
         try (cursor) {
             if (cursor.moveToFirst()) {
                 do {
-                    long id = cursor.getLong(0);
+                    String id = cursor.getString(0);
 
                     byte[] name = cursor.getBlob(1);
                     byte[] text = cursor.getBlob(2);
@@ -116,10 +99,10 @@ public final class NotesTable extends BaseTable {
         return notes;
     }
 
-    public EncryptedNote get(long id) {
+    public EncryptedNote get(String id) {
         Cursor cursor = db.readableDatabase.rawQuery(
                 "SELECT encrypted_name, encrypted_data, updated_at" +
-                        " FROM " + name + " WHERE note_id = ?",
+                        " FROM " + name + " WHERE id = ?",
                 new String[]{String.valueOf(id)});
 
         try (cursor) {
@@ -142,7 +125,7 @@ public final class NotesTable extends BaseTable {
         return null;
     }
 
-    public void delete(long id) {
-        db.writableDatabase.delete(name, "note_id" + "=" + id, null);
+    public void delete(String id) {
+        db.writableDatabase.delete(name, "id = ?", new String[]{id});
     }
 }
