@@ -6,7 +6,6 @@ import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
-import app.notesr.model.Note;
 import app.notesr.utils.HashHelper;
 
 import java.io.IOException;
