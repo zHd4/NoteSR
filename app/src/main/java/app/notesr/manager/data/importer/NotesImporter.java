@@ -40,7 +40,7 @@ public class NotesImporter extends BaseImporter {
                     switch (field) {
                         case "id" -> {
                             if (parser.getValueAsString().equals("id")) continue;
-                            note.setId(parser.getValueAsLong());
+                            note.setId(parser.getValueAsString());
                         }
 
                         case "name" -> {
@@ -74,7 +74,7 @@ public class NotesImporter extends BaseImporter {
             }
 
             EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
-            notesTable.importNote(encryptedNote);
+            notesTable.save(encryptedNote);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 }
