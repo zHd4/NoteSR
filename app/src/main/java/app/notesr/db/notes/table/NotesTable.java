@@ -85,7 +85,10 @@ public final class NotesTable extends BaseTable {
                     byte[] text = cursor.getBlob(2);
 
                     String updatedAtStr = cursor.getString(3);
-                    LocalDateTime updatedAt = LocalDateTime.parse(updatedAtStr, getTimestampFormatter());
+
+                    LocalDateTime updatedAt = LocalDateTime.parse(
+                            updatedAtStr, getTimestampFormatter()
+                    );
 
                     EncryptedNote note = new EncryptedNote(name, text);
 
