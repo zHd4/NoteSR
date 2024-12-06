@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import app.notesr.R;
 import app.notesr.exception.ImportFailedException;
@@ -77,30 +78,33 @@ public class ImportManagerV2 extends BaseImportManager {
         File fileInfoJsonFile = new File(tempDir, FILES_INFO_JSON_FILE_NAME);
         File dataBlocksDir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
 
-        JsonParser notesParser = createJsonParser(notesJsonFile);
-        JsonParser filesInfoParser = createJsonParser(fileInfoJsonFile);
+        JsonParser notesParser = getJsonParser(notesJsonFile);
+        JsonParser filesInfoParser = getJsonParser(fileInfoJsonFile);
 
-        NotesImporter notesImporter = createNotesImporter(notesParser);
-        FilesImporter filesImporter = createFilesImporter(filesInfoParser, dataBlocksDir);
-
+        NotesImporter notesImporter = getNotesImporter(notesParser);
         notesImporter.importNotes();
-        filesImporter.importFiles();
+
+        getFilesImporter(filesInfoParser, dataBlocksDir, notesImporter.getAdaptedIdMap()).importFiles();
     }
 
-    private JsonParser createJsonParser(File file) throws IOException {
+    private JsonParser getJsonParser(File file) throws IOException {
         JsonFactory factory = new JsonFactory();
         return factory.createParser(file);
     }
 
-    private NotesImporter createNotesImporter(JsonParser parser) {
+    private NotesImporter getNotesImporter(JsonParser parser) {
         return new NotesImporter(parser, getNotesTable(), getTimestampFormatter());
     }
 
-    private FilesImporter createFilesImporter(JsonParser parser, File dataBlocksDir) {
+    private FilesImporter getFilesImporter(
+            JsonParser parser,
+            File dataBlocksDir,
+            Map<String, String> adaptedNotesIdMap) {
         return new FilesImporter(
                 parser,
                 getFilesInfoTable(),
                 getDataBlocksTable(),
+                adaptedNotesIdMap,
                 dataBlocksDir,
                 getTimestampFormatter()
         );
