@@ -6,11 +6,13 @@ import com.fasterxml.jackson.core.JsonToken;
 import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.manager.data.importer.BaseFilesImporter;
+import app.notesr.manager.data.importer.IdAdapter;
 import app.notesr.model.DataBlock;
 import app.notesr.utils.FilesUtils;
 
@@ -21,9 +23,10 @@ class FilesImporter extends BaseFilesImporter {
     public FilesImporter(JsonParser parser,
                          FilesInfoTable filesInfoTable,
                          DataBlocksTable dataBlocksTable,
+                         Map<String, String> adaptedNotesIdMap,
                          File dataBlocksDir,
                          DateTimeFormatter timestampFormatter) {
-        super(parser, filesInfoTable, dataBlocksTable, timestampFormatter);
+        super(parser, filesInfoTable, dataBlocksTable, adaptedNotesIdMap, timestampFormatter);
         this.dataBlocksDir = dataBlocksDir;
     }
 
@@ -57,7 +60,7 @@ class FilesImporter extends BaseFilesImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        dataBlock.setId(parser.getValueAsString());
+                        dataBlock.setId(new IdAdapter(parser.getValueAsString()).getId());
                     }
 
                     case "file_id" -> {
