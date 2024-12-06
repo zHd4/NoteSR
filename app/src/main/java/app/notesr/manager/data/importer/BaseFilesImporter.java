@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
@@ -18,15 +19,18 @@ public abstract class BaseFilesImporter extends BaseImporter {
 
     protected final FilesInfoTable filesInfoTable;
     protected final DataBlocksTable dataBlocksTable;
+    protected final Map<String, String> adaptedNotesIdMap;
 
     public BaseFilesImporter(JsonParser parser,
-                         FilesInfoTable filesInfoTable,
-                         DataBlocksTable dataBlocksTable,
-                         DateTimeFormatter timestampFormatter) {
+                             FilesInfoTable filesInfoTable,
+                             DataBlocksTable dataBlocksTable,
+                             Map<String, String> adaptedNotesIdMap,
+                             DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
 
         this.filesInfoTable = filesInfoTable;
         this.dataBlocksTable = dataBlocksTable;
+        this.adaptedNotesIdMap = adaptedNotesIdMap;
     }
 
     public void importFiles() throws IOException {
@@ -60,12 +64,14 @@ public abstract class BaseFilesImporter extends BaseImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        fileInfo.setId(parser.getValueAsString());
+                        fileInfo.setId(new IdAdapter(parser.getValueAsString()).getId());
                     }
 
                     case "note_id" -> {
                         if (parser.getValueAsString().equals("note_id")) continue;
-                        fileInfo.setNoteId(parser.getValueAsString());
+
+                        String id = parser.getValueAsString();
+                        fileInfo.setNoteId(adaptedNotesIdMap.getOrDefault(id, id));
                     }
 
                     case "size" -> {
@@ -99,12 +105,14 @@ public abstract class BaseFilesImporter extends BaseImporter {
                         );
                     }
 
-                    default -> {}
+                    default -> {
+                    }
                 }
             }
         }
     }
 
     protected abstract void importFilesData() throws IOException;
+
     protected abstract void parseDataBlockObject(DataBlock dataBlock) throws IOException;
 }
