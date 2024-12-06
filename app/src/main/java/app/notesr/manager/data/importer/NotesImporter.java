@@ -7,12 +7,18 @@ import app.notesr.db.notes.table.NotesTable;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NotesImporter extends BaseImporter {
+
+    @Getter
+    private final Map<String, String> adaptedIdMap = new HashMap<>();
 
     private final NotesTable notesTable;
 
@@ -40,7 +46,7 @@ public class NotesImporter extends BaseImporter {
                     switch (field) {
                         case "id" -> {
                             if (parser.getValueAsString().equals("id")) continue;
-                            note.setId(new IdAdapter(parser.getValueAsString()).getId());
+                            note.setId(adaptId(parser.getValueAsString()));
                         }
 
                         case "name" -> {
@@ -76,5 +82,15 @@ public class NotesImporter extends BaseImporter {
             EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
             notesTable.save(encryptedNote);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
+    }
+
+    private String adaptId(String id) {
+        String adaptedId = new IdAdapter(id).getId();
+
+        if (!adaptedId.equals(id)) {
+            adaptedIdMap.put(id, adaptedId);
+        }
+
+        return adaptedId;
     }
 }
