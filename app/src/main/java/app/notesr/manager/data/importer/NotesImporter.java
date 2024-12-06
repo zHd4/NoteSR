@@ -40,7 +40,7 @@ public class NotesImporter extends BaseImporter {
                     switch (field) {
                         case "id" -> {
                             if (parser.getValueAsString().equals("id")) continue;
-                            note.setId(parser.getValueAsString());
+                            note.setId(new IdAdapter(parser.getValueAsString()).getId());
                         }
 
                         case "name" -> {
