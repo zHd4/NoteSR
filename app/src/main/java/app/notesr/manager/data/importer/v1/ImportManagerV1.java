@@ -14,6 +14,7 @@ import app.notesr.utils.Wiper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import lombok.Getter;
 
@@ -65,26 +66,33 @@ public class ImportManagerV1 extends BaseImportManager {
             JsonParser jsonParser = jsonFactory.createParser(file);
 
             try (jsonParser) {
-                NotesImporter notesImporter = new NotesImporter(
-                        jsonParser,
-                        getNotesTable(),
-                        getTimestampFormatter()
-                );
-
-                FilesImporter filesImporter = new FilesImporter(
-                        jsonParser,
-                        getFilesInfoTable(),
-                        getDataBlocksTable(),
-                        getTimestampFormatter()
-                );
-
+                NotesImporter notesImporter = getNotesImporter(jsonParser);
                 notesImporter.importNotes();
-                filesImporter.importFiles();
+
+                getFilesImporter(jsonParser, notesImporter.getAdaptedIdMap()).importFiles();
             }
         } catch (Exception e) {
             Log.e(TAG, "Exception", e);
             throw new ImportFailedException(e);
         }
+    }
+
+    private NotesImporter getNotesImporter(JsonParser parser) {
+        return new NotesImporter(
+                parser,
+                getNotesTable(),
+                getTimestampFormatter()
+        );
+    }
+
+    private FilesImporter getFilesImporter(JsonParser parser, Map<String, String> adaptedNotesIdMap) {
+        return new FilesImporter(
+                parser,
+                getFilesInfoTable(),
+                getDataBlocksTable(),
+                adaptedNotesIdMap,
+                getTimestampFormatter()
+        );
     }
 
     private void wipeFile(File file) {
