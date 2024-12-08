@@ -27,6 +27,10 @@ public final class NotesTable extends BaseTable {
     }
 
     public void save(EncryptedNote note) {
+        save(note, true);
+    }
+
+    public void save(EncryptedNote note, boolean generateId) {
         ContentValues values = new ContentValues();
 
         values.put("encrypted_name", note.getEncryptedName());
@@ -44,7 +48,7 @@ public final class NotesTable extends BaseTable {
         }
 
         if (note.getId() == null || get(note.getId()) == null) {
-            String id = randomUUID().toString();
+            String id = generateId ? randomUUID().toString() : note.getId();
             values.put("id", id);
 
             if (db.writableDatabase.insert(name, null, values) == -1) {
