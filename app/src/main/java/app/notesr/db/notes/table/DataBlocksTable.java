@@ -57,6 +57,10 @@ public class DataBlocksTable extends BaseTable {
     }
 
     public void save(DataBlock dataBlock) {
+        save(dataBlock, true);
+    }
+
+    public void save(DataBlock dataBlock, boolean generateId) {
         ContentValues values = new ContentValues();
 
         values.put("file_id", dataBlock.getFileId());
@@ -64,7 +68,7 @@ public class DataBlocksTable extends BaseTable {
         values.put("data", dataBlock.getData());
 
         if (dataBlock.getId() == null || get(dataBlock.getId()) == null) {
-            String id = randomUUID().toString();
+            String id = generateId ? randomUUID().toString() : dataBlock.getId();
             values.put("id", id);
 
             if (db.writableDatabase.insert(name, null, values) == -1) {

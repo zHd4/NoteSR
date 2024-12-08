@@ -34,7 +34,7 @@ class FilesImporter extends BaseFilesImporter {
 
                     if (dataBlock.getId() != null) {
                         dataBlock.setData(FilesCrypt.encryptData(dataBlock.getData()));
-                        dataBlocksTable.save(dataBlock);
+                        dataBlocksTable.save(dataBlock, false);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
