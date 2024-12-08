@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 
 import app.notesr.crypto.FilesCrypt;
@@ -20,6 +21,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
     protected final FilesInfoTable filesInfoTable;
     protected final DataBlocksTable dataBlocksTable;
     protected final Map<String, String> adaptedNotesIdMap;
+    protected final Map<String, String> adaptedFilesIdMap = new HashMap<>();
 
     public BaseFilesImporter(JsonParser parser,
                              FilesInfoTable filesInfoTable,
@@ -64,7 +66,9 @@ public abstract class BaseFilesImporter extends BaseImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        fileInfo.setId(new IdAdapter(parser.getValueAsString()).getId());
+
+                        fileInfo.setId(parser.getValueAsString());
+                        adaptId(fileInfo);
                     }
 
                     case "note_id" -> {
@@ -115,4 +119,14 @@ public abstract class BaseFilesImporter extends BaseImporter {
     protected abstract void importFilesData() throws IOException;
 
     protected abstract void parseDataBlockObject(DataBlock dataBlock) throws IOException;
+
+    private void adaptId(FileInfo fileInfo) {
+        String id = fileInfo.getId();
+        String adaptedId = new IdAdapter(id).getId();
+
+        if (!adaptedId.equals(id)) {
+            adaptedFilesIdMap.put(id, adaptedId);
+            fileInfo.setId(adaptedId);
+        }
+    }
 }

@@ -73,7 +73,9 @@ class FilesImporter extends BaseFilesImporter {
 
                     case "file_id" -> {
                         if (parser.getValueAsString().equals("file_id")) continue;
-                        dataBlock.setFileId(parser.getValueAsString());
+
+                        String id = parser.getValueAsString();
+                        dataBlock.setFileId(adaptedFilesIdMap.getOrDefault(id, id));
                     }
 
                     case "order" -> {
