@@ -49,7 +49,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
 
                     if (fileInfo.getId() != null) {
                         EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
-                        filesInfoTable.save(encryptedFileInfo);
+                        filesInfoTable.save(encryptedFileInfo, false);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }

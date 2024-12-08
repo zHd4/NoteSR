@@ -30,6 +30,10 @@ public class FilesInfoTable extends BaseTable {
     }
 
     public void save(EncryptedFileInfo fileInfo) {
+        save(fileInfo, true);
+    }
+
+    public void save(EncryptedFileInfo fileInfo, boolean generateId) {
         LocalDateTime now = LocalDateTime.now();
         String nowStr = now.format(getTimestampFormatter());
 
@@ -42,7 +46,7 @@ public class FilesInfoTable extends BaseTable {
         values.put("updated_at", nowStr);
 
         if (fileInfo.getId() == null || get(fileInfo.getId()) == null) {
-            String id = randomUUID().toString();
+            String id = generateId ? randomUUID().toString() : fileInfo.getId();
 
             values.put("id", id);
             values.put("created_at", nowStr);
