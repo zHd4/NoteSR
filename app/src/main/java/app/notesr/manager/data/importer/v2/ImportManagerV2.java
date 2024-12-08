@@ -48,10 +48,7 @@ public class ImportManagerV2 extends BaseImportManager {
                 ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath(), null);
 
                 begin();
-
-                clearTables();
                 importData();
-
                 end();
 
                 status = context.getString(R.string.wiping_temp_data);

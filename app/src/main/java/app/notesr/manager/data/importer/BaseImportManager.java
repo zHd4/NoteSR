@@ -16,12 +16,6 @@ public abstract class BaseImportManager extends BaseManager {
 
     private boolean transactionStarted = false;
 
-    protected void clearTables() {
-        getDataBlocksTable().deleteAll();
-        getFilesInfoTable().deleteAll();
-        getNotesTable().deleteAll();
-    }
-
     protected DateTimeFormatter getTimestampFormatter() {
         return App.getAppContainer().getTimestampFormatter();
     }

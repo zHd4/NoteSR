@@ -34,11 +34,9 @@ public class ImportManagerV1 extends BaseImportManager {
         Thread thread = new Thread(() -> {
             try {
                 status = context.getString(R.string.importing);
+
                 begin();
-
-                clearTables();
                 importData(file);
-
                 end();
 
                 status = context.getString(R.string.wiping_temp_data);
