@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 
 import app.notesr.crypto.FilesCrypt;
@@ -19,6 +20,8 @@ import app.notesr.utils.FilesUtils;
 class FilesImporter extends BaseFilesImporter {
 
     private final File dataBlocksDir;
+
+    private final Map<String, String> dataBlocksIdMap = new HashMap<>();
 
     public FilesImporter(JsonParser parser,
                          FilesInfoTable filesInfoTable,
@@ -38,8 +41,11 @@ class FilesImporter extends BaseFilesImporter {
                     DataBlock dataBlock = new DataBlock();
                     parseDataBlockObject(dataBlock);
 
-                    if (dataBlock.getId() != null) {
-                        byte[] data = FilesCrypt.encryptData(readDataBlock(dataBlock.getId()));
+                    String id = dataBlock.getId();
+
+                    if (id != null) {
+                        String dataFileName = dataBlocksIdMap.getOrDefault(id, id);
+                        byte[] data = FilesCrypt.encryptData(readDataBlock(dataFileName));
 
                         dataBlock.setData(data);
                         dataBlocksTable.save(dataBlock);
@@ -60,7 +66,9 @@ class FilesImporter extends BaseFilesImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        dataBlock.setId(new IdAdapter(parser.getValueAsString()).getId());
+
+                        dataBlock.setId(parser.getValueAsString());
+                        adaptId(dataBlock);
                     }
 
                     case "file_id" -> {
@@ -81,5 +89,15 @@ class FilesImporter extends BaseFilesImporter {
 
     private byte[] readDataBlock(String id) throws IOException {
         return FilesUtils.readFileBytes(new File(dataBlocksDir, id));
+    }
+
+    private void adaptId(DataBlock dataBlock) {
+        String id = dataBlock.getId();
+        String adaptedId = new IdAdapter(id).getId();
+
+        if (!adaptedId.equals(id)) {
+            dataBlocksIdMap.put(adaptedId, id);
+            dataBlock.setId(adaptedId);
+        }
     }
 }
