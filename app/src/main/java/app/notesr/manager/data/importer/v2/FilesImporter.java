@@ -21,8 +21,6 @@ class FilesImporter extends BaseFilesImporter {
 
     private final File dataBlocksDir;
 
-    private final Map<String, String> dataBlocksIdMap = new HashMap<>();
-
     public FilesImporter(JsonParser parser,
                          FilesInfoTable filesInfoTable,
                          DataBlocksTable dataBlocksTable,
@@ -91,15 +89,5 @@ class FilesImporter extends BaseFilesImporter {
 
     private byte[] readDataBlock(String id) throws IOException {
         return FilesUtils.readFileBytes(new File(dataBlocksDir, id));
-    }
-
-    private void adaptId(DataBlock dataBlock) {
-        String id = dataBlock.getId();
-        String adaptedId = new IdAdapter(id).getId();
-
-        if (!adaptedId.equals(id)) {
-            dataBlocksIdMap.put(adaptedId, id);
-            dataBlock.setId(adaptedId);
-        }
     }
 }

@@ -22,6 +22,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
     protected final DataBlocksTable dataBlocksTable;
     protected final Map<String, String> adaptedNotesIdMap;
     protected final Map<String, String> adaptedFilesIdMap = new HashMap<>();
+    protected final Map<String, String> dataBlocksIdMap = new HashMap<>();
 
     public BaseFilesImporter(JsonParser parser,
                              FilesInfoTable filesInfoTable,
@@ -113,6 +114,16 @@ public abstract class BaseFilesImporter extends BaseImporter {
                     }
                 }
             }
+        }
+    }
+
+    protected void adaptId(DataBlock dataBlock) {
+        String id = dataBlock.getId();
+        String adaptedId = new IdAdapter(id).getId();
+
+        if (!adaptedId.equals(id)) {
+            dataBlocksIdMap.put(adaptedId, id);
+            dataBlock.setId(adaptedId);
         }
     }
 
