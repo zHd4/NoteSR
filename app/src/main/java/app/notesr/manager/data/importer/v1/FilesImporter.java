@@ -7,7 +7,6 @@ import app.notesr.crypto.FilesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.manager.data.importer.BaseFilesImporter;
-import app.notesr.manager.data.importer.IdAdapter;
 import app.notesr.model.DataBlock;
 
 import java.io.IOException;
@@ -52,12 +51,16 @@ class FilesImporter extends BaseFilesImporter {
                 switch (field) {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
-                        dataBlock.setId(new IdAdapter(parser.getValueAsString()).getId());
+
+                        dataBlock.setId(parser.getValueAsString());
+                        adaptId(dataBlock);
                     }
 
                     case "file_id" -> {
                         if (parser.getValueAsString().equals("file_id")) continue;
-                        dataBlock.setFileId(parser.getValueAsString());
+
+                        String id = parser.getValueAsString();
+                        dataBlock.setFileId(adaptedFilesIdMap.getOrDefault(id, id));
                     }
 
                     case "order" -> {
