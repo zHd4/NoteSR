@@ -18,7 +18,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
@@ -148,37 +147,29 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener startButtonOnClick() {
         return view -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                    .setView(R.layout.dialog_import_warning)
-                    .setTitle(R.string.warning)
-                    .setNegativeButton(R.string.cancel, (dialog, result) -> {})
-                    .setPositiveButton(R.string.continue_text, (dialog, result) -> {
-                        if (selectedFileUri == null) {
-                            RuntimeException e = new NullPointerException("File Uri is null");
+            if (selectedFileUri == null) {
+                RuntimeException e = new NullPointerException("File Uri is null");
 
-                            Log.e(TAG, "NullPointerException", e);
-                            throw e;
-                        }
+                Log.e(TAG, "NullPointerException", e);
+                throw e;
+            }
 
-                        view.setEnabled(false);
-                        view.setVisibility(View.INVISIBLE);
+            view.setEnabled(false);
+            view.setVisibility(View.INVISIBLE);
 
-                        actionBar.setDisplayHomeAsUpEnabled(false);
-                        actionBar.setTitle(getString(R.string.importing));
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setTitle(getString(R.string.importing));
 
-                        selectFileButton.setEnabled(false);
-                        selectFileButton.setVisibility(View.INVISIBLE);
+            selectFileButton.setEnabled(false);
+            selectFileButton.setVisibility(View.INVISIBLE);
 
-                        selectedFileTextView.setVisibility(View.INVISIBLE);
+            selectedFileTextView.setVisibility(View.INVISIBLE);
 
-                        disableBackButton();
-                        startImport();
+            disableBackButton();
+            startImport();
 
-                        progressBar.setVisibility(View.VISIBLE);
-                        statusTextView.setVisibility(View.VISIBLE);
-                    });
-
-            builder.create().show();
+            progressBar.setVisibility(View.VISIBLE);
+            statusTextView.setVisibility(View.VISIBLE);
         };
     }
 

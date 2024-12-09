@@ -103,6 +103,5 @@
     <string name="select_file">Select file</string>
     <string name="start">Start</string>
     <string name="cannot_import_data">Cannot import data, possible corrupted</string>
-    <string name="import_warning">All your data will be OVERWRITTEN, you can LOSE your critical data if you don`t have backup.\nAre you sure?</string>
     <string name="continue_text">Continue</string>
 </resources>
