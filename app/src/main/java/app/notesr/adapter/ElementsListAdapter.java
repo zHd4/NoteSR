@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ElementsListAdapter<T> extends ArrayAdapter<T> {
-    private static final int MAX_VALUE_LENGTH = 25;
+
     protected static final DateTimeFormatter timestampFormatter =
             DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
@@ -20,11 +20,5 @@ public class ElementsListAdapter<T> extends ArrayAdapter<T> {
         super(context, resource, objects);
         this.context = context;
         this.resourceLayout = resource;
-    }
-
-    protected String formatValue(String value) {
-        String formatted = value.replace("\n", "");
-        return formatted.length() > MAX_VALUE_LENGTH ?
-                formatted.substring(0, MAX_VALUE_LENGTH) + "…" : formatted;
     }
 }
