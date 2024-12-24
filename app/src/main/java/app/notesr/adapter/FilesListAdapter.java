@@ -62,15 +62,15 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
 
             ImageView iconView = view.findViewById(R.id.fileIconImageView);
 
-            nameView.setText(formatValue(fileInfo.getName()));
-            sizeView.setText(formatValue(toReadableSize(fileInfo.getSize())));
+
+            nameView.setText(fileInfo.getName());
+            sizeView.setText(toReadableSize(fileInfo.getSize()));
             updateAtView.setText(fileInfo.getUpdatedAt().format(timestampFormatter));
 
             if (fileInfo.getType() != null) {
                 String type = fileInfo.getType().split("/")[0];
 
                 if (FILES_TYPES_ICONS.containsKey(type)) {
-                    //noinspection DataFlowIssue
                     iconView.setImageResource(FILES_TYPES_ICONS.get(type));
                 }
             }

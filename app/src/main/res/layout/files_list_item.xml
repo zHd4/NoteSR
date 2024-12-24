@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/fileNameTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="12dp"
@@ -36,35 +36,47 @@
             android:layout_toEndOf="@+id/fileIconImageView"
             android:textColor="@android:color/white"
             android:textSize="20sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:maxLines="1"
             android:textStyle="bold"
+            app:layout_constraintWidth_percent="0.8"
             app:layout_constraintStart_toEndOf="@+id/fileIconImageView"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="text" />
 
         <TextView
             android:id="@+id/fileSizeTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/fileNameTextView"
             android:layout_marginStart="12dp"
             android:layout_toEndOf="@+id/fileIconImageView"
             android:textColor="@android:color/white"
             android:textSize="12sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:maxLines="1"
             android:textStyle="bold"
+            app:layout_constraintWidth_percent="0.8"
             app:layout_constraintStart_toEndOf="@+id/fileIconImageView"
             app:layout_constraintTop_toBottomOf="@+id/fileNameTextView"
             tools:text="text" />
 
         <TextView
             android:id="@+id/fileUpdatedAtTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/fileSizeTextView"
             android:layout_marginStart="12dp"
             android:layout_toEndOf="@+id/fileIconImageView"
             android:textColor="@android:color/white"
             android:textSize="9sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:maxLines="1"
             android:textStyle="bold"
+            app:layout_constraintWidth_percent="0.8"
             app:layout_constraintStart_toEndOf="@+id/fileIconImageView"
             app:layout_constraintTop_toBottomOf="@+id/fileSizeTextView"
             tools:text="text" />
