@@ -38,8 +38,8 @@ public class NotesListAdapter extends ElementsListAdapter<Note> {
             TextView textView = view.findViewById(R.id.noteTextView);
             TextView updatedAtView = view.findViewById(R.id.noteUpdatedAtTextView);
 
-            nameView.setText(formatValue(note.getName()));
-            textView.setText(formatValue(note.getText()));
+            nameView.setText(note.getName());
+            textView.setText(note.getText());
             updatedAtView.setText(note.getUpdatedAt().format(timestampFormatter));
         }
 
