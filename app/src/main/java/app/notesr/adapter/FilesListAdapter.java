@@ -37,7 +37,6 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
         return "0 B";
     }
 
-
     public FilesListAdapter(@NonNull Context context, int resource, @NonNull List<FileInfo> objects) {
         super(context, resource, objects);
     }
