@@ -61,7 +61,6 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
 
             ImageView iconView = view.findViewById(R.id.fileIconImageView);
 
-
             nameView.setText(fileInfo.getName());
             sizeView.setText(toReadableSize(fileInfo.getSize()));
             updateAtView.setText(fileInfo.getUpdatedAt().format(timestampFormatter));
