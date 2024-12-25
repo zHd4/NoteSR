@@ -191,21 +191,21 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
             String extension = FilesUtils.getFileExtension(fileInfo.getName());
 
             File tempDir = getCacheDir();
-            File tempVideo = File.createTempFile(name, "." + extension, tempDir);
+            File tempFile = File.createTempFile(name, "." + extension, tempDir);
 
             AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
-            FileOutputStream stream = new FileOutputStream(tempVideo);
 
-            assignmentsManager.read(fileInfo.getId(), chunk -> {
-                try {
-                    stream.write(chunk);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            try (FileOutputStream stream = new FileOutputStream(tempFile)) {
+                assignmentsManager.read(fileInfo.getId(), chunk -> {
+                    try {
+                        stream.write(chunk);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
 
-            stream.close();
-            return tempVideo;
+            return tempFile;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
