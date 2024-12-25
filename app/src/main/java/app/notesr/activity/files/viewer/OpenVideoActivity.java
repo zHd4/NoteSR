@@ -16,17 +16,10 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.db.services.table.TempFilesTable;
-import app.notesr.manager.AssignmentsManager;
-import app.notesr.model.FileInfo;
 import app.notesr.model.TempFile;
 import app.notesr.service.CacheCleanerService;
-import app.notesr.utils.FilesUtils;
-import app.notesr.utils.HashHelper;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -115,39 +108,5 @@ public class OpenVideoActivity extends BaseFileViewerActivity {
 
         videoView.setMediaController(mediaController);
         videoView.setLayoutParams(params);
-    }
-
-    private File dropToCache(FileInfo fileInfo) {
-        try {
-            String name = generateTempName(fileInfo.getId(), fileInfo.getName());
-            String extension = FilesUtils.getFileExtension(fileInfo.getName());
-
-            File tempDir = getCacheDir();
-            File tempVideo = File.createTempFile(name, "." + extension, tempDir);
-
-            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
-            FileOutputStream stream = new FileOutputStream(tempVideo);
-
-            assignmentsManager.read(fileInfo.getId(), chunk -> {
-                try {
-                    stream.write(chunk);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-            stream.close();
-            return tempVideo;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String generateTempName(String id, String name) {
-        try {
-            return HashHelper.toSha256String(id + "$" + name);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

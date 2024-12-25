@@ -18,11 +18,14 @@ import app.notesr.activity.files.AssignmentsListActivity;
 import app.notesr.manager.AssignmentsManager;
 import app.notesr.model.FileInfo;
 import app.notesr.utils.FilesUtils;
+import app.notesr.utils.HashHelper;
 import lombok.Getter;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -180,6 +183,40 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
                 }, R.layout.progress_dialog_deleting));
 
         builder.create().show();
+    }
+
+    protected File dropToCache(FileInfo fileInfo) {
+        try {
+            String name = generateTempName(fileInfo.getId(), fileInfo.getName());
+            String extension = FilesUtils.getFileExtension(fileInfo.getName());
+
+            File tempDir = getCacheDir();
+            File tempVideo = File.createTempFile(name, "." + extension, tempDir);
+
+            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
+            FileOutputStream stream = new FileOutputStream(tempVideo);
+
+            assignmentsManager.read(fileInfo.getId(), chunk -> {
+                try {
+                    stream.write(chunk);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            stream.close();
+            return tempVideo;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String generateTempName(String id, String name) {
+        try {
+            return HashHelper.toSha256String(id + "$" + name);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void deleteFile() {
