@@ -54,35 +54,35 @@ public class AssignmentsManager extends BaseManager {
     public void saveData(String fileId, InputStream stream) throws IOException {
         DataBlocksTable dataBlocksTable = getDataBlocksTable();
 
-        byte[] chunk = new byte[CHUNK_SIZE];
+        try (stream) {
+            byte[] chunk = new byte[CHUNK_SIZE];
 
-        long order = 0;
-        int bytesRead = stream.read(chunk);
+            long order = 0;
+            int bytesRead = stream.read(chunk);
 
-        while (bytesRead != -1) {
-            if (bytesRead != CHUNK_SIZE) {
-                byte[] subChunk = new byte[bytesRead];
-                System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
-                chunk = subChunk;
+            while (bytesRead != -1) {
+                if (bytesRead != CHUNK_SIZE) {
+                    byte[] subChunk = new byte[bytesRead];
+                    System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
+                    chunk = subChunk;
+                }
+
+                chunk = FilesCrypt.encryptData(chunk);
+
+                DataBlock dataBlock = DataBlock.builder()
+                        .fileId(fileId)
+                        .order(order)
+                        .data(chunk)
+                        .build();
+
+                dataBlocksTable.save(dataBlock);
+
+                chunk = new byte[CHUNK_SIZE];
+                bytesRead = stream.read(chunk);
+
+                order++;
             }
-
-            chunk = FilesCrypt.encryptData(chunk);
-
-            DataBlock dataBlock = DataBlock.builder()
-                    .fileId(fileId)
-                    .order(order)
-                    .data(chunk)
-                    .build();
-
-            dataBlocksTable.save(dataBlock);
-
-            chunk = new byte[CHUNK_SIZE];
-            bytesRead = stream.read(chunk);
-
-            order++;
         }
-
-        stream.close();
     }
 
     public byte[] read(String fileId) {
