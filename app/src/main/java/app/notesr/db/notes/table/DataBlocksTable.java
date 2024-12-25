@@ -8,10 +8,10 @@ import app.notesr.db.BaseTable;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.model.DataBlock;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class DataBlocksTable extends BaseTable {
     public DataBlocksTable(NotesDB db, String name, FilesInfoTable filesInfoTable) {
@@ -107,7 +107,7 @@ public class DataBlocksTable extends BaseTable {
     }
 
     public Set<String> getBlocksIdsByFileId(String fileId) {
-        Set<String> ids = new TreeSet<>();
+        Set<String> ids = new LinkedHashSet<>();
 
         Cursor cursor = db.readableDatabase.rawQuery(
                 "SELECT id" +
