@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/assignmentIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_assignment"
+        android:contentDescription="@string/open_assignments" />
+
+    <TextView
+        android:id="@+id/attachedAssignmentsCountBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:background="@drawable/badge_background"
+        android:padding="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:visibility="gone" />
+</FrameLayout>

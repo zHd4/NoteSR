@@ -6,7 +6,7 @@
         android:icon="@android:drawable/ic_menu_save"
         android:orderInCategory="3"
         android:title="@string/save_note"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/deleteNoteButton"
@@ -20,5 +20,6 @@
         android:icon="@drawable/ic_assignment"
         android:orderInCategory="1"
         android:title="@string/open_assignments"
-        app:showAsAction="ifRoom" />
+        android:actionLayout="@layout/button_open_assignments"
+        app:showAsAction="always" />
 </menu>

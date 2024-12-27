@@ -3,6 +3,7 @@
     <color name="activity_background">#050D1C</color>
     <color name="dialog_background">#0F1726</color>
     <color name="light_button_background">#102449</color>
+    <color name="badge_background">#102449</color>
     <color name="button_background">#0D1D3C</color>
     <color name="floating_action_button_background">#031332</color>
     <color name="pressed_button_background">#1B2A47</color>

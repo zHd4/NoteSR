@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -14,12 +16,14 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.AssignmentsListActivity;
+import app.notesr.manager.AssignmentsManager;
 import app.notesr.manager.NotesManager;
 import app.notesr.model.Note;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -72,14 +76,37 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
 
-        menuItemsMap.put(R.id.saveNoteButton, action -> saveNoteOnClick(nameField, textField));
+        MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
+        MenuItem openAssignmentsButton = menu.findItem(R.id.openAssignmentsButton);
+        MenuItem deleteNoteButton = menu.findItem(R.id.deleteNoteButton);
 
-        if (note == null) {
-            disableMenuItem(menu.findItem(R.id.openAssignmentsButton));
-            disableMenuItem(menu.findItem(R.id.deleteNoteButton));
+        menuItemsMap.put(saveNoteButton.getItemId(),
+                action -> saveNoteOnClick(nameField, textField));
+
+        if (note != null) {
+            menuItemsMap.put(openAssignmentsButton.getItemId(),
+                    action -> openAssignmentsOnClick());
+
+            menuItemsMap.put(deleteNoteButton.getItemId(),
+                    action -> deleteNoteOnClick());
+
+            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
+            long filesCount = assignmentsManager.getFilesCount(note.getId());
+
+            if (filesCount > 0) {
+                openAssignmentsButton.setActionView(R.layout.button_open_assignments);
+
+                View view = Objects.requireNonNull(openAssignmentsButton.getActionView());
+                TextView badge = view.findViewById(R.id.attachedAssignmentsCountBadge);
+
+                badge.setText(String.valueOf(filesCount));
+                badge.setVisibility(View.VISIBLE);
+
+                view.setOnClickListener(v -> openAssignmentsOnClick());
+            }
         } else {
-            menuItemsMap.put(R.id.openAssignmentsButton, action -> openAssignmentsOnClick());
-            menuItemsMap.put(R.id.deleteNoteButton, action -> deleteNoteOnClick());
+            disableMenuItem(openAssignmentsButton);
+            disableMenuItem(deleteNoteButton);
         }
 
         return true;
