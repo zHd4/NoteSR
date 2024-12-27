@@ -32,6 +32,8 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
+    private static final long MAX_COUNT_IN_BADGE = 9;
+
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
     private Note note;
 
@@ -99,7 +101,11 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
                 View view = Objects.requireNonNull(openAssignmentsButton.getActionView());
                 TextView badge = view.findViewById(R.id.attachedAssignmentsCountBadge);
 
-                badge.setText(String.valueOf(filesCount));
+                String badgeText = filesCount <= MAX_COUNT_IN_BADGE
+                        ? String.valueOf(filesCount)
+                        : MAX_COUNT_IN_BADGE + "+";
+
+                badge.setText(badgeText);
                 badge.setVisibility(View.VISIBLE);
 
                 view.setOnClickListener(v -> openAssignmentsOnClick());
