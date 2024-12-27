@@ -19,6 +19,6 @@
         android:background="@drawable/badge_background"
         android:padding="3dp"
         android:textColor="@android:color/white"
-        android:textSize="12sp"
+        android:textSize="11sp"
         android:visibility="gone" />
 </FrameLayout>
