@@ -30,7 +30,9 @@ public class AuthActivity extends ExtendedAppCompatActivity {
             R.id.pinButton7,
             R.id.pinButton8,
             R.id.pinButton9,
-            R.id.pinButton0
+            R.id.pinButton0,
+            R.id.pinButtonSpecChars1,
+            R.id.pinButtonSpecChars2
     };
 
     private int currentMode;

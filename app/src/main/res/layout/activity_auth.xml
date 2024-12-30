@@ -48,161 +48,192 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.13" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="268dp"
-        android:layout_height="450dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.754">
-
-        <Button
-            android:id="@+id/pinButton6"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/button_6_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toEndOf="@+id/pinButton5"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton3" />
-
-        <Button
-            android:id="@+id/pinButton3"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/button_3_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toEndOf="@+id/pinButton2"
-            app:layout_constraintTop_toTopOf="parent" />
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/activity_background"
+        android:columnCount="3"
+        android:padding="10dp"
+        android:rowCount="4"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/pinButton1"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
             android:background="@drawable/pin_button"
+            android:gravity="center"
             android:text="@string/button_1_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/pinButton2"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
             android:background="@drawable/pin_button"
+            android:gravity="center"
             android:text="@string/button_2_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toEndOf="@+id/pinButton1"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="16sp" />
 
         <Button
-            android:id="@+id/pinButton7"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:id="@+id/pinButton3"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
             android:background="@drawable/pin_button"
-            android:text="@string/button_7_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton4" />
-
-        <Button
-            android:id="@+id/pinButton0"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/button_0_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton7" />
-
-        <Button
-            android:id="@+id/authButton"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_marginStart="88dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/ok"
-            android:textAllCaps="true"
-            android:textColor="#00FFA6"
-            app:layout_constraintStart_toEndOf="@+id/pinBackspaceButton"
-            app:layout_constraintTop_toBottomOf="@+id/changeInputIndexButton" />
-
-        <Button
-            android:id="@+id/capsButton"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/caps"
-            android:textAllCaps="true"
-            android:textColor="@color/text_color"
-            android:textSize="15sp"
-            app:layout_constraintStart_toEndOf="@+id/pinButton0"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton8" />
-
-        <Button
-            android:id="@+id/pinButton9"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/button_9_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toEndOf="@+id/pinButton8"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton6" />
-
-        <Button
-            android:id="@+id/pinBackspaceButton"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/backspace"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton0" />
-
-        <Button
-            android:id="@+id/changeInputIndexButton"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/number_1"
-            android:textColor="@color/text_color"
-            android:textSize="10sp"
-            app:layout_constraintStart_toEndOf="@+id/capsButton"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton9"
-            tools:ignore="SmallSp" />
-
-        <Button
-            android:id="@+id/pinButton8"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/button_8_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toEndOf="@+id/pinButton7"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton5" />
-
-        <Button
-            android:id="@+id/pinButton5"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:background="@drawable/pin_button"
-            android:text="@string/button_5_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toEndOf="@+id/pinButton4"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton2" />
+            android:gravity="center"
+            android:text="@string/button_3_text"
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/pinButton4"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
             android:background="@drawable/pin_button"
+            android:gravity="center"
             android:text="@string/button_4_text"
-            android:textColor="@color/text_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pinButton1" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinButton5"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/button_5_text"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinButton6"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/button_6_text"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinButton7"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/button_7_text"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinButton8"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/button_8_text"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinButton9"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/button_9_text"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinButton0"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/button_0_text"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinButtonSpecChars1"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/button_spec_chars1"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinButtonSpecChars2"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/button_spec_chars2"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pinBackspaceButton"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/backspace"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/capsButton"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/caps"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/changeInputIndexButton"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/number_1"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/authButton"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/pin_button"
+            android:gravity="center"
+            android:text="@string/ok"
+            android:textAllCaps="true"
+            android:textColor="#00FFA6"
+            android:textSize="16sp" />
+    </GridLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,6 +17,8 @@
     <string name="button_5_text">5\nmno</string>
     <string name="button_8_text">8\nvwm</string>
     <string name="button_0_text">0\n#+-</string>
+    <string name="button_spec_chars1">/\n@*%</string>
+    <string name="button_spec_chars2">$\n!^~</string>
     <string name="backspace">⌫</string>
     <string name="button_9_text">9\nxyz</string>
     <string name="button_6_text">6\npqr</string>
