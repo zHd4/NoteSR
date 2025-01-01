@@ -6,6 +6,7 @@ import app.notesr.App;
 import app.notesr.model.CryptoKey;
 import app.notesr.utils.FilesUtils;
 import app.notesr.utils.HashHelper;
+import app.notesr.utils.Wiper;
 import lombok.Getter;
 
 import java.io.File;
@@ -183,6 +184,7 @@ public class CryptoManager {
 
     public void block() {
         try {
+            Wiper.wipeFile(getEncryptedKeyFile());
             FilesUtils.writeFileBytes(getBlockFile(), new byte[0]);
         } catch (IOException e) {
             throw new RuntimeException(e);
