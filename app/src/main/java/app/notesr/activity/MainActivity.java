@@ -33,7 +33,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
             intent = new Intent(this, ImportActivity.class);
         } else if (!cryptoManager.ready()) {
             intent = new Intent(this, AuthActivity.class);
-            intent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
+            intent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
         } else {
             intent = new Intent(this, NotesListActivity.class);
         }

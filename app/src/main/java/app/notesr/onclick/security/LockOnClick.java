@@ -12,7 +12,7 @@ public class LockOnClick implements Consumer<NotesListActivity> {
     @Override
     public void accept(NotesListActivity activity) {
         Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-        authActivityIntent.putExtra("mode", AuthActivity.AUTHORIZATION_MODE);
+        authActivityIntent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
 
         App.getAppContainer().getCryptoManager().destroyKey();
 

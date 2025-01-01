@@ -15,7 +15,7 @@ public class StartActivity extends ExtendedAppCompatActivity {
         setContentView(R.layout.activity_start);
 
         Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-        authActivityIntent.putExtra("mode", AuthActivity.CREATE_PASSWORD_MODE);
+        authActivityIntent.putExtra("mode", AuthActivity.Mode.CREATE_PASSWORD.toString());
 
         View.OnClickListener onGetStartedButtonClick = view -> startActivity(authActivityIntent);
         findViewById(R.id.getStartedButton).setOnClickListener(onGetStartedButtonClick);
