@@ -40,6 +40,7 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_key);
+        setMode();
 
         TextView keyView = findViewById(R.id.aesKeyHex);
 
@@ -49,6 +50,16 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         Button copyToClipboardButton = findViewById(R.id.copyAesKeyHex);
         Button nextButton = findViewById(R.id.keySetupNextButton);
 
+        String password = getPassword();
+        CryptoKey key = getKey(password);
+        String keyHex = CryptoTools.cryptoKeyToHex(key);
+
+        keyView.setText(keyHex);
+        copyToClipboardButton.setOnClickListener(getCopyKeyOnClick(keyHex));
+        nextButton.setOnClickListener(new FinishKeySetupOnClick(this, password, key));
+    }
+
+    private void setMode() {
         String modeName = getIntent().getStringExtra("mode");
 
         try {
@@ -64,26 +75,24 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
             Log.e(TAG, "Invalid mode: " + modeName, e);
             throw new RuntimeException(e);
         }
+    }
 
+    private String getPassword() {
         String password = getIntent().getStringExtra("password");
 
         if (password == null) {
             throw new RuntimeException("Password didn't provided");
         }
 
-        CryptoKey key;
+        return password;
+    }
 
+    private CryptoKey getKey(String password) {
         try {
-            key = App.getAppContainer().getCryptoManager().generateNewKey(password);
+            return App.getAppContainer().getCryptoManager().generateNewKey(password);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-
-        String keyHex = CryptoTools.cryptoKeyToHex(key);
-
-        keyView.setText(keyHex);
-        copyToClipboardButton.setOnClickListener(getCopyKeyOnClick(keyHex));
-        nextButton.setOnClickListener(new FinishKeySetupOnClick(this, password, key));
     }
 
     private View.OnClickListener getCopyKeyOnClick(String keyHex) {
