@@ -33,6 +33,8 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
     }
 
     private static final String TAG = SetupKeyActivity.class.getName();
+    private static final int LOW_SCREEN_HEIGHT = 800;
+    private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
 
     private Mode mode;
 
@@ -55,6 +57,8 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         String keyHex = CryptoTools.cryptoKeyToHex(key);
 
         keyView.setText(keyHex);
+        adaptKeyView();
+
         copyToClipboardButton.setOnClickListener(getCopyKeyOnClick(keyHex));
         nextButton.setOnClickListener(new FinishKeySetupOnClick(this, password, key));
     }
@@ -92,6 +96,14 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
             return App.getAppContainer().getCryptoManager().generateNewKey(password);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void adaptKeyView() {
+        TextView keyView = findViewById(R.id.aesKeyHex);
+
+        if (getResources().getDisplayMetrics().heightPixels <= LOW_SCREEN_HEIGHT) {
+            keyView.setTextSize(KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT);
         }
     }
 
