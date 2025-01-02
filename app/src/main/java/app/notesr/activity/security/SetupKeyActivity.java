@@ -3,6 +3,7 @@ package app.notesr.activity.security;
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,12 +16,25 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.model.CryptoKey;
 import app.notesr.crypto.CryptoTools;
 import app.notesr.onclick.security.FinishKeySetupOnClick;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.security.NoSuchAlgorithmException;
 
+@Getter
 public class SetupKeyActivity extends ExtendedAppCompatActivity {
-    public static final int FIRST_RUN_MODE = 0;
-    public static final int REGENERATION_MODE = 1;
+
+    @AllArgsConstructor
+    public enum Mode {
+        FIRST_RUN("first_run"),
+        REGENERATION("regeneration");
+
+        public final String mode;
+    }
+
+    private static final String TAG = SetupKeyActivity.class.getName();
+
+    private Mode mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +49,23 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         Button copyToClipboardButton = findViewById(R.id.copyAesKeyHex);
         Button nextButton = findViewById(R.id.keySetupNextButton);
 
-        int mode = getIntent().getIntExtra("mode", -1);
-        String password = getIntent().getStringExtra("password");
+        String modeName = getIntent().getStringExtra("mode");
 
-        if (mode == -1) {
-            throw new RuntimeException("Mode didn't provided");
-        } else if (mode == REGENERATION_MODE) {
-            disableBackButton();
+        try {
+            mode = Mode.valueOf(modeName);
+
+            if (mode == Mode.REGENERATION) {
+                disableBackButton();
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Mode didn't provided", e);
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Invalid mode: " + modeName, e);
+            throw new RuntimeException(e);
         }
+
+        String password = getIntent().getStringExtra("password");
 
         if (password == null) {
             throw new RuntimeException("Password didn't provided");
@@ -60,7 +83,7 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
 
         keyView.setText(keyHex);
         copyToClipboardButton.setOnClickListener(getCopyKeyOnClick(keyHex));
-        nextButton.setOnClickListener(new FinishKeySetupOnClick(this, mode, password, key));
+        nextButton.setOnClickListener(new FinishKeySetupOnClick(this, password, key));
     }
 
     private View.OnClickListener getCopyKeyOnClick(String keyHex) {

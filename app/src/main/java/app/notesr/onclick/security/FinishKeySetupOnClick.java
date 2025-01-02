@@ -19,22 +19,17 @@ import app.notesr.model.CryptoKey;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.CryptoTools;
 import app.notesr.manager.KeyUpdateManager;
+import lombok.AllArgsConstructor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@AllArgsConstructor
 public class FinishKeySetupOnClick implements View.OnClickListener {
+
     private final SetupKeyActivity activity;
-    private final int mode;
     private final String password;
     private CryptoKey key;
-
-    public FinishKeySetupOnClick(SetupKeyActivity activity, int mode, String password, CryptoKey key) {
-        this.activity = activity;
-        this.mode = mode;
-        this.password = password;
-        this.key = key;
-    }
 
     @Override
     public void onClick(View v) {
@@ -51,7 +46,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
             }
         }
 
-        if (mode == SetupKeyActivity.FIRST_RUN_MODE) {
+        if (activity.getMode() == SetupKeyActivity.Mode.FIRST_RUN) {
             try {
                 getCryptoManager().applyNewKey(key);
             } catch (Exception e) {
@@ -59,7 +54,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
             }
 
             activity.startActivity(new Intent(App.getContext(), NotesListActivity.class));
-        } else if (mode == SetupKeyActivity.REGENERATION_MODE) {
+        } else if (activity.getMode() == SetupKeyActivity.Mode.REGENERATION) {
             proceedRegeneration();
         }
     }

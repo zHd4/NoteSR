@@ -36,7 +36,9 @@ public class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
                         .getCryptoKeyInstance()
                         .getPassword();
 
-                setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.REGENERATION_MODE);
+                setupKeyActivityIntent.putExtra("mode",
+                        SetupKeyActivity.Mode.REGENERATION.toString());
+
                 setupKeyActivityIntent.putExtra("password", password);
 
                 activity.startActivity(setupKeyActivityIntent);
