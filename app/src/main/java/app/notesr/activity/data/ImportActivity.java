@@ -220,6 +220,6 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     }
 
     private boolean isImportRunning() {
-        return App.getContext().serviceRunning(ImportService.class);
+        return App.getContext().isServiceRunning(ImportService.class);
     }
 }

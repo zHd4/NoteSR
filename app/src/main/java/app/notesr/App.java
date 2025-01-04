@@ -25,7 +25,7 @@ public class App extends Application {
         return context != null;
     }
 
-    public boolean serviceRunning(Class<?> serviceClass) {
+    public boolean isServiceRunning(Class<?> serviceClass) {
         String serviceName = serviceClass.getName();
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 

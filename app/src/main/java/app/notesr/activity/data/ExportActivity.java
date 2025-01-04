@@ -143,7 +143,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
     }
 
     private boolean exportRunning() {
-        return App.getContext().serviceRunning(ExportService.class);
+        return App.getContext().isServiceRunning(ExportService.class);
     }
 
     private void cancelExport() {

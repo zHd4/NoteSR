@@ -27,9 +27,9 @@ public class MainActivity extends ExtendedAppCompatActivity {
             intent = new Intent(this, StartActivity.class);
         } else if (cryptoManager.isBlocked()) {
             intent = new Intent(this, KeyRecoveryActivity.class);
-        } else if (App.getContext().serviceRunning(ExportService.class)) {
+        } else if (App.getContext().isServiceRunning(ExportService.class)) {
             intent = new Intent(this, ExportActivity.class);
-        } else if (App.getContext().serviceRunning(ImportService.class)) {
+        } else if (App.getContext().isServiceRunning(ImportService.class)) {
             intent = new Intent(this, ImportActivity.class);
         } else if (!cryptoManager.ready()) {
             intent = new Intent(this, AuthActivity.class);
