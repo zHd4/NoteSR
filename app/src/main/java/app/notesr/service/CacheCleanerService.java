@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class CacheCleanerService extends Service implements Runnable {
 
@@ -79,7 +80,7 @@ public class CacheCleanerService extends Service implements Runnable {
 
     private Runnable wipeFile(TempFile tempFile) {
         return () -> {
-            File file = new File(tempFile.getUri().getPath());
+            File file = new File(Objects.requireNonNull(tempFile.getUri().getPath()));
 
             if (file.exists()) {
                 try {
