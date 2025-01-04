@@ -22,9 +22,7 @@ import java.util.Arrays;
 public class Aes {
     public static final int KEY_SIZE = 256;
     public static final int SALT_SIZE = 16;
-
     private static final int DEFAULT_ITERATION_COUNT = 65536;
-
     public static final String KEY_GENERATOR_ALGORITHM = "AES";
     private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String PBE_ALGORITHM = "PBKDF2WithHmacSHA256";
