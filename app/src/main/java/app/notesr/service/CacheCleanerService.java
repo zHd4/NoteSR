@@ -50,10 +50,13 @@ public class CacheCleanerService extends Service implements Runnable {
 
                         stopForeground(STOP_FOREGROUND_REMOVE);
                         stopSelf();
+
+                        if (!App.getContext().isAnyActivityVisible()) {
+                            System.exit(0);
+                        }
                     }
                 }
 
-                //noinspection BusyWait
                 Thread.sleep(DELAY);
             }
         } catch (InterruptedException e) {

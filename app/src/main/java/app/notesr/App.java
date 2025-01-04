@@ -37,4 +37,25 @@ public class App extends Application {
 
         return foundName != null;
     }
+
+    public boolean isAnyActivityVisible() {
+        ActivityManager activityManager = (ActivityManager)
+                context.getSystemService(Context.ACTIVITY_SERVICE);
+
+        if (activityManager != null) {
+            for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
+                ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
+
+                if (taskInfo != null && taskInfo.topActivity != null) {
+                    String packageName = taskInfo.topActivity.getPackageName();
+
+                    if (context.getPackageName().equals(packageName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }
