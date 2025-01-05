@@ -95,7 +95,9 @@ public class ExportActivity extends ExtendedAppCompatActivity {
 
                 if (progress == 100) {
                     finishExporting(false);
-                } else if (canceled) {
+                }
+
+                if (canceled) {
                     finishExporting(true);
                 }
             }
