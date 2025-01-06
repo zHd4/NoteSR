@@ -18,8 +18,8 @@ import app.notesr.TestBase;
 class ZipUtilsTest extends TestBase {
     private static final Random RANDOM = new Random();
 
-    private static final String DIR_PATH = generateFixturePath("exported");
-    private static final String ZIP_PATH = generateFixturePath("exported.zip");
+    private static final String DIR_PATH = getFixturePath("exported");
+    private static final String ZIP_PATH = getFixturePath("exported.zip");
 
     private static final String TEMP_EXTRACTED_DIR_PATH = generateTempPath(randomUUID().toString());
     private static final String TEMP_ZIP_PATH = generateTempPath(randomUUID().toString() + ".zip");
