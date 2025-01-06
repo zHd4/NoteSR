@@ -13,7 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Random;
 
-class ZipUtilsTest {
+import app.notesr.TestBase;
+
+class ZipUtilsTest extends TestBase {
     private static final Random RANDOM = new Random();
 
     private static final String DIR_PATH = generateFixturePath("exported");
@@ -61,10 +63,6 @@ class ZipUtilsTest {
 
         tempZipFile.delete();
         removeDir(new File(TEMP_EXTRACTED_DIR_PATH));
-    }
-
-    private static String generateFixturePath(String pathPart) {
-        return Path.of("src/test/resources/fixtures", pathPart).toString();
     }
 
     private static String generateTempPath(String pathPart) {

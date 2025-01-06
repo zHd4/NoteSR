@@ -8,7 +8,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
 
-public class HashHelperTest {
+import app.notesr.TestBase;
+
+public class HashHelperTest extends TestBase {
 
     private static final int MAX_DATA_SIZE = 100000;
     private final Random random = new Random();
