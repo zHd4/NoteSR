@@ -21,8 +21,8 @@ class ZipUtilsTest extends TestBase {
     private static final String DIR_PATH = getFixturePath("exported");
     private static final String ZIP_PATH = getFixturePath("exported.zip");
 
-    private static final String TEMP_EXTRACTED_DIR_PATH = generateTempPath(randomUUID().toString());
-    private static final String TEMP_ZIP_PATH = generateTempPath(randomUUID().toString() + ".zip");
+    private static final String TEMP_EXTRACTED_DIR_PATH = getTempPath(randomUUID().toString());
+    private static final String TEMP_ZIP_PATH = getTempPath(randomUUID().toString() + ".zip");
 
     @Test
     public void testZipDirectory() throws IOException {
@@ -43,7 +43,7 @@ class ZipUtilsTest extends TestBase {
 
     @Test
     public void testIsZipArchive() throws IOException {
-        File nonZipFile = new File(generateTempPath(randomUUID().toString()));
+        File nonZipFile = new File(getTempPath(randomUUID().toString()));
         byte[] nonZipFileData = new byte[1024];
 
         RANDOM.nextBytes(nonZipFileData);
@@ -63,10 +63,6 @@ class ZipUtilsTest extends TestBase {
 
         tempZipFile.delete();
         removeDir(new File(TEMP_EXTRACTED_DIR_PATH));
-    }
-
-    private static String generateTempPath(String pathPart) {
-        return Path.of(System.getProperty("java.io.tmpdir"), pathPart).toString();
     }
 
     private static boolean isDirsIdentical(String path1, String path2) {
