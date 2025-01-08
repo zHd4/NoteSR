@@ -35,7 +35,7 @@ public class FileExifDataResolverTest {
                 .getResources()
                 .getAssets();
 
-        try (InputStream inputStream = assets.open("blank.jpg")) {
+        try (InputStream inputStream = assets.open("test_image.jpg")) {
             try (FileOutputStream outputStream = new FileOutputStream(testFile)) {
                 byte[] imageBytes = inputStream.readAllBytes();
                 testFileSize = imageBytes.length;
