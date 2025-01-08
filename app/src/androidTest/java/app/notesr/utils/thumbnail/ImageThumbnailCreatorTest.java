@@ -2,7 +2,6 @@ package app.notesr.utils.thumbnail;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static java.util.UUID.randomUUID;
 
 import android.graphics.BitmapFactory;
 import android.util.Size;
@@ -39,7 +38,7 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
     @Test
     public void testGetThumbnail() throws IOException {
         File origImage = getFixture(fixtureFileName);
-        File thumbnailFile = new File(getTempPath(randomUUID().toString()));
+        File thumbnailFile = File.createTempFile("thumbnail", "");
 
         ImageThumbnailCreator thumbnailCreator = new ImageThumbnailCreator();
         byte[] thumbnail = thumbnailCreator.getThumbnail(origImage);
@@ -72,9 +71,5 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
         int height = options.outHeight;
 
         return new Size(width, height);
-    }
-
-    private static String getTempPath(String pathPart) {
-        return Path.of(System.getProperty("java.io.tmpdir"), pathPart).toString();
     }
 }
