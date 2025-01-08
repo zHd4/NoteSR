@@ -29,10 +29,10 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {"Example_image.jpeg"},
-                {"Example_image.jpg"},
-                {"Example_image.png"},
-                {"Example_image.webp"}
+                {"test_image.jpeg"},
+                {"test_image.jpg"},
+                {"test_image.png"},
+                {"test_image.webp"}
         });
     }
 
