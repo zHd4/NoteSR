@@ -51,11 +51,11 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
     }
 
     private void fillResultsList(ListView resultsView) {
-        NotesService manager = App.getAppContainer().getNotesService();
+        NotesService service = App.getAppContainer().getNotesService();
 
         List<Note> notes = results.results()
                 .stream()
-                .map(manager::get)
+                .map(service::get)
                 .collect(Collectors.toList());
 
         notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
