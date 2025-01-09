@@ -22,27 +22,30 @@ public class VideoThumbnailCreator implements ThumbnailCreator {
 
     public static final int WIDTH = 100;
     public static final int QUALITY = 5;
+    public static final String THUMBNAIL_FORMAT = "webp";
 
     private final Context context;
 
     @Override
     public byte[] getThumbnail(File file) {
-        File tempThumbnail = new File(context.getCacheDir(), randomUUID().toString());
+        String tempThumbnailFileName = randomUUID().toString() + "." + THUMBNAIL_FORMAT;
+        File tempThumbnailFile = new File(context.getCacheDir(), tempThumbnailFileName);
+
         String command = "-i " + file.getAbsolutePath() + " -ss 00:00:03 -vframes 1 -vf scale="
-                + WIDTH + ":-1 -q:v " + QUALITY + " " + tempThumbnail.getAbsolutePath();
+                + WIDTH + ":-1 -q:v " + QUALITY + " " + tempThumbnailFile.getAbsolutePath();
 
-
+        Log.i(TAG, "Command: " + command);
         FFmpegSession session = FFmpegKit.execute(command);
 
         if (ReturnCode.isSuccess(session.getReturnCode())) {
             try {
                 byte[] thumbnailBytes = new byte[(int) file.length()];
 
-                try (FileInputStream inputStream = new FileInputStream(tempThumbnail)) {
+                try (FileInputStream inputStream = new FileInputStream(tempThumbnailFile)) {
                     inputStream.read(thumbnailBytes);
                 }
 
-                Wiper.wipeFile(tempThumbnail);
+                Wiper.wipeFile(tempThumbnailFile);
 
                 return thumbnailBytes;
             } catch (IOException e) {
