@@ -15,7 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.activity.files.AssignmentsListActivity;
+import app.notesr.activity.files.FilesListActivity;
 import app.notesr.service.FilesService;
 import app.notesr.service.NotesService;
 import app.notesr.model.Note;
@@ -175,7 +175,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
     }
 
     private void openAssignmentsOnClick() {
-        Intent intent = new Intent(App.getContext(), AssignmentsListActivity.class);
+        Intent intent = new Intent(App.getContext(), FilesListActivity.class);
 
         intent.putExtra("noteId", note.getId());
         startActivity(intent);

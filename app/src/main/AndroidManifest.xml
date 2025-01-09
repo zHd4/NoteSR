@@ -67,7 +67,7 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.files.AssignmentsListActivity"
+            android:name=".activity.files.FilesListActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />

@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import app.notesr.App;
-import app.notesr.activity.files.AssignmentsListActivity;
+import app.notesr.activity.files.FilesListActivity;
 import app.notesr.activity.files.viewer.BaseFileViewerActivity;
 import app.notesr.activity.files.viewer.OpenImageActivity;
 import app.notesr.activity.files.viewer.OpenTextFileActivity;
@@ -25,7 +25,7 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
 //                    "audio", null
             );
 
-    private final AssignmentsListActivity activity;
+    private final FilesListActivity activity;
     private final Map<Long, String> filesIdsMap;
 
     @Override
