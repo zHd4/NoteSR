@@ -37,26 +37,26 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
 
     @Test
     public void testGetThumbnail() throws IOException {
-        File origImage = getFixture(fixtureFileName);
+        File imageFile = getFixture(fixtureFileName);
         File thumbnailFile = File.createTempFile("thumbnail", "");
 
         ImageThumbnailCreator thumbnailCreator = new ImageThumbnailCreator();
-        byte[] thumbnail = thumbnailCreator.getThumbnail(origImage);
+        byte[] thumbnailBytes = thumbnailCreator.getThumbnail(imageFile);
 
-        Files.write(Path.of(thumbnailFile.getAbsolutePath()), thumbnail);
+        Files.write(Path.of(thumbnailFile.getAbsolutePath()), thumbnailBytes);
 
         assertTrue("Thumbnail not found", thumbnailFile.exists());
 
-        Size origImageSize = getImageSize(origImage);
+        Size imageSize = getImageSize(imageFile);
         Size thumbnailSize = getImageSize(thumbnailFile);
 
         int scaleFactor = Math.min(
-                origImageSize.getWidth() / ImageThumbnailCreator.WIDTH,
-                origImageSize.getHeight() / ImageThumbnailCreator.HEIGHT
+                imageSize.getWidth() / ImageThumbnailCreator.WIDTH,
+                imageSize.getHeight() / ImageThumbnailCreator.HEIGHT
         );
 
-        int expectedWidth = origImageSize.getWidth() / scaleFactor;
-        int expectedHeight = origImageSize.getHeight() / scaleFactor;
+        int expectedWidth = imageSize.getWidth() / scaleFactor;
+        int expectedHeight = imageSize.getHeight() / scaleFactor;
 
         assertEquals(expectedWidth, thumbnailSize.getWidth());
         assertEquals(expectedHeight, thumbnailSize.getHeight());
