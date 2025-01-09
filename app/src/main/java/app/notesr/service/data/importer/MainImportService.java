@@ -31,7 +31,7 @@ public class MainImportService extends ServiceBase {
     private ImportResult result = ImportResult.NONE;
     private String status = "";
 
-    private ImportServiceBase usingManager;
+    private ImportServiceBase usingService;
 
     public void start() {
         Thread thread = new Thread(() -> {
@@ -43,12 +43,12 @@ public class MainImportService extends ServiceBase {
                 decrypt(sourceStream, outputStream);
 
                 if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
-                    usingManager = new ImportServiceV2(context, tempDecryptedFile);
+                    usingService = new ImportServiceV2(context, tempDecryptedFile);
                 } else {
-                    usingManager = new ImportServiceV1(context, tempDecryptedFile);
+                    usingService = new ImportServiceV1(context, tempDecryptedFile);
                 }
 
-                usingManager.start();
+                usingService.start();
             } catch (DecryptionFailedException e) {
                 if (tempDecryptedFile.exists()) {
                     wipeFile(tempDecryptedFile);
@@ -65,16 +65,16 @@ public class MainImportService extends ServiceBase {
     }
 
     public ImportResult getResult() {
-        if (usingManager != null) {
-            return usingManager.getResult();
+        if (usingService != null) {
+            return usingService.getResult();
         }
 
         return result;
     }
 
     public String getStatus() {
-        if (usingManager != null) {
-            return usingManager.getStatus();
+        if (usingService != null) {
+            return usingService.getStatus();
         }
 
         return status;
