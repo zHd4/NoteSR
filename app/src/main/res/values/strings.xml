@@ -77,7 +77,7 @@
     <string name="select_a_dump">Select a dump</string>
     <string name="imported">Imported</string>
     <string name="cannot_decrypt_file">Cannot decrypt file</string>
-    <string name="open_attachments">Open assignments</string>
+    <string name="open_attachments">Open attachments</string>
     <string name="no_files">No files</string>
     <string name="add_file">Add file</string>
     <string name="file">File</string>
