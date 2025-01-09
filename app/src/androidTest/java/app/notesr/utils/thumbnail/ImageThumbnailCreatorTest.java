@@ -1,7 +1,6 @@
 package app.notesr.utils.thumbnail;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import android.util.Size;
 
@@ -44,8 +43,6 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
 
         Files.write(Path.of(thumbnailFile.getAbsolutePath()), thumbnailBytes);
 
-        assertTrue("Thumbnail not found", thumbnailFile.exists());
-
         Size imageSize = getImageSize(imageFile);
         Size thumbnailSize = getImageSize(thumbnailFile);
 
@@ -54,10 +51,13 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
                 imageSize.getHeight() / ImageThumbnailCreator.HEIGHT
         );
 
-        int expectedWidth = imageSize.getWidth() / scaleFactor;
-        int expectedHeight = imageSize.getHeight() / scaleFactor;
+        Size expectedSize = new Size(
+                imageSize.getWidth() / scaleFactor,
+                imageSize.getHeight() / scaleFactor
+        );
 
-        assertEquals(expectedWidth, thumbnailSize.getWidth());
-        assertEquals(expectedHeight, thumbnailSize.getHeight());
+        Size actualSize = new Size(thumbnailSize.getWidth(), thumbnailSize.getHeight());
+
+        assertEquals("Unexpected thumbnail size", expectedSize, actualSize);
     }
 }
