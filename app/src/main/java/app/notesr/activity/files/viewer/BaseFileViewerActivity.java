@@ -15,7 +15,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.AssignmentsListActivity;
-import app.notesr.service.AssignmentsService;
+import app.notesr.service.FilesService;
 import app.notesr.model.FileInfo;
 import app.notesr.utils.FilesUtils;
 import app.notesr.utils.HashHelper;
@@ -147,10 +147,10 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
 
     private Runnable getSaveRunnable(File destFile) {
         return () -> {
-            AssignmentsService assignmentsManager = App.getAppContainer().getAssignmentsManager();
+            FilesService filesService = App.getAppContainer().getFilesService();
 
             try {
-                assignmentsManager.read(fileInfo.getId(), chunk -> {
+                filesService.read(fileInfo.getId(), chunk -> {
                     try {
                         FilesUtils.writeFileBytes(destFile, chunk, true);
                     } catch (IOException e) {
@@ -193,10 +193,10 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
             File tempDir = getCacheDir();
             File tempFile = File.createTempFile(name, "." + extension, tempDir);
 
-            AssignmentsService assignmentsManager = App.getAppContainer().getAssignmentsManager();
+            FilesService filesService = App.getAppContainer().getFilesService();
 
             try (FileOutputStream stream = new FileOutputStream(tempFile)) {
-                assignmentsManager.read(fileInfo.getId(), chunk -> {
+                filesService.read(fileInfo.getId(), chunk -> {
                     try {
                         stream.write(chunk);
                     } catch (IOException e) {
@@ -221,7 +221,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
 
     private void deleteFile() {
         App.getAppContainer()
-                .getAssignmentsManager()
+                .getFilesService()
                 .delete(fileInfo.getId());
     }
 }

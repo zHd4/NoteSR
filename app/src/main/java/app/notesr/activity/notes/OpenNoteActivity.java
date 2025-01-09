@@ -16,7 +16,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.AssignmentsListActivity;
-import app.notesr.service.AssignmentsService;
+import app.notesr.service.FilesService;
 import app.notesr.service.NotesService;
 import app.notesr.model.Note;
 
@@ -92,8 +92,8 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
             menuItemsMap.put(deleteNoteButton.getItemId(),
                     action -> deleteNoteOnClick());
 
-            AssignmentsService assignmentsManager = App.getAppContainer().getAssignmentsManager();
-            long filesCount = assignmentsManager.getFilesCount(note.getId());
+            FilesService filesService = App.getAppContainer().getFilesService();
+            long filesCount = filesService.getFilesCount(note.getId());
 
             if (filesCount > 0) {
                 openAssignmentsButton.setActionView(R.layout.button_open_assignments);

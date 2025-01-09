@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.service.AssignmentsService;
+import app.notesr.service.FilesService;
 import app.notesr.model.FileInfo;
 import app.notesr.utils.FileExifDataResolver;
 
@@ -90,13 +90,13 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
 
-            AssignmentsService service = App.getAppContainer().getAssignmentsManager();
+            FilesService filesService = App.getAppContainer().getFilesService();
 
             filesMap.forEach((info, stream) -> {
-                String fileId = service.saveInfo(info);
+                String fileId = filesService.saveInfo(info);
 
                 try {
-                    service.saveData(fileId, stream);
+                    filesService.saveData(fileId, stream);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

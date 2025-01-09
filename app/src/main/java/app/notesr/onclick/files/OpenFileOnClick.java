@@ -33,7 +33,7 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
         String fileId = filesIdsMap.get(id);
 
         FileInfo fileInfo = App.getAppContainer()
-                .getAssignmentsManager()
+                .getFilesService()
                 .getInfo(fileId);
 
         String type = getFileType(fileInfo);
