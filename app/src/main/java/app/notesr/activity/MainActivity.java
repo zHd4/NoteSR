@@ -10,8 +10,8 @@ import app.notesr.activity.notes.NotesListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.crypto.CryptoManager;
-import app.notesr.service.ExportService;
-import app.notesr.service.ImportService;
+import app.notesr.service.android.ExportService;
+import app.notesr.service.android.ImportService;
 
 public class MainActivity extends ExtendedAppCompatActivity {
     @Override

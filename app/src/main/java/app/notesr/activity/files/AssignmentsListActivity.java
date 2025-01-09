@@ -16,8 +16,8 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.OpenNoteActivity;
 import app.notesr.adapter.FilesListAdapter;
-import app.notesr.manager.AssignmentsManager;
-import app.notesr.manager.NotesManager;
+import app.notesr.service.AssignmentsService;
+import app.notesr.service.NotesService;
 import app.notesr.model.FileInfo;
 import app.notesr.model.Note;
 import app.notesr.onclick.files.OpenFileOnClick;
@@ -136,11 +136,11 @@ public class AssignmentsListActivity extends ExtendedAppCompatActivity {
         }
     }
 
-    private NotesManager getNotesManager() {
-        return App.getAppContainer().getNotesManager();
+    private NotesService getNotesManager() {
+        return App.getAppContainer().getNotesService();
     }
 
-    private AssignmentsManager getAssignmentsManager() {
+    private AssignmentsService getAssignmentsManager() {
         return App.getAppContainer().getAssignmentsManager();
     }
 }

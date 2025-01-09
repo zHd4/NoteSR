@@ -16,8 +16,8 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.AssignmentsListActivity;
-import app.notesr.manager.AssignmentsManager;
-import app.notesr.manager.NotesManager;
+import app.notesr.service.AssignmentsService;
+import app.notesr.service.NotesService;
 import app.notesr.model.Note;
 
 import java.time.LocalDateTime;
@@ -92,7 +92,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
             menuItemsMap.put(deleteNoteButton.getItemId(),
                     action -> deleteNoteOnClick());
 
-            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
+            AssignmentsService assignmentsManager = App.getAppContainer().getAssignmentsManager();
             long filesCount = assignmentsManager.getFilesCount(note.getId());
 
             if (filesCount > 0) {
@@ -210,7 +210,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         item.setVisible(false);
     }
 
-    private NotesManager getNotesManager() {
-        return App.getAppContainer().getNotesManager();
+    private NotesService getNotesManager() {
+        return App.getAppContainer().getNotesService();
     }
 }

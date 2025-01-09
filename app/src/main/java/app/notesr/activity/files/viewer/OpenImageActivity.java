@@ -18,7 +18,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.db.services.table.TempFilesTable;
 import app.notesr.model.TempFile;
-import app.notesr.service.CacheCleanerService;
+import app.notesr.service.android.CacheCleanerService;
 
 public class OpenImageActivity extends BaseFileViewerActivity {
     private ScaleGestureDetector scaleGestureDetector;

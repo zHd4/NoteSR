@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.manager.AssignmentsManager;
+import app.notesr.service.AssignmentsService;
 import app.notesr.model.FileInfo;
 import app.notesr.utils.FileExifDataResolver;
 
@@ -90,7 +90,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
 
-            AssignmentsManager manager = App.getAppContainer().getAssignmentsManager();
+            AssignmentsService manager = App.getAppContainer().getAssignmentsManager();
 
             filesMap.forEach((info, stream) -> {
                 String fileId = manager.saveInfo(info);

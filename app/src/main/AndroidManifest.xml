@@ -108,15 +108,15 @@
             android:theme="@style/AppTheme"  />
 
         <service
-            android:name=".service.CacheCleanerService"
+            android:name=".service.android.CacheCleanerService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.ExportService"
+            android:name=".service.android.ExportService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.ImportService"
+            android:name=".service.android.ImportService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
     </application>

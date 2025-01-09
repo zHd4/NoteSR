@@ -15,7 +15,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.AssignmentsListActivity;
-import app.notesr.manager.AssignmentsManager;
+import app.notesr.service.AssignmentsService;
 import app.notesr.model.FileInfo;
 import app.notesr.utils.FilesUtils;
 import app.notesr.utils.HashHelper;
@@ -147,7 +147,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
 
     private Runnable getSaveRunnable(File destFile) {
         return () -> {
-            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
+            AssignmentsService assignmentsManager = App.getAppContainer().getAssignmentsManager();
 
             try {
                 assignmentsManager.read(fileInfo.getId(), chunk -> {
@@ -193,7 +193,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
             File tempDir = getCacheDir();
             File tempFile = File.createTempFile(name, "." + extension, tempDir);
 
-            AssignmentsManager assignmentsManager = App.getAppContainer().getAssignmentsManager();
+            AssignmentsService assignmentsManager = App.getAppContainer().getAssignmentsManager();
 
             try (FileOutputStream stream = new FileOutputStream(tempFile)) {
                 assignmentsManager.read(fileInfo.getId(), chunk -> {

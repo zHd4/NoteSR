@@ -7,7 +7,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.adapter.NotesListAdapter;
-import app.notesr.manager.NotesManager;
+import app.notesr.service.NotesService;
 import app.notesr.model.Note;
 import app.notesr.model.SearchNotesResults;
 import app.notesr.onclick.notes.OpenNoteOnClick;
@@ -51,7 +51,7 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
     }
 
     private void fillResultsList(ListView resultsView) {
-        NotesManager manager = App.getAppContainer().getNotesManager();
+        NotesService manager = App.getAppContainer().getNotesService();
 
         List<Note> notes = results.results()
                 .stream()

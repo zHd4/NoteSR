@@ -23,8 +23,8 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NotesListActivity;
-import app.notesr.manager.data.importer.ImportResult;
-import app.notesr.service.ImportService;
+import app.notesr.service.data.importer.ImportResult;
+import app.notesr.service.android.ImportService;
 import app.notesr.utils.FileExifDataResolver;
 
 public class ImportActivity extends ExtendedAppCompatActivity {

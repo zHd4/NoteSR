@@ -18,7 +18,7 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NotesListActivity;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.db.notes.table.NotesTable;
-import app.notesr.service.ExportService;
+import app.notesr.service.android.ExportService;
 
 public class ExportActivity extends ExtendedAppCompatActivity {
 

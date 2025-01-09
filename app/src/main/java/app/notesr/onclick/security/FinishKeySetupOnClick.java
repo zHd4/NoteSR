@@ -18,7 +18,7 @@ import app.notesr.activity.security.SetupKeyActivity;
 import app.notesr.model.CryptoKey;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.CryptoTools;
-import app.notesr.manager.KeyUpdateManager;
+import app.notesr.service.KeyUpdateService;
 import lombok.AllArgsConstructor;
 
 import java.util.concurrent.ExecutorService;
@@ -74,12 +74,12 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
 
             try {
                 CryptoManager cryptoManager = getCryptoManager();
-                KeyUpdateManager keyUpdateManager = getKeyUpdateManager();
+                KeyUpdateService keyUpdateService = getKeyUpdateManager();
 
                 CryptoKey oldKey = cryptoManager.getCryptoKeyInstance().clone();
 
                 cryptoManager.applyNewKey(key);
-                keyUpdateManager.updateEncryptedData(oldKey, key);
+                keyUpdateService.updateEncryptedData(oldKey, key);
 
                 activity.startActivity(new Intent(App.getContext(), NotesListActivity.class));
                 activity.finish();
@@ -105,7 +105,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
         return App.getAppContainer().getCryptoManager();
     }
 
-    private KeyUpdateManager getKeyUpdateManager() {
-        return App.getAppContainer().getKeyUpdateManager();
+    private KeyUpdateService getKeyUpdateManager() {
+        return App.getAppContainer().getKeyUpdateService();
     }
 }
