@@ -48,7 +48,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         setContentView(R.layout.activity_open_note);
 
         String noteId = getIntent().getStringExtra("noteId");
-        note = getNotesManager().get(noteId);
+        note = getNotesService().get(noteId);
 
         noteModified = getIntent().getBooleanExtra("modified", false);
 
@@ -157,7 +157,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
             note.setUpdatedAt(now);
 
-            getNotesManager().save(note);
+            getNotesService().save(note);
             startActivity(new Intent(App.getContext(), NotesListActivity.class));
         }
     }
@@ -194,7 +194,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
                 executor.execute(() -> {
                     runOnUiThread(progressDialog::show);
-                    getNotesManager().delete(note.getId());
+                    getNotesService().delete(note.getId());
 
                     runOnUiThread(() -> {
                         progressDialog.dismiss();
@@ -210,7 +210,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         item.setVisible(false);
     }
 
-    private NotesService getNotesManager() {
+    private NotesService getNotesService() {
         return App.getAppContainer().getNotesService();
     }
 }
