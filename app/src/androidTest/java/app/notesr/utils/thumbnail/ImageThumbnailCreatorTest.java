@@ -3,7 +3,6 @@ package app.notesr.utils.thumbnail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.graphics.BitmapFactory;
 import android.util.Size;
 
 import org.junit.Test;
@@ -60,16 +59,5 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
 
         assertEquals(expectedWidth, thumbnailSize.getWidth());
         assertEquals(expectedHeight, thumbnailSize.getHeight());
-    }
-
-    public static Size getImageSize(File file) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-
-        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-        int width = options.outWidth;
-        int height = options.outHeight;
-
-        return new Size(width, height);
     }
 }

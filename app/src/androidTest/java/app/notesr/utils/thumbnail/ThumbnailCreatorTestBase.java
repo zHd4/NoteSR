@@ -1,6 +1,8 @@
 package app.notesr.utils.thumbnail;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.util.Size;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -30,5 +32,16 @@ public class ThumbnailCreatorTestBase {
         }
 
         return tempFixture;
+    }
+
+    protected static Size getImageSize(File file) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+        int width = options.outWidth;
+        int height = options.outHeight;
+
+        return new Size(width, height);
     }
 }
