@@ -12,7 +12,7 @@
         android:contentDescription="@string/open_assignments" />
 
     <TextView
-        android:id="@+id/attachedAssignmentsCountBadge"
+        android:id="@+id/attachedFilesCountBadge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"

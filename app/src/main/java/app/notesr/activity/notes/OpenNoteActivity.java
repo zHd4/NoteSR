@@ -79,15 +79,15 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
 
         MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
-        MenuItem openAssignmentsButton = menu.findItem(R.id.openAssignmentsButton);
+        MenuItem openFilesListButton = menu.findItem(R.id.openFilesListButton);
         MenuItem deleteNoteButton = menu.findItem(R.id.deleteNoteButton);
 
         menuItemsMap.put(saveNoteButton.getItemId(),
                 action -> saveNoteOnClick(nameField, textField));
 
         if (note != null) {
-            menuItemsMap.put(openAssignmentsButton.getItemId(),
-                    action -> openAssignmentsOnClick());
+            menuItemsMap.put(openFilesListButton.getItemId(),
+                    action -> openFilesListOnClick());
 
             menuItemsMap.put(deleteNoteButton.getItemId(),
                     action -> deleteNoteOnClick());
@@ -96,10 +96,10 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
             long filesCount = filesService.getFilesCount(note.getId());
 
             if (filesCount > 0) {
-                openAssignmentsButton.setActionView(R.layout.button_open_assignments);
+                openFilesListButton.setActionView(R.layout.button_open_files_list);
 
-                View view = Objects.requireNonNull(openAssignmentsButton.getActionView());
-                TextView badge = view.findViewById(R.id.attachedAssignmentsCountBadge);
+                View view = Objects.requireNonNull(openFilesListButton.getActionView());
+                TextView badge = view.findViewById(R.id.attachedFilesCountBadge);
 
                 String badgeText = filesCount <= MAX_COUNT_IN_BADGE
                         ? String.valueOf(filesCount)
@@ -108,10 +108,10 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
                 badge.setText(badgeText);
                 badge.setVisibility(View.VISIBLE);
 
-                view.setOnClickListener(v -> openAssignmentsOnClick());
+                view.setOnClickListener(v -> openFilesListOnClick());
             }
         } else {
-            disableMenuItem(openAssignmentsButton);
+            disableMenuItem(openFilesListButton);
             disableMenuItem(deleteNoteButton);
         }
 
@@ -174,7 +174,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         builder.create().show();
     }
 
-    private void openAssignmentsOnClick() {
+    private void openFilesListOnClick() {
         Intent intent = new Intent(App.getContext(), FilesListActivity.class);
 
         intent.putExtra("noteId", note.getId());
