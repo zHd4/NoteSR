@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 class ExportThread extends Thread {
     private static final String TAG = ExportThread.class.getName();
 
-    private final ExportService manager;
+    private final ExportService service;
     private boolean running = false;
 
     @Override
@@ -39,13 +39,13 @@ class ExportThread extends Thread {
     @Override
     public void run() {
         try {
-            manager.doExport();
+            service.doExport();
         } catch (IOException e) {
             Log.e(TAG, "IOException", e);
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
             interrupt();
-            manager.onThreadInterrupted();
+            service.onThreadInterrupted();
         }
     }
 }
