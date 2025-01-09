@@ -5,6 +5,9 @@ import static java.util.UUID.randomUUID;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import app.notesr.db.BaseTable;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.model.EncryptedFileThumbnail;
@@ -70,5 +73,36 @@ public class ThumbnailsTable extends BaseTable {
         }
 
         return null;
+    }
+
+    public Set<EncryptedFileThumbnail> getByFileId(String fileId) {
+        Set<EncryptedFileThumbnail> thumbnails = new LinkedHashSet<>();
+
+        Cursor cursor = db.readableDatabase.rawQuery(
+                "SELECT " +
+                        "id, " +
+                        "encrypted_image " +
+                        " FROM " + name +
+                        " WHERE file_id = ?",
+                new String[] {fileId});
+
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                do {
+                    String id = cursor.getString(0);
+                    byte[] encryptedImage = cursor.getBlob(1);
+
+                    EncryptedFileThumbnail thumbnail = EncryptedFileThumbnail.builder()
+                            .id(id)
+                            .fileId(fileId)
+                            .encryptedImage(encryptedImage)
+                            .build();
+
+                    thumbnails.add(thumbnail);
+                } while (cursor.moveToNext());
+            }
+        }
+
+        return thumbnails;
     }
 }
