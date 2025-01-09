@@ -107,7 +107,7 @@ public class NotesTest {
     }
 
     @Test
-    public void testAddAssignment() {
+    public void testAttachFile() {
         saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
