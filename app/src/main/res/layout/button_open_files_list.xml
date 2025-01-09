@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:src="@drawable/ic_assignment"
-        android:contentDescription="@string/open_assignments" />
+        android:contentDescription="@string/open_attachments" />
 
     <TextView
         android:id="@+id/attachedFilesCountBadge"

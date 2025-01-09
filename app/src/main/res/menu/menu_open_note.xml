@@ -19,7 +19,7 @@
         android:id="@+id/openFilesListButton"
         android:icon="@drawable/ic_assignment"
         android:orderInCategory="1"
-        android:title="@string/open_assignments"
+        android:title="@string/open_attachments"
         android:actionLayout="@layout/button_open_files_list"
         app:showAsAction="always" />
 </menu>
