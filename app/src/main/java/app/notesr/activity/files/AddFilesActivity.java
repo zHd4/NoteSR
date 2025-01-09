@@ -90,13 +90,13 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
 
-            AssignmentsService manager = App.getAppContainer().getAssignmentsManager();
+            AssignmentsService service = App.getAppContainer().getAssignmentsManager();
 
             filesMap.forEach((info, stream) -> {
-                String fileId = manager.saveInfo(info);
+                String fileId = service.saveInfo(info);
 
                 try {
-                    manager.saveData(fileId, stream);
+                    service.saveData(fileId, stream);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
