@@ -1,0 +1,58 @@
+package app.notesr.utils.thumbnail;
+
+import static java.util.UUID.randomUUID;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.ReturnCode;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import app.notesr.utils.Wiper;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class VideoThumbnailCreator implements ThumbnailCreator {
+    private static final String TAG = VideoThumbnailCreator.class.getName();
+
+    public static final int WIDTH = 100;
+    public static final int QUALITY = 5;
+
+    private final Context context;
+
+    @Override
+    public byte[] getThumbnail(File file) {
+        File tempThumbnail = new File(context.getCacheDir(), randomUUID().toString());
+        String command = "-i " + file.getAbsolutePath() + " -ss 00:00:03 -vframes 1 -vf scale="
+                + WIDTH + ":-1 -q:v " + QUALITY + " " + tempThumbnail.getAbsolutePath();
+
+
+        FFmpegSession session = FFmpegKit.execute(command);
+
+        if (ReturnCode.isSuccess(session.getReturnCode())) {
+            try {
+                byte[] thumbnailBytes = new byte[(int) file.length()];
+
+                try (FileInputStream inputStream = new FileInputStream(tempThumbnail)) {
+                    inputStream.read(thumbnailBytes);
+                }
+
+                Wiper.wipeFile(tempThumbnail);
+
+                return thumbnailBytes;
+            } catch (IOException e) {
+                Log.e(TAG, "IOException", e);
+                throw new RuntimeException(e);
+            }
+        } else {
+            Log.e(TAG, "FFmpeg error: " + session.getFailStackTrace());
+        }
+
+        return null;
+    }
+}
