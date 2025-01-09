@@ -63,7 +63,7 @@ public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_open_assignment, menu);
+        getMenuInflater().inflate(R.menu.menu_open_file, menu);
         return true;
     }
 
