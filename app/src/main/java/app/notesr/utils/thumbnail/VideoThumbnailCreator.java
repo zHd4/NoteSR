@@ -31,7 +31,7 @@ public class VideoThumbnailCreator implements ThumbnailCreator {
         String tempThumbnailFileName = randomUUID().toString() + "." + THUMBNAIL_FORMAT;
         File tempThumbnailFile = new File(context.getCacheDir(), tempThumbnailFileName);
 
-        String command = "-i " + file.getAbsolutePath() + " -ss 00:00:03 -vframes 1 -vf scale="
+        String command = "-i " + file.getAbsolutePath() + " -ss 00:00:01 -vframes 1 -vf scale="
                 + WIDTH + ":-1 -q:v " + QUALITY + " " + tempThumbnailFile.getAbsolutePath();
 
         Log.i(TAG, "Command: " + command);
