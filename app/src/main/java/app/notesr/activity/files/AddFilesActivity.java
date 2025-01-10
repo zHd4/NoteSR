@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -141,7 +142,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
     }
 
     private Map<FileInfo, InputStream> getFilesMap(List<Uri> uris) {
-        Map<FileInfo, InputStream> map = new HashMap<>();
+        Map<FileInfo, InputStream> map = new LinkedHashMap<>();
 
         uris.forEach(uri -> {
             FileInfo fileInfo = getFileInfo(uri);
