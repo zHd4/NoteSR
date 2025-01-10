@@ -1,5 +1,7 @@
 package app.notesr.activity.files;
 
+import static java.util.UUID.randomUUID;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
@@ -16,14 +18,21 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.service.FilesService;
 import app.notesr.model.FileInfo;
 import app.notesr.utils.FileExifDataResolver;
+import app.notesr.utils.Wiper;
+import app.notesr.utils.thumbnail.ImageThumbnailCreator;
+import app.notesr.utils.thumbnail.ThumbnailCreator;
+import app.notesr.utils.thumbnail.VideoThumbnailCreator;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -135,29 +144,82 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         Map<FileInfo, InputStream> map = new HashMap<>();
 
         uris.forEach(uri -> {
-            FileExifDataResolver resolver = new FileExifDataResolver(uri);
+            FileInfo fileInfo = getFileInfo(uri);
+            InputStream stream = getFileStream(uri);
 
-            String filename = resolver.getFileName();
-            String type = resolver.getMimeType();
-
-            long size = resolver.getFileSize();
-
-            FileInfo fileInfo = FileInfo.builder()
-                    .noteId(noteId)
-                    .size(size)
-                    .name(filename)
-                    .type(type)
-                    .build();
-
-            try {
-                InputStream stream = getContentResolver().openInputStream(uri);
-                map.put(fileInfo, stream);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            map.put(fileInfo, stream);
         });
 
         return map;
+    }
+
+    private FileInfo getFileInfo(Uri uri) {
+        FileExifDataResolver resolver = new FileExifDataResolver(uri);
+
+        String filename = resolver.getFileName();
+        String type = resolver.getMimeType();
+
+        byte[] thumbnail = getFileThumbnail(uri, type);
+        long size = resolver.getFileSize();
+
+        return FileInfo.builder()
+                .noteId(noteId)
+                .size(size)
+                .name(filename)
+                .type(type)
+                .thumbnail(thumbnail)
+                .build();
+    }
+
+    private InputStream getFileStream(Uri uri) {
+        try {
+            return getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] getFileThumbnail(Uri uri, String mimeType) {
+        try {
+            String type = mimeType.split("/")[0];
+            String extension = mimeType.split("/")[1];
+
+            File file = cloneFileFromUri(uri, extension);
+
+            ThumbnailCreator creator;
+
+            if (type.equals("image")) {
+                creator = new ImageThumbnailCreator();
+            } else if (type.equals("video")) {
+                creator = new VideoThumbnailCreator(getApplicationContext());
+            } else {
+                return null;
+            }
+
+            byte[] thumbnail = Objects.requireNonNull(creator).getThumbnail(file);
+            Wiper.wipeFile(file);
+
+            return thumbnail;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private File cloneFileFromUri(Uri uri, String extension) throws IOException {
+        File file = new File(getCacheDir(), randomUUID().toString() + "." + extension);
+
+        try (InputStream inputStream = getFileStream(uri);
+             FileOutputStream outputStream = new FileOutputStream(file)) {
+
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
+
+        return file;
     }
 
     private AlertDialog createProgressDialog() {
