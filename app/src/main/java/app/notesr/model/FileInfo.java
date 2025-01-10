@@ -20,6 +20,7 @@ public class FileInfo implements Serializable {
     private Long size;
     private String name;
     private String type;
+    private byte[] thumbnail;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

@@ -78,14 +78,22 @@ public class FilesCrypt {
                 type = aes.encrypt(fileInfo.getType().getBytes(StandardCharsets.UTF_8));
             }
 
-            return new EncryptedFileInfo(
-                    fileInfo.getId(),
-                    fileInfo.getNoteId(),
-                    fileInfo.getSize(),
-                    name,
-                    type,
-                    fileInfo.getCreatedAt(),
-                    fileInfo.getUpdatedAt());
+            byte[] thumbnail = null;
+
+            if (fileInfo.getThumbnail() != null) {
+                thumbnail = aes.encrypt(fileInfo.getThumbnail());
+            }
+
+            return EncryptedFileInfo.builder()
+                    .id(fileInfo.getId())
+                    .noteId(fileInfo.getNoteId())
+                    .size(fileInfo.getSize())
+                    .encryptedName(name)
+                    .encryptedType(type)
+                    .encryptedThumbnail(thumbnail)
+                    .createdAt(fileInfo.getCreatedAt())
+                    .updatedAt(fileInfo.getUpdatedAt())
+                    .build();
         } catch (Exception e) {
             Log.e("Cannot encrypt file info", e.toString());
             throw new RuntimeException(e);
@@ -106,12 +114,20 @@ public class FilesCrypt {
                 decryptedType = new String(aes.decrypt(encryptedType));
             }
 
+            byte[] decryptedThumbnail = null;
+
+            if (encryptedFileInfo.getEncryptedThumbnail() != null) {
+                byte[] encryptedThumbnail = encryptedFileInfo.getEncryptedThumbnail();
+                decryptedThumbnail = aes.decrypt(encryptedThumbnail);
+            }
+
             return FileInfo.builder()
                     .id(encryptedFileInfo.getId())
                     .noteId(encryptedFileInfo.getNoteId())
                     .size(encryptedFileInfo.getSize())
                     .name(decryptedName)
                     .type(decryptedType)
+                    .thumbnail(decryptedThumbnail)
                     .createdAt(encryptedFileInfo.getCreatedAt())
                     .updatedAt(encryptedFileInfo.getUpdatedAt())
                     .build();

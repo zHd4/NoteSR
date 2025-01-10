@@ -17,6 +17,7 @@ public class EncryptedFileInfo {
     private Long size;
     private byte[] encryptedName;
     private byte[] encryptedType;
+    private byte[] encryptedThumbnail;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -22,6 +22,7 @@ public class FilesInfoTable extends BaseTable {
                         "note_id varchar(36) NOT NULL, " +
                         "encrypted_name blob NOT NULL, " +
                         "encrypted_type blob, " +
+                        "encrypted_thumbnail blob, " +
                         "size bigint NOT NULL, " +
                         "created_at varchar(255) NOT NULL, " +
                         "updated_at varchar(255) NOT NULL, " +
@@ -42,6 +43,7 @@ public class FilesInfoTable extends BaseTable {
         values.put("note_id", fileInfo.getNoteId());
         values.put("encrypted_name", fileInfo.getEncryptedName());
         values.put("encrypted_type", fileInfo.getEncryptedType());
+        values.put("encrypted_thumbnail", fileInfo.getEncryptedThumbnail());
         values.put("size", fileInfo.getSize());
         values.put("updated_at", nowStr);
 
@@ -74,6 +76,7 @@ public class FilesInfoTable extends BaseTable {
                         "note_id, " +
                         "encrypted_name, " +
                         "encrypted_type, " +
+                        "encrypted_thumbnail, " +
                         "size, " +
                         "created_at, " +
                         "updated_at " +
@@ -89,10 +92,11 @@ public class FilesInfoTable extends BaseTable {
                             .noteId(cursor.getString(1))
                             .encryptedName(cursor.getBlob(2))
                             .encryptedType(cursor.getBlob(3))
-                            .size(cursor.getLong(4))
-                            .createdAt(LocalDateTime.parse(cursor.getString(5),
+                            .encryptedThumbnail(cursor.getBlob(4))
+                            .size(cursor.getLong(5))
+                            .createdAt(LocalDateTime.parse(cursor.getString(6),
                                     getTimestampFormatter()))
-                            .updatedAt(LocalDateTime.parse(cursor.getString(6),
+                            .updatedAt(LocalDateTime.parse(cursor.getString(7),
                                     getTimestampFormatter()))
                             .build();
 
@@ -110,6 +114,7 @@ public class FilesInfoTable extends BaseTable {
                         "note_id, " +
                         "encrypted_name, " +
                         "encrypted_type, " +
+                        "encrypted_thumbnail, " +
                         "size, " +
                         "created_at, " +
                         "updated_at " +
@@ -123,20 +128,23 @@ public class FilesInfoTable extends BaseTable {
 
                 byte[] name = cursor.getBlob(1);
                 byte[] type = cursor.getBlob(2);
+                byte[] thumbnail = cursor.getBlob(3);
 
-                Long size = cursor.getLong(3);
+                Long size = cursor.getLong(4);
 
-                String createdAt = cursor.getString(4);
-                String updatedAt = cursor.getString(5);
+                String createdAt = cursor.getString(5);
+                String updatedAt = cursor.getString(6);
 
-                return new EncryptedFileInfo(
-                        id,
-                        noteId,
-                        size,
-                        name,
-                        type,
-                        LocalDateTime.parse(createdAt, getTimestampFormatter()),
-                        LocalDateTime.parse(updatedAt, getTimestampFormatter()));
+                return EncryptedFileInfo.builder()
+                        .id(id)
+                        .noteId(noteId)
+                        .size(size)
+                        .encryptedName(name)
+                        .encryptedType(type)
+                        .encryptedThumbnail(thumbnail)
+                        .createdAt(LocalDateTime.parse(createdAt, getTimestampFormatter()))
+                        .updatedAt(LocalDateTime.parse(updatedAt, getTimestampFormatter()))
+                        .build();
             }
         }
 
@@ -147,7 +155,14 @@ public class FilesInfoTable extends BaseTable {
         List<EncryptedFileInfo> files = new ArrayList<>();
 
         Cursor cursor = db.readableDatabase.rawQuery(
-                "SELECT id, encrypted_name, encrypted_type, size, created_at, updated_at" +
+                "SELECT " +
+                        "id, " +
+                        "encrypted_name, " +
+                        "encrypted_type, " +
+                        "encrypted_thumbnail, " +
+                        "size, " +
+                        "created_at, " +
+                        "updated_at" +
                         " FROM " + name +
                         " WHERE note_id = ?" +
                         " ORDER BY updated_at DESC",
@@ -160,20 +175,25 @@ public class FilesInfoTable extends BaseTable {
 
                     byte[] name = cursor.getBlob(1);
                     byte[] type = cursor.getBlob(2);
+                    byte[] thumbnail = cursor.getBlob(3);
 
-                    Long size = cursor.getLong(3);
+                    Long size = cursor.getLong(4);
 
-                    String createdAt = cursor.getString(4);
-                    String updatedAt = cursor.getString(5);
+                    String createdAt = cursor.getString(5);
+                    String updatedAt = cursor.getString(6);
 
-                    files.add(new EncryptedFileInfo(
-                            id,
-                            noteId,
-                            size,
-                            name,
-                            type,
-                            LocalDateTime.parse(createdAt, getTimestampFormatter()),
-                            LocalDateTime.parse(updatedAt, getTimestampFormatter())));
+                    EncryptedFileInfo fileInfo = EncryptedFileInfo.builder()
+                            .id(id)
+                            .noteId(noteId)
+                            .size(size)
+                            .encryptedName(name)
+                            .encryptedType(type)
+                            .encryptedThumbnail(thumbnail)
+                            .createdAt(LocalDateTime.parse(createdAt, getTimestampFormatter()))
+                            .updatedAt(LocalDateTime.parse(updatedAt, getTimestampFormatter()))
+                            .build();
+
+                    files.add(fileInfo);
                 } while (cursor.moveToNext());
             }
         }
