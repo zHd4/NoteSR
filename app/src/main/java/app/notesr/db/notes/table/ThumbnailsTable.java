@@ -40,7 +40,7 @@ public class ThumbnailsTable extends BaseTable {
             values.put("id", id);
 
             if (db.writableDatabase.insert(name, null, values) == -1) {
-                throw new RuntimeException("Cannot insert data block in table '" + name + "'");
+                throw new RuntimeException("Cannot insert thumbnail in table '" + name + "'");
             }
 
             thumbnail.setId(id);
