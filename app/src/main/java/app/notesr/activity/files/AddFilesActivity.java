@@ -1,5 +1,6 @@
 package app.notesr.activity.files;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 
 import android.app.Activity;
@@ -29,11 +30,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -182,8 +181,10 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
 
     private byte[] getFileThumbnail(Uri uri, String mimeType) {
         try {
-            String type = mimeType.split("/")[0];
-            String extension = mimeType.split("/")[1];
+            String[] mimeTypeParts = mimeType.split("/");
+
+            String type = mimeTypeParts[0];
+            String extension = mimeTypeParts[1];
 
             File file = cloneFileFromUri(uri, extension);
 
@@ -197,7 +198,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
                 return null;
             }
 
-            byte[] thumbnail = Objects.requireNonNull(creator).getThumbnail(file);
+            byte[] thumbnail = requireNonNull(creator).getThumbnail(file);
             Wiper.wipeFile(file);
 
             return thumbnail;
