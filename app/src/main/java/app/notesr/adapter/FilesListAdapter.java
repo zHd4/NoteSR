@@ -1,6 +1,8 @@
 package app.notesr.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,16 +67,31 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
             sizeView.setText(toReadableSize(fileInfo.getSize()));
             updateAtView.setText(fileInfo.getUpdatedAt().format(timestampFormatter));
 
-            if (fileInfo.getType() != null) {
-                String type = fileInfo.getType().split("/")[0];
-
-                if (FILES_TYPES_ICONS.containsKey(type)) {
-                    iconView.setImageResource(FILES_TYPES_ICONS.get(type));
-                }
-            }
+            setFileIcon(fileInfo, iconView);
         }
 
         return view;
+    }
+
+    private void setFileIcon(FileInfo fileInfo, ImageView view) {
+        byte[] thumbnail = fileInfo.getThumbnail();
+
+        if (thumbnail != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.length);
+
+            view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            view.setImageBitmap(bitmap);
+
+            return;
+        }
+
+        if (fileInfo.getType() != null) {
+            String type = fileInfo.getType().split("/")[0];
+
+            if (FILES_TYPES_ICONS.containsKey(type)) {
+                view.setImageResource(FILES_TYPES_ICONS.get(type));
+            }
+        }
     }
 
     @Override
