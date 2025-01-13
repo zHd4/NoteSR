@@ -39,7 +39,7 @@ public class VideoThumbnailCreator implements ThumbnailCreator {
 
         if (ReturnCode.isSuccess(session.getReturnCode())) {
             try {
-                byte[] thumbnailBytes = new byte[(int) file.length()];
+                byte[] thumbnailBytes = new byte[(int) tempThumbnailFile.length()];
 
                 try (FileInputStream inputStream = new FileInputStream(tempThumbnailFile)) {
                     inputStream.read(thumbnailBytes);
