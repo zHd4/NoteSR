@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import app.notesr.App;
 import app.notesr.activity.files.FilesListActivity;
-import app.notesr.activity.files.viewer.BaseFileViewerActivity;
+import app.notesr.activity.files.viewer.FileViewerActivityBase;
 import app.notesr.activity.files.viewer.OpenImageActivity;
 import app.notesr.activity.files.viewer.OpenTextFileActivity;
 import app.notesr.activity.files.viewer.OpenUnknownFileActivity;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class OpenFileOnClick implements AdapterView.OnItemClickListener {
-    private static final Map<String, Class<? extends BaseFileViewerActivity>> FILES_VIEWERS =
+    private static final Map<String, Class<? extends FileViewerActivityBase>> FILES_VIEWERS =
             Map.of(
                     "text", OpenTextFileActivity.class,
                     "image", OpenImageActivity.class,
@@ -38,14 +38,14 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
 
         String type = getFileType(fileInfo);
 
-        Class<? extends BaseFileViewerActivity> viewer = type != null
+        Class<? extends FileViewerActivityBase> viewer = type != null
                 ? FILES_VIEWERS.get(type)
                 : OpenUnknownFileActivity.class;
 
         openViewer(viewer, fileInfo);
     }
 
-    private void openViewer(Class<? extends BaseFileViewerActivity> viewer, FileInfo fileInfo) {
+    private void openViewer(Class<? extends FileViewerActivityBase> viewer, FileInfo fileInfo) {
         Intent intent = new Intent(App.getContext(), viewer);
 
         intent.putExtra("fileInfo", fileInfo);

@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class BaseFileViewerActivity extends ExtendedAppCompatActivity {
+public class FileViewerActivityBase extends ExtendedAppCompatActivity {
     protected FileInfo fileInfo;
     protected java.io.File saveDir;
 

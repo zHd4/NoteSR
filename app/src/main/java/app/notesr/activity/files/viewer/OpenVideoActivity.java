@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class OpenVideoActivity extends BaseFileViewerActivity {
+public class OpenVideoActivity extends FileViewerActivityBase {
 
     private ScaleGestureDetector scaleGestureDetector;
     private VideoView videoView;

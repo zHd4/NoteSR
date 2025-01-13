@@ -7,7 +7,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.service.FilesService;
 
-public class OpenTextFileActivity extends BaseFileViewerActivity {
+public class OpenTextFileActivity extends FileViewerActivityBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

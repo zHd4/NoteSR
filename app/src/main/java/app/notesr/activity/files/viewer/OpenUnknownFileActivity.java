@@ -3,7 +3,7 @@ package app.notesr.activity.files.viewer;
 import android.os.Bundle;
 import app.notesr.R;
 
-public class OpenUnknownFileActivity extends BaseFileViewerActivity {
+public class OpenUnknownFileActivity extends FileViewerActivityBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
