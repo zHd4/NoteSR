@@ -8,11 +8,13 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
@@ -25,6 +27,7 @@ import app.notesr.utils.thumbnail.ThumbnailCreator;
 import app.notesr.utils.thumbnail.VideoThumbnailCreator;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -94,18 +97,20 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         AlertDialog progressDialog = createProgressDialog();
 
-        Map<FileInfo, InputStream> filesMap = getFilesMap(getFilesUri(data));
+        Map<FileInfo, File> filesMap = cacheFiles(getFilesUri(data));
 
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
 
             FilesService filesService = App.getAppContainer().getFilesService();
 
-            filesMap.forEach((info, stream) -> {
-                String fileId = filesService.saveInfo(info);
-
+            filesMap.forEach((info, file) -> {
                 try {
+                    String fileId = filesService.saveInfo(info);
+                    InputStream stream = new FileInputStream(file);
+
                     filesService.saveData(fileId, stream);
+                    Wiper.wipeFile(file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -140,17 +145,24 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         return result;
     }
 
-    private Map<FileInfo, InputStream> getFilesMap(List<Uri> uris) {
-        Map<FileInfo, InputStream> map = new LinkedHashMap<>();
+    private Map<FileInfo, File> cacheFiles(List<Uri> uris) {
+        Map<FileInfo, File> filesMap = new LinkedHashMap<>();
 
         uris.forEach(uri -> {
-            FileInfo fileInfo = getFileInfo(uri);
-            InputStream stream = getFileStream(uri);
 
-            map.put(fileInfo, stream);
+            try {
+                FileInfo fileInfo = getFileInfo(uri);
+                MimeType mimeType = MimeType.fromString(fileInfo.getType());
+                File file = createTempFileFromUri(uri, mimeType);
+
+                fileInfo.setThumbnail(getFileThumbnail(file, mimeType));
+                filesMap.put(fileInfo, file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
 
-        return map;
+        return filesMap;
     }
 
     private FileInfo getFileInfo(Uri uri) {
@@ -159,7 +171,6 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         String filename = resolver.getFileName();
         String type = resolver.getMimeType();
 
-        byte[] thumbnail = getFileThumbnail(uri, type);
         long size = resolver.getFileSize();
 
         return FileInfo.builder()
@@ -167,7 +178,6 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
                 .size(size)
                 .name(filename)
                 .type(type)
-                .thumbnail(thumbnail)
                 .build();
     }
 
@@ -179,15 +189,9 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         }
     }
 
-    private byte[] getFileThumbnail(Uri uri, String mimeType) {
+    private byte[] getFileThumbnail(File file, MimeType mimeType) {
         try {
-            String[] mimeTypeParts = mimeType.split("/");
-
-            String type = mimeTypeParts[0];
-            String extension = mimeTypeParts[1];
-
-            File file = cloneFileFromUri(uri, extension);
-
+            String type = mimeType.type();
             ThumbnailCreator creator;
 
             if (type.equals("image")) {
@@ -198,17 +202,15 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
                 return null;
             }
 
-            byte[] thumbnail = requireNonNull(creator).getThumbnail(file);
-            Wiper.wipeFile(file);
-
-            return thumbnail;
+            return requireNonNull(creator).getThumbnail(file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private File cloneFileFromUri(Uri uri, String extension) throws IOException {
-        File file = new File(getCacheDir(), randomUUID().toString() + "." + extension);
+    private File createTempFileFromUri(Uri uri, MimeType mimeType) throws IOException {
+        String filename = randomUUID().toString() + "." + mimeType.extension();
+        File file = new File(getCacheDir(), filename);
 
         try (InputStream inputStream = getFileStream(uri);
              FileOutputStream outputStream = new FileOutputStream(file)) {
@@ -229,5 +231,12 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         builder.setView(R.layout.progress_dialog_adding).setCancelable(false);
 
         return builder.create();
+    }
+
+    private record MimeType(String type, String extension) {
+        public static MimeType fromString(String s) {
+            String[] mimeTypeParts = s.split("/");
+            return new MimeType(mimeTypeParts[0], mimeTypeParts[1]);
+        }
     }
 }
