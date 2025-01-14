@@ -8,8 +8,9 @@ import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
 import app.notesr.utils.HashHelper;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -51,10 +52,10 @@ public class FilesService extends ServiceBase {
         return encryptedFileInfo.getId();
     }
 
-    public void saveData(String fileId, InputStream stream) throws IOException {
+    public void saveData(String fileId, File sourceFile) throws IOException {
         DataBlocksTable dataBlocksTable = getDataBlocksTable();
 
-        try (stream) {
+        try (FileInputStream stream = new FileInputStream(sourceFile)) {
             byte[] chunk = new byte[CHUNK_SIZE];
 
             long order = 0;

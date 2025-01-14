@@ -27,7 +27,6 @@ import app.notesr.utils.thumbnail.ThumbnailCreator;
 import app.notesr.utils.thumbnail.VideoThumbnailCreator;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -107,9 +106,8 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
             filesMap.forEach((info, file) -> {
                 try {
                     String fileId = filesService.saveInfo(info);
-                    InputStream stream = new FileInputStream(file);
+                    filesService.saveData(fileId, file);
 
-                    filesService.saveData(fileId, stream);
                     Wiper.wipeFile(file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
