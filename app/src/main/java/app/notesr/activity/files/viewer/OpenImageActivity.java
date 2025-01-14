@@ -20,7 +20,7 @@ import app.notesr.db.services.table.TempFilesTable;
 import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerService;
 
-public class OpenImageActivity extends FileViewerActivityBase {
+public class OpenImageActivity extends MediaFileViewerActivityBase {
     private ScaleGestureDetector scaleGestureDetector;
     private ImageView imageView;
     private File imageFile;
@@ -59,6 +59,10 @@ public class OpenImageActivity extends FileViewerActivityBase {
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
             imageFile = dropToCache(fileInfo);
+
+            if (!isThumbnailSet()) {
+                setThumbnail(imageFile);
+            }
 
             runOnUiThread(progressDialog::dismiss);
             runOnUiThread(() -> {

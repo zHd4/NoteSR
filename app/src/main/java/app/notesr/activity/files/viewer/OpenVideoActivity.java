@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class OpenVideoActivity extends FileViewerActivityBase {
+public class OpenVideoActivity extends MediaFileViewerActivityBase {
 
     private ScaleGestureDetector scaleGestureDetector;
     private VideoView videoView;
@@ -76,6 +76,10 @@ public class OpenVideoActivity extends FileViewerActivityBase {
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
             videoFile = dropToCache(fileInfo);
+
+            if (!isThumbnailSet()) {
+                setThumbnail(videoFile);
+            }
 
             runOnUiThread(progressDialog::dismiss);
             runOnUiThread(() -> {
