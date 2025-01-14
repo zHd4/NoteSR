@@ -3,6 +3,7 @@ package app.notesr.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,6 +81,7 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
             Bitmap bitmap = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.length);
 
             view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            view.setBackgroundColor(Color.BLACK);
             view.setImageBitmap(bitmap);
 
             return;
