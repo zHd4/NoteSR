@@ -45,7 +45,14 @@ public class FilesInfoTable extends BaseTable {
         values.put("encrypted_type", fileInfo.getEncryptedType());
         values.put("encrypted_thumbnail", fileInfo.getEncryptedThumbnail());
         values.put("size", fileInfo.getSize());
-        values.put("updated_at", nowStr);
+
+        if (fileInfo.getUpdatedAt() == null) {
+            values.put("updated_at", nowStr);
+            fileInfo.setUpdatedAt(now);
+        } else {
+            String updatedAt = fileInfo.getUpdatedAt().format(getTimestampFormatter());
+            values.put("updated_at", updatedAt);
+        }
 
         if (fileInfo.getId() == null || get(fileInfo.getId()) == null) {
             String id = generateId ? randomUUID().toString() : fileInfo.getId();
