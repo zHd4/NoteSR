@@ -94,6 +94,11 @@ public abstract class BaseFilesImporter extends BaseImporter {
                         fileInfo.setType(parser.getValueAsString());
                     }
 
+                    case "thumbnail" -> {
+                        if (parser.getValueAsString().equals("thumbnail")) continue;
+                        fileInfo.setThumbnail(parser.getBinaryValue());
+                    }
+
                     case "created_at" -> {
                         if (parser.getValueAsString().equals("created_at")) continue;
 
