@@ -91,6 +91,10 @@ class FilesInfoExporter extends Exporter {
         jsonGenerator.writeStringField("name", fileInfo.getName());
         jsonGenerator.writeStringField("type", fileInfo.getType());
 
+        if (fileInfo.getThumbnail() != null) {
+            jsonGenerator.writeBinaryField("thumbnail", fileInfo.getThumbnail());
+        }
+
         String createdAt = fileInfo.getCreatedAt().format(timestampFormatter);
         String updatedAt = fileInfo.getUpdatedAt().format(timestampFormatter);
 
