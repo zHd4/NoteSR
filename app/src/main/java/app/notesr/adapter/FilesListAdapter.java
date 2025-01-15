@@ -80,7 +80,7 @@ public class FilesListAdapter extends ElementsListAdapter<FileInfo> {
         if (thumbnail != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.length);
 
-            view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            view.setScaleType(ImageView.ScaleType.CENTER_CROP);
             view.setBackgroundColor(Color.BLACK);
             view.setImageBitmap(bitmap);
 
