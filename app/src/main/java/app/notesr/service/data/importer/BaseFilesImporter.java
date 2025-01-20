@@ -90,13 +90,21 @@ public abstract class BaseFilesImporter extends BaseImporter {
                     }
 
                     case "type" -> {
-                        if (parser.getValueAsString().equals("type")) continue;
-                        fileInfo.setType(parser.getValueAsString());
+                        String value = parser.getValueAsString();
+
+                        if (value != null) {
+                            if (value.equals("type")) continue;
+                            fileInfo.setType(parser.getValueAsString());
+                        }
                     }
 
                     case "thumbnail" -> {
-                        if (parser.getValueAsString().equals("thumbnail")) continue;
-                        fileInfo.setThumbnail(parser.getBinaryValue());
+                        String value = parser.getValueAsString();
+
+                        if (value != null) {
+                            if (value.equals("thumbnail")) continue;
+                            fileInfo.setThumbnail(parser.getBinaryValue());
+                        }
                     }
 
                     case "created_at" -> {
@@ -115,8 +123,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
                         );
                     }
 
-                    default -> {
-                    }
+                    default -> {}
                 }
             }
         }
