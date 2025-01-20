@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 public class FilesUtils {
     /** @noinspection ResultOfMethodCallIgnored*/
@@ -35,13 +33,8 @@ public class FilesUtils {
         return new File(App.getContext().getFilesDir(), path);
     }
 
-    public static String getFileExtension(String filename) {
-        String[] array = filename.split("\\.");
-
-        if (array.length >= 2) {
-            return new LinkedList<>(Arrays.asList(array)).getLast();
-        }
-
-        return null;
+    public static String getFileExtension(String fileName) {
+        int lastIndex = fileName.lastIndexOf('.');
+        return (lastIndex != -1) ? fileName.substring(lastIndex + 1) : null;
     }
 }
