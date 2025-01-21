@@ -34,10 +34,10 @@ public class KeyRecoveryActivity extends ExtendedAppCompatActivity {
         disableBackButton();
 
         hexKeyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
-        applyButton.setOnClickListener(recoveryKeyButtonOnClick(hexKeyField));
+        applyButton.setOnClickListener(applyButtonOnClick(hexKeyField));
     }
 
-    private View.OnClickListener recoveryKeyButtonOnClick(EditText hexKeyField) {
+    private View.OnClickListener applyButtonOnClick(EditText hexKeyField) {
         return view -> {
             String hexKey = hexKeyField.getText().toString();
 
