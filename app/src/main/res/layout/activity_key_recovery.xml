@@ -14,7 +14,7 @@
         android:backgroundTint="@color/activity_background"
         android:ems="10"
         android:gravity="start"
-        android:hint="@string/paste_or_enter_your_private_key_here"
+        android:hint="@string/enter_your_private_key_here"
         android:inputType="textMultiLine"
         android:maxLines="12"
         android:minLines="12"
