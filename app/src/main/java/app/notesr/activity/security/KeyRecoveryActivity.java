@@ -46,9 +46,9 @@ public class KeyRecoveryActivity extends ExtendedAppCompatActivity {
                     CryptoTools.hexToCryptoKey(hexKey, null);
 
                     Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-                    String mode = AuthActivity.Mode.KEY_RECOVERY.toString();
+                    String authActivityMode = AuthActivity.Mode.KEY_RECOVERY.toString();
 
-                    authActivityIntent.putExtra("mode", mode);
+                    authActivityIntent.putExtra("mode", authActivityMode);
                     authActivityIntent.putExtra("hexKey", hexKey);
 
                     startActivity(authActivityIntent);
