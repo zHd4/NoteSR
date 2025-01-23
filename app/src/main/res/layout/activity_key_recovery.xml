@@ -7,10 +7,11 @@
     tools:context=".activity.security.KeyRecoveryActivity"
     android:background="@color/activity_background">
 
+
     <EditText
-        android:id="@+id/importKeyField"
+        android:id="@+id/importRecoveryKeyField"
         android:layout_width="0dp"
-        android:layout_height="642dp"
+        android:layout_height="0dp"
         android:backgroundTint="@color/activity_background"
         android:ems="10"
         android:gravity="start"
