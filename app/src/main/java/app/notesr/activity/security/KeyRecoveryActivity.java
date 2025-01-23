@@ -29,7 +29,7 @@ public class KeyRecoveryActivity extends ExtendedAppCompatActivity {
         Objects.requireNonNull(actionBar).setTitle(getString(R.string.key_recovery));
 
         EditText hexKeyField = findViewById(R.id.importRecoveryKeyField);
-        Button applyButton = findViewById(R.id.checkRecoveryKeyButton);
+        Button applyButton = findViewById(R.id.applyRecoveryKeyButton);
 
         disableBackButton();
 

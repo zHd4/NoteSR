@@ -33,7 +33,7 @@
         tools:ignore="Autofill" />
 
     <Button
-        android:id="@+id/checkRecoveryKeyButton"
+        android:id="@+id/applyRecoveryKeyButton"
         android:layout_width="0dp"
         android:layout_height="64dp"
         android:background="@drawable/button"
