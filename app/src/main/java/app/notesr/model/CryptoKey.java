@@ -3,13 +3,11 @@ package app.notesr.model;
 import androidx.annotation.NonNull;
 import javax.crypto.SecretKey;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 
 @AllArgsConstructor
-@Getter
-@EqualsAndHashCode
-public class CryptoKey {
+@Data
+public class CryptoKey implements Cloneable {
 
     private SecretKey key;
     private byte[] salt;
@@ -17,7 +15,13 @@ public class CryptoKey {
 
     @NonNull
     @Override
-    public CryptoKey clone() {
-        return new CryptoKey(key, salt, password);
+    public CryptoKey clone() throws CloneNotSupportedException {
+        CryptoKey cryptoKey = (CryptoKey) super.clone();
+
+        cryptoKey.key = this.key;
+        cryptoKey.salt = this.salt;
+        cryptoKey.password = this.password;
+
+        return cryptoKey;
     }
 }
