@@ -10,7 +10,7 @@ import app.notesr.activity.files.viewer.OpenImageActivity;
 import app.notesr.activity.files.viewer.OpenTextFileActivity;
 import app.notesr.activity.files.viewer.OpenUnknownFileActivity;
 import app.notesr.activity.files.viewer.OpenVideoActivity;
-import app.notesr.model.FileInfo;
+import app.notesr.dto.FileInfo;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;

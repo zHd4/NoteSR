@@ -3,7 +3,7 @@ package app.notesr.crypto;
 import android.util.Log;
 
 import app.notesr.App;
-import app.notesr.model.CryptoKey;
+import app.notesr.dto.CryptoKey;
 import app.notesr.utils.FilesUtils;
 import app.notesr.utils.HashHelper;
 import app.notesr.utils.Wiper;

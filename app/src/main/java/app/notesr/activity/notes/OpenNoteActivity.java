@@ -18,7 +18,7 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.FilesListActivity;
 import app.notesr.service.FilesService;
 import app.notesr.service.NotesService;
-import app.notesr.model.Note;
+import app.notesr.dto.Note;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

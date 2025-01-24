@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import app.notesr.R;
-import app.notesr.model.Note;
+import app.notesr.dto.Note;
 
 import java.util.List;
 import java.util.Objects;

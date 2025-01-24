@@ -4,7 +4,7 @@ import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.EncryptedNote;
-import app.notesr.model.Note;
+import app.notesr.dto.Note;
 import app.notesr.utils.HashHelper;
 
 import java.util.List;

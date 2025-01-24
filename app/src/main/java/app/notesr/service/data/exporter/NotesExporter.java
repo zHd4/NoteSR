@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.model.EncryptedNote;
-import app.notesr.model.Note;
+import app.notesr.dto.Note;
 import lombok.Getter;
 
 import java.io.IOException;

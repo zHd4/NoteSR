@@ -18,7 +18,7 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.data.ExportActivity;
 import app.notesr.activity.data.ImportActivity;
 import app.notesr.adapter.NotesListAdapter;
-import app.notesr.model.Note;
+import app.notesr.dto.Note;
 import app.notesr.onclick.notes.NewNoteOnClick;
 import app.notesr.onclick.notes.OpenNoteOnClick;
 import app.notesr.onclick.security.ChangePasswordOnClick;

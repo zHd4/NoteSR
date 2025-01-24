@@ -1,4 +1,4 @@
-package app.notesr.model;
+package app.notesr.dto;
 
 import androidx.annotation.NonNull;
 import javax.crypto.SecretKey;

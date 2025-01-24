@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import app.notesr.R;
-import app.notesr.model.FileInfo;
+import app.notesr.dto.FileInfo;
 
 import java.text.DecimalFormat;
 import java.util.List;

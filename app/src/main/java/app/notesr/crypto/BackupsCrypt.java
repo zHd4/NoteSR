@@ -1,7 +1,7 @@
 package app.notesr.crypto;
 
 import app.notesr.App;
-import app.notesr.model.CryptoKey;
+import app.notesr.dto.CryptoKey;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;

@@ -9,7 +9,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.service.NotesService;
-import app.notesr.model.SearchNotesResults;
+import app.notesr.dto.SearchNotesResults;
 
 public class SearchNotesActivity extends ExtendedAppCompatActivity {
     /** @noinspection DataFlowIssue*/

@@ -2,9 +2,9 @@ package app.notesr.crypto;
 
 import android.util.Log;
 import app.notesr.App;
-import app.notesr.model.CryptoKey;
+import app.notesr.dto.CryptoKey;
 import app.notesr.model.EncryptedFileInfo;
-import app.notesr.model.FileInfo;
+import app.notesr.dto.FileInfo;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

@@ -18,8 +18,8 @@ import app.notesr.activity.notes.OpenNoteActivity;
 import app.notesr.adapter.FilesListAdapter;
 import app.notesr.service.FilesService;
 import app.notesr.service.NotesService;
-import app.notesr.model.FileInfo;
-import app.notesr.model.Note;
+import app.notesr.dto.FileInfo;
+import app.notesr.dto.Note;
 import app.notesr.onclick.files.OpenFileOnClick;
 
 import java.util.HashMap;

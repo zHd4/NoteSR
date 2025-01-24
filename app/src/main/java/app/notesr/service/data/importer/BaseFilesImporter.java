@@ -14,7 +14,7 @@ import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
-import app.notesr.model.FileInfo;
+import app.notesr.dto.FileInfo;
 
 public abstract class BaseFilesImporter extends BaseImporter {
 

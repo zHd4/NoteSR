@@ -1,6 +1,6 @@
 package app.notesr;
 
-import app.notesr.model.CryptoKey;
+import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FilesCrypt;
 import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
@@ -9,8 +9,8 @@ import app.notesr.db.notes.table.NotesTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.EncryptedNote;
-import app.notesr.model.FileInfo;
-import app.notesr.model.Note;
+import app.notesr.dto.FileInfo;
+import app.notesr.dto.Note;
 import io.bloco.faker.Faker;
 import org.junit.After;
 import org.junit.Assert;

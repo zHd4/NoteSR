@@ -8,8 +8,8 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.adapter.NotesListAdapter;
 import app.notesr.service.NotesService;
-import app.notesr.model.Note;
-import app.notesr.model.SearchNotesResults;
+import app.notesr.dto.Note;
+import app.notesr.dto.SearchNotesResults;
 import app.notesr.onclick.notes.OpenNoteOnClick;
 
 import java.util.HashMap;
