@@ -43,7 +43,8 @@ public class CryptoTools {
         return hexToCryptoKey(hex, password, false);
     }
 
-    public static CryptoKey hexToCryptoKey(String hex, String password, boolean newKey) throws Exception {
+    public static CryptoKey hexToCryptoKey(String hex, String password, boolean newKey)
+            throws Exception {
         String[] hexArray = hex.toLowerCase().split("\\s+");
 
         byte[] bytes = new byte[hexArray.length];
