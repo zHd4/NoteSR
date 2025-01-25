@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_background"
+    tools:context=".activity.security.ImportKeyActivity">
+
+    <EditText
+        android:id="@+id/importKeyField"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:backgroundTint="@color/activity_background"
+        android:ems="10"
+        android:gravity="start"
+        android:hint="@string/enter_your_private_key_here"
+        android:inputType="textMultiLine"
+        android:maxLines="12"
+        android:minLines="12"
+        android:scrollbars="vertical"
+        android:textColor="@color/text_color"
+        android:textColorHighlight="@color/select_text"
+        android:textColorHint="#8F8F8F"
+        android:textColorLink="@color/text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill" />
+
+    <Button
+        android:id="@+id/importKeyButton"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/button"
+        android:text="@string/import_text"
+        android:textColor="@color/text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

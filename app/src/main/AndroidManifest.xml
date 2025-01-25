@@ -47,6 +47,11 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
+            android:name=".activity.security.ImportKeyActivity"
+            android:exported="false"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".activity.notes.NotesListActivity"
             android:exported="false"
             android:screenOrientation="locked"
@@ -105,7 +110,7 @@
             android:name=".activity.data.ImportActivity"
             android:exported="false"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme"  />
+            android:theme="@style/AppTheme" />
 
         <service
             android:name=".service.android.CacheCleanerService"
