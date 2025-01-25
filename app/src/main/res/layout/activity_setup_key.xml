@@ -7,26 +7,6 @@
     tools:context=".activity.security.SetupKeyActivity"
     android:background="@color/activity_background">
 
-    <EditText
-        android:id="@+id/importKeyField"
-        android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:layout_margin="4dp"
-        android:backgroundTint="@color/edit_text_background_tint"
-        android:ems="10"
-        android:hint="@string/or_enter_key_here_to_import"
-        android:inputType="text"
-        android:maxLines="1"
-        android:textColor="@color/text_color"
-        android:textColorHighlight="@color/select_text"
-        android:textColorHint="#8F8F8F"
-        android:textColorLink="@color/text_color"
-        app:layout_constraintBottom_toTopOf="@+id/copyAesKeyHex"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="Autofill" />
-
     <TextView
         android:id="@+id/setupKeyTopLabel"
         android:layout_width="wrap_content"
@@ -72,22 +52,31 @@
         android:id="@+id/copyAesKeyHex"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:layout_margin="4dp"
+        android:layout_margin="6dp"
         android:background="@drawable/button"
         android:text="@string/copy_to_clipboard"
         android:textColor="@color/text_color"
+        app:layout_constraintBottom_toTopOf="@+id/importHexKeyButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/importHexKeyButton"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/button"
+        android:text="@string/import_text"
+        android:textColor="@color/text_color"
         app:layout_constraintBottom_toTopOf="@+id/keySetupNextButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/keySetupNextButton"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:layout_margin="4dp"
+        android:layout_margin="6dp"
         android:background="@drawable/button"
         android:text="@string/next"
         android:textColor="@color/text_color"
