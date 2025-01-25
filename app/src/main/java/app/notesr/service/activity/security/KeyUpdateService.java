@@ -1,4 +1,4 @@
-package app.notesr.service;
+package app.notesr.service.activity.security;
 
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FilesCrypt;
@@ -8,6 +8,7 @@ import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.EncryptedNote;
+import app.notesr.service.ServiceBase;
 
 import java.util.Set;
 import java.util.function.Consumer;
