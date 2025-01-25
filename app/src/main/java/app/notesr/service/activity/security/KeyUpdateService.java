@@ -17,19 +17,19 @@ public class KeyUpdateService extends ServiceBase {
     public void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
         getNotesTable()
                 .getAll()
-                .forEach(noteUpdater(oldKey, newKey));
+                .forEach(getNotesUpdateCallback(oldKey, newKey));
     }
 
-    private Consumer<EncryptedNote> noteUpdater(CryptoKey oldKey, CryptoKey newKey) {
+    private Consumer<EncryptedNote> getNotesUpdateCallback(CryptoKey oldKey, CryptoKey newKey) {
         return note -> {
             getNotesTable().save(NotesCrypt.updateKey(note, oldKey, newKey));
             getFilesInfoTable()
                     .getByNoteId(note.getId())
-                    .forEach(fileInfoUpdater(oldKey, newKey));
+                    .forEach(getFilesInfoUpdateCallback(oldKey, newKey));
         };
     }
 
-    private Consumer<EncryptedFileInfo> fileInfoUpdater(CryptoKey oldKey, CryptoKey newKey) {
+    private Consumer<EncryptedFileInfo> getFilesInfoUpdateCallback(CryptoKey oldKey, CryptoKey newKey) {
         return fileInfo -> {
             FilesInfoTable filesInfoTable = getFilesInfoTable();
             DataBlocksTable dataBlocksTable = getDataBlocksTable();
