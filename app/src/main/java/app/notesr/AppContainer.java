@@ -4,7 +4,7 @@ import app.notesr.crypto.CryptoManager;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.db.services.ServicesDB;
 import app.notesr.service.FilesService;
-import app.notesr.service.KeyUpdateService;
+import app.notesr.service.activity.security.KeyUpdateService;
 import app.notesr.service.NotesService;
 import lombok.Getter;
 
