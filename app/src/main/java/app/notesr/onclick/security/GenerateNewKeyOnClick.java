@@ -42,7 +42,6 @@ public class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
                 setupKeyActivityIntent.putExtra("password", password);
 
                 activity.startActivity(setupKeyActivityIntent);
-                activity.finish();
             }
         };
     }
