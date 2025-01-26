@@ -74,6 +74,7 @@
     <string name="exported">Exported!</string>
     <string name="saved_to">Saved to %s</string>
     <string name="import_text">Import</string>
+    <string name="import_key">Import key</string>
     <string name="select_a_dump">Select a dump</string>
     <string name="imported">Imported</string>
     <string name="cannot_decrypt_file">Cannot decrypt file</string>

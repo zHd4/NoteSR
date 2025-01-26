@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -32,6 +33,11 @@ public class ImportKeyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import_key);
+
+        ActionBar actionBar = requireNonNull(getSupportActionBar());
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(getResources().getString(R.string.import_key));
 
         String password = requireNonNull(getIntent().getStringExtra("password"));
         keySetupService = new KeySetupService(password);
