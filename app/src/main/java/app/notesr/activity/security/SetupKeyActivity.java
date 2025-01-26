@@ -104,7 +104,7 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
 
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
-            Intent intent = new Intent(getApplicationContext(), NotesListActivity.class)
+            Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class)
                     .putExtra("password", password);
 
             startActivity(intent);
