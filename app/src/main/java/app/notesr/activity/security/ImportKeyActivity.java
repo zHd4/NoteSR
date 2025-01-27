@@ -5,27 +5,25 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import static java.util.Objects.requireNonNull;
 
 import android.content.Intent;
-import android.graphics.BlendMode;
-import android.graphics.BlendModeColorFilter;
-import android.graphics.ColorFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import app.notesr.R;
+import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NotesListActivity;
 import app.notesr.service.activity.security.KeySetupService;
 
-public class ImportKeyActivity extends AppCompatActivity {
+public class ImportKeyActivity extends ExtendedAppCompatActivity {
 
     private static final String TAG = ImportKeyActivity.class.getName();
 
+    private SetupKeyActivity.Mode mode;
     private EditText keyField;
     private KeySetupService keySetupService;
 
@@ -39,6 +37,8 @@ public class ImportKeyActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(getResources().getString(R.string.import_key));
 
+        mode = SetupKeyActivity.Mode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
+
         String password = requireNonNull(getIntent().getStringExtra("password"));
         keySetupService = new KeySetupService(password);
 
@@ -49,6 +49,12 @@ public class ImportKeyActivity extends AppCompatActivity {
         importKeyButton.setOnClickListener(importKeyButtonOnClick());
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        super.onBackPressed();
+        return true;
+    }
+
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
             String hexKey = keyField.getText().toString();
@@ -56,21 +62,18 @@ public class ImportKeyActivity extends AppCompatActivity {
             if (!hexKey.isBlank()) {
                 try {
                     keySetupService.setHexKey(hexKey);
-                    keySetupService.apply();
 
-                    startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+                    if (mode == SetupKeyActivity.Mode.FIRST_RUN) {
+                        keySetupService.apply();
+                        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+                    } else if (mode == SetupKeyActivity.Mode.REGENERATION) {
+                        ReEncryptor reEncryptor = new ReEncryptor(this,
+                                keySetupService.getCryptoKey());
+                        reEncryptor.run();
+                    }
                 } catch (Exception e) {
                     Log.e(TAG, "Cannot parse or apply the key", e);
-
-                    int fieldColor = ContextCompat.getColor(
-                            getApplicationContext(),
-                            R.color.key_import_failed_color);
-
-                    ColorFilter colorFilter = new BlendModeColorFilter(
-                            fieldColor,
-                            BlendMode.SRC_ATOP);
-
-                    keyField.getBackground().setColorFilter(colorFilter);
+                    showToastMessage(getString(R.string.wrong_key), Toast.LENGTH_SHORT);
                 }
             }
         };
