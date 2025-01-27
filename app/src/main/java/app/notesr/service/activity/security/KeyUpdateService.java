@@ -21,12 +21,6 @@ public class KeyUpdateService extends ServiceBase {
     private final CryptoKey newKey;
     private final CryptoKey oldKey;
 
-    public KeyUpdateService(CryptoKey oldKey, CryptoKey newKey) {
-        this.cryptoManager = App.getAppContainer().getCryptoManager();
-        this.newKey = newKey;
-        this.oldKey = oldKey;
-    }
-
     public KeyUpdateService(CryptoKey newKey) throws CloneNotSupportedException {
         this.cryptoManager = App.getAppContainer().getCryptoManager();
         this.newKey = newKey;
