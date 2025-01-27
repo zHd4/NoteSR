@@ -13,6 +13,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.notes.NotesListActivity;
 import app.notesr.dto.CryptoKey;
+import app.notesr.service.activity.security.KeyUpdateService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -36,7 +37,8 @@ class ReEncryptor implements Runnable {
             });
 
             try {
-                App.getAppContainer().getKeyUpdateService().updateEncryptedData(cryptoKey);
+                KeyUpdateService keyUpdateService = new KeyUpdateService(cryptoKey);
+                keyUpdateService.updateEncryptedData();
 
                 activity.startActivity(new Intent(activity, NotesListActivity.class));
                 activity.finish();

@@ -4,7 +4,6 @@ import app.notesr.crypto.CryptoManager;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.db.services.ServicesDB;
 import app.notesr.service.FilesService;
-import app.notesr.service.activity.security.KeyUpdateService;
 import app.notesr.service.NotesService;
 import lombok.Getter;
 
@@ -20,5 +19,4 @@ public class AppContainer {
     private final CryptoManager cryptoManager = new CryptoManager();
     private final NotesService notesService = new NotesService();
     private final FilesService filesService = new FilesService();
-    private final KeyUpdateService keyUpdateService = new KeyUpdateService();
 }

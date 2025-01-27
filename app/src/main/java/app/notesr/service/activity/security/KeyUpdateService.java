@@ -16,15 +16,24 @@ import app.notesr.service.ServiceBase;
 import java.util.Set;
 
 public class KeyUpdateService extends ServiceBase {
-    public void updateEncryptedData(CryptoKey newKey) throws Exception {
-        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
-        CryptoKey oldKey = cryptoManager.getCryptoKeyInstance().clone();
 
-        cryptoManager.applyNewKey(newKey);
-        updateEncryptedData(oldKey, newKey);
+    private final CryptoManager cryptoManager;
+    private final CryptoKey newKey;
+    private final CryptoKey oldKey;
+
+    public KeyUpdateService(CryptoKey oldKey, CryptoKey newKey) {
+        this.cryptoManager = App.getAppContainer().getCryptoManager();
+        this.newKey = newKey;
+        this.oldKey = oldKey;
     }
 
-    public void updateEncryptedData(CryptoKey oldKey, CryptoKey newKey) {
+    public KeyUpdateService(CryptoKey newKey) throws CloneNotSupportedException {
+        this.cryptoManager = App.getAppContainer().getCryptoManager();
+        this.newKey = newKey;
+        this.oldKey = cryptoManager.getCryptoKeyInstance().clone();
+    }
+
+    public void updateEncryptedData() throws Exception {
         NotesDB db = getNotesDB();
 
         NotesTable notesTable = getNotesTable();
@@ -34,6 +43,8 @@ public class KeyUpdateService extends ServiceBase {
         db.beginTransaction();
 
         try {
+            cryptoManager.applyNewKey(newKey);
+
             notesTable.getAll().forEach(note -> {
                 notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
 
@@ -57,9 +68,9 @@ public class KeyUpdateService extends ServiceBase {
             });
 
             db.commitTransaction();
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             db.rollbackTransaction();
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 
