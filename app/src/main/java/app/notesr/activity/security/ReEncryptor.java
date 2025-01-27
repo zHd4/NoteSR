@@ -9,7 +9,6 @@ import android.os.Looper;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.notes.NotesListActivity;
 import app.notesr.dto.CryptoKey;
