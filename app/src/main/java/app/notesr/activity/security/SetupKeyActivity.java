@@ -2,21 +2,13 @@ package app.notesr.activity.security;
 
 import static java.util.Objects.requireNonNull;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NotesListActivity;
@@ -35,7 +27,6 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         public final String mode;
     }
 
-    private static final String TAG = SetupKeyActivity.class.getName();
     private static final int LOW_SCREEN_HEIGHT = 800;
     private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
 
@@ -46,9 +37,13 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_setup_key);
-        setMode();
+
+        mode = Mode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
+
+        if (mode == Mode.REGENERATION) {
+            disableBackButton();
+        }
 
         password = requireNonNull(getIntent().getStringExtra("password"));
         keySetupService = new KeySetupService(password);
@@ -65,24 +60,6 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         copyToClipboardButton.setOnClickListener(copyKeyButtonOnClick());
         importButton.setOnClickListener(importKeyButtonOnClick());
         nextButton.setOnClickListener(nextButtonOnClick());
-    }
-
-    private void setMode() {
-        String modeName = getIntent().getStringExtra("mode");
-
-        try {
-            mode = Mode.valueOf(modeName);
-
-            if (mode == Mode.REGENERATION) {
-                disableBackButton();
-            }
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Mode didn't provided", e);
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Invalid mode: " + modeName, e);
-            throw new RuntimeException(e);
-        }
     }
 
     private void adaptKeyView() {
@@ -105,6 +82,7 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
             Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class)
+                    .putExtra("mode", mode.toString())
                     .putExtra("password", password);
 
             startActivity(intent);
@@ -128,27 +106,7 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
     }
 
     private void proceedRegeneration() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-
-        executor.execute(() -> {
-            handler.post(() -> {
-                builder.setView(R.layout.progress_dialog_re_encryption);
-                builder.setCancelable(false);
-                builder.create().show();
-            });
-
-            try {
-                App.getAppContainer()
-                        .getKeyUpdateService()
-                        .updateEncryptedData(keySetupService.getCryptoKey());
-                startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-                finish();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+        ReEncryptor reEncryptor = new ReEncryptor(this, keySetupService.getCryptoKey());
+        reEncryptor.run();
     }
 }
