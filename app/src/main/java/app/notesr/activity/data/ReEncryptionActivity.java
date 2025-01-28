@@ -31,6 +31,8 @@ public class ReEncryptionActivity extends ExtendedAppCompatActivity {
         CryptoKey newCryptoKey =
                 requireNonNull((CryptoKey) getIntent().getSerializableExtra("newCryptoKey"));
 
+        progressView = findViewById(R.id.reEncryptionProgressLabel);
+
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver(),
                 new IntentFilter(ReEncryptionService.BROADCAST_ACTION));
 
