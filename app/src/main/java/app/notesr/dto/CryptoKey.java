@@ -1,13 +1,16 @@
 package app.notesr.dto;
 
 import androidx.annotation.NonNull;
+
+import java.io.Serializable;
+
 import javax.crypto.SecretKey;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class CryptoKey implements Cloneable {
+public class CryptoKey implements Serializable, Cloneable {
 
     private SecretKey key;
     private byte[] salt;
