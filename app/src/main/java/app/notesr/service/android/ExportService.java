@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import app.notesr.R;
 import app.notesr.service.data.exporter.ExportResult;
 
 import java.io.File;
@@ -32,7 +33,7 @@ public class ExportService extends Service implements Runnable {
 
     private Thread cancelThread;
     private File outputFile;
-    private app.notesr.service.data.exporter.ExportService exportManager;
+    private app.notesr.service.data.exporter.ExportService exportService;
 
     @Override
     public void onCreate() {
@@ -46,9 +47,9 @@ public class ExportService extends Service implements Runnable {
         File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
-        exportManager = new app.notesr.service.data.exporter.ExportService(context, outputFile);
+        exportService = new app.notesr.service.data.exporter.ExportService(context, outputFile);
 
-        exportManager.start();
+        exportService.start();
 
         registerCancelSignalReceiver();
         broadcastLoop();
@@ -61,15 +62,15 @@ public class ExportService extends Service implements Runnable {
     }
 
     private void broadcastLoop() {
-        String status = exportManager.getStatus();
+        String status = exportService.getStatus();
         String outputPath = outputFile.getAbsolutePath();
 
-        int progress = exportManager.calculateProgress();
+        int progress = exportService.calculateProgress();
 
-        while (exportManager.getResult() == ExportResult.NONE) {
+        while (exportService.getResult() == ExportResult.NONE) {
             try {
-                status = exportManager.getStatus();
-                progress = exportManager.calculateProgress();
+                status = exportService.getStatus();
+                progress = exportService.calculateProgress();
 
                 sendBroadcastData(progress, status, outputPath, false);
 
@@ -79,9 +80,9 @@ public class ExportService extends Service implements Runnable {
             }
         }
 
-        if (exportManager.getResult() == ExportResult.FINISHED_SUCCESSFULLY) {
+        if (exportService.getResult() == ExportResult.FINISHED_SUCCESSFULLY) {
             sendBroadcastData(100, status, outputPath, false);
-        } else if (exportManager.getResult() == ExportResult.CANCELED) {
+        } else if (exportService.getResult() == ExportResult.CANCELED) {
             sendBroadcastData(progress, status, outputPath, true);
         }
     }
@@ -98,11 +99,11 @@ public class ExportService extends Service implements Runnable {
 
     private void registerCancelSignalReceiver() {
         Runnable cancel = () -> {
-            if (exportManager == null) {
+            if (exportService == null) {
                 throw new IllegalStateException("Service has not been started");
             }
 
-            exportManager.cancel();
+            exportService.cancel();
         };
 
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
@@ -120,7 +121,6 @@ public class ExportService extends Service implements Runnable {
         LocalDateTime now = LocalDateTime.now();
         String nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
-        //noinspection SpellCheckingInspection
         String filename = "nsr_export_" + nowStr + ".notesr.bak";
         Path outputPath = Paths.get(dirPath, filename);
 
@@ -129,14 +129,14 @@ public class ExportService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Exporting",
+        String channelName = getResources().getString(R.string.exporting);
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
                 NotificationManager.IMPORTANCE_NONE);
 
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .build();
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).build();
 
         int type = 0;
 
