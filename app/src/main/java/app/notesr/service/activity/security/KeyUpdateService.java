@@ -12,6 +12,7 @@ import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.service.ServiceBase;
+import lombok.Getter;
 
 import java.util.Set;
 
@@ -21,10 +22,17 @@ public class KeyUpdateService extends ServiceBase {
     private final CryptoKey newKey;
     private final CryptoKey oldKey;
 
+    @Getter
+    private final long total;
+
+    @Getter
+    private long progress;
+
     public KeyUpdateService(CryptoKey newKey) throws CloneNotSupportedException {
         this.cryptoManager = App.getAppContainer().getCryptoManager();
         this.newKey = newKey;
         this.oldKey = cryptoManager.getCryptoKeyInstance().clone();
+        this.total = calculateTotal();
     }
 
     public void updateEncryptedData() throws Exception {
@@ -41,6 +49,7 @@ public class KeyUpdateService extends ServiceBase {
 
             notesTable.getAll().forEach(note -> {
                 notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
+                increaseProgress();
 
                 filesInfoTable.getByNoteId(note.getId())
                         .forEach(fileInfo -> {
@@ -55,9 +64,11 @@ public class KeyUpdateService extends ServiceBase {
 
                                 block.setData(FilesCrypt.updateKey(block.getData(), oldKey, newKey));
                                 dataBlocksTable.save(block);
+                                increaseProgress();
                             }
 
                             filesInfoTable.save(updatedFileInfo);
+                            increaseProgress();
                         });
             });
 
@@ -66,6 +77,16 @@ public class KeyUpdateService extends ServiceBase {
             db.rollbackTransaction();
             throw e;
         }
+    }
+
+    private void increaseProgress() {
+        progress += 1;
+    }
+
+    private long calculateTotal() {
+        return getNotesTable().getRowsCount()
+                + getFilesInfoTable().getRowsCount()
+                + getDataBlocksTable().getRowsCount();
     }
 
     private NotesDB getNotesDB() {
