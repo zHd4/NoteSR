@@ -14,6 +14,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import app.notesr.R;
 import app.notesr.service.data.importer.MainImportService;
 import app.notesr.service.data.importer.ImportResult;
 
@@ -26,7 +28,7 @@ public class ImportService extends Service implements Runnable {
     private static final String CHANNEL_ID = "ImportChannel";
     private static final int LOOP_DELAY = 100;
 
-    private MainImportService mainImportManager;
+    private MainImportService mainImportService;
 
     @Override
     public void onCreate() {
@@ -38,7 +40,7 @@ public class ImportService extends Service implements Runnable {
     public void run() {
         try {
             waitForImportManager();
-            mainImportManager.start();
+            mainImportService.start();
             broadcastLoop();
         } catch (InterruptedException e) {
             Log.e(TAG, "Thread interrupted", e);
@@ -49,12 +51,12 @@ public class ImportService extends Service implements Runnable {
     }
 
     private void broadcastLoop() throws InterruptedException {
-        while (mainImportManager.getResult() == ImportResult.NONE) {
-            sendBroadcastData(mainImportManager.getStatus(), ImportResult.NONE);
+        while (mainImportService.getResult() == ImportResult.NONE) {
+            sendBroadcastData(mainImportService.getStatus(), ImportResult.NONE);
             Thread.sleep(LOOP_DELAY);
         }
 
-        sendBroadcastData(mainImportManager.getStatus(), mainImportManager.getResult());
+        sendBroadcastData(mainImportService.getStatus(), mainImportService.getResult());
     }
 
     private void sendBroadcastData(String status, ImportResult result) {
@@ -66,7 +68,7 @@ public class ImportService extends Service implements Runnable {
     }
 
     private void waitForImportManager() throws InterruptedException {
-        while (mainImportManager == null) {
+        while (mainImportService == null) {
             Thread.sleep(LOOP_DELAY);
         }
     }
@@ -87,9 +89,10 @@ public class ImportService extends Service implements Runnable {
         Uri sourceUri = intent.getData();
         FileInputStream sourceStream = getFileStream(sourceUri);
 
-        mainImportManager = new MainImportService(context, sourceStream);
+        mainImportService = new MainImportService(context, sourceStream);
 
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Importing",
+        String channelName = getResources().getString(R.string.importing);
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
                 NotificationManager.IMPORTANCE_NONE);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).build();
