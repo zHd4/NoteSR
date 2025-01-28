@@ -47,6 +47,9 @@ public class ReEncryptionService extends Service implements Runnable {
 
         jobThread.start();
         broadcastLoop();
+
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
     }
 
     @Override
