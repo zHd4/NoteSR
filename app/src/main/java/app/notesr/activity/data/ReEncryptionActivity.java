@@ -52,6 +52,7 @@ public class ReEncryptionActivity extends ExtendedAppCompatActivity {
 
                     if (progress == 100) {
                         startActivity(new Intent(context, NotesListActivity.class));
+                        finish();
                     }
                 }
             }
