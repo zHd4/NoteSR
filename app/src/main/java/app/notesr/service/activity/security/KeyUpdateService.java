@@ -9,6 +9,7 @@ import app.notesr.crypto.FilesCrypt;
 import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.exception.ReEncryptionFailedException;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.service.ServiceBase;
@@ -35,7 +36,7 @@ public class KeyUpdateService extends ServiceBase {
         this.total = calculateTotal();
     }
 
-    public void updateEncryptedData() throws Exception {
+    public void updateEncryptedData() {
         NotesDB db = getNotesDB();
 
         NotesTable notesTable = getNotesTable();
@@ -75,7 +76,7 @@ public class KeyUpdateService extends ServiceBase {
             db.commitTransaction();
         } catch (Exception e) {
             db.rollbackTransaction();
-            throw e;
+            throw new ReEncryptionFailedException(e);
         }
     }
 
