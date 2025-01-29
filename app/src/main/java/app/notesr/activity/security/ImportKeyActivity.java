@@ -16,6 +16,7 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.data.ReEncryptionActivity;
 import app.notesr.activity.notes.NotesListActivity;
 import app.notesr.service.activity.security.KeySetupService;
 
@@ -67,9 +68,11 @@ public class ImportKeyActivity extends ExtendedAppCompatActivity {
                         keySetupService.apply();
                         startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
                     } else if (mode == SetupKeyActivity.Mode.REGENERATION) {
-                        ReEncryptor reEncryptor = new ReEncryptor(this,
-                                keySetupService.getCryptoKey());
-                        reEncryptor.run();
+                        Intent intent = new Intent(getApplicationContext(), ReEncryptionActivity.class)
+                                .putExtra("newCryptoKey", keySetupService.getCryptoKey());
+
+                        startActivity(intent);
+                        finish();
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Cannot parse or apply the key", e);
