@@ -1,7 +1,5 @@
 package app.notesr.activity.data;
 
-import static java.util.Objects.requireNonNull;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,18 +26,18 @@ public class ReEncryptionActivity extends ExtendedAppCompatActivity {
 
         disableBackButton();
 
-        CryptoKey newCryptoKey =
-                requireNonNull((CryptoKey) getIntent().getSerializableExtra("newCryptoKey"));
-
         progressView = findViewById(R.id.reEncryptionProgressLabel);
+        CryptoKey newCryptoKey = (CryptoKey) getIntent().getSerializableExtra("newCryptoKey");
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver(),
-                new IntentFilter(ReEncryptionService.BROADCAST_ACTION));
+        if (newCryptoKey != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver(),
+                    new IntentFilter(ReEncryptionService.BROADCAST_ACTION));
 
-        Intent serviceIntent = new Intent(getApplicationContext(), ReEncryptionActivity.class)
-                .putExtra("newCryptoKey", newCryptoKey);
+            Intent serviceIntent = new Intent(this, ReEncryptionService.class)
+                    .putExtra("newCryptoKey", newCryptoKey);
 
-        startForegroundService(serviceIntent);
+            startForegroundService(serviceIntent);
+        }
     }
 
     private BroadcastReceiver broadcastReceiver() {
