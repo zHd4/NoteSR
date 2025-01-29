@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.data.ReEncryptionActivity;
 import app.notesr.activity.notes.NotesListActivity;
 import app.notesr.service.activity.security.KeySetupService;
 import lombok.AllArgsConstructor;
@@ -106,7 +107,10 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
     }
 
     private void proceedRegeneration() {
-        ReEncryptor reEncryptor = new ReEncryptor(this, keySetupService.getCryptoKey());
-        reEncryptor.run();
+        Intent intent = new Intent(getApplicationContext(), ReEncryptionActivity.class)
+                .putExtra("newCryptoKey", keySetupService.getCryptoKey());
+        
+        startActivity(intent);
+        finish();
     }
 }
