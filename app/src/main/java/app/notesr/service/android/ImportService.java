@@ -39,7 +39,7 @@ public class ImportService extends Service implements Runnable {
     @Override
     public void run() {
         try {
-            waitForImportManager();
+            waitForImportService();
             mainImportService.start();
             broadcastLoop();
         } catch (InterruptedException e) {
@@ -67,7 +67,7 @@ public class ImportService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    private void waitForImportManager() throws InterruptedException {
+    private void waitForImportService() throws InterruptedException {
         while (mainImportService == null) {
             Thread.sleep(LOOP_DELAY);
         }
