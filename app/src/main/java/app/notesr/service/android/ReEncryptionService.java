@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -18,14 +19,19 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.R;
 import app.notesr.dto.CryptoKey;
 import app.notesr.exception.ReEncryptionFailedException;
+import app.notesr.service.ServiceHandler;
 import app.notesr.service.activity.security.KeyUpdateService;
 
 public class ReEncryptionService extends Service implements Runnable {
 
     public static final String BROADCAST_ACTION = "ReEncryptionServiceDataBroadcast";
-    private static final String CHANNEL_ID = "ReEncryptionChannel";
 
-    private KeyUpdateService keyUpdateService;
+    private static final String TAG = ReEncryptionService.class.getName();
+    private static final String CHANNEL_ID = "ReEncryptionChannel";
+    private static final int LOOP_DELAY = 100;
+
+    private final ServiceHandler<KeyUpdateService> keyUpdateServiceServiceHandler =
+            new ServiceHandler<>();
     private Thread jobThread;
 
     @Override
@@ -38,7 +44,8 @@ public class ReEncryptionService extends Service implements Runnable {
     public void run() {
         jobThread = new Thread(() -> {
             try {
-                keyUpdateService.updateEncryptedData();
+                keyUpdateServiceServiceHandler.waitForService();
+                keyUpdateServiceServiceHandler.getService().updateEncryptedData();
             } catch (Exception e) {
                 jobThread.interrupt();
                 throw new ReEncryptionFailedException(e);
@@ -46,10 +53,15 @@ public class ReEncryptionService extends Service implements Runnable {
         });
 
         jobThread.start();
-        broadcastLoop();
 
-        stopForeground(STOP_FOREGROUND_REMOVE);
-        stopSelf();
+        try {
+            broadcastLoop();
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Broadcast loop interrupted", e);
+        } finally {
+            stopForeground(STOP_FOREGROUND_REMOVE);
+            stopSelf();
+        }
     }
 
     @Override
@@ -57,7 +69,7 @@ public class ReEncryptionService extends Service implements Runnable {
         CryptoKey newCryptoKey =
                 requireNonNull((CryptoKey) intent.getSerializableExtra("newCryptoKey"));
 
-        keyUpdateService = getKeyUpdateService(newCryptoKey);
+        keyUpdateServiceServiceHandler.setService(createKeyUpdateService(newCryptoKey));
 
         String channelName = getResources().getString(R.string.re_encrypting_data);
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
@@ -86,18 +98,27 @@ public class ReEncryptionService extends Service implements Runnable {
         return null;
     }
 
-    private void broadcastLoop() {
-        int progress;
+    private void broadcastLoop() throws InterruptedException {
+        Integer progress;
+        boolean threadInterrupted;
 
         do {
             progress = getProgressPercent();
+            threadInterrupted = jobThread.isInterrupted();
 
-            Intent intent = new Intent(BROADCAST_ACTION).putExtra("progress", progress);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        } while (progress < 100 && !jobThread.isInterrupted());
+            Log.i(TAG, "Progress: " + progress + "%, is job thread interrupted: "
+                    + threadInterrupted);
+
+            if (progress != null) {
+                Intent intent = new Intent(BROADCAST_ACTION).putExtra("progress", progress);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            }
+
+            Thread.sleep(LOOP_DELAY);
+        } while (progress == null || (progress < 100 && !threadInterrupted));
     }
 
-    private KeyUpdateService getKeyUpdateService(CryptoKey newCryptoKey) {
+    private KeyUpdateService createKeyUpdateService(CryptoKey newCryptoKey) {
         try {
             return new KeyUpdateService(newCryptoKey);
         } catch (CloneNotSupportedException e) {
@@ -105,9 +126,13 @@ public class ReEncryptionService extends Service implements Runnable {
         }
     }
 
-    private int getProgressPercent() {
-        long total = keyUpdateService.getTotal();
-        long progress = keyUpdateService.getProgress();
+    private Integer getProgressPercent() {
+        if (keyUpdateServiceServiceHandler.getService() == null) {
+            return null;
+        }
+
+        long total = keyUpdateServiceServiceHandler.getService().getTotal();
+        long progress = keyUpdateServiceServiceHandler.getService().getProgress();
 
         return Math.round((progress * 100f) / total);
     }
