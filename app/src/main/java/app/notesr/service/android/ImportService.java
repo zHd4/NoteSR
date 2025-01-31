@@ -29,7 +29,7 @@ public class ImportService extends Service implements Runnable {
     private static final String CHANNEL_ID = "ImportChannel";
     private static final int LOOP_DELAY = 100;
 
-    private final ServiceHandler<MainImportService> mainImportServiceServiceHandler =
+    private final ServiceHandler<MainImportService> mainImportServiceHandler =
             new ServiceHandler<>();
 
     @Override
@@ -41,8 +41,8 @@ public class ImportService extends Service implements Runnable {
     @Override
     public void run() {
         try {
-            mainImportServiceServiceHandler.waitForService();
-            mainImportServiceServiceHandler.getService().start();
+            mainImportServiceHandler.waitForService();
+            mainImportServiceHandler.getService().start();
             broadcastLoop();
         } catch (InterruptedException e) {
             Log.e(TAG, "Thread interrupted", e);
@@ -53,7 +53,7 @@ public class ImportService extends Service implements Runnable {
     }
 
     private void broadcastLoop() throws InterruptedException {
-        MainImportService service = mainImportServiceServiceHandler.getService();
+        MainImportService service = mainImportServiceHandler.getService();
 
         while (service.getResult() == ImportResult.NONE) {
             sendBroadcastData(service.getStatus(), ImportResult.NONE);
@@ -88,7 +88,7 @@ public class ImportService extends Service implements Runnable {
         FileInputStream sourceStream = getFileStream(sourceUri);
 
         MainImportService service = new MainImportService(context, sourceStream);
-        mainImportServiceServiceHandler.setService(service);
+        mainImportServiceHandler.setService(service);
 
         String channelName = getResources().getString(R.string.importing);
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
