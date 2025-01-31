@@ -150,10 +150,17 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
 
             try {
                 FileInfo fileInfo = getFileInfo(uri);
-                MimeType mimeType = MimeType.fromString(fileInfo.getType());
+
+                MimeType mimeType = fileInfo.getType() != null
+                        ? MimeType.fromString(fileInfo.getType())
+                        : null;
+
                 File file = createTempFileFromUri(uri, mimeType);
 
-                fileInfo.setThumbnail(getFileThumbnail(file, mimeType));
+                if (mimeType != null) {
+                    fileInfo.setThumbnail(getFileThumbnail(file, mimeType));
+                }
+
                 filesMap.put(fileInfo, file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -207,8 +214,10 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
     }
 
     private File createTempFileFromUri(Uri uri, MimeType mimeType) throws IOException {
-        String filename = randomUUID().toString() + "." + mimeType.extension();
-        File file = new File(getCacheDir(), filename);
+        String extension = mimeType != null ? "." + mimeType.extension() : "";
+        String fileName = randomUUID().toString() + extension;
+
+        File file = new File(getCacheDir(), fileName);
 
         try (InputStream inputStream = getFileStream(uri);
              FileOutputStream outputStream = new FileOutputStream(file)) {
