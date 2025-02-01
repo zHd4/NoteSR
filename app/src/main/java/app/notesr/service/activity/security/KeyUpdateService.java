@@ -46,8 +46,6 @@ public class KeyUpdateService extends ServiceBase {
         db.beginTransaction();
 
         try {
-            cryptoManager.applyNewKey(newKey);
-
             notesTable.getAll().forEach(note -> {
                 notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
                 increaseProgress();
@@ -74,6 +72,7 @@ public class KeyUpdateService extends ServiceBase {
             });
 
             db.commitTransaction();
+            cryptoManager.applyNewKey(newKey);
         } catch (Exception e) {
             db.rollbackTransaction();
             throw new ReEncryptionFailedException(e);
