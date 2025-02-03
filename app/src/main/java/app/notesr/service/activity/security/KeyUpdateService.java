@@ -33,7 +33,7 @@ public class KeyUpdateService extends ServiceBase {
         this.cryptoManager = App.getAppContainer().getCryptoManager();
         this.newKey = newKey;
         this.oldKey = cryptoManager.getCryptoKeyInstance().clone();
-        this.total = calculateTotal();
+        this.total = calculateTotal() + 1;
     }
 
     public void updateEncryptedData() {
@@ -48,7 +48,7 @@ public class KeyUpdateService extends ServiceBase {
         try {
             notesTable.getAll().forEach(note -> {
                 notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
-                increaseProgress();
+                progress += 1;
 
                 filesInfoTable.getByNoteId(note.getId())
                         .forEach(fileInfo -> {
@@ -63,24 +63,22 @@ public class KeyUpdateService extends ServiceBase {
 
                                 block.setData(FilesCrypt.updateKey(block.getData(), oldKey, newKey));
                                 dataBlocksTable.save(block);
-                                increaseProgress();
+                                progress += 1;
                             }
 
                             filesInfoTable.save(updatedFileInfo);
-                            increaseProgress();
+                            progress += 1;
                         });
             });
 
             db.commitTransaction();
+
             cryptoManager.applyNewKey(newKey);
+            progress += 1;
         } catch (Exception e) {
             db.rollbackTransaction();
             throw new ReEncryptionFailedException(e);
         }
-    }
-
-    private void increaseProgress() {
-        progress += 1;
     }
 
     private long calculateTotal() {
