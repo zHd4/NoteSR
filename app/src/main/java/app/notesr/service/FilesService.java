@@ -1,6 +1,8 @@
 package app.notesr.service;
 
+import app.notesr.App;
 import app.notesr.crypto.FilesCrypt;
+import app.notesr.db.notes.NotesDB;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
@@ -41,6 +43,23 @@ public class FilesService extends ServiceBase {
     public FileInfo getInfo(String fileId) {
         EncryptedFileInfo encryptedFileInfo = getFilesInfoTable().get(fileId);
         return setDecimalId(FilesCrypt.decryptInfo(encryptedFileInfo));
+    }
+
+    public String save(FileInfo fileInfo, File dataSourceFile) throws IOException {
+        NotesDB db = App.getAppContainer().getNotesDB();
+
+        db.beginTransaction();
+        String fileId = saveInfo(fileInfo);
+
+        try {
+            saveData(fileId, dataSourceFile);
+        } catch (IOException e) {
+            db.rollbackTransaction();
+            throw e;
+        }
+
+        db.commitTransaction();
+        return fileId;
     }
 
     public String saveInfo(FileInfo fileInfo) {

@@ -105,9 +105,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
 
             filesMap.forEach((info, file) -> {
                 try {
-                    String fileId = filesService.saveInfo(info);
-                    filesService.saveData(fileId, file);
-
+                    filesService.save(info, file);
                     Wiper.wipeFile(file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
