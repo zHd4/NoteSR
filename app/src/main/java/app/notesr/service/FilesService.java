@@ -143,9 +143,14 @@ public class FilesService extends ServiceBase {
     }
 
     public void delete(String fileId) {
+        NotesDB db = App.getAppContainer().getNotesDB();
+        db.beginTransaction();
+
         getDataBlocksTable().deleteByFileId(fileId);
         getNotesTable().markAsModified(getFilesInfoTable().get(fileId).getNoteId());
         getFilesInfoTable().delete(fileId);
+
+        db.commitTransaction();
     }
 
     private FileInfo setDecimalId(FileInfo fileInfo) {
