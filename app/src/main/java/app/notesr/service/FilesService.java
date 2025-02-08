@@ -45,7 +45,7 @@ public class FilesService extends ServiceBase {
         return setDecimalId(FilesCrypt.decryptInfo(encryptedFileInfo));
     }
 
-    public String save(FileInfo fileInfo, File dataSourceFile) throws IOException {
+    public void save(FileInfo fileInfo, File dataSourceFile) throws IOException {
         NotesDB db = App.getAppContainer().getNotesDB();
 
         db.beginTransaction();
@@ -59,7 +59,6 @@ public class FilesService extends ServiceBase {
         }
 
         db.commitTransaction();
-        return fileId;
     }
 
     public String saveInfo(FileInfo fileInfo) {
