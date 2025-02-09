@@ -3,7 +3,7 @@ package app.notesr;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.db.services.ServicesDB;
-import app.notesr.service.FilesService;
+import app.notesr.service.FileService;
 import app.notesr.service.NoteService;
 import lombok.Getter;
 
@@ -18,5 +18,5 @@ public class AppContainer {
 
     private final CryptoManager cryptoManager = new CryptoManager();
     private final NoteService noteService = new NoteService();
-    private final FilesService filesService = new FilesService();
+    private final FileService fileService = new FileService();
 }

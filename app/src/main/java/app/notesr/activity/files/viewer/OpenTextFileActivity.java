@@ -5,7 +5,7 @@ import android.os.Environment;
 import android.widget.EditText;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.service.FilesService;
+import app.notesr.service.FileService;
 
 public class OpenTextFileActivity extends FileViewerActivityBase {
 
@@ -19,10 +19,10 @@ public class OpenTextFileActivity extends FileViewerActivityBase {
     }
 
     private void loadText() {
-        FilesService filesService = App.getAppContainer().getFilesService();
+        FileService fileService = App.getAppContainer().getFileService();
         EditText field = findViewById(R.id.textFileField);
 
-        String content = new String(filesService.read(fileInfo.getId()));
+        String content = new String(fileService.read(fileInfo.getId()));
 
         field.setText(content);
     }

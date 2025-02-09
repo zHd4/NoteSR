@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class FilesService extends ServiceBase {
+public class FileService extends ServiceBase {
     private static final int CHUNK_SIZE = 500000;
 
     public long getFilesCount(String noteId) {

@@ -18,7 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.service.FilesService;
+import app.notesr.service.FileService;
 import app.notesr.dto.FileInfo;
 import app.notesr.utils.FileExifDataResolver;
 import app.notesr.utils.Wiper;
@@ -101,11 +101,11 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
 
-            FilesService filesService = App.getAppContainer().getFilesService();
+            FileService fileService = App.getAppContainer().getFileService();
 
             filesMap.forEach((info, file) -> {
                 try {
-                    filesService.save(info, file);
+                    fileService.save(info, file);
                     Wiper.wipeFile(file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);

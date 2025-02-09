@@ -15,7 +15,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.FilesListActivity;
-import app.notesr.service.FilesService;
+import app.notesr.service.FileService;
 import app.notesr.dto.FileInfo;
 import app.notesr.utils.FilesUtils;
 import app.notesr.utils.HashHelper;
@@ -147,10 +147,10 @@ public class FileViewerActivityBase extends ExtendedAppCompatActivity {
 
     private Runnable getSaveRunnable(File destFile) {
         return () -> {
-            FilesService filesService = App.getAppContainer().getFilesService();
+            FileService fileService = App.getAppContainer().getFileService();
 
             try {
-                filesService.read(fileInfo.getId(), chunk -> {
+                fileService.read(fileInfo.getId(), chunk -> {
                     try {
                         FilesUtils.writeFileBytes(destFile, chunk, true);
                     } catch (IOException e) {
@@ -193,10 +193,10 @@ public class FileViewerActivityBase extends ExtendedAppCompatActivity {
             File tempDir = getCacheDir();
             File tempFile = File.createTempFile(name, "." + extension, tempDir);
 
-            FilesService filesService = App.getAppContainer().getFilesService();
+            FileService fileService = App.getAppContainer().getFileService();
 
             try (FileOutputStream stream = new FileOutputStream(tempFile)) {
-                filesService.read(fileInfo.getId(), chunk -> {
+                fileService.read(fileInfo.getId(), chunk -> {
                     try {
                         stream.write(chunk);
                     } catch (IOException e) {
@@ -221,7 +221,7 @@ public class FileViewerActivityBase extends ExtendedAppCompatActivity {
 
     private void deleteFile() {
         App.getAppContainer()
-                .getFilesService()
+                .getFileService()
                 .delete(fileInfo.getId());
     }
 }
