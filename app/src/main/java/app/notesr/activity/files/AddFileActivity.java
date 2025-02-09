@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class AddFilesActivity extends ExtendedAppCompatActivity {
+public class AddFileActivity extends ExtendedAppCompatActivity {
     private String noteId;
     private boolean noteModified = false;
 

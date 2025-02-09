@@ -57,7 +57,7 @@ public class FileListActivity extends ExtendedAppCompatActivity {
         FloatingActionButton addFileButton = findViewById(R.id.addFileButton);
 
         addFileButton.setOnClickListener(view -> {
-            Intent intent = new Intent(App.getContext(), AddFilesActivity.class);
+            Intent intent = new Intent(App.getContext(), AddFileActivity.class);
 
             intent.putExtra("noteId", noteId);
             startActivity(intent);
