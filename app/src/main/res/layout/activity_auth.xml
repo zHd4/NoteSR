@@ -38,7 +38,7 @@
         android:background="@color/activity_background"
         android:columnCount="3"
         android:padding="10dp"
-        android:rowCount="4"
+        android:rowCount="6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_percent="0.5">
 
