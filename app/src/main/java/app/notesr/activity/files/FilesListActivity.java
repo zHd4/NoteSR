@@ -16,7 +16,6 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.OpenNoteActivity;
 import app.notesr.adapter.FilesListAdapter;
-import app.notesr.service.FileService;
 import app.notesr.service.NoteService;
 import app.notesr.dto.FileInfo;
 import app.notesr.dto.Note;
@@ -92,7 +91,7 @@ public class FilesListActivity extends ExtendedAppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
 
-        long filesCount = getfilesService().getFilesCount(note.getId());
+        long filesCount = App.getAppContainer().getFileService().getFilesCount(note.getId());
 
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("(" + filesCount + ") Files of: " + note.getName());
@@ -110,7 +109,9 @@ public class FilesListActivity extends ExtendedAppCompatActivity {
         executor.execute(() -> {
             handler.post(progressDialog::show);
 
-            List<FileInfo> filesInfo = getfilesService().getFilesInfo(note.getId());
+            List<FileInfo> filesInfo = App.getAppContainer()
+                    .getFileService()
+                    .getFilesInfo(note.getId());
 
             filesInfo.forEach(
                     fileInfo -> filesIdsMap.put(fileInfo.getDecimalId(), fileInfo.getId())
@@ -138,9 +139,5 @@ public class FilesListActivity extends ExtendedAppCompatActivity {
 
     private NoteService getNotesManager() {
         return App.getAppContainer().getNoteService();
-    }
-
-    private FileService getfilesService() {
-        return App.getAppContainer().getFileService();
     }
 }
