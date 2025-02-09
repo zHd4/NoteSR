@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class NotesService extends ServiceBase {
+public class NoteService extends ServiceBase {
     public void save(Note note) {
         EncryptedNote encryptedNote = NotesCrypt.encrypt(note);
         getNotesTable().save(encryptedNote);

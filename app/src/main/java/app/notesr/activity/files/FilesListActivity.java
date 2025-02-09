@@ -17,7 +17,7 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.OpenNoteActivity;
 import app.notesr.adapter.FilesListAdapter;
 import app.notesr.service.FilesService;
-import app.notesr.service.NotesService;
+import app.notesr.service.NoteService;
 import app.notesr.dto.FileInfo;
 import app.notesr.dto.Note;
 import app.notesr.onclick.files.OpenFileOnClick;
@@ -136,8 +136,8 @@ public class FilesListActivity extends ExtendedAppCompatActivity {
         }
     }
 
-    private NotesService getNotesManager() {
-        return App.getAppContainer().getNotesService();
+    private NoteService getNotesManager() {
+        return App.getAppContainer().getNoteService();
     }
 
     private FilesService getfilesService() {

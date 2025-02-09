@@ -8,7 +8,7 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.service.NotesService;
+import app.notesr.service.NoteService;
 import app.notesr.dto.SearchNotesResults;
 
 public class SearchNotesActivity extends ExtendedAppCompatActivity {
@@ -49,7 +49,7 @@ public class SearchNotesActivity extends ExtendedAppCompatActivity {
     }
 
     private SearchNotesResults search(String query) {
-        NotesService manager = App.getAppContainer().getNotesService();
+        NoteService manager = App.getAppContainer().getNoteService();
         return new SearchNotesResults(manager.search(query));
     }
 }

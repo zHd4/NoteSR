@@ -100,7 +100,7 @@ public class NotesListActivity extends ExtendedAppCompatActivity {
             handler.post(progressDialog::show);
 
             List<Note> notes = App.getAppContainer()
-                    .getNotesService()
+                    .getNoteService()
                     .getAll();
 
             notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));

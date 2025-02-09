@@ -17,7 +17,7 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.FilesListActivity;
 import app.notesr.service.FilesService;
-import app.notesr.service.NotesService;
+import app.notesr.service.NoteService;
 import app.notesr.dto.Note;
 
 import java.time.LocalDateTime;
@@ -48,7 +48,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         setContentView(R.layout.activity_open_note);
 
         String noteId = getIntent().getStringExtra("noteId");
-        note = getNotesService().get(noteId);
+        note = getNoteService().get(noteId);
 
         noteModified = getIntent().getBooleanExtra("modified", false);
 
@@ -157,7 +157,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
             note.setUpdatedAt(now);
 
-            getNotesService().save(note);
+            getNoteService().save(note);
             startActivity(new Intent(App.getContext(), NotesListActivity.class));
         }
     }
@@ -194,7 +194,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
                 executor.execute(() -> {
                     runOnUiThread(progressDialog::show);
-                    getNotesService().delete(note.getId());
+                    getNoteService().delete(note.getId());
 
                     runOnUiThread(() -> {
                         progressDialog.dismiss();
@@ -210,7 +210,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         item.setVisible(false);
     }
 
-    private NotesService getNotesService() {
-        return App.getAppContainer().getNotesService();
+    private NoteService getNoteService() {
+        return App.getAppContainer().getNoteService();
     }
 }

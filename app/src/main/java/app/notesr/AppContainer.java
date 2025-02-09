@@ -4,7 +4,7 @@ import app.notesr.crypto.CryptoManager;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.db.services.ServicesDB;
 import app.notesr.service.FilesService;
-import app.notesr.service.NotesService;
+import app.notesr.service.NoteService;
 import lombok.Getter;
 
 import java.time.format.DateTimeFormatter;
@@ -17,6 +17,6 @@ public class AppContainer {
     private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final CryptoManager cryptoManager = new CryptoManager();
-    private final NotesService notesService = new NotesService();
+    private final NoteService noteService = new NoteService();
     private final FilesService filesService = new FilesService();
 }
