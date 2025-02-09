@@ -15,7 +15,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.activity.notes.NotesListActivity;
+import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.service.android.ExportService;
@@ -134,7 +134,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
             showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
         }
 
-        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
         finish();
     }
 

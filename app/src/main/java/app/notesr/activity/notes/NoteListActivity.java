@@ -33,21 +33,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-public class NotesListActivity extends ExtendedAppCompatActivity {
-    private final Map<Integer, Consumer<NotesListActivity>> menuItemsMap = new HashMap<>();
+public class NoteListActivity extends ExtendedAppCompatActivity {
+    private final Map<Integer, Consumer<NoteListActivity>> menuItemsMap = new HashMap<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notes_list);
+        setContentView(R.layout.activity_note_list);
 
         getOnBackPressedDispatcher()
                 .addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 LockOnClick lock = new LockOnClick();
-                lock.accept(NotesListActivity.this);
+                lock.accept(NoteListActivity.this);
             }
         });
 

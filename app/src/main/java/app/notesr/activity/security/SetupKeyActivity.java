@@ -12,7 +12,7 @@ import android.widget.Toast;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.data.ReEncryptionActivity;
-import app.notesr.activity.notes.NotesListActivity;
+import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.service.activity.security.KeySetupService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -100,7 +100,7 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
     private void proceedFirstRun() {
         try {
             keySetupService.apply();
-            startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+            startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

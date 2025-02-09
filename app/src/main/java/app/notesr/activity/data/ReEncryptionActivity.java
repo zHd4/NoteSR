@@ -11,7 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.activity.notes.NotesListActivity;
+import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.dto.CryptoKey;
 import app.notesr.service.android.ReEncryptionService;
 
@@ -51,7 +51,7 @@ public class ReEncryptionActivity extends ExtendedAppCompatActivity {
                     progressView.setText(progressStr);
 
                     if (progress == 100) {
-                        startActivity(new Intent(context, NotesListActivity.class));
+                        startActivity(new Intent(context, NoteListActivity.class));
                         finish();
                     }
                 }

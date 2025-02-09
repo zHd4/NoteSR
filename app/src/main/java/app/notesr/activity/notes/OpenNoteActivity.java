@@ -124,7 +124,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
         if (id == android.R.id.home) {
             if (noteModified) {
-                Intent intent = new Intent(App.getContext(), NotesListActivity.class);
+                Intent intent = new Intent(App.getContext(), NoteListActivity.class);
                 startActivity(intent);
             } else {
                 finish();
@@ -158,7 +158,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
             note.setUpdatedAt(now);
 
             getNoteService().save(note);
-            startActivity(new Intent(App.getContext(), NotesListActivity.class));
+            startActivity(new Intent(App.getContext(), NoteListActivity.class));
         }
     }
 
@@ -198,7 +198,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
                     runOnUiThread(() -> {
                         progressDialog.dismiss();
-                        startActivity(new Intent(App.getContext(), NotesListActivity.class));
+                        startActivity(new Intent(App.getContext(), NoteListActivity.class));
                     });
                 });
             }

@@ -8,7 +8,7 @@ import app.notesr.R;
 import app.notesr.activity.data.ExportActivity;
 import app.notesr.activity.data.ImportActivity;
 import app.notesr.activity.data.ReEncryptionActivity;
-import app.notesr.activity.notes.NotesListActivity;
+import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.crypto.CryptoManager;
@@ -46,7 +46,7 @@ public class MainActivity extends ExtendedAppCompatActivity {
             intent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
 
         } else {
-            intent = new Intent(this, NotesListActivity.class);
+            intent = new Intent(this, NoteListActivity.class);
         }
 
         startActivity(intent);

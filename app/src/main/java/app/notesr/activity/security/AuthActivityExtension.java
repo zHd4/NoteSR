@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.notes.NotesListActivity;
+import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.CryptoTools;
 
@@ -61,7 +61,7 @@ public class AuthActivityExtension {
             resetPassword();
         } else {
             censoredPasswordView.setText("");
-            activity.startActivity(new Intent(App.getContext(), NotesListActivity.class));
+            activity.startActivity(new Intent(App.getContext(), NoteListActivity.class));
         }
     }
 
@@ -94,7 +94,7 @@ public class AuthActivityExtension {
                 throw new RuntimeException(e);
             }
 
-            activity.startActivity(new Intent(App.getContext(), NotesListActivity.class));
+            activity.startActivity(new Intent(App.getContext(), NoteListActivity.class));
         }
     }
 
@@ -106,7 +106,7 @@ public class AuthActivityExtension {
                 App.getAppContainer().getCryptoManager().changePassword(password);
 
                 showToastMessage(R.string.updated);
-                activity.startActivity(new Intent(App.getContext(), NotesListActivity.class));
+                activity.startActivity(new Intent(App.getContext(), NoteListActivity.class));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

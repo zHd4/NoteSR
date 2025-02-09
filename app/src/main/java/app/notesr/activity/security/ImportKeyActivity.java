@@ -17,7 +17,7 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.data.ReEncryptionActivity;
-import app.notesr.activity.notes.NotesListActivity;
+import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.service.activity.security.KeySetupService;
 
 public class ImportKeyActivity extends ExtendedAppCompatActivity {
@@ -66,7 +66,7 @@ public class ImportKeyActivity extends ExtendedAppCompatActivity {
 
                     if (mode == SetupKeyActivity.Mode.FIRST_RUN) {
                         keySetupService.apply();
-                        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+                        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
                     } else if (mode == SetupKeyActivity.Mode.REGENERATION) {
                         Intent intent = new Intent(getApplicationContext(), ReEncryptionActivity.class)
                                 .putExtra("newCryptoKey", keySetupService.getCryptoKey());

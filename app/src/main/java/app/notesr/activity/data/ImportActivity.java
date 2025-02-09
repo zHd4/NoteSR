@@ -22,7 +22,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.activity.notes.NotesListActivity;
+import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.service.data.importer.ImportResult;
 import app.notesr.service.android.ImportService;
 import app.notesr.utils.FileExifDataResolver;
@@ -73,7 +73,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(this, NotesListActivity.class)
+            Intent intent = new Intent(this, NoteListActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             startActivity(intent);
@@ -193,7 +193,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
 
     private void onImportFinished() {
         if (result == ImportResult.FINISHED_SUCCESSFULLY) {
-            startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+            startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
             finish();
         } else {
             findViewById(R.id.importCannotBeCanceledLabel).setVisibility(View.INVISIBLE);
