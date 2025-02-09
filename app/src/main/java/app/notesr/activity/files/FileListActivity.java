@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FilesListActivity extends ExtendedAppCompatActivity {
+public class FileListActivity extends ExtendedAppCompatActivity {
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
     private Note note;
@@ -36,7 +36,7 @@ public class FilesListActivity extends ExtendedAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_files_list);
+        setContentView(R.layout.activity_file_list);
 
         String noteId = getIntent().getStringExtra("noteId");
 

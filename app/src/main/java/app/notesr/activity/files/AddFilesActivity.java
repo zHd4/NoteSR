@@ -67,7 +67,7 @@ public class AddFilesActivity extends ExtendedAppCompatActivity {
 
     @Override
     public void finish() {
-        Intent intent = new Intent(App.getContext(), FilesListActivity.class);
+        Intent intent = new Intent(App.getContext(), FileListActivity.class);
 
         intent.putExtra("noteId", noteId);
         intent.putExtra("modified", noteModified);

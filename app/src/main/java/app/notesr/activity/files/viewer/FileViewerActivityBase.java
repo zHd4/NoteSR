@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.activity.files.FilesListActivity;
+import app.notesr.activity.files.FileListActivity;
 import app.notesr.service.FileService;
 import app.notesr.dto.FileInfo;
 import app.notesr.utils.FilesUtils;
@@ -99,7 +99,7 @@ public class FileViewerActivityBase extends ExtendedAppCompatActivity {
     }
 
     private void returnToListActivity() {
-        Intent intent = new Intent(App.getContext(), FilesListActivity.class)
+        Intent intent = new Intent(App.getContext(), FileListActivity.class)
                 .putExtra("noteId", fileInfo.getNoteId())
                 .putExtra("modified", true)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
