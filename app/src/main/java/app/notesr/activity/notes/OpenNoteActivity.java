@@ -187,7 +187,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this,
                         R.style.AlertDialogTheme);
 
-                builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+                builder.setView(R.layout.progress_dialog_deleting).setCancelable(false);
 
                 AlertDialog progressDialog = builder.create();
                 ExecutorService executor = Executors.newSingleThreadExecutor();
