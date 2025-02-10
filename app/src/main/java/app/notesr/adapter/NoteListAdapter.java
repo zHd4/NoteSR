@@ -14,9 +14,9 @@ import app.notesr.dto.Note;
 import java.util.List;
 import java.util.Objects;
 
-public class NotesListAdapter extends ElementListAdapter<Note> {
+public class NoteListAdapter extends ElementListAdapter<Note> {
 
-    public NotesListAdapter(Context context, int resource, List<Note> items) {
+    public NoteListAdapter(Context context, int resource, List<Note> items) {
         super(context, resource, items);
     }
 

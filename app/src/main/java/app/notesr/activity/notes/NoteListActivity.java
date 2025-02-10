@@ -17,7 +17,7 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.data.ExportActivity;
 import app.notesr.activity.data.ImportActivity;
-import app.notesr.adapter.NotesListAdapter;
+import app.notesr.adapter.NoteListAdapter;
 import app.notesr.dto.Note;
 import app.notesr.onclick.notes.NewNoteOnClick;
 import app.notesr.onclick.notes.OpenNoteOnClick;
@@ -116,7 +116,7 @@ public class NoteListActivity extends ExtendedAppCompatActivity {
 
         if (!notes.isEmpty()) {
             missingNotesLabel.setVisibility(View.INVISIBLE);
-            NotesListAdapter adapter = new NotesListAdapter(
+            NoteListAdapter adapter = new NoteListAdapter(
                     App.getContext(),
                     R.layout.notes_list_item,
                     notes);

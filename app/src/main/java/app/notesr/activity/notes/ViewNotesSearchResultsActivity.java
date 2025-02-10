@@ -6,7 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
-import app.notesr.adapter.NotesListAdapter;
+import app.notesr.adapter.NoteListAdapter;
 import app.notesr.service.NoteService;
 import app.notesr.dto.Note;
 import app.notesr.dto.SearchNotesResults;
@@ -60,7 +60,7 @@ public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
 
         notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
 
-        NotesListAdapter adapter = new NotesListAdapter(
+        NoteListAdapter adapter = new NoteListAdapter(
                 App.getContext(),
                 R.layout.notes_list_item,
                 notes);
