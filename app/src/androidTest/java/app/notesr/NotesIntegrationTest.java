@@ -21,7 +21,7 @@ import org.junit.Test;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
-public class NotesTest {
+public class NotesIntegrationTest {
     private static final Faker FAKER = new Faker();
     private static final Random RANDOM = new Random();
 
