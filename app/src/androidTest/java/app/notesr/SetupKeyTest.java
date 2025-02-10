@@ -6,14 +6,19 @@ import static org.hamcrest.core.Is.is;
 import app.notesr.crypto.Aes;
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.CryptoTools;
+import io.bloco.faker.Faker;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class SetupKeyTest {
-    private static final byte[] keyBytes = new byte[] {
+
+    private static final Faker FAKER = new Faker();
+
+    private static final byte[] TEST_KEY_BYTES = new byte[] {
             28, -65, -106, -25,
             -88, -127, 7, -32,
             -47, 28, 95, -85,
@@ -23,13 +28,13 @@ public class SetupKeyTest {
             -79, -82, 4, -64,
             -121, -59, -29, -62 };
 
-    private static final byte[] salt = new byte[] {
+    private static final byte[] TEST_SALT = new byte[] {
             -4, -106, -91, -41,
             -13, 24, 77, 85,
             -100, -16, -116, -24,
             -8, -48, 95, 85 };
 
-    private static final String cryptoKeyHex = """
+    private static final String TEST_HEX_CRYPTO_KEY = """
             1C BF 96 E7\s
             A8 81 07 E0\s
             D1 1C 5F AB\s
@@ -43,18 +48,25 @@ public class SetupKeyTest {
             9C F0 8C E8\s
             F8 D0 5F 55""";
 
-    private static final String password = "zxcvbnm";
+    private static String testPassword;
+
+    @BeforeClass
+    public static void beforeAll() {
+        testPassword = FAKER.internet.password();
+    }
 
     @Test
     public void testCryptoKeyConvertation() throws Exception {
-        SecretKey secretKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
+        SecretKey secretKey = new SecretKeySpec(TEST_KEY_BYTES, 0, TEST_KEY_BYTES.length,
                 Aes.KEY_GENERATOR_ALGORITHM);
-        CryptoKey cryptoKey = new CryptoKey(secretKey, salt, password);
+        CryptoKey cryptoKey = new CryptoKey(secretKey, TEST_SALT, testPassword);
 
         String actual = CryptoTools.cryptoKeyToHex(cryptoKey);
-        assertThat(actual, is(cryptoKeyHex));
+        assertThat(actual, is(TEST_HEX_CRYPTO_KEY));
 
-        CryptoKey actualCryptoKey = CryptoTools.hexToCryptoKey(cryptoKeyHex, password, true);
+        CryptoKey actualCryptoKey =
+                CryptoTools.hexToCryptoKey(TEST_HEX_CRYPTO_KEY, testPassword, true);
+
         assertThat(actualCryptoKey, is(cryptoKey));
     }
 }
