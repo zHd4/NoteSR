@@ -1,7 +1,7 @@
 package app.notesr.service.data.exporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import app.notesr.crypto.NotesCrypt;
+import app.notesr.crypto.NoteCrypt;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.model.EncryptedNote;
 import app.notesr.dto.Note;
@@ -35,7 +35,7 @@ class NotesExporter extends Exporter {
             jsonGenerator.writeArrayFieldStart("notes");
 
             for (EncryptedNote encryptedNote : notesTable.getAll()) {
-                Note note = NotesCrypt.decrypt(encryptedNote);
+                Note note = NoteCrypt.decrypt(encryptedNote);
                 writeNote(note);
 
                 increaseExported();

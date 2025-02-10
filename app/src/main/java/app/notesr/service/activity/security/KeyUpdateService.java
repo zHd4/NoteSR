@@ -6,7 +6,7 @@ import app.notesr.db.notes.NotesDB;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCrypt;
-import app.notesr.crypto.NotesCrypt;
+import app.notesr.crypto.NoteCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.exception.ReEncryptionFailedException;
@@ -47,7 +47,7 @@ public class KeyUpdateService extends ServiceBase {
 
         try {
             notesTable.getAll().forEach(note -> {
-                notesTable.save(NotesCrypt.updateKey(note, oldKey, newKey));
+                notesTable.save(NoteCrypt.updateKey(note, oldKey, newKey));
                 progress += 1;
 
                 filesInfoTable.getByNoteId(note.getId())

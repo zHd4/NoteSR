@@ -2,7 +2,7 @@ package app.notesr;
 
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCrypt;
-import app.notesr.crypto.NotesCrypt;
+import app.notesr.crypto.NoteCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.db.notes.table.NotesTable;
@@ -76,7 +76,7 @@ public class NotesTest {
         EncryptedNote encryptedActual = notesTable.get(testNote.getId());
         Assert.assertNotNull(encryptedActual);
 
-        Note actual = NotesCrypt.decrypt(encryptedActual, cryptoKey);
+        Note actual = NoteCrypt.decrypt(encryptedActual, cryptoKey);
 
         Assert.assertEquals(testNote.getName(), actual.getName());
         Assert.assertEquals(testNote.getText(), actual.getText());
@@ -94,12 +94,12 @@ public class NotesTest {
         Note note = new Note(newName, newText);
         note.setId(testNote.getId());
 
-        notesTable.save(NotesCrypt.encrypt(note, cryptoKey));
+        notesTable.save(NoteCrypt.encrypt(note, cryptoKey));
 
         EncryptedNote encryptedActual = notesTable.get(testNote.getId());
         Assert.assertNotNull(encryptedActual);
 
-        Note actual = NotesCrypt.decrypt(encryptedActual, cryptoKey);
+        Note actual = NoteCrypt.decrypt(encryptedActual, cryptoKey);
 
         Assert.assertEquals(actual.getName(), note.getName());
         Assert.assertEquals(actual.getText(), note.getText());
@@ -152,7 +152,7 @@ public class NotesTest {
     }
 
     private void saveTestNote() {
-        EncryptedNote encryptedNote = NotesCrypt.encrypt(testNote, cryptoKey);
+        EncryptedNote encryptedNote = NoteCrypt.encrypt(testNote, cryptoKey);
         notesTable.save(encryptedNote);
 
         testNote.setId(encryptedNote.getId());
