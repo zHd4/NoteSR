@@ -10,7 +10,7 @@ import java.util.Map;
 
 import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.service.data.importer.BaseFilesImporter;
 import app.notesr.model.DataBlock;
 import app.notesr.utils.FilesUtils;
@@ -20,12 +20,12 @@ class FilesImporter extends BaseFilesImporter {
     private final File dataBlocksDir;
 
     public FilesImporter(JsonParser parser,
-                         FilesInfoTable filesInfoTable,
+                         FileInfoTable fileInfoTable,
                          DataBlockTable dataBlockTable,
                          Map<String, String> adaptedNotesIdMap,
                          File dataBlocksDir,
                          DateTimeFormatter timestampFormatter) {
-        super(parser, filesInfoTable, dataBlockTable, adaptedNotesIdMap, timestampFormatter);
+        super(parser, fileInfoTable, dataBlockTable, adaptedNotesIdMap, timestampFormatter);
         this.dataBlocksDir = dataBlocksDir;
     }
 

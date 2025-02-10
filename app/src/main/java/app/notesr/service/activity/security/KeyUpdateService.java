@@ -8,7 +8,7 @@ import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NoteCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.exception.ReEncryptionFailedException;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
@@ -40,7 +40,7 @@ public class KeyUpdateService extends ServiceBase {
         NotesDB db = getNotesDB();
 
         NotesTable notesTable = getNotesTable();
-        FilesInfoTable filesInfoTable = getFilesInfoTable();
+        FileInfoTable fileInfoTable = getFileInfoTable();
         DataBlockTable dataBlockTable = getDataBlockTable();
 
         db.beginTransaction();
@@ -50,7 +50,7 @@ public class KeyUpdateService extends ServiceBase {
                 notesTable.save(NoteCrypt.updateKey(note, oldKey, newKey));
                 progress += 1;
 
-                filesInfoTable.getByNoteId(note.getId())
+                fileInfoTable.getByNoteId(note.getId())
                         .forEach(fileInfo -> {
                             EncryptedFileInfo updatedFileInfo =
                                     FileCrypt.updateKey(fileInfo, oldKey, newKey);
@@ -66,7 +66,7 @@ public class KeyUpdateService extends ServiceBase {
                                 progress += 1;
                             }
 
-                            filesInfoTable.save(updatedFileInfo);
+                            fileInfoTable.save(updatedFileInfo);
                             progress += 1;
                         });
             });
@@ -83,7 +83,7 @@ public class KeyUpdateService extends ServiceBase {
 
     private long calculateTotal() {
         return getNotesTable().getRowsCount()
-                + getFilesInfoTable().getRowsCount()
+                + getFileInfoTable().getRowsCount()
                 + getDataBlockTable().getRowsCount();
     }
 

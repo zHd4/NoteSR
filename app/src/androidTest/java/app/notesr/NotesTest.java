@@ -4,7 +4,7 @@ import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NoteCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
@@ -31,9 +31,9 @@ public class NotesTest {
             .getNotesDB()
             .getTable(NotesTable.class);
 
-    private final FilesInfoTable filesInfoTable = App.getAppContainer()
+    private final FileInfoTable fileInfoTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(FilesInfoTable.class);
+            .getTable(FileInfoTable.class);
 
     private final DataBlockTable dataBlockTable = App.getAppContainer()
             .getNotesDB()
@@ -59,9 +59,9 @@ public class NotesTest {
     @After
     public void after() {
         notesTable.getAll().forEach(note -> {
-            filesInfoTable.getByNoteId(note.getId()).forEach(file -> {
+            fileInfoTable.getByNoteId(note.getId()).forEach(file -> {
                 dataBlockTable.getBlocksIdsByFileId(file.getId()).forEach(dataBlockTable::delete);
-                filesInfoTable.delete(file.getId());
+                fileInfoTable.delete(file.getId());
             });
 
             notesTable.delete(note.getId());
@@ -124,7 +124,7 @@ public class NotesTest {
         fileInfo.setName(fileName);
 
         EncryptedFileInfo encryptedFileInfo = FileCrypt.encryptInfo(fileInfo, cryptoKey);
-        filesInfoTable.save(encryptedFileInfo);
+        fileInfoTable.save(encryptedFileInfo);
 
         DataBlock dataBlock = DataBlock.builder()
                 .fileId(encryptedFileInfo.getId())

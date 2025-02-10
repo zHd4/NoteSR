@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public class DataBlockTable extends BaseTable {
-    public DataBlockTable(NotesDB db, String name, FilesInfoTable filesInfoTable) {
+    public DataBlockTable(NotesDB db, String name, FileInfoTable fileInfoTable) {
         super(db, name);
 
         db.writableDatabase.execSQL(
@@ -23,7 +23,7 @@ public class DataBlockTable extends BaseTable {
                         "file_id varchar(36) NOT NULL, " +
                         "block_order bigint NOT NULL, " +
                         "data blob NOT NULL, " +
-                        "FOREIGN KEY(file_id) REFERENCES " + filesInfoTable.getName() + "(id))"
+                        "FOREIGN KEY(file_id) REFERENCES " + fileInfoTable.getName() + "(id))"
         );
     }
 

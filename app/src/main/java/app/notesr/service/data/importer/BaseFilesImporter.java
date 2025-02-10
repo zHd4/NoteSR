@@ -11,27 +11,27 @@ import java.util.Map;
 
 import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.dto.FileInfo;
 
 public abstract class BaseFilesImporter extends BaseImporter {
 
-    protected final FilesInfoTable filesInfoTable;
+    protected final FileInfoTable fileInfoTable;
     protected final DataBlockTable dataBlockTable;
     protected final Map<String, String> adaptedNotesIdMap;
     protected final Map<String, String> adaptedFilesIdMap = new HashMap<>();
     protected final Map<String, String> dataBlocksIdMap = new HashMap<>();
 
     public BaseFilesImporter(JsonParser parser,
-                             FilesInfoTable filesInfoTable,
+                             FileInfoTable fileInfoTable,
                              DataBlockTable dataBlockTable,
                              Map<String, String> adaptedNotesIdMap,
                              DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
 
-        this.filesInfoTable = filesInfoTable;
+        this.fileInfoTable = fileInfoTable;
         this.dataBlockTable = dataBlockTable;
         this.adaptedNotesIdMap = adaptedNotesIdMap;
     }
@@ -50,7 +50,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
 
                     if (fileInfo.getId() != null) {
                         EncryptedFileInfo encryptedFileInfo = FileCrypt.encryptInfo(fileInfo);
-                        filesInfoTable.save(encryptedFileInfo, false);
+                        fileInfoTable.save(encryptedFileInfo, false);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }

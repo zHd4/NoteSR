@@ -3,7 +3,7 @@ package app.notesr.service.data.exporter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.dto.FileInfo;
@@ -17,20 +17,20 @@ class FilesInfoExporter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    private final FilesInfoTable filesInfoTable;
+    private final FileInfoTable fileInfoTable;
     private final DataBlockTable dataBlockTable;
 
     private final DateTimeFormatter timestampFormatter;
 
     FilesInfoExporter(ExportThread thread,
                       JsonGenerator jsonGenerator,
-                      FilesInfoTable filesInfoTable,
+                      FileInfoTable fileInfoTable,
                       DataBlockTable dataBlockTable,
                       DateTimeFormatter timestampFormatter) {
         super(thread);
 
         this.jsonGenerator = jsonGenerator;
-        this.filesInfoTable = filesInfoTable;
+        this.fileInfoTable = fileInfoTable;
         this.dataBlockTable = dataBlockTable;
         this.timestampFormatter = timestampFormatter;
     }
@@ -40,7 +40,7 @@ class FilesInfoExporter extends Exporter {
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
 
-            writeFilesInfo(filesInfoTable.getAll());
+            writeFilesInfo(fileInfoTable.getAll());
             writeDataBlocksInfo(dataBlockTable.getAllWithoutData());
 
             jsonGenerator.writeEndObject();
@@ -49,7 +49,7 @@ class FilesInfoExporter extends Exporter {
 
     @Override
     long getTotal() {
-        return filesInfoTable.getRowsCount() + dataBlockTable.getRowsCount();
+        return fileInfoTable.getRowsCount() + dataBlockTable.getRowsCount();
     }
 
     private void writeFilesInfo(List<EncryptedFileInfo> encryptedFilesInfo) throws IOException,

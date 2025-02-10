@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonToken;
 
 import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.service.data.importer.BaseFilesImporter;
 import app.notesr.model.DataBlock;
 
@@ -16,11 +16,11 @@ import java.util.Map;
 class FilesImporter extends BaseFilesImporter {
 
     public FilesImporter(JsonParser parser,
-                         FilesInfoTable filesInfoTable,
+                         FileInfoTable fileInfoTable,
                          DataBlockTable dataBlockTable,
                          Map<String, String> adaptedNotesIdMap,
                          DateTimeFormatter timestampFormatter) {
-        super(parser, filesInfoTable, dataBlockTable, adaptedNotesIdMap, timestampFormatter);
+        super(parser, fileInfoTable, dataBlockTable, adaptedNotesIdMap, timestampFormatter);
     }
 
     @Override

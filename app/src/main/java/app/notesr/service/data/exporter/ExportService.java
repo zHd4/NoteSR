@@ -207,7 +207,7 @@ public class ExportService extends ServiceBase {
         return new FilesInfoExporter(
                 thread,
                 jsonGenerator,
-                getFilesInfoTable(),
+                getFileInfoTable(),
                 getDataBlockTable(),
                 getTimestampFormatter()
         );

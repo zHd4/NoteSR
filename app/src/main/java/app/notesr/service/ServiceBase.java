@@ -3,7 +3,7 @@ package app.notesr.service;
 import app.notesr.App;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.db.notes.table.NotesTable;
 
 public class ServiceBase {
@@ -11,8 +11,8 @@ public class ServiceBase {
         return getNotesDatabase().getTable(NotesTable.class);
     }
 
-    protected FilesInfoTable getFilesInfoTable() {
-        return getNotesDatabase().getTable(FilesInfoTable.class);
+    protected FileInfoTable getFileInfoTable() {
+        return getNotesDatabase().getTable(FileInfoTable.class);
     }
 
     protected DataBlockTable getDataBlockTable() {

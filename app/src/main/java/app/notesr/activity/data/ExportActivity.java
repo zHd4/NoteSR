@@ -16,7 +16,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NoteListActivity;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.service.android.ExportService;
 
@@ -157,6 +157,6 @@ public class ExportActivity extends ExtendedAppCompatActivity {
     }
 
     private long getFilesCount() {
-        return App.getAppContainer().getNotesDB().getTable(FilesInfoTable.class).getRowsCount();
+        return App.getAppContainer().getNotesDB().getTable(FileInfoTable.class).getRowsCount();
     }
 }

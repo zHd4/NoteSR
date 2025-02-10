@@ -4,7 +4,7 @@ import app.notesr.App;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FilesInfoTable;
+import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.dto.FileInfo;
@@ -23,7 +23,7 @@ public class FileService extends ServiceBase {
     private static final int CHUNK_SIZE = 500000;
 
     public long getFilesCount(String noteId) {
-        Long count = getFilesInfoTable().getCountByNoteId(noteId);
+        Long count = getFileInfoTable().getCountByNoteId(noteId);
 
         if (count == null) {
             throw new NullPointerException("Files count is null");
@@ -33,7 +33,7 @@ public class FileService extends ServiceBase {
     }
 
     public List<FileInfo> getFilesInfo(String noteId) {
-        List<EncryptedFileInfo> encryptedFilesInfo = getFilesInfoTable().getByNoteId(noteId);
+        List<EncryptedFileInfo> encryptedFilesInfo = getFileInfoTable().getByNoteId(noteId);
 
         return FileCrypt.decryptInfo(encryptedFilesInfo).stream()
                 .map(this::setDecimalId)
@@ -41,7 +41,7 @@ public class FileService extends ServiceBase {
     }
 
     public FileInfo getInfo(String fileId) {
-        EncryptedFileInfo encryptedFileInfo = getFilesInfoTable().get(fileId);
+        EncryptedFileInfo encryptedFileInfo = getFileInfoTable().get(fileId);
         return setDecimalId(FileCrypt.decryptInfo(encryptedFileInfo));
     }
 
@@ -64,7 +64,7 @@ public class FileService extends ServiceBase {
     public String saveInfo(FileInfo fileInfo) {
         EncryptedFileInfo encryptedFileInfo = FileCrypt.encryptInfo(fileInfo);
 
-        getFilesInfoTable().save(encryptedFileInfo);
+        getFileInfoTable().save(encryptedFileInfo);
         getNotesTable().markAsModified(encryptedFileInfo.getNoteId());
 
         return encryptedFileInfo.getId();
@@ -105,12 +105,12 @@ public class FileService extends ServiceBase {
     }
 
     public byte[] read(String fileId) {
-        FilesInfoTable filesInfoTable = getFilesInfoTable();
+        FileInfoTable fileInfoTable = getFileInfoTable();
         DataBlockTable dataBlockTable = getDataBlockTable();
 
         Set<String> ids = dataBlockTable.getBlocksIdsByFileId(fileId);
 
-        byte[] data = new byte[Math.toIntExact(filesInfoTable.get(fileId).getSize())];
+        byte[] data = new byte[Math.toIntExact(fileInfoTable.get(fileId).getSize())];
         int readBytes = 0;
 
         for (String id : ids) {
@@ -146,8 +146,8 @@ public class FileService extends ServiceBase {
         db.beginTransaction();
 
         getDataBlockTable().deleteByFileId(fileId);
-        getNotesTable().markAsModified(getFilesInfoTable().get(fileId).getNoteId());
-        getFilesInfoTable().delete(fileId);
+        getNotesTable().markAsModified(getFileInfoTable().get(fileId).getNoteId());
+        getFileInfoTable().delete(fileId);
 
         db.commitTransaction();
     }

@@ -99,7 +99,7 @@ public class ImportServiceV2 extends ImportServiceBase {
             Map<String, String> adaptedNotesIdMap) {
         return new FilesImporter(
                 parser,
-                getFilesInfoTable(),
+                getFileInfoTable(),
                 getDataBlockTable(),
                 adaptedNotesIdMap,
                 dataBlocksDir,

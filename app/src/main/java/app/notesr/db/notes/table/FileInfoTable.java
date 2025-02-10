@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilesInfoTable extends BaseTable {
-    public FilesInfoTable(NotesDB db, String name, NotesTable notesTable) {
+public class FileInfoTable extends BaseTable {
+    public FileInfoTable(NotesDB db, String name, NotesTable notesTable) {
         super(db, name);
 
         db.writableDatabase.execSQL(
