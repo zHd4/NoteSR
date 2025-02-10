@@ -14,7 +14,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-public class BackupsCrypt {
+public class BackupCrypt {
 
     private static final int CHUNK_SIZE = 100000;
 
@@ -22,7 +22,7 @@ public class BackupsCrypt {
     private final FileOutputStream outputFileStream;
     private final CryptoKey cryptoKey;
 
-    public BackupsCrypt(FileInputStream sourceFileStream, FileOutputStream outputFileStream) {
+    public BackupCrypt(FileInputStream sourceFileStream, FileOutputStream outputFileStream) {
         this.sourceFileStream = sourceFileStream;
         this.outputFileStream = outputFileStream;
         this.cryptoKey = getCryptoKey();

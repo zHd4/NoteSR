@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import app.notesr.R;
-import app.notesr.crypto.BackupsCrypt;
+import app.notesr.crypto.BackupCrypt;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.service.ServiceBase;
 import app.notesr.service.data.importer.v1.ImportServiceV1;
@@ -83,8 +83,8 @@ public class MainImportService extends ServiceBase {
     private static void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws
             DecryptionFailedException {
         try {
-            BackupsCrypt backupsCrypt = new BackupsCrypt(inputStream, outputStream);
-            backupsCrypt.decrypt();
+            BackupCrypt backupCrypt = new BackupCrypt(inputStream, outputStream);
+            backupCrypt.decrypt();
         } catch (IOException e) {
             Log.e(TAG, "IOException", e);
             throw new DecryptionFailedException();
