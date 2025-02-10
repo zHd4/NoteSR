@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import app.notesr.crypto.FileCrypt;
-import app.notesr.db.notes.table.DataBlocksTable;
+import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.service.data.importer.BaseFilesImporter;
 import app.notesr.model.DataBlock;
@@ -21,11 +21,11 @@ class FilesImporter extends BaseFilesImporter {
 
     public FilesImporter(JsonParser parser,
                          FilesInfoTable filesInfoTable,
-                         DataBlocksTable dataBlocksTable,
+                         DataBlockTable dataBlockTable,
                          Map<String, String> adaptedNotesIdMap,
                          File dataBlocksDir,
                          DateTimeFormatter timestampFormatter) {
-        super(parser, filesInfoTable, dataBlocksTable, adaptedNotesIdMap, timestampFormatter);
+        super(parser, filesInfoTable, dataBlockTable, adaptedNotesIdMap, timestampFormatter);
         this.dataBlocksDir = dataBlocksDir;
     }
 
@@ -44,7 +44,7 @@ class FilesImporter extends BaseFilesImporter {
                         byte[] data = FileCrypt.encryptData(readDataBlock(dataFileName));
 
                         dataBlock.setData(data);
-                        dataBlocksTable.save(dataBlock, false);
+                        dataBlockTable.save(dataBlock, false);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }

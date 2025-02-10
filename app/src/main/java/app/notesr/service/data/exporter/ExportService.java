@@ -208,14 +208,14 @@ public class ExportService extends ServiceBase {
                 thread,
                 jsonGenerator,
                 getFilesInfoTable(),
-                getDataBlocksTable(),
+                getDataBlockTable(),
                 getTimestampFormatter()
         );
     }
 
     private FilesDataExporter createFilesDataExporter() {
         File dir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
-        return new FilesDataExporter(thread, dir, getDataBlocksTable());
+        return new FilesDataExporter(thread, dir, getDataBlockTable());
     }
 
     private DateTimeFormatter getTimestampFormatter() {

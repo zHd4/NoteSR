@@ -5,19 +5,19 @@ import java.io.IOException;
 import java.util.List;
 
 import app.notesr.crypto.FileCrypt;
-import app.notesr.db.notes.table.DataBlocksTable;
+import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.model.DataBlock;
 import app.notesr.utils.FilesUtils;
 
 class FilesDataExporter extends Exporter {
     private final File outputDir;
-    private final DataBlocksTable dataBlocksTable;
+    private final DataBlockTable dataBlockTable;
 
-    FilesDataExporter(ExportThread thread, File outputDir, DataBlocksTable dataBlocksTable) {
+    FilesDataExporter(ExportThread thread, File outputDir, DataBlockTable dataBlockTable) {
         super(thread);
 
         this.outputDir = outputDir;
-        this.dataBlocksTable = dataBlocksTable;
+        this.dataBlockTable = dataBlockTable;
     }
 
     @Override
@@ -28,10 +28,10 @@ class FilesDataExporter extends Exporter {
             }
         }
 
-        List<DataBlock> dataBlocksWithoutData = dataBlocksTable.getAllWithoutData();
+        List<DataBlock> dataBlocksWithoutData = dataBlockTable.getAllWithoutData();
 
         for (DataBlock blockWithoutData : dataBlocksWithoutData) {
-            DataBlock dataBlock = dataBlocksTable.get(blockWithoutData.getId());
+            DataBlock dataBlock = dataBlockTable.get(blockWithoutData.getId());
             byte[] data = FileCrypt.decryptData(dataBlock.getData());
 
             FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId().toString()), data);
@@ -43,6 +43,6 @@ class FilesDataExporter extends Exporter {
 
     @Override
     long getTotal() {
-        return dataBlocksTable.getRowsCount();
+        return dataBlockTable.getRowsCount();
     }
 }

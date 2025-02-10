@@ -1,7 +1,7 @@
 package app.notesr.db.notes;
 
 import app.notesr.db.BaseDB;
-import app.notesr.db.notes.table.DataBlocksTable;
+import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.db.notes.table.NotesTable;
 
@@ -13,10 +13,10 @@ public class NotesDB extends BaseDB {
 
         NotesTable notesTable = new NotesTable(this, "notes");
         FilesInfoTable filesInfoTable = new FilesInfoTable(this, "files_info", notesTable);
-        DataBlocksTable dataBlocksTable = new DataBlocksTable(this, "data_blocks", filesInfoTable);
+        DataBlockTable dataBlockTable = new DataBlockTable(this, "data_blocks", filesInfoTable);
 
         tables.put(NotesTable.class, notesTable);
         tables.put(FilesInfoTable.class, filesInfoTable);
-        tables.put(DataBlocksTable.class, dataBlocksTable);
+        tables.put(DataBlockTable.class, dataBlockTable);
     }
 }

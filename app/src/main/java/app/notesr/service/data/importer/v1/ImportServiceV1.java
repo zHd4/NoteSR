@@ -87,7 +87,7 @@ public class ImportServiceV1 extends ImportServiceBase {
         return new FilesImporter(
                 parser,
                 getFilesInfoTable(),
-                getDataBlocksTable(),
+                getDataBlockTable(),
                 adaptedNotesIdMap,
                 getTimestampFormatter()
         );

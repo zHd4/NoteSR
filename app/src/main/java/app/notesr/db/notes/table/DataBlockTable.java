@@ -13,8 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class DataBlocksTable extends BaseTable {
-    public DataBlocksTable(NotesDB db, String name, FilesInfoTable filesInfoTable) {
+public class DataBlockTable extends BaseTable {
+    public DataBlockTable(NotesDB db, String name, FilesInfoTable filesInfoTable) {
         super(db, name);
 
         db.writableDatabase.execSQL(

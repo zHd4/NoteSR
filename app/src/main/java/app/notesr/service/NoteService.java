@@ -1,7 +1,7 @@
 package app.notesr.service;
 
 import app.notesr.crypto.NoteCrypt;
-import app.notesr.db.notes.table.DataBlocksTable;
+import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.EncryptedNote;
 import app.notesr.dto.Note;
@@ -60,10 +60,10 @@ public class NoteService extends ServiceBase {
 
     public void delete(String id) {
         FilesInfoTable filesInfoTable = getFilesInfoTable();
-        DataBlocksTable dataBlocksTable = getDataBlocksTable();
+        DataBlockTable dataBlockTable = getDataBlockTable();
 
         filesInfoTable.getByNoteId(id).forEach(fileInfo -> {
-            dataBlocksTable.deleteByFileId(fileInfo.getId());
+            dataBlockTable.deleteByFileId(fileInfo.getId());
             filesInfoTable.delete(fileInfo.getId());
         });
 

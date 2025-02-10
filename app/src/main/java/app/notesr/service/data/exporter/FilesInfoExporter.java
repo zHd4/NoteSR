@@ -2,7 +2,7 @@ package app.notesr.service.data.exporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.crypto.FileCrypt;
-import app.notesr.db.notes.table.DataBlocksTable;
+import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
@@ -18,20 +18,20 @@ class FilesInfoExporter extends Exporter {
     private final JsonGenerator jsonGenerator;
 
     private final FilesInfoTable filesInfoTable;
-    private final DataBlocksTable dataBlocksTable;
+    private final DataBlockTable dataBlockTable;
 
     private final DateTimeFormatter timestampFormatter;
 
     FilesInfoExporter(ExportThread thread,
                       JsonGenerator jsonGenerator,
                       FilesInfoTable filesInfoTable,
-                      DataBlocksTable dataBlocksTable,
+                      DataBlockTable dataBlockTable,
                       DateTimeFormatter timestampFormatter) {
         super(thread);
 
         this.jsonGenerator = jsonGenerator;
         this.filesInfoTable = filesInfoTable;
-        this.dataBlocksTable = dataBlocksTable;
+        this.dataBlockTable = dataBlockTable;
         this.timestampFormatter = timestampFormatter;
     }
 
@@ -41,7 +41,7 @@ class FilesInfoExporter extends Exporter {
             jsonGenerator.writeStartObject();
 
             writeFilesInfo(filesInfoTable.getAll());
-            writeDataBlocksInfo(dataBlocksTable.getAllWithoutData());
+            writeDataBlocksInfo(dataBlockTable.getAllWithoutData());
 
             jsonGenerator.writeEndObject();
         }
@@ -49,7 +49,7 @@ class FilesInfoExporter extends Exporter {
 
     @Override
     long getTotal() {
-        return filesInfoTable.getRowsCount() + dataBlocksTable.getRowsCount();
+        return filesInfoTable.getRowsCount() + dataBlockTable.getRowsCount();
     }
 
     private void writeFilesInfo(List<EncryptedFileInfo> encryptedFilesInfo) throws IOException,

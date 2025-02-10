@@ -7,7 +7,7 @@ import app.notesr.db.notes.table.NotesTable;
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NoteCrypt;
-import app.notesr.db.notes.table.DataBlocksTable;
+import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.exception.ReEncryptionFailedException;
 import app.notesr.model.DataBlock;
@@ -41,7 +41,7 @@ public class KeyUpdateService extends ServiceBase {
 
         NotesTable notesTable = getNotesTable();
         FilesInfoTable filesInfoTable = getFilesInfoTable();
-        DataBlocksTable dataBlocksTable = getDataBlocksTable();
+        DataBlockTable dataBlockTable = getDataBlockTable();
 
         db.beginTransaction();
 
@@ -56,13 +56,13 @@ public class KeyUpdateService extends ServiceBase {
                                     FileCrypt.updateKey(fileInfo, oldKey, newKey);
 
                             Set<String> blockIds =
-                                    dataBlocksTable.getBlocksIdsByFileId(updatedFileInfo.getId());
+                                    dataBlockTable.getBlocksIdsByFileId(updatedFileInfo.getId());
 
                             for (String blockId : blockIds) {
-                                DataBlock block = dataBlocksTable.get(blockId);
+                                DataBlock block = dataBlockTable.get(blockId);
 
                                 block.setData(FileCrypt.updateKey(block.getData(), oldKey, newKey));
-                                dataBlocksTable.save(block);
+                                dataBlockTable.save(block);
                                 progress += 1;
                             }
 
@@ -84,7 +84,7 @@ public class KeyUpdateService extends ServiceBase {
     private long calculateTotal() {
         return getNotesTable().getRowsCount()
                 + getFilesInfoTable().getRowsCount()
-                + getDataBlocksTable().getRowsCount();
+                + getDataBlockTable().getRowsCount();
     }
 
     private NotesDB getNotesDB() {

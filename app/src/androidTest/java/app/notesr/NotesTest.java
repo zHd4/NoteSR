@@ -3,7 +3,7 @@ package app.notesr;
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NoteCrypt;
-import app.notesr.db.notes.table.DataBlocksTable;
+import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.model.DataBlock;
@@ -35,9 +35,9 @@ public class NotesTest {
             .getNotesDB()
             .getTable(FilesInfoTable.class);
 
-    private final DataBlocksTable dataBlocksTable = App.getAppContainer()
+    private final DataBlockTable dataBlockTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(DataBlocksTable.class);
+            .getTable(DataBlockTable.class);
 
     private Note testNote;
 
@@ -60,7 +60,7 @@ public class NotesTest {
     public void after() {
         notesTable.getAll().forEach(note -> {
             filesInfoTable.getByNoteId(note.getId()).forEach(file -> {
-                dataBlocksTable.getBlocksIdsByFileId(file.getId()).forEach(dataBlocksTable::delete);
+                dataBlockTable.getBlocksIdsByFileId(file.getId()).forEach(dataBlockTable::delete);
                 filesInfoTable.delete(file.getId());
             });
 
@@ -131,13 +131,13 @@ public class NotesTest {
                 .order(1L).data(testFileData)
                 .build();
 
-        dataBlocksTable.save(dataBlock);
+        dataBlockTable.save(dataBlock);
 
         Assert.assertNotNull(encryptedFileInfo.getId());
         Assert.assertNotNull(dataBlock.getId());
 
         Assert.assertEquals(encryptedFileInfo.getId(), dataBlock.getFileId());
-        Assert.assertArrayEquals(dataBlocksTable.get(dataBlock.getId()).getData(), dataBlock.getData());
+        Assert.assertArrayEquals(dataBlockTable.get(dataBlock.getId()).getData(), dataBlock.getData());
     }
 
     @Test
