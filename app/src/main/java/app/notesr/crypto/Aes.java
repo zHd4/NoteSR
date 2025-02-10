@@ -1,6 +1,6 @@
 package app.notesr.crypto;
 
-import app.notesr.utils.HashHelper;
+import app.notesr.util.HashHelper;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

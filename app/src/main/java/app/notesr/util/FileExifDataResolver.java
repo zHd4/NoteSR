@@ -1,4 +1,4 @@
-package app.notesr.utils;
+package app.notesr.util;
 
 import android.database.Cursor;
 import android.net.Uri;

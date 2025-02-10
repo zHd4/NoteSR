@@ -13,7 +13,7 @@ import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.service.data.importer.BaseFilesImporter;
 import app.notesr.model.DataBlock;
-import app.notesr.utils.FilesUtils;
+import app.notesr.util.FilesUtils;
 
 class FilesImporter extends BaseFilesImporter {
 

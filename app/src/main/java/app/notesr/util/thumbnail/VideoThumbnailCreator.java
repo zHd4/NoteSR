@@ -1,4 +1,4 @@
-package app.notesr.utils.thumbnail;
+package app.notesr.util.thumbnail;
 
 import static java.util.UUID.randomUUID;
 
@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import app.notesr.utils.Wiper;
+import app.notesr.util.Wiper;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

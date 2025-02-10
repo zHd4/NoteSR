@@ -8,7 +8,7 @@ import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.dto.FileInfo;
-import app.notesr.utils.HashHelper;
+import app.notesr.util.HashHelper;
 
 import java.io.File;
 import java.io.FileInputStream;

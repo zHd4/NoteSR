@@ -1,4 +1,4 @@
-package app.notesr.utils.thumbnail;
+package app.notesr.util.thumbnail;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

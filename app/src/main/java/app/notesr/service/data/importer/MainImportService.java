@@ -16,8 +16,8 @@ import app.notesr.exception.DecryptionFailedException;
 import app.notesr.service.ServiceBase;
 import app.notesr.service.data.importer.v1.ImportServiceV1;
 import app.notesr.service.data.importer.v2.ImportServiceV2;
-import app.notesr.utils.Wiper;
-import app.notesr.utils.ZipUtils;
+import app.notesr.util.Wiper;
+import app.notesr.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

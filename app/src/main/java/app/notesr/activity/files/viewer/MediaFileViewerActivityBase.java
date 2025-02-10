@@ -5,9 +5,9 @@ import java.io.FileNotFoundException;
 
 import app.notesr.App;
 import app.notesr.service.FileService;
-import app.notesr.utils.thumbnail.ImageThumbnailCreator;
-import app.notesr.utils.thumbnail.ThumbnailCreator;
-import app.notesr.utils.thumbnail.VideoThumbnailCreator;
+import app.notesr.util.thumbnail.ImageThumbnailCreator;
+import app.notesr.util.thumbnail.ThumbnailCreator;
+import app.notesr.util.thumbnail.VideoThumbnailCreator;
 
 public class MediaFileViewerActivityBase extends FileViewerActivityBase {
 

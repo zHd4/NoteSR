@@ -1,4 +1,4 @@
-package app.notesr.utils.thumbnail;
+package app.notesr.util.thumbnail;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;

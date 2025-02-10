@@ -4,9 +4,9 @@ import android.util.Log;
 
 import app.notesr.App;
 import app.notesr.dto.CryptoKey;
-import app.notesr.utils.FilesUtils;
-import app.notesr.utils.HashHelper;
-import app.notesr.utils.Wiper;
+import app.notesr.util.FilesUtils;
+import app.notesr.util.HashHelper;
+import app.notesr.util.Wiper;
 import lombok.Getter;
 
 import java.io.File;

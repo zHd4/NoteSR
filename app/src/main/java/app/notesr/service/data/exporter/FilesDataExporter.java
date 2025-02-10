@@ -7,7 +7,7 @@ import java.util.List;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.model.DataBlock;
-import app.notesr.utils.FilesUtils;
+import app.notesr.util.FilesUtils;
 
 class FilesDataExporter extends Exporter {
     private final File outputDir;

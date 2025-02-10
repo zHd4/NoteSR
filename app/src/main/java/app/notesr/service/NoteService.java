@@ -5,7 +5,7 @@ import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.model.EncryptedNote;
 import app.notesr.dto.Note;
-import app.notesr.utils.HashHelper;
+import app.notesr.util.HashHelper;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package app.notesr.utils.thumbnail;
+package app.notesr.util.thumbnail;
 
 import java.io.File;
 import java.io.FileNotFoundException;

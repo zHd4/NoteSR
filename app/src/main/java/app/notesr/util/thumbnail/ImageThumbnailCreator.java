@@ -1,4 +1,4 @@
-package app.notesr.utils.thumbnail;
+package app.notesr.util.thumbnail;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.Objects;
 
-import app.notesr.utils.FilesUtils;
+import app.notesr.util.FilesUtils;
 
 public class ImageThumbnailCreator implements ThumbnailCreator {
     public static final int WIDTH = 100;

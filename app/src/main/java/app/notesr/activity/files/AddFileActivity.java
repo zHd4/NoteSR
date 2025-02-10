@@ -20,11 +20,11 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.service.FileService;
 import app.notesr.dto.FileInfo;
-import app.notesr.utils.FileExifDataResolver;
-import app.notesr.utils.Wiper;
-import app.notesr.utils.thumbnail.ImageThumbnailCreator;
-import app.notesr.utils.thumbnail.ThumbnailCreator;
-import app.notesr.utils.thumbnail.VideoThumbnailCreator;
+import app.notesr.util.FileExifDataResolver;
+import app.notesr.util.Wiper;
+import app.notesr.util.thumbnail.ImageThumbnailCreator;
+import app.notesr.util.thumbnail.ThumbnailCreator;
+import app.notesr.util.thumbnail.VideoThumbnailCreator;
 
 import java.io.File;
 import java.io.FileNotFoundException;

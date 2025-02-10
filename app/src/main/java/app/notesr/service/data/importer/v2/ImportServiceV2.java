@@ -17,7 +17,7 @@ import app.notesr.exception.ImportFailedException;
 import app.notesr.service.data.importer.ImportServiceBase;
 import app.notesr.service.data.importer.ImportResult;
 import app.notesr.service.data.importer.NotesImporter;
-import app.notesr.utils.ZipUtils;
+import app.notesr.util.ZipUtils;
 import lombok.Getter;
 
 public class ImportServiceV2 extends ImportServiceBase {

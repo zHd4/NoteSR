@@ -1,4 +1,4 @@
-package app.notesr.utils;
+package app.notesr.util;
 
 import java.io.File;
 import java.io.FileInputStream;

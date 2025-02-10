@@ -15,7 +15,7 @@ import app.notesr.App;
 import app.notesr.activity.files.viewer.FileViewerActivityBase;
 import app.notesr.db.services.table.TempFileTable;
 import app.notesr.model.TempFile;
-import app.notesr.utils.Wiper;
+import app.notesr.util.Wiper;
 
 import java.io.File;
 import java.io.IOException;

@@ -10,7 +10,7 @@ import app.notesr.exception.ImportFailedException;
 import app.notesr.service.data.importer.ImportServiceBase;
 import app.notesr.service.data.importer.ImportResult;
 import app.notesr.service.data.importer.NotesImporter;
-import app.notesr.utils.Wiper;
+import app.notesr.util.Wiper;
 
 import java.io.File;
 import java.io.IOException;

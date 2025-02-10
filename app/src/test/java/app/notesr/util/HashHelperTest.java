@@ -1,4 +1,4 @@
-package app.notesr.utils;
+package app.notesr.util;
 
 import org.junit.Assert;
 import org.junit.Test;

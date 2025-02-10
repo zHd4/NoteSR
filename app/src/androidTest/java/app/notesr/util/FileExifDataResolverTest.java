@@ -1,4 +1,4 @@
-package app.notesr.utils;
+package app.notesr.util;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;

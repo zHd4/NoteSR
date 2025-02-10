@@ -5,7 +5,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 
-import app.notesr.utils.Wiper;
+import app.notesr.util.Wiper;
 
 public class TempDataWiper {
     private static final String TAG = TempDataWiper.class.getName();

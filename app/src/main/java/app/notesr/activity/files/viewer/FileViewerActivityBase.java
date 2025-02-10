@@ -17,8 +17,8 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.files.FileListActivity;
 import app.notesr.service.FileService;
 import app.notesr.dto.FileInfo;
-import app.notesr.utils.FilesUtils;
-import app.notesr.utils.HashHelper;
+import app.notesr.util.FilesUtils;
+import app.notesr.util.HashHelper;
 import lombok.Getter;
 
 import java.io.File;

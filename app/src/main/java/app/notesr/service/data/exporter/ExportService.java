@@ -13,8 +13,8 @@ import app.notesr.R;
 import app.notesr.crypto.BackupCrypt;
 import app.notesr.service.ServiceBase;
 import app.notesr.service.data.TempDataWiper;
-import app.notesr.utils.FilesUtils;
-import app.notesr.utils.VersionFetcher;
+import app.notesr.util.FilesUtils;
+import app.notesr.util.VersionFetcher;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-import app.notesr.utils.ZipUtils;
+import app.notesr.util.ZipUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
