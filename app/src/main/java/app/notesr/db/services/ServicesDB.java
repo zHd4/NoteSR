@@ -1,7 +1,7 @@
 package app.notesr.db.services;
 
 import app.notesr.db.BaseDB;
-import app.notesr.db.services.table.TempFilesTable;
+import app.notesr.db.services.table.TempFileTable;
 
 public class ServicesDB extends BaseDB {
     private static final String NAME = "services_db5";
@@ -9,6 +9,6 @@ public class ServicesDB extends BaseDB {
     public ServicesDB() {
         super(NAME);
 
-        tables.put(TempFilesTable.class, new TempFilesTable(this, "temp_files"));
+        tables.put(TempFileTable.class, new TempFileTable(this, "temp_files"));
     }
 }

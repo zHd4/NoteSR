@@ -10,8 +10,8 @@ import app.notesr.model.TempFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TempFilesTable extends BaseTable {
-    public TempFilesTable(ServicesDB db, String name) {
+public class TempFileTable extends BaseTable {
+    public TempFileTable(ServicesDB db, String name) {
         super(db, name);
 
         db.writableDatabase.execSQL(

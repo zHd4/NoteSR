@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.db.services.table.TempFilesTable;
+import app.notesr.db.services.table.TempFileTable;
 import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerService;
 
@@ -52,9 +52,9 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
         AlertDialog progressDialog = builder.create();
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        TempFilesTable tempFilesTable = App.getAppContainer()
+        TempFileTable tempFileTable = App.getAppContainer()
                 .getServicesDB()
-                .getTable(TempFilesTable.class);
+                .getTable(TempFileTable.class);
 
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
@@ -69,7 +69,7 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
                 Uri imageUri = Uri.parse(imageFile.getAbsolutePath());
                 TempFile imageFile = new TempFile(imageUri);
 
-                tempFilesTable.save(imageFile);
+                tempFileTable.save(imageFile);
                 imageView.setImageURI(imageUri);
             });
         });

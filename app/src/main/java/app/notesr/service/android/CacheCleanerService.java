@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import app.notesr.App;
 import app.notesr.activity.files.viewer.FileViewerActivityBase;
-import app.notesr.db.services.table.TempFilesTable;
+import app.notesr.db.services.table.TempFileTable;
 import app.notesr.model.TempFile;
 import app.notesr.utils.Wiper;
 
@@ -66,7 +66,7 @@ public class CacheCleanerService extends Service implements Runnable {
     }
 
     private void clearCache() {
-        List<TempFile> tempFiles = getTempFilesTable().getAll();
+        List<TempFile> tempFiles = getTempFileTable().getAll();
 
         tempFiles.stream()
                 .filter(tempFile -> !runningJobs.containsKey(tempFile))
@@ -94,15 +94,15 @@ public class CacheCleanerService extends Service implements Runnable {
                 }
             }
 
-            getTempFilesTable().delete(tempFile.getId());
+            getTempFileTable().delete(tempFile.getId());
             runningJobs.remove(tempFile);
         };
     }
 
-    private TempFilesTable getTempFilesTable() {
+    private TempFileTable getTempFileTable() {
         return App.getAppContainer()
                 .getServicesDB()
-                .getTable(TempFilesTable.class);
+                .getTable(TempFileTable.class);
     }
 
     @Override
