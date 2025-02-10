@@ -2,7 +2,7 @@ package app.notesr.service.data.exporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.crypto.NoteCrypt;
-import app.notesr.db.notes.table.NotesTable;
+import app.notesr.db.notes.table.NoteTable;
 import app.notesr.model.EncryptedNote;
 import app.notesr.dto.Note;
 import lombok.Getter;
@@ -14,17 +14,17 @@ class NotesExporter extends Exporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    private final NotesTable notesTable;
+    private final NoteTable noteTable;
     private final DateTimeFormatter timestampFormatter;
 
     NotesExporter(ExportThread thread,
                   JsonGenerator jsonGenerator,
-                  NotesTable notesTable,
+                  NoteTable noteTable,
                   DateTimeFormatter timestampFormatter) {
         super(thread);
 
         this.jsonGenerator = jsonGenerator;
-        this.notesTable = notesTable;
+        this.noteTable = noteTable;
         this.timestampFormatter = timestampFormatter;
     }
 
@@ -34,7 +34,7 @@ class NotesExporter extends Exporter {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeArrayFieldStart("notes");
 
-            for (EncryptedNote encryptedNote : notesTable.getAll()) {
+            for (EncryptedNote encryptedNote : noteTable.getAll()) {
                 Note note = NoteCrypt.decrypt(encryptedNote);
                 writeNote(note);
 
@@ -63,6 +63,6 @@ class NotesExporter extends Exporter {
 
     @Override
     long getTotal() {
-        return notesTable.getRowsCount();
+        return noteTable.getRowsCount();
     }
 }

@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class NotesTable extends BaseTable {
-    public NotesTable(NotesDB db, String name) {
+public final class NoteTable extends BaseTable {
+    public NoteTable(NotesDB db, String name) {
         super(db, name);
 
         db.writableDatabase.execSQL(

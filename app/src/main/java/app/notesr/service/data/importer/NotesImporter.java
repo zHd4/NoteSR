@@ -3,7 +3,7 @@ package app.notesr.service.data.importer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import app.notesr.crypto.NoteCrypt;
-import app.notesr.db.notes.table.NotesTable;
+import app.notesr.db.notes.table.NoteTable;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.model.EncryptedNote;
 import app.notesr.dto.Note;
@@ -20,13 +20,13 @@ public class NotesImporter extends BaseImporter {
     @Getter
     private final Map<String, String> adaptedIdMap = new HashMap<>();
 
-    private final NotesTable notesTable;
+    private final NoteTable noteTable;
 
     public NotesImporter(JsonParser parser,
-                         NotesTable notesTable,
+                         NoteTable noteTable,
                          DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
-        this.notesTable = notesTable;
+        this.noteTable = noteTable;
     }
 
     public void importNotes() throws IOException, ImportFailedException {
@@ -52,7 +52,7 @@ public class NotesImporter extends BaseImporter {
             }
 
             EncryptedNote encryptedNote = NoteCrypt.encrypt(note);
-            notesTable.save(encryptedNote, false);
+            noteTable.save(encryptedNote, false);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 

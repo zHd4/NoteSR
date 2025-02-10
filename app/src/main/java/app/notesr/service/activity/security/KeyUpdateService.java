@@ -3,7 +3,7 @@ package app.notesr.service.activity.security;
 import app.notesr.App;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.db.notes.NotesDB;
-import app.notesr.db.notes.table.NotesTable;
+import app.notesr.db.notes.table.NoteTable;
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NoteCrypt;
@@ -39,15 +39,15 @@ public class KeyUpdateService extends ServiceBase {
     public void updateEncryptedData() {
         NotesDB db = getNotesDB();
 
-        NotesTable notesTable = getNotesTable();
+        NoteTable noteTable = getNoteTable();
         FileInfoTable fileInfoTable = getFileInfoTable();
         DataBlockTable dataBlockTable = getDataBlockTable();
 
         db.beginTransaction();
 
         try {
-            notesTable.getAll().forEach(note -> {
-                notesTable.save(NoteCrypt.updateKey(note, oldKey, newKey));
+            noteTable.getAll().forEach(note -> {
+                noteTable.save(NoteCrypt.updateKey(note, oldKey, newKey));
                 progress += 1;
 
                 fileInfoTable.getByNoteId(note.getId())
@@ -82,7 +82,7 @@ public class KeyUpdateService extends ServiceBase {
     }
 
     private long calculateTotal() {
-        return getNotesTable().getRowsCount()
+        return getNoteTable().getRowsCount()
                 + getFileInfoTable().getRowsCount()
                 + getDataBlockTable().getRowsCount();
     }

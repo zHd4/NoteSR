@@ -5,7 +5,7 @@ import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NoteCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FileInfoTable;
-import app.notesr.db.notes.table.NotesTable;
+import app.notesr.db.notes.table.NoteTable;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.EncryptedNote;
@@ -27,9 +27,9 @@ public class NotesTest {
 
     private static CryptoKey cryptoKey;
 
-    private final NotesTable notesTable = App.getAppContainer()
+    private final NoteTable noteTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(NotesTable.class);
+            .getTable(NoteTable.class);
 
     private final FileInfoTable fileInfoTable = App.getAppContainer()
             .getNotesDB()
@@ -58,13 +58,13 @@ public class NotesTest {
 
     @After
     public void after() {
-        notesTable.getAll().forEach(note -> {
+        noteTable.getAll().forEach(note -> {
             fileInfoTable.getByNoteId(note.getId()).forEach(file -> {
                 dataBlockTable.getBlocksIdsByFileId(file.getId()).forEach(dataBlockTable::delete);
                 fileInfoTable.delete(file.getId());
             });
 
-            notesTable.delete(note.getId());
+            noteTable.delete(note.getId());
         });
     }
 
@@ -73,7 +73,7 @@ public class NotesTest {
         saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
-        EncryptedNote encryptedActual = notesTable.get(testNote.getId());
+        EncryptedNote encryptedActual = noteTable.get(testNote.getId());
         Assert.assertNotNull(encryptedActual);
 
         Note actual = NoteCrypt.decrypt(encryptedActual, cryptoKey);
@@ -94,9 +94,9 @@ public class NotesTest {
         Note note = new Note(newName, newText);
         note.setId(testNote.getId());
 
-        notesTable.save(NoteCrypt.encrypt(note, cryptoKey));
+        noteTable.save(NoteCrypt.encrypt(note, cryptoKey));
 
-        EncryptedNote encryptedActual = notesTable.get(testNote.getId());
+        EncryptedNote encryptedActual = noteTable.get(testNote.getId());
         Assert.assertNotNull(encryptedActual);
 
         Note actual = NoteCrypt.decrypt(encryptedActual, cryptoKey);
@@ -145,15 +145,15 @@ public class NotesTest {
         saveTestNote();
         Assert.assertNotNull(testNote.getId());
 
-        notesTable.delete(testNote.getId());
-        EncryptedNote actual = notesTable.get(testNote.getId());
+        noteTable.delete(testNote.getId());
+        EncryptedNote actual = noteTable.get(testNote.getId());
 
         Assert.assertNull(actual);
     }
 
     private void saveTestNote() {
         EncryptedNote encryptedNote = NoteCrypt.encrypt(testNote, cryptoKey);
-        notesTable.save(encryptedNote);
+        noteTable.save(encryptedNote);
 
         testNote.setId(encryptedNote.getId());
         testNote.setUpdatedAt(encryptedNote.getUpdatedAt());

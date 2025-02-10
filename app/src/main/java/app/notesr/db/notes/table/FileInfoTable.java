@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileInfoTable extends BaseTable {
-    public FileInfoTable(NotesDB db, String name, NotesTable notesTable) {
+    public FileInfoTable(NotesDB db, String name, NoteTable noteTable) {
         super(db, name);
 
         db.writableDatabase.execSQL(
@@ -26,7 +26,7 @@ public class FileInfoTable extends BaseTable {
                         "size bigint NOT NULL, " +
                         "created_at varchar(255) NOT NULL, " +
                         "updated_at varchar(255) NOT NULL, " +
-                        "FOREIGN KEY(note_id) REFERENCES " + notesTable.getName() + "(id))"
+                        "FOREIGN KEY(note_id) REFERENCES " + noteTable.getName() + "(id))"
         );
     }
 

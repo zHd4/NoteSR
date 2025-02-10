@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 public class NoteService extends ServiceBase {
     public void save(Note note) {
         EncryptedNote encryptedNote = NoteCrypt.encrypt(note);
-        getNotesTable().save(encryptedNote);
+        getNoteTable().save(encryptedNote);
     }
 
     public List<Note> getAll() {
-        return getNotesTable()
+        return getNoteTable()
                 .getAll()
                 .stream()
                 .map(NoteCrypt::decrypt)
@@ -27,7 +27,7 @@ public class NoteService extends ServiceBase {
     }
 
     public Note get(String id) {
-        EncryptedNote encryptedNote = getNotesTable().get(id);
+        EncryptedNote encryptedNote = getNoteTable().get(id);
 
         if (encryptedNote != null) {
             Note note = NoteCrypt.decrypt(encryptedNote);
@@ -67,7 +67,7 @@ public class NoteService extends ServiceBase {
             fileInfoTable.delete(fileInfo.getId());
         });
 
-        getNotesTable().delete(id);
+        getNoteTable().delete(id);
     }
 
     private Note setDecimalId(Note note) {

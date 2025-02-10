@@ -90,7 +90,7 @@ public class ImportServiceV2 extends ImportServiceBase {
     }
 
     private NotesImporter getNotesImporter(JsonParser parser) {
-        return new NotesImporter(parser, getNotesTable(), getTimestampFormatter());
+        return new NotesImporter(parser, getNoteTable(), getTimestampFormatter());
     }
 
     private FilesImporter getFilesImporter(

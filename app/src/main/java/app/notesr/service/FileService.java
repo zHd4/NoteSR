@@ -65,7 +65,7 @@ public class FileService extends ServiceBase {
         EncryptedFileInfo encryptedFileInfo = FileCrypt.encryptInfo(fileInfo);
 
         getFileInfoTable().save(encryptedFileInfo);
-        getNotesTable().markAsModified(encryptedFileInfo.getNoteId());
+        getNoteTable().markAsModified(encryptedFileInfo.getNoteId());
 
         return encryptedFileInfo.getId();
     }
@@ -146,7 +146,7 @@ public class FileService extends ServiceBase {
         db.beginTransaction();
 
         getDataBlockTable().deleteByFileId(fileId);
-        getNotesTable().markAsModified(getFileInfoTable().get(fileId).getNoteId());
+        getNoteTable().markAsModified(getFileInfoTable().get(fileId).getNoteId());
         getFileInfoTable().delete(fileId);
 
         db.commitTransaction();

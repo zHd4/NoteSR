@@ -78,7 +78,7 @@ public class ImportServiceV1 extends ImportServiceBase {
     private NotesImporter getNotesImporter(JsonParser parser) {
         return new NotesImporter(
                 parser,
-                getNotesTable(),
+                getNoteTable(),
                 getTimestampFormatter()
         );
     }

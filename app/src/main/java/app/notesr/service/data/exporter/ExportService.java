@@ -53,7 +53,7 @@ public class ExportService extends ServiceBase {
     private String status = "";
 
     public void start() {
-        if (getNotesTable().getRowsCount() == 0) {
+        if (getNoteTable().getRowsCount() == 0) {
             throw new RuntimeException("No notes in table");
         }
 
@@ -198,7 +198,7 @@ public class ExportService extends ServiceBase {
         return new NotesExporter(
                 thread,
                 jsonGenerator,
-                getNotesTable(),
+                getNoteTable(),
                 getTimestampFormatter()
         );
     }
