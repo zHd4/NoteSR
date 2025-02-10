@@ -1,5 +1,10 @@
 package app.notesr;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NoteCrypt;
@@ -13,7 +18,6 @@ import app.notesr.dto.FileInfo;
 import app.notesr.dto.Note;
 import io.bloco.faker.Faker;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -71,22 +75,22 @@ public class NotesIntegrationTest {
     @Test
     public void testCreateNote() {
         saveTestNote();
-        Assert.assertNotNull(testNote.getId());
+        assertNotNull(testNote.getId());
 
         EncryptedNote encryptedActual = noteTable.get(testNote.getId());
-        Assert.assertNotNull(encryptedActual);
+        assertNotNull(encryptedActual);
 
         Note actual = NoteCrypt.decrypt(encryptedActual, cryptoKey);
 
-        Assert.assertEquals(testNote.getName(), actual.getName());
-        Assert.assertEquals(testNote.getText(), actual.getText());
-        Assert.assertNotNull(actual.getUpdatedAt());
+        assertEquals(testNote.getName(), actual.getName());
+        assertEquals(testNote.getText(), actual.getText());
+        assertNotNull(actual.getUpdatedAt());
     }
 
     @Test
     public void testUpdateNote() {
         saveTestNote();
-        Assert.assertNotNull(testNote.getId());
+        assertNotNull(testNote.getId());
 
         String newName = FAKER.lorem.word();
         String newText = FAKER.lorem.paragraph();
@@ -97,19 +101,19 @@ public class NotesIntegrationTest {
         noteTable.save(NoteCrypt.encrypt(note, cryptoKey));
 
         EncryptedNote encryptedActual = noteTable.get(testNote.getId());
-        Assert.assertNotNull(encryptedActual);
+        assertNotNull(encryptedActual);
 
         Note actual = NoteCrypt.decrypt(encryptedActual, cryptoKey);
 
-        Assert.assertEquals(actual.getName(), note.getName());
-        Assert.assertEquals(actual.getText(), note.getText());
-        Assert.assertNotNull(actual.getUpdatedAt());
+        assertEquals(actual.getName(), note.getName());
+        assertEquals(actual.getText(), note.getText());
+        assertNotNull(actual.getUpdatedAt());
     }
 
     @Test
     public void testAttachFile() {
         saveTestNote();
-        Assert.assertNotNull(testNote.getId());
+        assertNotNull(testNote.getId());
 
         byte[] testFileData = new byte[1024];
         RANDOM.nextBytes(testFileData);
@@ -133,22 +137,22 @@ public class NotesIntegrationTest {
 
         dataBlockTable.save(dataBlock);
 
-        Assert.assertNotNull(encryptedFileInfo.getId());
-        Assert.assertNotNull(dataBlock.getId());
+        assertNotNull(encryptedFileInfo.getId());
+        assertNotNull(dataBlock.getId());
 
-        Assert.assertEquals(encryptedFileInfo.getId(), dataBlock.getFileId());
-        Assert.assertArrayEquals(dataBlockTable.get(dataBlock.getId()).getData(), dataBlock.getData());
+        assertEquals(encryptedFileInfo.getId(), dataBlock.getFileId());
+        assertArrayEquals(dataBlockTable.get(dataBlock.getId()).getData(), dataBlock.getData());
     }
 
     @Test
     public void testDeleteNote() {
         saveTestNote();
-        Assert.assertNotNull(testNote.getId());
+        assertNotNull(testNote.getId());
 
         noteTable.delete(testNote.getId());
         EncryptedNote actual = noteTable.get(testNote.getId());
 
-        Assert.assertNull(actual);
+        assertNull(actual);
     }
 
     private void saveTestNote() {
