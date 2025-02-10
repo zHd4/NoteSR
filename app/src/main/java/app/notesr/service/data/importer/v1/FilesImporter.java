@@ -3,7 +3,7 @@ package app.notesr.service.data.importer.v1;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.notesr.crypto.FilesCrypt;
+import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.service.data.importer.BaseFilesImporter;
@@ -32,7 +32,7 @@ class FilesImporter extends BaseFilesImporter {
                     parseDataBlockObject(dataBlock);
 
                     if (dataBlock.getId() != null) {
-                        dataBlock.setData(FilesCrypt.encryptData(dataBlock.getData()));
+                        dataBlock.setData(FileCrypt.encryptData(dataBlock.getData()));
                         dataBlocksTable.save(dataBlock, false);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);

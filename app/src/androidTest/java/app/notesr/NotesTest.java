@@ -1,7 +1,7 @@
 package app.notesr;
 
 import app.notesr.dto.CryptoKey;
-import app.notesr.crypto.FilesCrypt;
+import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
@@ -123,7 +123,7 @@ public class NotesTest {
         fileInfo.setSize(fileSize);
         fileInfo.setName(fileName);
 
-        EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo, cryptoKey);
+        EncryptedFileInfo encryptedFileInfo = FileCrypt.encryptInfo(fileInfo, cryptoKey);
         filesInfoTable.save(encryptedFileInfo);
 
         DataBlock dataBlock = DataBlock.builder()

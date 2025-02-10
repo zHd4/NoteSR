@@ -5,7 +5,7 @@ import app.notesr.crypto.CryptoManager;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.db.notes.table.NotesTable;
 import app.notesr.dto.CryptoKey;
-import app.notesr.crypto.FilesCrypt;
+import app.notesr.crypto.FileCrypt;
 import app.notesr.crypto.NotesCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
@@ -53,7 +53,7 @@ public class KeyUpdateService extends ServiceBase {
                 filesInfoTable.getByNoteId(note.getId())
                         .forEach(fileInfo -> {
                             EncryptedFileInfo updatedFileInfo =
-                                    FilesCrypt.updateKey(fileInfo, oldKey, newKey);
+                                    FileCrypt.updateKey(fileInfo, oldKey, newKey);
 
                             Set<String> blockIds =
                                     dataBlocksTable.getBlocksIdsByFileId(updatedFileInfo.getId());
@@ -61,7 +61,7 @@ public class KeyUpdateService extends ServiceBase {
                             for (String blockId : blockIds) {
                                 DataBlock block = dataBlocksTable.get(blockId);
 
-                                block.setData(FilesCrypt.updateKey(block.getData(), oldKey, newKey));
+                                block.setData(FileCrypt.updateKey(block.getData(), oldKey, newKey));
                                 dataBlocksTable.save(block);
                                 progress += 1;
                             }

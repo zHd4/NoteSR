@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import app.notesr.crypto.FilesCrypt;
+import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.service.data.importer.BaseFilesImporter;
@@ -41,7 +41,7 @@ class FilesImporter extends BaseFilesImporter {
 
                     if (id != null) {
                         String dataFileName = dataBlocksIdMap.getOrDefault(id, id);
-                        byte[] data = FilesCrypt.encryptData(readDataBlock(dataFileName));
+                        byte[] data = FileCrypt.encryptData(readDataBlock(dataFileName));
 
                         dataBlock.setData(data);
                         dataBlocksTable.save(dataBlock, false);

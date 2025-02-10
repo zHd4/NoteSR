@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.notesr.crypto.FilesCrypt;
+import app.notesr.crypto.FileCrypt;
 import app.notesr.db.notes.table.DataBlocksTable;
 import app.notesr.db.notes.table.FilesInfoTable;
 import app.notesr.model.DataBlock;
@@ -49,7 +49,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
                     parseFileInfoObject(fileInfo);
 
                     if (fileInfo.getId() != null) {
-                        EncryptedFileInfo encryptedFileInfo = FilesCrypt.encryptInfo(fileInfo);
+                        EncryptedFileInfo encryptedFileInfo = FileCrypt.encryptInfo(fileInfo);
                         filesInfoTable.save(encryptedFileInfo, false);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);

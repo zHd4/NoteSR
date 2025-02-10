@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FilesCrypt {
+public class FileCrypt {
     public static EncryptedFileInfo updateKey(EncryptedFileInfo fileInfo, CryptoKey oldKey, CryptoKey newKey) {
         return encryptInfo(decryptInfo(fileInfo, oldKey), newKey);
     }
