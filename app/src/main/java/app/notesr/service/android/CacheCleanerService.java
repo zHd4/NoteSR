@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import app.notesr.App;
 import app.notesr.activity.files.viewer.FileViewerActivityBase;
-import app.notesr.db.services.table.TempFileTable;
+import app.notesr.db.service.table.TempFileTable;
 import app.notesr.model.TempFile;
 import app.notesr.util.Wiper;
 

@@ -1,10 +1,10 @@
-package app.notesr.db.services.table;
+package app.notesr.db.service.table;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import app.notesr.db.BaseTable;
-import app.notesr.db.services.ServicesDB;
+import app.notesr.db.service.ServicesDB;
 import app.notesr.model.TempFile;
 
 import java.util.ArrayList;

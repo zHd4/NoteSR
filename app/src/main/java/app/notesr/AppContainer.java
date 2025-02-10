@@ -2,7 +2,7 @@ package app.notesr;
 
 import app.notesr.crypto.CryptoManager;
 import app.notesr.db.notes.NotesDB;
-import app.notesr.db.services.ServicesDB;
+import app.notesr.db.service.ServicesDB;
 import app.notesr.service.FileService;
 import app.notesr.service.NoteService;
 import lombok.Getter;
