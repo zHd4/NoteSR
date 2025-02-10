@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class ElementsListAdapter<T> extends ArrayAdapter<T> {
+public class ElementListAdapter<T> extends ArrayAdapter<T> {
 
     protected static final DateTimeFormatter timestampFormatter =
             DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
@@ -16,7 +16,7 @@ public class ElementsListAdapter<T> extends ArrayAdapter<T> {
     protected final int resourceLayout;
     protected final Context context;
 
-    public ElementsListAdapter(@NonNull Context context, int resource, @NonNull List<T> objects) {
+    public ElementListAdapter(@NonNull Context context, int resource, @NonNull List<T> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resourceLayout = resource;
