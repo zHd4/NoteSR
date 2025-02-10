@@ -15,7 +15,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.OpenNoteActivity;
-import app.notesr.adapter.FilesListAdapter;
+import app.notesr.adapter.FileListAdapter;
 import app.notesr.service.NoteService;
 import app.notesr.dto.FileInfo;
 import app.notesr.dto.Note;
@@ -128,7 +128,7 @@ public class FileListActivity extends ExtendedAppCompatActivity {
 
         if (!filesInfo.isEmpty()) {
             missingFilesLabel.setVisibility(View.INVISIBLE);
-            FilesListAdapter adapter = new FilesListAdapter(
+            FileListAdapter adapter = new FileListAdapter(
                     App.getContext(),
                     R.layout.files_list_item,
                     filesInfo);
