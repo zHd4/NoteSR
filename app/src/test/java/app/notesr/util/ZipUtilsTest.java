@@ -109,6 +109,7 @@ class ZipUtilsTest extends TestBase {
             }
         }
 
-        dir.delete();
+        if (!dir.delete()) throw new RuntimeException("Cannot delete directory: " +
+                dir.getAbsolutePath());
     }
 }
