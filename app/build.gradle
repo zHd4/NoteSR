@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'checkstyle'
     id 'de.mannodermaus.android-junit5'
 }
 
@@ -32,6 +33,26 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+checkstyle {
+    toolVersion = "10.12.5"
+}
+
+tasks.register('checkstyle', Checkstyle) {
+    group = "verification"
+    description = "Runs Checkstyle for Java source files"
+
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+
+    source 'src/main/java'
+    include '**/*.java'
+
+    classpath = files()
+}
+
+tasks.named("check") {
+    dependsOn("checkstyle")
 }
 
 dependencies {
