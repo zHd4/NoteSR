@@ -12,21 +12,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileInfoTable extends BaseTable {
+public final class FileInfoTable extends BaseTable {
     public FileInfoTable(NotesDB db, String name, NoteTable noteTable) {
         super(db, name);
 
         db.writableDatabase.execSQL(
-                "CREATE TABLE IF NOT EXISTS " + name + "(" +
-                        "id varchar(36) PRIMARY KEY CHECK(LENGTH(id) = 36), " +
-                        "note_id varchar(36) NOT NULL, " +
-                        "encrypted_name blob NOT NULL, " +
-                        "encrypted_type blob, " +
-                        "encrypted_thumbnail blob, " +
-                        "size bigint NOT NULL, " +
-                        "created_at varchar(255) NOT NULL, " +
-                        "updated_at varchar(255) NOT NULL, " +
-                        "FOREIGN KEY(note_id) REFERENCES " + noteTable.getName() + "(id))"
+                "CREATE TABLE IF NOT EXISTS " + name + "("
+                        + "id varchar(36) PRIMARY KEY CHECK(LENGTH(id) = 36), "
+                        + "note_id varchar(36) NOT NULL, "
+                        + "encrypted_name blob NOT NULL, "
+                        + "encrypted_type blob, "
+                        + "encrypted_thumbnail blob, "
+                        + "size bigint NOT NULL, "
+                        + "created_at varchar(255) NOT NULL, "
+                        + "updated_at varchar(255) NOT NULL, "
+                        + "FOREIGN KEY(note_id) REFERENCES " + noteTable.getName() + "(id))"
         );
     }
 
@@ -78,17 +78,17 @@ public class FileInfoTable extends BaseTable {
         List<EncryptedFileInfo> filesInfo = new ArrayList<>();
 
         Cursor cursor = db.readableDatabase.rawQuery(
-                "SELECT " +
-                        "id, " +
-                        "note_id, " +
-                        "encrypted_name, " +
-                        "encrypted_type, " +
-                        "encrypted_thumbnail, " +
-                        "size, " +
-                        "created_at, " +
-                        "updated_at " +
-                        " FROM " + name +
-                        " ORDER BY id",
+                "SELECT "
+                        + "id, "
+                        + "note_id, "
+                        + "encrypted_name, "
+                        + "encrypted_type, "
+                        + "encrypted_thumbnail, "
+                        + "size, "
+                        + "created_at, "
+                        + "updated_at "
+                        + " FROM " + name
+                        + " ORDER BY id",
                 new String[] {});
 
         try (cursor) {
@@ -117,17 +117,17 @@ public class FileInfoTable extends BaseTable {
 
     public EncryptedFileInfo get(String id) {
         Cursor cursor = db.readableDatabase.rawQuery(
-                "SELECT " +
-                        "note_id, " +
-                        "encrypted_name, " +
-                        "encrypted_type, " +
-                        "encrypted_thumbnail, " +
-                        "size, " +
-                        "created_at, " +
-                        "updated_at " +
-                        " FROM " + name +
-                        " WHERE id = ?",
-                new String[] { String.valueOf(id) });
+                "SELECT "
+                        + "note_id, "
+                        + "encrypted_name, "
+                        + "encrypted_type, "
+                        + "encrypted_thumbnail, "
+                        + "size, "
+                        + "created_at, "
+                        + "updated_at "
+                        + " FROM " + name
+                        + " WHERE id = ?",
+                new String[] {String.valueOf(id)});
 
         try (cursor) {
             if (cursor.moveToFirst()) {
@@ -162,18 +162,18 @@ public class FileInfoTable extends BaseTable {
         List<EncryptedFileInfo> files = new ArrayList<>();
 
         Cursor cursor = db.readableDatabase.rawQuery(
-                "SELECT " +
-                        "id, " +
-                        "encrypted_name, " +
-                        "encrypted_type, " +
-                        "encrypted_thumbnail, " +
-                        "size, " +
-                        "created_at, " +
-                        "updated_at" +
-                        " FROM " + name +
-                        " WHERE note_id = ?" +
-                        " ORDER BY updated_at DESC",
-                new String[] { String.valueOf(noteId) });
+                "SELECT "
+                        + "id, "
+                        + "encrypted_name, "
+                        + "encrypted_type, "
+                        + "encrypted_thumbnail, "
+                        + "size, "
+                        + "created_at, "
+                        + "updated_at"
+                        + " FROM " + name
+                        + " WHERE note_id = ?"
+                        + " ORDER BY updated_at DESC",
+                new String[] {String.valueOf(noteId)});
 
         try (cursor) {
             if (cursor.moveToFirst()) {
