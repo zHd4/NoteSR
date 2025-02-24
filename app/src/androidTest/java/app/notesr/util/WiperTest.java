@@ -1,12 +1,16 @@
 package app.notesr.util;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static java.util.UUID.randomUUID;
+
 import app.notesr.App;
-import org.junit.Assert;
+
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Random;
 
 public class WiperTest {
@@ -19,16 +23,40 @@ public class WiperTest {
         File cacheDir = App.getContext().getCacheDir();
         File testFile = File.createTempFile("test", "file", cacheDir);
 
-        int testFileSize = random.nextInt(MAX_FILE_SIZE - MIN_FILE_SIZE + 1) + MIN_FILE_SIZE;
-        byte[] testData = new byte[testFileSize];
-
-        random.nextBytes(testData);
-
-        try (FileOutputStream outputStream = new FileOutputStream(testFile)) {
-            outputStream.write(testData);
-        }
+        byte[] testData = getRandomFileData();
+        Files.write(testFile.toPath(), testData);
 
         boolean result = Wiper.wipeFile(testFile);
-        Assert.assertTrue("File hasn't been wiped", result);
+
+        assertTrue("Result of wipeFile must be 'true'", result);
+        assertFalse(testFile.getAbsolutePath() + " must be deleted", testFile.exists());
+    }
+
+    @Test
+    public void testWipeDir() throws IOException {
+        File cacheDir = App.getContext().getCacheDir();
+        File testDir = new File(cacheDir, randomUUID().toString());
+
+        boolean isDirCreated = testDir.mkdir();
+        assertTrue("Cannot create directory " + testDir.getAbsolutePath(), isDirCreated);
+
+        File testFile = File.createTempFile("test", "file", testDir);
+
+        byte[] testData = getRandomFileData();
+        Files.write(testFile.toPath(), testData);
+
+        boolean result = Wiper.wipeDir(testDir);
+
+        assertTrue("Result of wipeDir must be 'true'", result);
+        assertFalse(testDir.getAbsolutePath() + " must be deleted", testDir.exists());
+        assertFalse(testFile.getAbsolutePath() + " must be deleted", testFile.exists());
+    }
+
+    private byte[] getRandomFileData() {
+        int size = random.nextInt(MAX_FILE_SIZE - MIN_FILE_SIZE + 1) + MIN_FILE_SIZE;
+        byte[] data = new byte[size];
+
+        random.nextBytes(data);
+        return data;
     }
 }
