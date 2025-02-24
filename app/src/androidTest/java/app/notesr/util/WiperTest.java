@@ -10,7 +10,8 @@ import java.io.IOException;
 import java.util.Random;
 
 public class WiperTest {
-    private static final int MAX_FILE_SIZE = 100000;
+    private static final int MIN_FILE_SIZE = 1024;
+    private static final int MAX_FILE_SIZE = 1024 * 10;
     private final Random random = new Random();
 
     @Test
@@ -18,7 +19,9 @@ public class WiperTest {
         File cacheDir = App.getContext().getCacheDir();
         File testFile = File.createTempFile("test", "file", cacheDir);
 
-        byte[] testData = new byte[random.nextInt(MAX_FILE_SIZE)];
+        int testFileSize = random.nextInt(MAX_FILE_SIZE - MIN_FILE_SIZE + 1) + MIN_FILE_SIZE;
+        byte[] testData = new byte[testFileSize];
+
         random.nextBytes(testData);
 
         try (FileOutputStream outputStream = new FileOutputStream(testFile)) {
