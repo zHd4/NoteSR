@@ -1,6 +1,5 @@
 package app.notesr.activity.security;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -125,7 +124,6 @@ public class AuthActivity extends ExtendedAppCompatActivity {
         };
     }
 
-    @SuppressLint("SetTextI18n")
     private View.OnClickListener pinButtonOnClick() {
         return view -> {
             Button self = ((Button)view);
@@ -149,7 +147,8 @@ public class AuthActivity extends ExtendedAppCompatActivity {
 
             if (passwordViewLength == 0 ||
                     screenWidth - passwordViewWidth > passwordViewWidth / passwordViewLength) {
-                censoredPasswordView.setText(censoredPasswordView.getText() + "•");
+                String censoredPassword = censoredPasswordView.getText() + "•";
+                censoredPasswordView.setText(censoredPassword);
             }
         };
     }
