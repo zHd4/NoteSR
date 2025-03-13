@@ -67,7 +67,9 @@ public class ImportServiceV1 extends ImportServiceBase {
                 NotesImporter notesImporter = getNotesImporter(jsonParser);
                 notesImporter.importNotes();
 
-                getFilesImporter(jsonParser, notesImporter.getAdaptedIdMap()).importFiles();
+                FilesImporter filesImporter =
+                        getFilesImporter(jsonParser, notesImporter.getAdaptedIdMap());
+                filesImporter.importFiles();
             }
         } catch (Exception e) {
             Log.e(TAG, "Exception", e);
