@@ -5,26 +5,38 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 public class Wiper {
-
     private static final String TAG = Wiper.class.getName();
     private static final int LOOPS_COUNT = 6;
 
     public static boolean wipeDir(File dir) throws IOException {
-        for (File file : listDirFiles(dir)) {
+        if (dir == null || !dir.isDirectory()) {
+            return false;
+        }
+
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return false;
+        }
+
+        boolean success = true;
+
+        for (File file : files) {
             if (file.isDirectory()) {
-                wipeDir(file);
-                file.delete();
+                boolean subdirCleared = !file.exists() || wipeDir(file);
+                boolean subdirDeleted = !file.exists() || wipeFile(file);
+
+                success &= subdirCleared;
+                success &= subdirDeleted;
             } else {
-                wipeFile(file);
+                boolean fileDeleted = !file.exists() || wipeFile(file);
+                success &= fileDeleted;
             }
         }
 
-        return dir.delete();
+        boolean dirDeleted = !dir.exists() || dir.delete();
+        return success && dirDeleted;
     }
 
     public static boolean wipeFile(File file) throws IOException {
@@ -57,10 +69,6 @@ public class Wiper {
                 } while (bytesWrite < fileSize);
             }
         }
-    }
-
-    private static List<File> listDirFiles(File dir) {
-        return Arrays.asList(Objects.requireNonNull(dir.listFiles()));
     }
 
     private static long getAvailableMemory() {
