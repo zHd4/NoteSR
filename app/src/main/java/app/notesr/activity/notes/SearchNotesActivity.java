@@ -49,7 +49,7 @@ public class SearchNotesActivity extends ExtendedAppCompatActivity {
     }
 
     private SearchNotesResults search(String query) {
-        NoteService manager = App.getAppContainer().getNoteService();
-        return new SearchNotesResults(manager.search(query));
+        NoteService noteService = App.getAppContainer().getNoteService();
+        return new SearchNotesResults(noteService.search(query));
     }
 }
