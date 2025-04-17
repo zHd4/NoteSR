@@ -58,7 +58,7 @@ public class NoteCrypt {
             return getAesInstance(cryptoKey)
                     .encrypt(value.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            Log.e("Cannot encrypt note", e.toString());
+            Log.e("Cannot encrypt value", e.toString());
             throw new RuntimeException(e);
         }
     }
@@ -68,7 +68,7 @@ public class NoteCrypt {
             byte[] decrypted = getAesInstance(cryptoKey).decrypt(value);
             return new String(decrypted);
         } catch (Exception e) {
-            Log.e("Cannot decrypt note", e.toString());
+            Log.e("Cannot decrypt value", e.toString());
             throw new RuntimeException(e);
         }
     }
