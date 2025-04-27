@@ -3,6 +3,7 @@ package app.notesr.activity.notes;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.TextViewKt;
 
 import app.notesr.App;
 import app.notesr.R;
@@ -19,6 +21,8 @@ import app.notesr.activity.files.FileListActivity;
 import app.notesr.service.FileService;
 import app.notesr.service.NoteService;
 import app.notesr.dto.Note;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -31,17 +35,13 @@ import java.util.function.Consumer;
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 public class OpenNoteActivity extends ExtendedAppCompatActivity {
-
     private static final long MAX_COUNT_IN_BADGE = 9;
-
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
-    private Note note;
 
+    private Note note;
+    private Menu menu;
     private boolean noteModified;
 
-    /**
-     * @noinspection DataFlowIssue
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +52,27 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
 
         noteModified = getIntent().getBooleanExtra("modified", false);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        initializeActionBar();
+        prepareEditorFields();
+    }
 
+    private void initializeActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+
+            if (note != null) {
+                actionBar.setTitle(getResources().getString(R.string.edit_note));
+            } else {
+                actionBar.setTitle(getResources().getString(R.string.new_note));
+            }
+        } else {
+            throw new NullPointerException("Action bar is null");
+        }
+    }
+
+    private void prepareEditorFields() {
         EditText nameField = findViewById(R.id.noteNameField);
         EditText textField = findViewById(R.id.noteTextField);
 
@@ -64,11 +82,21 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         if (note != null) {
             nameField.setText(note.getName());
             textField.setText(note.getText());
-
-            actionBar.setTitle(getResources().getString(R.string.edit_note));
-        } else {
-            actionBar.setTitle(getResources().getString(R.string.new_note));
         }
+
+        Function1<Editable, Unit> afterTextChangedAction = editable -> {
+            if (!noteModified) {
+                noteModified = true;
+
+                MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
+                saveNoteButton.setVisible(true);
+            }
+
+            return Unit.INSTANCE;
+        };
+
+        TextViewKt.doAfterTextChanged(nameField, afterTextChangedAction);
+        TextViewKt.doAfterTextChanged(textField, afterTextChangedAction);
     }
 
     @Override
@@ -77,6 +105,7 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
         EditText textField = findViewById(R.id.noteTextField);
 
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
+        this.menu = menu;
 
         MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
         MenuItem openFilesListButton = menu.findItem(R.id.openFilesListButton);
@@ -92,30 +121,34 @@ public class OpenNoteActivity extends ExtendedAppCompatActivity {
             menuItemsMap.put(deleteNoteButton.getItemId(),
                     action -> deleteNoteOnClick());
 
-            FileService fileService = App.getAppContainer().getFileService();
-            long filesCount = fileService.getFilesCount(note.getId());
-
-            if (filesCount > 0) {
-                openFilesListButton.setActionView(R.layout.button_open_files_list);
-
-                View view = Objects.requireNonNull(openFilesListButton.getActionView());
-                TextView badge = view.findViewById(R.id.attachedFilesCountBadge);
-
-                String badgeText = filesCount <= MAX_COUNT_IN_BADGE
-                        ? String.valueOf(filesCount)
-                        : MAX_COUNT_IN_BADGE + "+";
-
-                badge.setText(badgeText);
-                badge.setVisibility(View.VISIBLE);
-
-                view.setOnClickListener(v -> openFilesListOnClick());
-            }
+            setAttachedFilesCountBadge(openFilesListButton);
         } else {
             disableMenuItem(openFilesListButton);
             disableMenuItem(deleteNoteButton);
         }
 
         return true;
+    }
+
+    private void setAttachedFilesCountBadge(MenuItem openFilesListButton) {
+        FileService fileService = App.getAppContainer().getFileService();
+        long filesCount = fileService.getFilesCount(note.getId());
+
+        if (filesCount > 0) {
+            openFilesListButton.setActionView(R.layout.button_open_files_list);
+
+            View view = Objects.requireNonNull(openFilesListButton.getActionView());
+            TextView badge = view.findViewById(R.id.attachedFilesCountBadge);
+
+            String badgeText = filesCount <= MAX_COUNT_IN_BADGE
+                    ? String.valueOf(filesCount)
+                    : MAX_COUNT_IN_BADGE + "+";
+
+            badge.setText(badgeText);
+            badge.setVisibility(View.VISIBLE);
+
+            view.setOnClickListener(v -> openFilesListOnClick());
+        }
     }
 
     @Override

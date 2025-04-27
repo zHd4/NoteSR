@@ -6,6 +6,7 @@
         android:icon="@android:drawable/ic_menu_save"
         android:orderInCategory="3"
         android:title="@string/save_note"
+        android:visible="false"
         app:showAsAction="always" />
 
     <item
