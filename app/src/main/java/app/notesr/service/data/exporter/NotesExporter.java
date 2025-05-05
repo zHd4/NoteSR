@@ -10,7 +10,7 @@ import lombok.Getter;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-class NotesExporter extends Exporter {
+class NotesExporter extends BaseExporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 

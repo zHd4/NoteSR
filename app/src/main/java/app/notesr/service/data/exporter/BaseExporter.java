@@ -6,11 +6,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 @Getter(AccessLevel.PACKAGE)
-abstract class Exporter {
+abstract class BaseExporter {
     private final ExportThread thread;
     private long exported = 0;
 
-    Exporter(ExportThread thread) {
+    BaseExporter(ExportThread thread) {
         this.thread = thread;
     }
 

@@ -9,7 +9,7 @@ import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.model.DataBlock;
 import app.notesr.util.FilesUtils;
 
-class FilesDataExporter extends Exporter {
+class FilesDataExporter extends BaseExporter {
     private final File outputDir;
     private final DataBlockTable dataBlockTable;
 

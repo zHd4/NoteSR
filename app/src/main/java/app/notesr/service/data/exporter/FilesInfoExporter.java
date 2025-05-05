@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-class FilesInfoExporter extends Exporter {
+class FilesInfoExporter extends BaseExporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
