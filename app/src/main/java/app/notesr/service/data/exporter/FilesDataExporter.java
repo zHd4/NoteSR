@@ -34,7 +34,7 @@ class FilesDataExporter extends BaseExporter {
             DataBlock dataBlock = dataBlockTable.get(blockWithoutData.getId());
             byte[] data = FileCrypt.decryptData(dataBlock.getData());
 
-            FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId().toString()), data);
+            FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId()), data);
 
             increaseExported();
             getThread().breakOnInterrupted();
