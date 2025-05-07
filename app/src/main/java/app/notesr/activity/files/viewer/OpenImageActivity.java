@@ -1,12 +1,14 @@
 package app.notesr.activity.files.viewer;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -21,8 +23,11 @@ import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerService;
 
 public class OpenImageActivity extends MediaFileViewerActivityBase {
+    private static final int MAX_IMAGE_SIZE = 4096;
+
     private ScaleGestureDetector scaleGestureDetector;
     private ImageView imageView;
+    private TextView errorMessageTextView;
     private File imageFile;
 
     @Override
@@ -31,8 +36,8 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
         setContentView(R.layout.activity_open_image);
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
         imageView = findViewById(R.id.assignedImageView);
+        errorMessageTextView = findViewById(R.id.errorMessageTextView);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(imageView));
 
         loadImage();
@@ -52,10 +57,6 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
         AlertDialog progressDialog = builder.create();
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        TempFileTable tempFileTable = App.getAppContainer()
-                .getServicesDB()
-                .getTable(TempFileTable.class);
-
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
             imageFile = dropToCache(fileInfo);
@@ -67,11 +68,33 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
             runOnUiThread(progressDialog::dismiss);
             runOnUiThread(() -> {
                 Uri imageUri = Uri.parse(imageFile.getAbsolutePath());
-                TempFile imageFile = new TempFile(imageUri);
 
-                tempFileTable.save(imageFile);
-                imageView.setImageURI(imageUri);
+                TempFileTable tempFileTable = App.getAppContainer()
+                        .getServicesDB()
+                        .getTable(TempFileTable.class);
+
+                TempFile tempImageFile = new TempFile(imageUri);
+
+                tempFileTable.save(tempImageFile);
+
+                if (!isImageTooLarge(imageFile)) {
+                    imageView.setImageURI(imageUri);
+                } else {
+                    errorMessageTextView.setText(getString(R.string.image_is_too_large_to_open));
+                }
             });
         });
+    }
+
+    private boolean isImageTooLarge(File imageFile) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+        BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+
+        int width = options.outWidth;
+        int height = options.outHeight;
+
+        return width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE;
     }
 }
