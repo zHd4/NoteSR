@@ -1,61 +1,50 @@
 package app.notesr.util.thumbnail;
 
-import static java.util.UUID.randomUUID;
-
-import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.util.Log;
 
-import com.arthenica.ffmpegkit.FFmpegKit;
-import com.arthenica.ffmpegkit.FFmpegSession;
-import com.arthenica.ffmpegkit.ReturnCode;
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
-import app.notesr.util.Wiper;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public class VideoThumbnailCreator implements ThumbnailCreator {
     private static final String TAG = VideoThumbnailCreator.class.getName();
-
-    public static final int WIDTH = 100;
-    public static final int QUALITY = 5;
-    public static final String THUMBNAIL_FORMAT = "webp";
-
-    private final Context context;
+    private static final Bitmap.CompressFormat THUMBNAIL_FORMAT = Bitmap.CompressFormat.WEBP;
+    private static final int TIME_US = 1;
+    private static final int QUALITY = 90;
+    private static final int WIDTH = 200;
 
     @Override
     public byte[] getThumbnail(File file) {
-        String tempThumbnailFileName = randomUUID().toString() + "." + THUMBNAIL_FORMAT;
-        File tempThumbnailFile = new File(context.getCacheDir(), tempThumbnailFileName);
+        try (MediaMetadataRetriever retriever = new MediaMetadataRetriever()) {
+            retriever.setDataSource(file.getAbsolutePath());
+            Bitmap original = retriever.getFrameAtTime(TIME_US);
 
-        String command = "-i " + file.getAbsolutePath() + " -ss 00:00:01 -vframes 1 -vf scale="
-                + WIDTH + ":-1 -q:v " + QUALITY + " " + tempThumbnailFile.getAbsolutePath();
+            if (original == null) return null;
 
-        Log.i(TAG, "Command: " + command);
-        FFmpegSession session = FFmpegKit.execute(command);
+            int width = original.getWidth();
+            int height = original.getHeight();
 
-        if (ReturnCode.isSuccess(session.getReturnCode())) {
-            try {
-                byte[] thumbnailBytes = new byte[(int) tempThumbnailFile.length()];
+            if (width > WIDTH) {
+                float scale = (float) WIDTH / width;
+                int newHeight = Math.round(height * scale);
 
-                try (FileInputStream inputStream = new FileInputStream(tempThumbnailFile)) {
-                    inputStream.read(thumbnailBytes);
-                }
+                Bitmap scaled = Bitmap.createScaledBitmap(original, WIDTH, newHeight, true);
 
-                Wiper.wipeFile(tempThumbnailFile);
-
-                return thumbnailBytes;
-            } catch (IOException e) {
-                Log.e(TAG, "IOException", e);
-                throw new RuntimeException(e);
+                original.recycle();
+                original = scaled;
             }
-        } else {
-            Log.e(TAG, "FFmpeg error: " + session.getFailStackTrace());
-        }
 
-        return null;
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            original.compress(THUMBNAIL_FORMAT, QUALITY, stream);
+            retriever.release();
+
+            return stream.toByteArray();
+        } catch (IOException e) {
+            Log.e(TAG, "IOException", e);
+            throw new RuntimeException(e);
+        }
     }
 }

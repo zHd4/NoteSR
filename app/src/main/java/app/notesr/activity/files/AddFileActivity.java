@@ -200,7 +200,7 @@ public class AddFileActivity extends ExtendedAppCompatActivity {
             if (type.equals("image")) {
                 creator = new ImageThumbnailCreator();
             } else if (type.equals("video")) {
-                creator = new VideoThumbnailCreator(getApplicationContext());
+                creator = new VideoThumbnailCreator();
             } else {
                 return null;
             }

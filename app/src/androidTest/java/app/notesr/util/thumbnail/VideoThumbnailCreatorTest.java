@@ -3,8 +3,6 @@ package app.notesr.util.thumbnail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import android.content.Context;
-
 import org.junit.Test;
 
 import java.io.File;
@@ -12,25 +10,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import app.notesr.App;
-
 public class VideoThumbnailCreatorTest extends ThumbnailCreatorTestBase {
+    private static final int EXPECTED_WIDTH = 200;
+
     @Test
     public void testGetThumbnail() throws IOException {
         File videoFile = getFixture("test_video.mp4");
         File thumbnailFile = File.createTempFile("thumbnail", "");
 
-        Context context = App.getContext();
-        VideoThumbnailCreator thumbnailCreator = new VideoThumbnailCreator(context);
+        VideoThumbnailCreator thumbnailCreator = new VideoThumbnailCreator();
 
         byte[] thumbnailBytes = thumbnailCreator.getThumbnail(videoFile);
         assertNotNull("Thumbnail creator returned null", thumbnailBytes);
 
         Files.write(Path.of(thumbnailFile.getAbsolutePath()), thumbnailBytes);
 
-        int expectedWidth = VideoThumbnailCreator.WIDTH;
         int actualWidth = getImageSize(thumbnailFile).getWidth();
 
-        assertEquals("Unexpected thumbnail width", expectedWidth, actualWidth);
+        assertEquals("Unexpected thumbnail width", EXPECTED_WIDTH, actualWidth);
     }
 }

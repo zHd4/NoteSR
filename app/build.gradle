@@ -98,7 +98,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
     implementation 'org.projectlombok:lombok:1.18.32'
-    implementation 'com.arthenica:ffmpeg-kit-full:6.0-2'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.11.4'

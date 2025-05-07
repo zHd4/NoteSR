@@ -22,7 +22,7 @@ public class MediaFileViewerActivityBase extends FileViewerActivityBase {
         if (type.equals("image")) {
             creator = new ImageThumbnailCreator();
         } else if (type.equals("video")) {
-            creator = new VideoThumbnailCreator(getApplicationContext());
+            creator = new VideoThumbnailCreator();
         } else {
             throw new RuntimeException("Unexpected media file type: " + type);
         }
