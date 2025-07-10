@@ -2,28 +2,62 @@
   <img alt="NoteSR" src=".images/notesr-icon-512x512.png" width="192" height="192">
 </p>
 
-<h1 align="center" style="margin: 0; padding: 0;">NoteSR</h1>
-<h3 align="center" style="margin: 0; padding: 0;">The best security for your notes</h3>
+<h1 align="center" style="padding: 0;">NoteSR</h1>
+<h3 align="center" style="padding: 0;">The best security for your notes</h3>
 
 <p align="center">
+    <a href="https://github.com/zHd4/NoteSR/releases"><img src="https://img.shields.io/github/v/release/zHd4/NoteSR" /></a>
     <a href="https://github.com/zHd4/NoteSR/actions/workflows/java_ci.yml"><img src="https://github.com/zHd4/NoteSR/actions/workflows/java_ci.yml/badge.svg" /></a>
     <a href="https://codeclimate.com/github/zHd4/NoteSR/maintainability"><img src="https://api.codeclimate.com/v1/badges/5ea743b7a5adc15c9450/maintainability" /></a>
 </p>
 
-<p align="center">NoteSR is an application for securely storing information.
-It is also a note-taking application, and all data is encrypted using the AES-256 symmetric encryption algorithm.</p>
+**NoteSR** is a secure and offline-first note-taking Android app that creates an encrypted storage space on your device. You can write text notes, attach any type of file to them, and open files directly inside the app — all fully encrypted using AES-256.
 
-<div align="center">
-    <h2 style="">Download</h2>
-    <span>Lastest version: <a href="(https://github.com/zHd4/NoteSR/releases/tag/5.1">5.1</a></span>
-    <a href="https://github.com/zHd4/NoteSR/releases/download/5.1/NoteSR_v5.1.apk">Download APK</a>
-</div>
+---
 
-<h1></h1>
+## 📦 Download
 
-<div align="center" style="margin-top: 50px;">
-    <div>
-        <img alt="Notes list screenshot" src=".images/notes.jpg" width="350" height="797">
-        <img alt="New note screenshot" src=".images/new-note.jpg" width="350" height="797">
-    </div>
-</div>
+**Latest version:** [v5.1.0](https://github.com/zHd4/NoteSR/releases/tag/5.1.0)  
+You can download the APK from the [Releases page](https://github.com/zHd4/NoteSR/releases).
+
+---
+
+## ✨ Features
+
+- 🔐 **AES-256 encryption** — all data is encrypted and stored locally
+- 📝 **Text notes** with optional file attachments
+- 📂 **Built-in file viewer** — open attached files directly in the app
+- 🚫 **No cloud**, no account — 100% offline & private
+- 📁 Works with basic files types — images, videos, text files
+- 🔄 **Encrypted export & import** — backup and restore your storage
+- 🖥️ **Cross-platform CLI tool** for working with encrypted backups: [NoteSR-Cli](https://github.com/zHd4/NoteSR-Cli)
+- 🧭 Simple and minimal interface
+
+---
+
+## 🔐 Privacy & Security
+
+NoteSR is built with privacy in mind:
+
+- All content is encrypted using **AES‑256**
+- Backups are also encrypted and can only be opened with your key
+- No data ever leaves your device without your intent
+
+> ✅ Ideal for journaling, personal records, secure attachments, and more
+
+---
+
+## 🚀 Getting Started
+
+### Install from APK
+
+1. Download the latest `.apk` from the [Releases page](https://github.com/zHd4/NoteSR/releases)
+2. Enable installation from unknown sources on your device
+3. Install and start using NoteSR
+
+### Build from source
+
+```bash
+git clone https://github.com/zHd4/NoteSR.git
+cd NoteSR
+./gradlew assembleRelease
