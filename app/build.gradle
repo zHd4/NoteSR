@@ -84,12 +84,18 @@ tasks.register('jacocoTestReport', JacocoReport) {
             '**/*_Factory*.*', '**/*_Provide*.*', '**/*Extensions*.*'
     ]
 
-    def javaClasses = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: fileFilter)
-    def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def javaClasses = fileTree(dir:
+            layout.buildDirectory.dir('intermediates/javac/debug/classes').get().asFile,
+            excludes: fileFilter)
+
+    def kotlinClasses = fileTree(dir:
+            layout.buildDirectory.dir('tmp/kotlin-classes/debug').get().asFile,
+            excludes: fileFilter)
 
     sourceDirectories.setFrom(files(["src/main/java"]))
     classDirectories.setFrom(files([javaClasses, kotlinClasses]))
-    executionData.setFrom(fileTree(dir: buildDir, includes: ["**/*.exec", "**/*.ec"]))
+    executionData.setFrom(fileTree(dir: layout.buildDirectory.get().asFile,
+            includes: ["**/*.exec", "**/*.ec"]))
 }
 
 dependencies {
