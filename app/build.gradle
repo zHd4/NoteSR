@@ -9,12 +9,15 @@ android {
     namespace 'app.notesr'
     compileSdk 34
 
+    buildFeatures.buildConfig true
+
     defaultConfig {
         applicationId "app.notesr"
         minSdk 29
         targetSdk 34
         versionCode 51
         versionName "5.1.0"
+        buildConfigField "int", "DATA_SCHEMA_VERSION", "2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
