@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class NoteCrypt {
+public class NoteCryptor {
     public static EncryptedNote updateKey(EncryptedNote note, CryptoKey oldKey, CryptoKey newKey) {
         return encrypt(decrypt(note, oldKey), newKey);
     }

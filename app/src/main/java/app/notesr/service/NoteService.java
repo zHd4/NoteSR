@@ -1,6 +1,6 @@
 package app.notesr.service;
 
-import app.notesr.crypto.NoteCrypt;
+import app.notesr.crypto.NoteCryptor;
 import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.model.EncryptedNote;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class NoteService extends ServiceBase {
     public void save(Note note) {
-        EncryptedNote encryptedNote = NoteCrypt.encrypt(note);
+        EncryptedNote encryptedNote = NoteCryptor.encrypt(note);
         getNoteTable().save(encryptedNote);
     }
 
@@ -21,7 +21,7 @@ public class NoteService extends ServiceBase {
         return getNoteTable()
                 .getAll()
                 .stream()
-                .map(NoteCrypt::decrypt)
+                .map(NoteCryptor::decrypt)
                 .map(this::setDecimalId)
                 .collect(Collectors.toList());
     }
@@ -30,7 +30,7 @@ public class NoteService extends ServiceBase {
         EncryptedNote encryptedNote = getNoteTable().get(id);
 
         if (encryptedNote != null) {
-            Note note = NoteCrypt.decrypt(encryptedNote);
+            Note note = NoteCryptor.decrypt(encryptedNote);
             setDecimalId(note);
 
             return note;

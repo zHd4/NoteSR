@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
 
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCryptor;
-import app.notesr.crypto.NoteCrypt;
+import app.notesr.crypto.NoteCryptor;
 import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.db.notes.table.NoteTable;
@@ -80,7 +80,7 @@ public class NotesIntegrationTest {
         EncryptedNote encryptedActual = noteTable.get(testNote.getId());
         assertNotNull(encryptedActual);
 
-        Note actual = NoteCrypt.decrypt(encryptedActual, cryptoKey);
+        Note actual = NoteCryptor.decrypt(encryptedActual, cryptoKey);
 
         assertEquals(testNote.getName(), actual.getName());
         assertEquals(testNote.getText(), actual.getText());
@@ -98,12 +98,12 @@ public class NotesIntegrationTest {
         Note note = new Note(newName, newText);
         note.setId(testNote.getId());
 
-        noteTable.save(NoteCrypt.encrypt(note, cryptoKey));
+        noteTable.save(NoteCryptor.encrypt(note, cryptoKey));
 
         EncryptedNote encryptedActual = noteTable.get(testNote.getId());
         assertNotNull(encryptedActual);
 
-        Note actual = NoteCrypt.decrypt(encryptedActual, cryptoKey);
+        Note actual = NoteCryptor.decrypt(encryptedActual, cryptoKey);
 
         assertEquals(actual.getName(), note.getName());
         assertEquals(actual.getText(), note.getText());
@@ -156,7 +156,7 @@ public class NotesIntegrationTest {
     }
 
     private void saveTestNote() {
-        EncryptedNote encryptedNote = NoteCrypt.encrypt(testNote, cryptoKey);
+        EncryptedNote encryptedNote = NoteCryptor.encrypt(testNote, cryptoKey);
         noteTable.save(encryptedNote);
 
         testNote.setId(encryptedNote.getId());
