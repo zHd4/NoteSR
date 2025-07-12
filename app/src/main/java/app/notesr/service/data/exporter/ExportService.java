@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.crypto.BackupCrypt;
+import app.notesr.crypto.BackupCryptor;
 import app.notesr.service.ServiceBase;
 import app.notesr.service.data.TempDataWiper;
 import app.notesr.util.FilesUtils;
@@ -164,8 +164,8 @@ public class ExportService extends ServiceBase {
             FileInputStream inputStream = new FileInputStream(tempArchive);
             FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-            BackupCrypt backupCrypt = new BackupCrypt(inputStream, outputStream);
-            backupCrypt.encrypt();
+            BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream);
+            backupCryptor.encrypt();
         }
     }
 
