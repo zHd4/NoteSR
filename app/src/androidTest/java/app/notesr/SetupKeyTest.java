@@ -3,7 +3,7 @@ package app.notesr;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import app.notesr.crypto.Aes;
+import app.notesr.crypto.AesCryptor;
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.CryptoTools;
 import io.bloco.faker.Faker;
@@ -58,7 +58,7 @@ public class SetupKeyTest {
     @Test
     public void testCryptoKeyConvertation() throws Exception {
         SecretKey secretKey = new SecretKeySpec(TEST_KEY_BYTES, 0, TEST_KEY_BYTES.length,
-                Aes.KEY_GENERATOR_ALGORITHM);
+                AesCryptor.KEY_GENERATOR_ALGORITHM);
         CryptoKey cryptoKey = new CryptoKey(secretKey, TEST_SALT, testPassword);
 
         String actual = CryptoTools.cryptoKeyToHex(cryptoKey);

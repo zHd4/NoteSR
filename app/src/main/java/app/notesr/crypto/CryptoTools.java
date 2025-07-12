@@ -49,8 +49,8 @@ public class CryptoTools {
 
         byte[] bytes = new byte[hexArray.length];
 
-        byte[] keyBytes = new byte[Aes.KEY_SIZE / 8];
-        byte[] salt = new byte[Aes.SALT_SIZE];
+        byte[] keyBytes = new byte[AesCryptor.KEY_SIZE / 8];
+        byte[] salt = new byte[AesCryptor.SALT_SIZE];
 
         for (int i = 0; i < hexArray.length; i++) {
             String hexDigit = hexArray[i];

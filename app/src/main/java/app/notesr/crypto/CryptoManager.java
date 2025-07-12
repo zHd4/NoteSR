@@ -28,28 +28,28 @@ public class CryptoManager {
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
     private static final String HASHED_CRYPTO_KEY_FILENAME = "key.sha256";
     private static final String BLOCKED_FILENAME = ".blocked";
-    private static final int KEY_BYTES_COUNT = Aes.KEY_SIZE / 8;
+    private static final int KEY_BYTES_COUNT = AesCryptor.KEY_SIZE / 8;
     private CryptoKey cryptoKeyInstance;
 
     public boolean configure(String password) {
         try {
-            byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
-            Aes aesInstance = new Aes(password, secondarySalt);
+            byte[] secondarySalt = AesCryptor.generatePasswordBasedSalt(password);
+            AesCryptor aesCryptor = new AesCryptor(password, secondarySalt);
 
             byte[] encryptedKeyFileBytes = FilesUtils.readFileBytes(getEncryptedKeyFile());
-            byte[] keyFileBytes = aesInstance.decrypt(encryptedKeyFileBytes);
+            byte[] keyFileBytes = aesCryptor.decrypt(encryptedKeyFileBytes);
 
             byte[] mainKeyBytes = new byte[KEY_BYTES_COUNT];
-            byte[] mainSaltBytes = new byte[Aes.SALT_SIZE];
+            byte[] mainSaltBytes = new byte[AesCryptor.SALT_SIZE];
 
             System.arraycopy(keyFileBytes, 0, mainKeyBytes, 0,KEY_BYTES_COUNT);
-            System.arraycopy(keyFileBytes, KEY_BYTES_COUNT, mainSaltBytes, 0,Aes.SALT_SIZE);
+            System.arraycopy(keyFileBytes, KEY_BYTES_COUNT, mainSaltBytes, 0, AesCryptor.SALT_SIZE);
 
             SecretKey mainKey = new SecretKeySpec(
                     mainKeyBytes,
                     0,
                     mainKeyBytes.length,
-                    Aes.KEY_GENERATOR_ALGORITHM);
+                    AesCryptor.KEY_GENERATOR_ALGORITHM);
 
             cryptoKeyInstance = new CryptoKey(mainKey, mainSaltBytes, password);
 
@@ -81,8 +81,8 @@ public class CryptoManager {
     }
 
     public CryptoKey generateNewKey(String password) throws NoSuchAlgorithmException {
-        SecretKey mainKey = Aes.generateRandomKey();
-        byte[] mainSalt = Aes.generateRandomSalt();
+        SecretKey mainKey = AesCryptor.generateRandomKey();
+        byte[] mainSalt = AesCryptor.generateRandomSalt();
 
         return new CryptoKey(mainKey, mainSalt, password);
     }
@@ -90,7 +90,7 @@ public class CryptoManager {
     public CryptoKey createCryptoKey(byte[] keyBytes, byte[] salt, String password, boolean checkKey) throws
             Exception {
         SecretKey newKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
-                Aes.KEY_GENERATOR_ALGORITHM);
+                AesCryptor.KEY_GENERATOR_ALGORITHM);
         if (checkKey && !checkImportedKey(newKey, salt)) {
             throw new Exception("Wrong key");
         }
@@ -108,14 +108,14 @@ public class CryptoManager {
         byte[] mainKey = newKey.getKey().getEncoded();
         byte[] mainSalt = newKey.getSalt();
 
-        byte[] secondarySalt = Aes.generatePasswordBasedSalt(password);
-        byte[] keyFileData = new byte[KEY_BYTES_COUNT + Aes.SALT_SIZE];
+        byte[] secondarySalt = AesCryptor.generatePasswordBasedSalt(password);
+        byte[] keyFileData = new byte[KEY_BYTES_COUNT + AesCryptor.SALT_SIZE];
 
         System.arraycopy(mainKey, 0, keyFileData, 0, mainKey.length);
         System.arraycopy(mainSalt, 0, keyFileData, mainKey.length, mainSalt.length);
 
-        Aes aesInstance = new Aes(password, secondarySalt);
-        FilesUtils.writeFileBytes(getEncryptedKeyFile(), aesInstance.encrypt(keyFileData));
+        AesCryptor aesCryptor = new AesCryptor(password, secondarySalt);
+        FilesUtils.writeFileBytes(getEncryptedKeyFile(), aesCryptor.encrypt(keyFileData));
 
         cryptoKeyInstance = newKey;
         File blockFile = getBlockFile();
@@ -135,14 +135,14 @@ public class CryptoManager {
         File keyFile = getEncryptedKeyFile();
         String currentPassword = cryptoKeyInstance.getPassword();
 
-        byte[] currentSecondarySalt = Aes.generatePasswordBasedSalt(currentPassword);
-        byte[] newSecondarySalt = Aes.generatePasswordBasedSalt(newPassword);
+        byte[] currentSecondarySalt = AesCryptor.generatePasswordBasedSalt(currentPassword);
+        byte[] newSecondarySalt = AesCryptor.generatePasswordBasedSalt(newPassword);
 
-        Aes aesInstance = new Aes(currentPassword, currentSecondarySalt);
-        byte[] keyFileData = aesInstance.decrypt(FilesUtils.readFileBytes(keyFile));
+        AesCryptor aesCryptor = new AesCryptor(currentPassword, currentSecondarySalt);
+        byte[] keyFileData = aesCryptor.decrypt(FilesUtils.readFileBytes(keyFile));
 
-        aesInstance = new Aes(newPassword, newSecondarySalt);
-        FilesUtils.writeFileBytes(keyFile, aesInstance.encrypt(keyFileData));
+        aesCryptor = new AesCryptor(newPassword, newSecondarySalt);
+        FilesUtils.writeFileBytes(keyFile, aesCryptor.encrypt(keyFileData));
 
         cryptoKeyInstance = new CryptoKey(
                 cryptoKeyInstance.getKey(),

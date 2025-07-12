@@ -49,8 +49,8 @@ public class FileCrypt {
 
     public static byte[] encryptData(byte[] data, CryptoKey cryptoKey) {
         try {
-            Aes aes = new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
-            return aes.encrypt(data);
+            AesCryptor aesCryptor = new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
+            return aesCryptor.encrypt(data);
         } catch (Exception e) {
             Log.e("Cannot encrypt file data", e.toString());
             throw new RuntimeException(e);
@@ -59,8 +59,8 @@ public class FileCrypt {
 
     public static byte[] decryptData(byte[] data, CryptoKey cryptoKey) {
         try {
-            Aes aes = new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
-            return aes.decrypt(data);
+            AesCryptor aesCryptor = new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
+            return aesCryptor.decrypt(data);
         } catch (Exception e) {
             Log.e("Cannot decrypt file data", e.toString());
             throw new RuntimeException(e);
@@ -68,20 +68,20 @@ public class FileCrypt {
     }
 
     public static EncryptedFileInfo encryptInfo(FileInfo fileInfo, CryptoKey cryptoKey) {
-        Aes aes = new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
+        AesCryptor aesCryptor = new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
 
         try {
-            byte[] name = aes.encrypt(fileInfo.getName().getBytes(StandardCharsets.UTF_8));
+            byte[] name = aesCryptor.encrypt(fileInfo.getName().getBytes(StandardCharsets.UTF_8));
             byte[] type = null;
 
             if (fileInfo.getType() != null) {
-                type = aes.encrypt(fileInfo.getType().getBytes(StandardCharsets.UTF_8));
+                type = aesCryptor.encrypt(fileInfo.getType().getBytes(StandardCharsets.UTF_8));
             }
 
             byte[] thumbnail = null;
 
             if (fileInfo.getThumbnail() != null) {
-                thumbnail = aes.encrypt(fileInfo.getThumbnail());
+                thumbnail = aesCryptor.encrypt(fileInfo.getThumbnail());
             }
 
             return EncryptedFileInfo.builder()
@@ -101,24 +101,24 @@ public class FileCrypt {
     }
 
     public static FileInfo decryptInfo(EncryptedFileInfo encryptedFileInfo, CryptoKey cryptoKey) {
-        Aes aes = new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
+        AesCryptor aesCryptor = new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
 
         try {
             byte[] encryptedName = encryptedFileInfo.getEncryptedName();
-            String decryptedName = new String(aes.decrypt(encryptedName));
+            String decryptedName = new String(aesCryptor.decrypt(encryptedName));
 
             String decryptedType = null;
 
             if (encryptedFileInfo.getEncryptedType() != null) {
                 byte[] encryptedType = encryptedFileInfo.getEncryptedType();
-                decryptedType = new String(aes.decrypt(encryptedType));
+                decryptedType = new String(aesCryptor.decrypt(encryptedType));
             }
 
             byte[] decryptedThumbnail = null;
 
             if (encryptedFileInfo.getEncryptedThumbnail() != null) {
                 byte[] encryptedThumbnail = encryptedFileInfo.getEncryptedThumbnail();
-                decryptedThumbnail = aes.decrypt(encryptedThumbnail);
+                decryptedThumbnail = aesCryptor.decrypt(encryptedThumbnail);
             }
 
             return FileInfo.builder()

@@ -73,8 +73,8 @@ public class NoteCrypt {
         }
     }
 
-    private static Aes getAesInstance(CryptoKey cryptoKey) {
-        return new Aes(cryptoKey.getKey(), cryptoKey.getSalt());
+    private static AesCryptor getAesInstance(CryptoKey cryptoKey) {
+        return new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
     }
     
     private static CryptoManager getCryptoManager() {

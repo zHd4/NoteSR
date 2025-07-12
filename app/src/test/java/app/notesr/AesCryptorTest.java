@@ -1,6 +1,6 @@
 package app.notesr;
 
-import app.notesr.crypto.Aes;
+import app.notesr.crypto.AesCryptor;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-public class AesTest extends TestBase {
+public class AesCryptorTest extends TestBase {
     private static final String AVAILABLE_SYMBOLS = "0123456789qwertyuiopasdfghjklzxcvbnm";
     private static final int PASSWORD_LENGTH = 20;
     private static final int MIN_DATA_SIZE = 4096;
@@ -48,13 +48,13 @@ public class AesTest extends TestBase {
             NoSuchAlgorithmException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException,
             BadPaddingException, InvalidKeyException {
-        SecretKey key = Aes.generateRandomKey();
-        byte[] salt = Aes.generateRandomSalt();
+        SecretKey key = AesCryptor.generateRandomKey();
+        byte[] salt = AesCryptor.generateRandomSalt();
 
-        Aes aesInstance = new Aes(key, salt);
+        AesCryptor aesCryptor = new AesCryptor(key, salt);
 
-        byte[] actualEncryptedData = aesInstance.encrypt(plainData);
-        byte[] actualDecryptedData = aesInstance.decrypt(actualEncryptedData);
+        byte[] actualEncryptedData = aesCryptor.encrypt(plainData);
+        byte[] actualDecryptedData = aesCryptor.decrypt(actualEncryptedData);
 
         Assertions.assertArrayEquals(plainData, actualDecryptedData);
     }
@@ -64,11 +64,11 @@ public class AesTest extends TestBase {
             NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException,
             IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        byte[] salt = Aes.generateRandomSalt();
-        Aes aesInstance = new Aes(password, salt);
+        byte[] salt = AesCryptor.generateRandomSalt();
+        AesCryptor aesCryptor = new AesCryptor(password, salt);
 
-        byte[] actualEncryptedData = aesInstance.encrypt(plainData);
-        byte[] actualDecryptedData = aesInstance.decrypt(actualEncryptedData);
+        byte[] actualEncryptedData = aesCryptor.encrypt(plainData);
+        byte[] actualDecryptedData = aesCryptor.decrypt(actualEncryptedData);
 
         Assertions.assertArrayEquals(plainData, actualDecryptedData);
     }

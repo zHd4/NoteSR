@@ -19,7 +19,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
-public class Aes {
+public class AesCryptor {
     public static final int KEY_SIZE = 256;
     public static final int SALT_SIZE = 16;
     private static final int DEFAULT_ITERATION_COUNT = 65536;
@@ -30,12 +30,12 @@ public class Aes {
     private final SecretKey key;
     private final byte[] salt;
 
-    public Aes(SecretKey key, byte[] salt) {
+    public AesCryptor(SecretKey key, byte[] salt) {
         this.key = key;
         this.salt = salt;
     }
 
-    public Aes(String password, byte[] salt) throws
+    public AesCryptor(String password, byte[] salt) throws
             NoSuchAlgorithmException, InvalidKeySpecException {
         this.salt = salt;
         this.key = generatePasswordBasedKey(password, salt);
