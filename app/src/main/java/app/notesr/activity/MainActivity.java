@@ -3,6 +3,9 @@ package app.notesr.activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.data.ExportActivity;
@@ -22,34 +25,48 @@ public class MainActivity extends ExtendedAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        App context = App.getContext();
         CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
 
-        Intent intent;
+        List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(context, cryptoManager);
+        Intent defaultIntent = new Intent(context, NoteListActivity.class);
 
-        if (cryptoManager.isFirstRun()) {
-            intent = new Intent(this, StartActivity.class);
-
-        } else if (cryptoManager.isBlocked()) {
-            intent = new Intent(this, KeyRecoveryActivity.class);
-
-        } else if (App.getContext().isServiceRunning(ExportService.class)) {
-            intent = new Intent(this, ExportActivity.class);
-
-        } else if (App.getContext().isServiceRunning(ImportService.class)) {
-            intent = new Intent(this, ImportActivity.class);
-
-        } else if (App.getContext().isServiceRunning(ReEncryptionService.class)) {
-            intent = new Intent(this, ReEncryptionActivity.class);
-
-        } else if (!cryptoManager.ready()) {
-            intent = new Intent(this, AuthActivity.class);
-            intent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
-
-        } else {
-            intent = new Intent(this, NoteListActivity.class);
-        }
-
-        startActivity(intent);
+        startActivity(new StartupIntentResolver(intentSuppliers, defaultIntent).resolve());
         finish();
+    }
+
+    private List<Supplier<Intent>> getIntentSuppliers(App context, CryptoManager cryptoManager) {
+        return List.of(
+                () -> cryptoManager.isFirstRun()
+                        ? new Intent(context, StartActivity.class)
+                        : null,
+
+                () -> cryptoManager.isBlocked()
+                        ? new Intent(context, KeyRecoveryActivity.class)
+                        : null,
+
+                () -> context.isServiceRunning(ExportService.class)
+                        ? new Intent(context, ExportActivity.class)
+                        : null,
+
+                () -> context.isServiceRunning(ImportService.class)
+                        ? new Intent(context, ImportActivity.class)
+                        : null,
+
+                () -> context.isServiceRunning(ReEncryptionService.class)
+                        ? new Intent(context, ReEncryptionActivity.class)
+                        : null,
+
+                () -> {
+                    if (!cryptoManager.ready()) {
+                        Intent intent = new Intent(context, AuthActivity.class);
+                        intent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
+
+                        return intent;
+                    }
+
+                    return null;
+                }
+        );
     }
 }
