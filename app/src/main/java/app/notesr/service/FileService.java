@@ -1,7 +1,7 @@
 package app.notesr.service;
 
 import app.notesr.App;
-import app.notesr.crypto.FileCrypt;
+import app.notesr.crypto.FileCryptor;
 import app.notesr.db.notes.NotesDB;
 import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FileInfoTable;
@@ -35,14 +35,14 @@ public class FileService extends ServiceBase {
     public List<FileInfo> getFilesInfo(String noteId) {
         List<EncryptedFileInfo> encryptedFilesInfo = getFileInfoTable().getByNoteId(noteId);
 
-        return FileCrypt.decryptInfo(encryptedFilesInfo).stream()
+        return FileCryptor.decryptInfo(encryptedFilesInfo).stream()
                 .map(this::setDecimalId)
                 .collect(Collectors.toList());
     }
 
     public FileInfo getInfo(String fileId) {
         EncryptedFileInfo encryptedFileInfo = getFileInfoTable().get(fileId);
-        return setDecimalId(FileCrypt.decryptInfo(encryptedFileInfo));
+        return setDecimalId(FileCryptor.decryptInfo(encryptedFileInfo));
     }
 
     public void save(FileInfo fileInfo, File dataSourceFile) throws IOException {
@@ -62,7 +62,7 @@ public class FileService extends ServiceBase {
     }
 
     public String saveInfo(FileInfo fileInfo) {
-        EncryptedFileInfo encryptedFileInfo = FileCrypt.encryptInfo(fileInfo);
+        EncryptedFileInfo encryptedFileInfo = FileCryptor.encryptInfo(fileInfo);
 
         getFileInfoTable().save(encryptedFileInfo);
         getNoteTable().markAsModified(encryptedFileInfo.getNoteId());
@@ -86,7 +86,7 @@ public class FileService extends ServiceBase {
                     chunk = subChunk;
                 }
 
-                chunk = FileCrypt.encryptData(chunk);
+                chunk = FileCryptor.encryptData(chunk);
 
                 DataBlock dataBlock = DataBlock.builder()
                         .fileId(fileId)
@@ -115,7 +115,7 @@ public class FileService extends ServiceBase {
 
         for (String id : ids) {
             DataBlock dataBlock = dataBlockTable.get(id);
-            byte[] blockData = FileCrypt.decryptData(dataBlock.getData());
+            byte[] blockData = FileCryptor.decryptData(dataBlock.getData());
 
             System.arraycopy(blockData, 0, data, readBytes, blockData.length);
             readBytes += blockData.length;
@@ -132,7 +132,7 @@ public class FileService extends ServiceBase {
 
         for (String id : ids) {
             DataBlock dataBlock = dataBlockTable.get(id);
-            byte[] data = FileCrypt.decryptData(dataBlock.getData());
+            byte[] data = FileCryptor.decryptData(dataBlock.getData());
 
             actionPerChunk.accept(data);
             readBytes += data.length;

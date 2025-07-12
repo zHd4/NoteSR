@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import app.notesr.crypto.FileCrypt;
+import app.notesr.crypto.FileCryptor;
 import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.model.DataBlock;
 import app.notesr.util.FilesUtils;
@@ -32,7 +32,7 @@ class FilesDataExporter extends BaseExporter {
 
         for (DataBlock blockWithoutData : dataBlocksWithoutData) {
             DataBlock dataBlock = dataBlockTable.get(blockWithoutData.getId());
-            byte[] data = FileCrypt.decryptData(dataBlock.getData());
+            byte[] data = FileCryptor.decryptData(dataBlock.getData());
 
             FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId()), data);
 

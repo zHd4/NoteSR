@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import app.notesr.dto.CryptoKey;
-import app.notesr.crypto.FileCrypt;
+import app.notesr.crypto.FileCryptor;
 import app.notesr.crypto.NoteCrypt;
 import app.notesr.db.notes.table.DataBlockTable;
 import app.notesr.db.notes.table.FileInfoTable;
@@ -127,7 +127,7 @@ public class NotesIntegrationTest {
         fileInfo.setSize(fileSize);
         fileInfo.setName(fileName);
 
-        EncryptedFileInfo encryptedFileInfo = FileCrypt.encryptInfo(fileInfo, cryptoKey);
+        EncryptedFileInfo encryptedFileInfo = FileCryptor.encryptInfo(fileInfo, cryptoKey);
         fileInfoTable.save(encryptedFileInfo);
 
         DataBlock dataBlock = DataBlock.builder()
