@@ -27,7 +27,7 @@ import java.util.Objects;
 public class CacheCleanerService extends Service implements Runnable {
 
     private static final String TAG = CacheCleanerService.class.getName();
-    private static final String CHANNEL_ID = "CacheCleanerChannel";
+    private static final String CHANNEL_ID = "cache_cleaner_service_channel";
     private static final int DELAY = 2000;
 
     private final Map<TempFile, Thread> runningJobs = new LinkedHashMap<>();
