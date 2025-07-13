@@ -131,7 +131,7 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.android.ImportService"
+            android:name=".service.android.ImportAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service

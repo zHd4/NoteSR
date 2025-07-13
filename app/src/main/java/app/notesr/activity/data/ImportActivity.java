@@ -24,7 +24,7 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.service.data.importer.ImportResult;
-import app.notesr.service.android.ImportService;
+import app.notesr.service.android.ImportAndroidService;
 import app.notesr.util.FileExifDataResolver;
 
 public class ImportActivity extends ExtendedAppCompatActivity {
@@ -51,7 +51,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
         assert actionBar != null;
 
         LocalBroadcastManager.getInstance(this)
-                .registerReceiver(dataReceiver(), new IntentFilter(ImportService.BROADCAST_ACTION));
+                .registerReceiver(dataReceiver(), new IntentFilter(ImportAndroidService.BROADCAST_ACTION));
 
         boolean importRunning = isImportRunning();
 
@@ -213,13 +213,13 @@ public class ImportActivity extends ExtendedAppCompatActivity {
     }
 
     private void startImport() {
-        Intent intent = new Intent(this, ImportService.class)
+        Intent intent = new Intent(this, ImportAndroidService.class)
                 .setData(selectedFileUri);
 
         startForegroundService(intent);
     }
 
     private boolean isImportRunning() {
-        return App.getContext().isServiceRunning(ImportService.class);
+        return App.getContext().isServiceRunning(ImportAndroidService.class);
     }
 }

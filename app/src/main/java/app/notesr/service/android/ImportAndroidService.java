@@ -23,9 +23,9 @@ import app.notesr.service.data.importer.ImportResult;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class ImportService extends Service implements Runnable {
+public class ImportAndroidService extends Service implements Runnable {
 
-    private static final String TAG = ImportService.class.getName();
+    private static final String TAG = ImportAndroidService.class.getName();
     public static final String BROADCAST_ACTION = "import_data_broadcast";
     private static final String CHANNEL_ID = "import_service_channel";
     private static final int LOOP_DELAY = 100;
