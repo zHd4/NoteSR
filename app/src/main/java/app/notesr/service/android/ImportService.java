@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 public class ImportService extends Service implements Runnable {
 
     private static final String TAG = ImportService.class.getName();
+    public static final String BROADCAST_ACTION = "import_data_broadcast";
     private static final String CHANNEL_ID = "ImportChannel";
     private static final int LOOP_DELAY = 100;
 
@@ -64,7 +65,7 @@ public class ImportService extends Service implements Runnable {
     }
 
     private void sendBroadcastData(String status, ImportResult result) {
-        Intent intent = new Intent("importDataBroadcast")
+        Intent intent = new Intent(BROADCAST_ACTION)
                 .putExtra("status", status)
                 .putExtra("result", result.toString());
 

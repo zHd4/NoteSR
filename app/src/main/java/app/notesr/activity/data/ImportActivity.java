@@ -51,7 +51,7 @@ public class ImportActivity extends ExtendedAppCompatActivity {
         assert actionBar != null;
 
         LocalBroadcastManager.getInstance(this)
-                .registerReceiver(dataReceiver(), new IntentFilter("importDataBroadcast"));
+                .registerReceiver(dataReceiver(), new IntentFilter(ImportService.BROADCAST_ACTION));
 
         boolean importRunning = isImportRunning();
 
