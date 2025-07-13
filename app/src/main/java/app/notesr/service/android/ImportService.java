@@ -27,7 +27,7 @@ public class ImportService extends Service implements Runnable {
 
     private static final String TAG = ImportService.class.getName();
     public static final String BROADCAST_ACTION = "import_data_broadcast";
-    private static final String CHANNEL_ID = "ImportChannel";
+    private static final String CHANNEL_ID = "import_service_channel";
     private static final int LOOP_DELAY = 100;
 
     private final ServiceHandler<MainImportService> mainImportServiceHandler =
