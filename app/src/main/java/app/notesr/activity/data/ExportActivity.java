@@ -33,8 +33,8 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         actionBar = getSupportActionBar();
         assert actionBar != null;
 
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(dataReceiver(), new IntentFilter("ExportDataBroadcast"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(dataReceiver(),
+                new IntentFilter(ExportService.EXPORT_DATA_BROADCAST));
 
         startStopButton = findViewById(R.id.startStopExportButton);
         startStopButton.setOnClickListener(startStopButtonOnClick());
@@ -149,7 +149,8 @@ public class ExportActivity extends ExtendedAppCompatActivity {
     }
 
     private void cancelExport() {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("CancelExportSignal"));
+        LocalBroadcastManager.getInstance(this)
+                .sendBroadcast(new Intent(ExportService.CANCEL_EXPORT_SIGNAL));
     }
 
     private long getNotesCount() {

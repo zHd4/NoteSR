@@ -28,7 +28,9 @@ import java.time.format.DateTimeFormatter;
 
 public class ExportService extends Service implements Runnable {
     private static final String TAG = ExportService.class.getName();
-    private static final String CHANNEL_ID = "ExportChannel";
+    public static final String EXPORT_DATA_BROADCAST = "export_data_broadcast";
+    public static final String CANCEL_EXPORT_SIGNAL = "cancel_export_signal";
+    private static final String CHANNEL_ID = "export_service_channel";
     private static final int BROADCAST_DELAY = 100;
 
     private Thread cancelThread;
@@ -88,7 +90,7 @@ public class ExportService extends Service implements Runnable {
     }
 
     private void sendBroadcastData(int progress, String status, String outputPath, boolean canceled) {
-        Intent intent = new Intent("ExportDataBroadcast")
+        Intent intent = new Intent(EXPORT_DATA_BROADCAST)
                 .putExtra("progress", progress)
                 .putExtra("status", status)
                 .putExtra("outputPath", outputPath)
@@ -114,7 +116,7 @@ public class ExportService extends Service implements Runnable {
                             cancelThread.start();
                         }
                     }
-                }, new IntentFilter("CancelExportSignal"));
+                }, new IntentFilter(CANCEL_EXPORT_SIGNAL));
     }
 
     private File getOutputFile(String dirPath) {
