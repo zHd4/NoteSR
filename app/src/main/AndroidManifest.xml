@@ -116,6 +116,11 @@
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.data.MigrationActivity"
+            android:exported="false"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".service.android.CacheCleanerService"
