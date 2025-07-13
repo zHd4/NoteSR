@@ -123,7 +123,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".service.android.CacheCleanerService"
+            android:name=".service.android.CacheCleanerAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service

@@ -17,7 +17,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.db.service.table.TempFileTable;
 import app.notesr.model.TempFile;
-import app.notesr.service.android.CacheCleanerService;
+import app.notesr.service.android.CacheCleanerAndroidService;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -52,7 +52,7 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
             label.setVisibility(View.INVISIBLE);
 
             loadVideo();
-            startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
+            startForegroundService(new Intent(getApplicationContext(), CacheCleanerAndroidService.class));
 
             playing = true;
         } else {

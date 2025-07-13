@@ -20,7 +20,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.db.service.table.TempFileTable;
 import app.notesr.model.TempFile;
-import app.notesr.service.android.CacheCleanerService;
+import app.notesr.service.android.CacheCleanerAndroidService;
 
 public class OpenImageActivity extends MediaFileViewerActivityBase {
     private static final int MAX_IMAGE_SIZE = 4096;
@@ -41,7 +41,7 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(imageView));
 
         loadImage();
-        startForegroundService(new Intent(getApplicationContext(), CacheCleanerService.class));
+        startForegroundService(new Intent(getApplicationContext(), CacheCleanerAndroidService.class));
     }
 
     @Override

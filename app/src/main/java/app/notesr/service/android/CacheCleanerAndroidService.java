@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class CacheCleanerService extends Service implements Runnable {
+public class CacheCleanerAndroidService extends Service implements Runnable {
 
-    private static final String TAG = CacheCleanerService.class.getName();
+    private static final String TAG = CacheCleanerAndroidService.class.getName();
     private static final String CHANNEL_ID = "cache_cleaner_service_channel";
     private static final int DELAY = 2000;
 
