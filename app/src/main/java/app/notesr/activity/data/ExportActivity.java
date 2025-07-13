@@ -18,7 +18,7 @@ import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.db.notes.table.NoteTable;
-import app.notesr.service.android.ExportService;
+import app.notesr.service.android.ExportAndroidService;
 
 public class ExportActivity extends ExtendedAppCompatActivity {
 
@@ -34,7 +34,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
         assert actionBar != null;
 
         LocalBroadcastManager.getInstance(this).registerReceiver(dataReceiver(),
-                new IntentFilter(ExportService.EXPORT_DATA_BROADCAST));
+                new IntentFilter(ExportAndroidService.EXPORT_DATA_BROADCAST));
 
         startStopButton = findViewById(R.id.startStopExportButton);
         startStopButton.setOnClickListener(startStopButtonOnClick());
@@ -71,7 +71,7 @@ public class ExportActivity extends ExtendedAppCompatActivity {
                 actionBar.setTitle(getString(R.string.exporting));
 
                 disableBackButton();
-                startForegroundService(new Intent(this, ExportService.class));
+                startForegroundService(new Intent(this, ExportAndroidService.class));
 
                 setCancelButton();
             } else {
@@ -145,12 +145,12 @@ public class ExportActivity extends ExtendedAppCompatActivity {
     }
 
     private boolean exportRunning() {
-        return App.getContext().isServiceRunning(ExportService.class);
+        return App.getContext().isServiceRunning(ExportAndroidService.class);
     }
 
     private void cancelExport() {
         LocalBroadcastManager.getInstance(this)
-                .sendBroadcast(new Intent(ExportService.CANCEL_EXPORT_SIGNAL));
+                .sendBroadcast(new Intent(ExportAndroidService.CANCEL_EXPORT_SIGNAL));
     }
 
     private long getNotesCount() {

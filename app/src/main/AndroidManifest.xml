@@ -127,7 +127,7 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.android.ExportService"
+            android:name=".service.android.ExportAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service

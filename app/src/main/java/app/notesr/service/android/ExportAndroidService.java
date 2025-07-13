@@ -19,6 +19,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.R;
 import app.notesr.service.data.exporter.ExportResult;
+import app.notesr.service.data.exporter.ExportService;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -26,8 +27,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ExportService extends Service implements Runnable {
-    private static final String TAG = ExportService.class.getName();
+public class ExportAndroidService extends Service implements Runnable {
+    private static final String TAG = ExportAndroidService.class.getName();
     public static final String EXPORT_DATA_BROADCAST = "export_data_broadcast";
     public static final String CANCEL_EXPORT_SIGNAL = "cancel_export_signal";
     private static final String CHANNEL_ID = "export_service_channel";
@@ -49,7 +50,7 @@ public class ExportService extends Service implements Runnable {
         File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
-        exportService = new app.notesr.service.data.exporter.ExportService(context, outputFile);
+        exportService = new ExportService(context, outputFile);
 
         exportService.start();
 
