@@ -24,10 +24,10 @@ import app.notesr.service.activity.security.KeyUpdateService;
 
 public class ReEncryptionService extends Service implements Runnable {
 
-    public static final String BROADCAST_ACTION = "ReEncryptionServiceDataBroadcast";
+    public static final String BROADCAST_ACTION = "re_encryption_service_data_broadcast";
 
     private static final String TAG = ReEncryptionService.class.getName();
-    private static final String CHANNEL_ID = "ReEncryptionChannel";
+    private static final String CHANNEL_ID = "re_encryption_channel";
     private static final int LOOP_DELAY = 100;
 
     private final ServiceHandler<KeyUpdateService> keyUpdateServiceServiceHandler =
