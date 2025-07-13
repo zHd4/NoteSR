@@ -135,7 +135,7 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.android.ReEncryptionService"
+            android:name=".service.android.ReEncryptionAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
     </application>

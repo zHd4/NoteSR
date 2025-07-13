@@ -13,7 +13,7 @@ import app.notesr.R;
 import app.notesr.activity.ExtendedAppCompatActivity;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.dto.CryptoKey;
-import app.notesr.service.android.ReEncryptionService;
+import app.notesr.service.android.ReEncryptionAndroidService;
 
 public class ReEncryptionActivity extends ExtendedAppCompatActivity {
 
@@ -30,10 +30,10 @@ public class ReEncryptionActivity extends ExtendedAppCompatActivity {
         CryptoKey newCryptoKey = (CryptoKey) getIntent().getSerializableExtra("newCryptoKey");
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver(),
-                new IntentFilter(ReEncryptionService.BROADCAST_ACTION));
+                new IntentFilter(ReEncryptionAndroidService.BROADCAST_ACTION));
 
         if (newCryptoKey != null) {
-            Intent serviceIntent = new Intent(this, ReEncryptionService.class)
+            Intent serviceIntent = new Intent(this, ReEncryptionAndroidService.class)
                     .putExtra("newCryptoKey", newCryptoKey);
 
             startForegroundService(serviceIntent);
