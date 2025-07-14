@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.notesr.App;
-import app.notesr.BuildConfig;
-import app.notesr.activity.data.MigrationActivity;
 import app.notesr.R;
 import app.notesr.activity.data.ExportActivity;
 import app.notesr.activity.data.ImportActivity;
@@ -20,7 +18,6 @@ import app.notesr.crypto.CryptoManager;
 import app.notesr.service.android.ExportAndroidService;
 import app.notesr.service.android.ImportAndroidService;
 import app.notesr.service.android.ReEncryptionAndroidService;
-import app.notesr.service.migration.DataVersionManager;
 
 public class MainActivity extends ExtendedAppCompatActivity {
     @Override
