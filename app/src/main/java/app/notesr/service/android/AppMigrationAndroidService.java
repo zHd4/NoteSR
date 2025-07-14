@@ -35,8 +35,6 @@ public class AppMigrationAndroidService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        appMigrationService = new AppMigrationService(AppMigrationRegistry.getAllMigrations());
-
         String channelName = getResources().getString(R.string.updating);
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
                 NotificationManager.IMPORTANCE_NONE);
@@ -53,6 +51,10 @@ public class AppMigrationAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
+        appMigrationService = new AppMigrationService(AppMigrationRegistry.getAllMigrations());
+        Thread thread = new Thread(this);
+
+        thread.start();
         startForeground(startId, notification, type);
 
         return START_STICKY;
