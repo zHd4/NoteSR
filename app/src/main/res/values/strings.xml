@@ -55,6 +55,7 @@
     <string name="no_notes">No notes</string>
     <string name="change_access_code">Change access code</string>
     <string name="create_new_access_code">Create new access code</string>
+    <string name="updating">Updating…</string>
     <string name="updated">Updated!</string>
     <string name="generate_new_key">Generate new key</string>
     <string name="key_regeneration_warning">This action will cause all of your data to be re-encrypted.\nAre you sure?</string>

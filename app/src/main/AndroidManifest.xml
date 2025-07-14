@@ -138,6 +138,10 @@
             android:name=".service.android.ReEncryptionAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+        <service
+            android:name=".service.android.AppMigrationAndroidService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>
