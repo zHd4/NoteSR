@@ -1,14 +1,18 @@
 package app.notesr.activity.security;
 
+import android.content.Context;
 import android.content.Intent;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import app.notesr.App;
+import app.notesr.BuildConfig;
 import app.notesr.R;
+import app.notesr.activity.data.MigrationActivity;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.CryptoTools;
+import app.notesr.service.migration.DataVersionManager;
 
 public class AuthActivityExtension {
     private static final int MAX_ATTEMPTS = 3;
@@ -121,7 +125,17 @@ public class AuthActivityExtension {
         TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
         censoredPasswordView.setText("");
 
-        activity.startActivity(new Intent(App.getContext(), NoteListActivity.class));
+        Context context = activity.getApplicationContext();
+
+        int lastMigrationVersion = new DataVersionManager(context).getCurrentVersion();
+        int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
+
+        Intent nextActivityIntent = lastMigrationVersion < currentDataSchemaVersion
+                ? new Intent(context, MigrationActivity.class)
+                : new Intent(context, NoteListActivity.class);
+
+        activity.startActivity(nextActivityIntent);
+        activity.finish();
     }
 
     private void onIncorrectPassword() {
