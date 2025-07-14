@@ -29,39 +29,18 @@ public class AuthActivityExtension {
     public void authorize() {
         String password = passwordBuilder.toString();
 
-        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
-        TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
-
         if (password.isEmpty()) {
             String enterCodeMessage = activity.getString(R.string.enter_the_code);
             activity.showToastMessage(enterCodeMessage, Toast.LENGTH_SHORT);
             return;
         }
 
+        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
+
         if (!cryptoManager.configure(password)) {
-            attempts--;
-
-            if (attempts == 0) {
-                cryptoManager.block();
-
-                showToastMessage(R.string.blocked);
-                activity.startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
-            } else {
-                try {
-                    Thread.sleep(ON_WRONG_PASSWORD_DELAY_MS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                showToastMessage(String.format(
-                        activity.getString(R.string.wrong_code_you_have_n_attempts),
-                        attempts));
-            }
-
-            resetPassword();
+            onCorrectPassword();
         } else {
-            censoredPasswordView.setText("");
-            activity.startActivity(new Intent(App.getContext(), NoteListActivity.class));
+            onIncorrectPassword();
         }
     }
 
@@ -136,6 +115,37 @@ public class AuthActivityExtension {
 
         resetPassword();
         return null;
+    }
+
+    private void onCorrectPassword() {
+        TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
+        censoredPasswordView.setText("");
+
+        activity.startActivity(new Intent(App.getContext(), NoteListActivity.class));
+    }
+
+    private void onIncorrectPassword() {
+        attempts--;
+
+        if (attempts == 0) {
+            CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
+            cryptoManager.block();
+
+            showToastMessage(R.string.blocked);
+            activity.startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
+        } else {
+            try {
+                Thread.sleep(ON_WRONG_PASSWORD_DELAY_MS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            showToastMessage(String.format(
+                    activity.getString(R.string.wrong_code_you_have_n_attempts),
+                    attempts));
+        }
+
+        resetPassword();
     }
 
     private void resetPassword() {
