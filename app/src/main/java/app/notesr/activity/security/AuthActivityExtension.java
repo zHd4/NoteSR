@@ -37,7 +37,7 @@ public class AuthActivityExtension {
 
         CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
 
-        if (!cryptoManager.configure(password)) {
+        if (cryptoManager.configure(password)) {
             onCorrectPassword();
         } else {
             onIncorrectPassword();
