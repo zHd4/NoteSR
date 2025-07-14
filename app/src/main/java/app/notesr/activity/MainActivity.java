@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.notesr.App;
+import app.notesr.BuildConfig;
+import app.notesr.activity.data.MigrationActivity;
 import app.notesr.R;
 import app.notesr.activity.data.ExportActivity;
 import app.notesr.activity.data.ImportActivity;
@@ -15,9 +17,10 @@ import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.crypto.CryptoManager;
-import app.notesr.service.android.ExportService;
-import app.notesr.service.android.ImportService;
-import app.notesr.service.android.ReEncryptionService;
+import app.notesr.service.android.ExportAndroidService;
+import app.notesr.service.android.ImportAndroidService;
+import app.notesr.service.android.ReEncryptionAndroidService;
+import app.notesr.service.migration.DataVersionManager;
 
 public class MainActivity extends ExtendedAppCompatActivity {
     @Override
@@ -45,15 +48,15 @@ public class MainActivity extends ExtendedAppCompatActivity {
                         ? new Intent(context, KeyRecoveryActivity.class)
                         : null,
 
-                () -> context.isServiceRunning(ExportService.class)
+                () -> context.isServiceRunning(ExportAndroidService.class)
                         ? new Intent(context, ExportActivity.class)
                         : null,
 
-                () -> context.isServiceRunning(ImportService.class)
+                () -> context.isServiceRunning(ImportAndroidService.class)
                         ? new Intent(context, ImportActivity.class)
                         : null,
 
-                () -> context.isServiceRunning(ReEncryptionService.class)
+                () -> context.isServiceRunning(ReEncryptionAndroidService.class)
                         ? new Intent(context, ReEncryptionActivity.class)
                         : null,
 
