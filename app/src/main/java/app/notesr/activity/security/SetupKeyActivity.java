@@ -2,6 +2,10 @@ package app.notesr.activity.security;
 
 import static java.util.Objects.requireNonNull;
 
+import static app.notesr.util.ActivityUtils.copyToClipboard;
+import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.showToastMessage;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -43,7 +47,7 @@ public class SetupKeyActivity extends ActivityBase {
         mode = Mode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
 
         if (mode == Mode.REGENERATION) {
-            disableBackButton();
+            disableBackButton(this);
         }
 
         password = requireNonNull(getIntent().getStringExtra("password"));
@@ -75,8 +79,8 @@ public class SetupKeyActivity extends ActivityBase {
         return view -> {
             String keyHex = ((TextView) findViewById(R.id.aesKeyHex)).getText().toString();
 
-            copyToClipboard(keyHex);
-            showToastMessage(getString(R.string.copied), Toast.LENGTH_SHORT);
+            copyToClipboard(this, keyHex);
+            showToastMessage(this, getString(R.string.copied), Toast.LENGTH_SHORT);
         };
     }
 

@@ -1,5 +1,8 @@
 package app.notesr.activity.data;
 
+import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.showToastMessage;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -42,7 +45,7 @@ public class ExportActivity extends ActivityBase {
         if (exportRunning()) {
             actionBar.setTitle(getString(R.string.exporting));
 
-            disableBackButton();
+            disableBackButton(this);
             setCancelButton();
         } else {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -62,7 +65,7 @@ public class ExportActivity extends ActivityBase {
     private View.OnClickListener startStopButtonOnClick() {
         return view -> {
             if (getNotesCount() == 0) {
-                showToastMessage(getString(R.string.no_notes), Toast.LENGTH_SHORT);
+                showToastMessage(this, getString(R.string.no_notes), Toast.LENGTH_SHORT);
                 return;
             }
 
@@ -70,7 +73,7 @@ public class ExportActivity extends ActivityBase {
                 actionBar.setDisplayHomeAsUpEnabled(false);
                 actionBar.setTitle(getString(R.string.exporting));
 
-                disableBackButton();
+                disableBackButton(this);
                 startForegroundService(new Intent(this, ExportAndroidService.class));
 
                 setCancelButton();
@@ -131,7 +134,7 @@ public class ExportActivity extends ActivityBase {
 
     private void finishExporting(boolean canceled) {
         if (!canceled) {
-            showToastMessage(getString(R.string.exported), Toast.LENGTH_LONG);
+            showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
         }
 
         startActivity(new Intent(getApplicationContext(), NoteListActivity.class));

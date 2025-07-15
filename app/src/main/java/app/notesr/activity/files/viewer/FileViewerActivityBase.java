@@ -1,5 +1,7 @@
 package app.notesr.activity.files.viewer;
 
+import static app.notesr.util.ActivityUtils.showToastMessage;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
@@ -137,7 +139,7 @@ public class FileViewerActivityBase extends ActivityBase {
                     .setTitle(R.string.warning)
                     .setPositiveButton(R.string.overwrite, (dialog, result) -> executeTask(saveRunnable, dialogLayoutId))
                     .setNegativeButton(R.string.no, (dialog, result) ->
-                            showToastMessage(getResources().getString(R.string.saving_canceled), Toast.LENGTH_SHORT));
+                            showToastMessage(this, getResources().getString(R.string.saving_canceled), Toast.LENGTH_SHORT));
 
             builder.create().show();
         } else {
@@ -161,12 +163,12 @@ public class FileViewerActivityBase extends ActivityBase {
                 String messageFormat = getResources().getString(R.string.saved_to);
 
                 Looper.prepare();
-                showToastMessage(String.format(messageFormat, destFile.getAbsolutePath()), Toast.LENGTH_LONG);
+                showToastMessage(this, String.format(messageFormat, destFile.getAbsolutePath()), Toast.LENGTH_LONG);
             } catch (RuntimeException e) {
                 Log.e("NoteSR", e.toString());
 
                 Looper.prepare();
-                showToastMessage(getResources().getString(R.string.cannot_save_file), Toast.LENGTH_SHORT);
+                showToastMessage(this, getResources().getString(R.string.cannot_save_file), Toast.LENGTH_SHORT);
             }
         };
     }

@@ -1,5 +1,7 @@
 package app.notesr.activity.data;
 
+import static app.notesr.util.ActivityUtils.disableBackButton;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -60,7 +62,7 @@ public class ImportActivity extends ActivityBase {
             actionBar.setTitle(R.string.import_text);
         } else {
             actionBar.setTitle(R.string.importing);
-            disableBackButton();
+            disableBackButton(this);
         }
 
         fileChooserLauncher = registerForActivityResult(
@@ -165,7 +167,7 @@ public class ImportActivity extends ActivityBase {
 
             selectedFileTextView.setVisibility(View.INVISIBLE);
 
-            disableBackButton();
+            disableBackButton(this);
             startImport();
 
             progressBar.setVisibility(View.VISIBLE);

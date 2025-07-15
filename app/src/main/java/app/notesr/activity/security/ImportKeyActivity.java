@@ -4,6 +4,8 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 import static java.util.Objects.requireNonNull;
 
+import static app.notesr.util.ActivityUtils.showToastMessage;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -76,7 +78,7 @@ public class ImportKeyActivity extends ActivityBase {
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Cannot parse or apply the key", e);
-                    showToastMessage(getString(R.string.wrong_key), Toast.LENGTH_SHORT);
+                    showToastMessage(this, getString(R.string.wrong_key), Toast.LENGTH_SHORT);
                 }
             }
         };

@@ -13,6 +13,7 @@ import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.CryptoTools;
 import app.notesr.service.migration.DataVersionManager;
+import app.notesr.util.ActivityUtils;
 
 public class AuthActivityExtension {
     private static final int MAX_ATTEMPTS = 3;
@@ -35,7 +36,7 @@ public class AuthActivityExtension {
 
         if (password.isEmpty()) {
             String enterCodeMessage = activity.getString(R.string.enter_the_code);
-            activity.showToastMessage(enterCodeMessage, Toast.LENGTH_SHORT);
+            showToastMessage(enterCodeMessage);
             return;
         }
 
@@ -174,6 +175,6 @@ public class AuthActivityExtension {
     }
 
     private void showToastMessage(String text) {
-        activity.showToastMessage(text, Toast.LENGTH_SHORT);
+        ActivityUtils.showToastMessage(activity, text, Toast.LENGTH_SHORT);
     }
 }

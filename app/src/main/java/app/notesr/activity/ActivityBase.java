@@ -1,18 +1,10 @@
 package app.notesr.activity;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
-
-import app.notesr.App;
 
 public class ActivityBase extends AppCompatActivity {
     @Override
@@ -21,28 +13,6 @@ public class ActivityBase extends AppCompatActivity {
 
         int windowFlag = WindowManager.LayoutParams.FLAG_SECURE;
         getWindow().setFlags(windowFlag, windowFlag);
-    }
-
-    public void showToastMessage(String text, int duration) {
-        Toast toast = Toast.makeText(App.getContext(), text, duration);
-        toast.show();
-    }
-
-    protected void copyToClipboard(String text) {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("", text);
-
-        clipboard.setPrimaryClip(clip);
-    }
-
-    protected void disableBackButton() {
-        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
-        dispatcher.addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                finishAffinity();
-            }
-        });
     }
 
     @Override

@@ -1,5 +1,7 @@
 package app.notesr.activity;
 
+import static app.notesr.util.ActivityUtils.disableBackButton;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -29,7 +31,7 @@ public class StartActivity extends ActivityBase {
         View.OnClickListener onGetStartedButtonClick = view -> startActivity(authActivityIntent);
         findViewById(R.id.getStartedButton).setOnClickListener(onGetStartedButtonClick);
 
-        disableBackButton();
+        disableBackButton(this);
         placeBannerFront();
     }
 

@@ -1,5 +1,7 @@
 package app.notesr.activity.security;
 
+import static app.notesr.util.ActivityUtils.disableBackButton;
+
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -82,7 +84,7 @@ public class AuthActivity extends ActivityBase {
         switch (currentMode) {
             case AUTHORIZATION -> {
                 topLabel.setText(R.string.enter_access_code);
-                disableBackButton();
+                disableBackButton(this);
             }
 
             case CHANGE_PASSWORD -> topLabel.setText(R.string.create_new_access_code);

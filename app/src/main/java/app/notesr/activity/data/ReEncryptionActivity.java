@@ -1,5 +1,7 @@
 package app.notesr.activity.data;
 
+import static app.notesr.util.ActivityUtils.disableBackButton;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +26,7 @@ public class ReEncryptionActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_re_encryption);
 
-        disableBackButton();
+        disableBackButton(this);
 
         progressView = findViewById(R.id.reEncryptionProgressLabel);
         CryptoKey newCryptoKey = (CryptoKey) getIntent().getSerializableExtra("newCryptoKey");

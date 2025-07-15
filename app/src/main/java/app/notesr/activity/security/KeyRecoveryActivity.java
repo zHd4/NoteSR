@@ -2,6 +2,9 @@ package app.notesr.activity.security;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
+import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.showToastMessage;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,7 +34,7 @@ public class KeyRecoveryActivity extends ActivityBase {
         EditText hexKeyField = findViewById(R.id.importRecoveryKeyField);
         Button applyButton = findViewById(R.id.applyRecoveryKeyButton);
 
-        disableBackButton();
+        disableBackButton(this);
 
         hexKeyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         applyButton.setOnClickListener(applyButtonOnClick(hexKeyField));
@@ -54,7 +57,7 @@ public class KeyRecoveryActivity extends ActivityBase {
                     startActivity(authActivityIntent);
                 } catch (Exception e) {
                     Log.e("Key recovery error", e.toString());
-                    showToastMessage(getString(R.string.wrong_key), Toast.LENGTH_SHORT);
+                    showToastMessage(this,getString(R.string.wrong_key), Toast.LENGTH_SHORT);
                 }
             }
         };
