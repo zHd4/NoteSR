@@ -17,7 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.service.FileService;
 import app.notesr.dto.FileInfo;
 import app.notesr.util.FileExifDataResolver;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class AddFileActivity extends ExtendedAppCompatActivity {
+public class AddFileActivity extends ActivityBase {
     private String noteId;
     private boolean noteModified = false;
 

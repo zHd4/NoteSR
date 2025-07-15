@@ -12,7 +12,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.activity.security.AuthActivity;
 
-public class StartActivity extends ExtendedAppCompatActivity {
+public class StartActivity extends ActivityBase {
 
     private static final double BANNER_MARGIN_FOR_LOW_HEIGHT = 0.1;
     private static final double BANNER_MARGIN_FOR_LARGE_HEIGHT = 0.2;

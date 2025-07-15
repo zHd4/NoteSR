@@ -14,12 +14,12 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.crypto.CryptoTools;
 
 import java.util.Objects;
 
-public class KeyRecoveryActivity extends ExtendedAppCompatActivity {
+public class KeyRecoveryActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

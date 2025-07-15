@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import app.notesr.App;
 
-public class ExtendedAppCompatActivity extends AppCompatActivity {
+public class ActivityBase extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

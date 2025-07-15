@@ -5,7 +5,7 @@ import android.widget.ListView;
 import androidx.appcompat.app.ActionBar;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.adapter.NoteListAdapter;
 import app.notesr.service.NoteService;
 import app.notesr.dto.Note;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ViewNotesSearchResultsActivity extends ExtendedAppCompatActivity {
+public class ViewNotesSearchResultsActivity extends ActivityBase {
     private SearchNotesResults results;
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 

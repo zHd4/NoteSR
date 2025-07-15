@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.data.ReEncryptionActivity;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.service.activity.security.KeySetupService;
@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class SetupKeyActivity extends ExtendedAppCompatActivity {
+public class SetupKeyActivity extends ActivityBase {
 
     @AllArgsConstructor
     public enum Mode {

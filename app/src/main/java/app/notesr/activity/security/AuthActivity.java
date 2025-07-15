@@ -11,12 +11,12 @@ import androidx.core.content.ContextCompat;
 
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
 
-public class AuthActivity extends ExtendedAppCompatActivity {
+public class AuthActivity extends ActivityBase {
 
     private static final String TAG = AuthActivity.class.getName();
 

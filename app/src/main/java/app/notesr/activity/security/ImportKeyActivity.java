@@ -15,12 +15,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.data.ReEncryptionActivity;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.service.activity.security.KeySetupService;
 
-public class ImportKeyActivity extends ExtendedAppCompatActivity {
+public class ImportKeyActivity extends ActivityBase {
 
     private static final String TAG = ImportKeyActivity.class.getName();
 

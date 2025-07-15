@@ -7,13 +7,13 @@ import android.widget.AdapterView;
 import java.util.Map;
 
 import app.notesr.App;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.notes.OpenNoteActivity;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class OpenNoteOnClick implements AdapterView.OnItemClickListener {
-    private final ExtendedAppCompatActivity activity;
+    private final ActivityBase activity;
     private final Map<Long, String> notesIdsMap;
 
     @Override

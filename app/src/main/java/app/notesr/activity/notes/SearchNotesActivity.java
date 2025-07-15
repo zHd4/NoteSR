@@ -7,11 +7,11 @@ import android.widget.EditText;
 import androidx.appcompat.app.ActionBar;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.service.NoteService;
 import app.notesr.dto.SearchNotesResults;
 
-public class SearchNotesActivity extends ExtendedAppCompatActivity {
+public class SearchNotesActivity extends ActivityBase {
     /** @noinspection DataFlowIssue*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {

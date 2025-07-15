@@ -21,13 +21,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.service.data.importer.ImportResult;
 import app.notesr.service.android.ImportAndroidService;
 import app.notesr.util.FileExifDataResolver;
 
-public class ImportActivity extends ExtendedAppCompatActivity {
+public class ImportActivity extends ActivityBase {
 
     private static final String TAG = ImportActivity.class.getName();
 

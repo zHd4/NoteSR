@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.files.FileListActivity;
 import app.notesr.service.FileService;
 import app.notesr.dto.FileInfo;
@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FileViewerActivityBase extends ExtendedAppCompatActivity {
+public class FileViewerActivityBase extends ActivityBase {
     protected FileInfo fileInfo;
     protected java.io.File saveDir;
 

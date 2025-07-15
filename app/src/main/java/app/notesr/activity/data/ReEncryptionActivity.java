@@ -10,12 +10,12 @@ import android.widget.TextView;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.dto.CryptoKey;
 import app.notesr.service.android.ReEncryptionAndroidService;
 
-public class ReEncryptionActivity extends ExtendedAppCompatActivity {
+public class ReEncryptionActivity extends ActivityBase {
 
     private TextView progressView;
 

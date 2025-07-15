@@ -14,13 +14,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.db.notes.table.FileInfoTable;
 import app.notesr.db.notes.table.NoteTable;
 import app.notesr.service.android.ExportAndroidService;
 
-public class ExportActivity extends ExtendedAppCompatActivity {
+public class ExportActivity extends ActivityBase {
 
     private ActionBar actionBar;
     private Button startStopButton;

@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.notes.OpenNoteActivity;
 import app.notesr.adapter.FileListAdapter;
 import app.notesr.service.NoteService;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FileListActivity extends ExtendedAppCompatActivity {
+public class FileListActivity extends ActivityBase {
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
     private Note note;

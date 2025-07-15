@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.data.ExportActivity;
 import app.notesr.activity.data.ImportActivity;
 import app.notesr.adapter.NoteListAdapter;
@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-public class NoteListActivity extends ExtendedAppCompatActivity {
+public class NoteListActivity extends ActivityBase {
     private final Map<Integer, Consumer<NoteListActivity>> menuItemsMap = new HashMap<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 

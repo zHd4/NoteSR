@@ -16,7 +16,7 @@ import androidx.core.widget.TextViewKt;
 
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.activity.ExtendedAppCompatActivity;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.files.FileListActivity;
 import app.notesr.service.FileService;
 import app.notesr.service.NoteService;
@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
-public class OpenNoteActivity extends ExtendedAppCompatActivity {
+public class OpenNoteActivity extends ActivityBase {
     private static final long MAX_COUNT_IN_BADGE = 9;
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
 
