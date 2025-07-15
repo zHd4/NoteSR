@@ -75,7 +75,7 @@ public class SetupKeyActivity extends ExtendedAppCompatActivity {
         return view -> {
             String keyHex = ((TextView) findViewById(R.id.aesKeyHex)).getText().toString();
 
-            copyToClipboard("", keyHex);
+            copyToClipboard(keyHex);
             showToastMessage(getString(R.string.copied), Toast.LENGTH_SHORT);
         };
     }

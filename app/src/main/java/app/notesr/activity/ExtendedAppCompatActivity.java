@@ -28,10 +28,9 @@ public class ExtendedAppCompatActivity extends AppCompatActivity {
         toast.show();
     }
 
-    /** @noinspection SameParameterValue*/
-    protected void copyToClipboard(String label, String text) {
+    protected void copyToClipboard(String text) {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(label, text);
+        ClipData clip = ClipData.newPlainText("", text);
 
         clipboard.setPrimaryClip(clip);
     }
