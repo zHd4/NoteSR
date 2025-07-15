@@ -8,16 +8,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.BuildConfig;
 import app.notesr.R;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.notes.NoteListActivity;
 import app.notesr.service.android.AppMigrationAndroidService;
 import app.notesr.service.migration.DataVersionManager;
 
-public class MigrationActivity extends AppCompatActivity {
+public class MigrationActivity extends ActivityBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
