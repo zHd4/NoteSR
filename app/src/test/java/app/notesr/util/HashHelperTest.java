@@ -1,7 +1,9 @@
 package app.notesr.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +25,7 @@ public class HashHelperTest extends TestBase {
         byte[] expected = MessageDigest.getInstance("SHA-256").digest(data);
         byte[] actual = HashHelper.toSha256Bytes(data);
 
-        Assert.assertArrayEquals("Actual hash different", expected, actual);
+        assertArrayEquals(expected, actual, "Actual hash different");
     }
 
     @Test
@@ -33,6 +35,6 @@ public class HashHelperTest extends TestBase {
         long expected = 3121068470L;
         long actual = HashHelper.getUUIDHash(uuid);
 
-        Assert.assertEquals("Actual hash different", expected, actual);
+        assertEquals(expected, actual, "Actual hash different");
     }
 }
