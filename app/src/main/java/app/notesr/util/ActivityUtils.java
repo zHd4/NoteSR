@@ -17,7 +17,8 @@ public final class ActivityUtils {
     }
 
     public static void copyToClipboard(ActivityBase activity, String text) {
-        ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipboard =
+                (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("", text);
 
         clipboard.setPrimaryClip(clip);
