@@ -1,8 +1,8 @@
 package app.notesr;
 
 import app.notesr.crypto.CryptoManager;
-import app.notesr.db.notes.NotesDB;
-import app.notesr.db.service.ServicesDB;
+import app.notesr.db.notes.NotesDb;
+import app.notesr.db.service.ServicesDb;
 import app.notesr.service.FileService;
 import app.notesr.service.NoteService;
 import lombok.Getter;
@@ -11,8 +11,8 @@ import java.time.format.DateTimeFormatter;
 
 @Getter
 public class AppContainer {
-    private final NotesDB notesDB = new NotesDB();
-    private final ServicesDB servicesDB = new ServicesDB();
+    private final NotesDb notesDB = new NotesDb();
+    private final ServicesDb servicesDB = new ServicesDb();
 
     private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

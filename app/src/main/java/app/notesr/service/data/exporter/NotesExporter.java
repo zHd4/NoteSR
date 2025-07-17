@@ -2,7 +2,7 @@ package app.notesr.service.data.exporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.crypto.NoteCryptor;
-import app.notesr.db.notes.table.NoteTable;
+import app.notesr.db.notes.table.NoteDao;
 import app.notesr.model.EncryptedNote;
 import app.notesr.dto.Note;
 import lombok.Getter;
@@ -14,12 +14,12 @@ class NotesExporter extends BaseExporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    private final NoteTable noteTable;
+    private final NoteDao noteTable;
     private final DateTimeFormatter timestampFormatter;
 
     NotesExporter(ExportThread thread,
                   JsonGenerator jsonGenerator,
-                  NoteTable noteTable,
+                  NoteDao noteTable,
                   DateTimeFormatter timestampFormatter) {
         super(thread);
 

@@ -7,22 +7,22 @@ import app.notesr.App;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class BaseDB extends SQLiteOpenHelper {
+public abstract class BaseDb extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
-    protected final Map<Class<? extends BaseTable>, BaseTable> tables = new HashMap<>();
+    protected final Map<Class<? extends BaseDao>, BaseDao> tables = new HashMap<>();
 
     public final SQLiteDatabase readableDatabase;
     public final SQLiteDatabase writableDatabase;
 
-    public BaseDB(String name) {
+    public BaseDb(String name) {
         super(App.getContext(), name, null, DATABASE_VERSION);
 
         this.readableDatabase = getReadableDatabase();
         this.writableDatabase = getWritableDatabase();
     }
 
-    public <T extends BaseTable> T getTable(Class<? extends BaseTable> tableClass) {
+    public <T extends BaseDao> T getTable(Class<? extends BaseDao> tableClass) {
         return (T) tables.get(tableClass);
     }
 

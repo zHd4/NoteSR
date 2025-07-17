@@ -15,7 +15,7 @@ import android.widget.VideoView;
 import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.db.service.table.TempFileTable;
+import app.notesr.db.service.table.TempFileDao;
 import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerAndroidService;
 
@@ -69,9 +69,9 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
         AlertDialog progressDialog = builder.create();
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        TempFileTable tempFileTable = App.getAppContainer()
+        TempFileDao tempFileTable = App.getAppContainer()
                 .getServicesDB()
-                .getTable(TempFileTable.class);
+                .getTable(TempFileDao.class);
 
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);

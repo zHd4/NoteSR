@@ -4,11 +4,11 @@ import app.notesr.App;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.FileCryptor;
 import app.notesr.crypto.NoteCryptor;
-import app.notesr.db.notes.NotesDB;
-import app.notesr.db.notes.table.NoteTable;
+import app.notesr.db.notes.NotesDb;
+import app.notesr.db.notes.table.NoteDao;
 import app.notesr.dto.CryptoKey;
-import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FileInfoTable;
+import app.notesr.db.notes.table.DataBlockDao;
+import app.notesr.db.notes.table.FileInfoDao;
 import app.notesr.exception.ReEncryptionFailedException;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
@@ -37,11 +37,11 @@ public class KeyUpdateService extends ServiceBase {
     }
 
     public void updateEncryptedData() {
-        NotesDB db = getNotesDB();
+        NotesDb db = getNotesDB();
 
-        NoteTable noteTable = getNoteTable();
-        FileInfoTable fileInfoTable = getFileInfoTable();
-        DataBlockTable dataBlockTable = getDataBlockTable();
+        NoteDao noteTable = getNoteTable();
+        FileInfoDao fileInfoTable = getFileInfoTable();
+        DataBlockDao dataBlockTable = getDataBlockTable();
 
         db.beginTransaction();
 
@@ -87,7 +87,7 @@ public class KeyUpdateService extends ServiceBase {
                 + getDataBlockTable().getRowsCount();
     }
 
-    private NotesDB getNotesDB() {
+    private NotesDb getNotesDB() {
         return App.getAppContainer().getNotesDB();
     }
 }

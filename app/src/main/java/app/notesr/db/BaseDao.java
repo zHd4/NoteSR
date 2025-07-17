@@ -8,9 +8,9 @@ import lombok.Getter;
 import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
-public abstract class BaseTable {
+public abstract class BaseDao {
 
-    protected final BaseDB db;
+    protected final BaseDb db;
 
     @Getter
     protected final String name;

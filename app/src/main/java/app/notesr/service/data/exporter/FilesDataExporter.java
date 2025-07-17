@@ -5,15 +5,15 @@ import java.io.IOException;
 import java.util.List;
 
 import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.table.DataBlockTable;
+import app.notesr.db.notes.table.DataBlockDao;
 import app.notesr.model.DataBlock;
 import app.notesr.util.FilesUtils;
 
 class FilesDataExporter extends BaseExporter {
     private final File outputDir;
-    private final DataBlockTable dataBlockTable;
+    private final DataBlockDao dataBlockTable;
 
-    FilesDataExporter(ExportThread thread, File outputDir, DataBlockTable dataBlockTable) {
+    FilesDataExporter(ExportThread thread, File outputDir, DataBlockDao dataBlockTable) {
         super(thread);
 
         this.outputDir = outputDir;

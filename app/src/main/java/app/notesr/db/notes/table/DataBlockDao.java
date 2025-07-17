@@ -4,8 +4,8 @@ import static java.util.UUID.randomUUID;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import app.notesr.db.BaseTable;
-import app.notesr.db.notes.NotesDB;
+import app.notesr.db.BaseDao;
+import app.notesr.db.notes.NotesDb;
 import app.notesr.model.DataBlock;
 
 import java.util.LinkedHashSet;
@@ -13,8 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class DataBlockTable extends BaseTable {
-    public DataBlockTable(NotesDB db, String name, FileInfoTable fileInfoTable) {
+public class DataBlockDao extends BaseDao {
+    public DataBlockDao(NotesDb db, String name, FileInfoDao fileInfoTable) {
         super(db, name);
 
         db.writableDatabase.execSQL(

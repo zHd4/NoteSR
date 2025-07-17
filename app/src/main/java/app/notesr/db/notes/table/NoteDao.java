@@ -5,16 +5,16 @@ import static java.util.UUID.randomUUID;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import app.notesr.db.BaseTable;
-import app.notesr.db.notes.NotesDB;
+import app.notesr.db.BaseDao;
+import app.notesr.db.notes.NotesDb;
 import app.notesr.model.EncryptedNote;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class NoteTable extends BaseTable {
-    public NoteTable(NotesDB db, String name) {
+public final class NoteDao extends BaseDao {
+    public NoteDao(NotesDb db, String name) {
         super(db, name);
 
         db.writableDatabase.execSQL(

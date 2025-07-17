@@ -3,15 +3,15 @@ package app.notesr.db.service.table;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import app.notesr.db.BaseTable;
-import app.notesr.db.service.ServicesDB;
+import app.notesr.db.BaseDao;
+import app.notesr.db.service.ServicesDb;
 import app.notesr.model.TempFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TempFileTable extends BaseTable {
-    public TempFileTable(ServicesDB db, String name) {
+public class TempFileDao extends BaseDao {
+    public TempFileDao(ServicesDb db, String name) {
         super(db, name);
 
         db.writableDatabase.execSQL(

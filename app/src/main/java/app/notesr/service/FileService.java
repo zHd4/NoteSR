@@ -2,9 +2,9 @@ package app.notesr.service;
 
 import app.notesr.App;
 import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.NotesDB;
-import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FileInfoTable;
+import app.notesr.db.notes.NotesDb;
+import app.notesr.db.notes.table.DataBlockDao;
+import app.notesr.db.notes.table.FileInfoDao;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.dto.FileInfo;
@@ -46,7 +46,7 @@ public class FileService extends ServiceBase {
     }
 
     public void save(FileInfo fileInfo, File dataSourceFile) throws IOException {
-        NotesDB db = App.getAppContainer().getNotesDB();
+        NotesDb db = App.getAppContainer().getNotesDB();
 
         db.beginTransaction();
         String fileId = saveInfo(fileInfo);
@@ -71,7 +71,7 @@ public class FileService extends ServiceBase {
     }
 
     public void saveData(String fileId, File sourceFile) throws IOException {
-        DataBlockTable dataBlockTable = getDataBlockTable();
+        DataBlockDao dataBlockTable = getDataBlockTable();
 
         try (FileInputStream stream = new FileInputStream(sourceFile)) {
             byte[] chunk = new byte[CHUNK_SIZE];
@@ -105,8 +105,8 @@ public class FileService extends ServiceBase {
     }
 
     public byte[] read(String fileId) {
-        FileInfoTable fileInfoTable = getFileInfoTable();
-        DataBlockTable dataBlockTable = getDataBlockTable();
+        FileInfoDao fileInfoTable = getFileInfoTable();
+        DataBlockDao dataBlockTable = getDataBlockTable();
 
         Set<String> ids = dataBlockTable.getBlocksIdsByFileId(fileId);
 
@@ -125,7 +125,7 @@ public class FileService extends ServiceBase {
     }
 
     public long read(String fileId, Consumer<byte[]> actionPerChunk) {
-        DataBlockTable dataBlockTable = getDataBlockTable();
+        DataBlockDao dataBlockTable = getDataBlockTable();
         Set<String> ids = dataBlockTable.getBlocksIdsByFileId(fileId);
 
         long readBytes = 0;
@@ -142,7 +142,7 @@ public class FileService extends ServiceBase {
     }
 
     public void delete(String fileId) {
-        NotesDB db = App.getAppContainer().getNotesDB();
+        NotesDb db = App.getAppContainer().getNotesDB();
         db.beginTransaction();
 
         getDataBlockTable().deleteByFileId(fileId);

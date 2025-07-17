@@ -8,9 +8,9 @@ import static org.junit.Assert.assertNull;
 import app.notesr.dto.CryptoKey;
 import app.notesr.crypto.FileCryptor;
 import app.notesr.crypto.NoteCryptor;
-import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FileInfoTable;
-import app.notesr.db.notes.table.NoteTable;
+import app.notesr.db.notes.table.DataBlockDao;
+import app.notesr.db.notes.table.FileInfoDao;
+import app.notesr.db.notes.table.NoteDao;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.EncryptedNote;
@@ -31,17 +31,17 @@ public class NotesIntegrationTest {
 
     private static CryptoKey cryptoKey;
 
-    private final NoteTable noteTable = App.getAppContainer()
+    private final NoteDao noteTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(NoteTable.class);
+            .getTable(NoteDao.class);
 
-    private final FileInfoTable fileInfoTable = App.getAppContainer()
+    private final FileInfoDao fileInfoTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(FileInfoTable.class);
+            .getTable(FileInfoDao.class);
 
-    private final DataBlockTable dataBlockTable = App.getAppContainer()
+    private final DataBlockDao dataBlockTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(DataBlockTable.class);
+            .getTable(DataBlockDao.class);
 
     private Note testNote;
 

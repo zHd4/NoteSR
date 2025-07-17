@@ -1,25 +1,25 @@
 package app.notesr.service;
 
 import app.notesr.App;
-import app.notesr.db.notes.NotesDB;
-import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FileInfoTable;
-import app.notesr.db.notes.table.NoteTable;
+import app.notesr.db.notes.NotesDb;
+import app.notesr.db.notes.table.DataBlockDao;
+import app.notesr.db.notes.table.FileInfoDao;
+import app.notesr.db.notes.table.NoteDao;
 
 public class ServiceBase {
-    protected NoteTable getNoteTable() {
-        return getNotesDatabase().getTable(NoteTable.class);
+    protected NoteDao getNoteTable() {
+        return getNotesDatabase().getTable(NoteDao.class);
     }
 
-    protected FileInfoTable getFileInfoTable() {
-        return getNotesDatabase().getTable(FileInfoTable.class);
+    protected FileInfoDao getFileInfoTable() {
+        return getNotesDatabase().getTable(FileInfoDao.class);
     }
 
-    protected DataBlockTable getDataBlockTable() {
-        return getNotesDatabase().getTable(DataBlockTable.class);
+    protected DataBlockDao getDataBlockTable() {
+        return getNotesDatabase().getTable(DataBlockDao.class);
     }
 
-    private NotesDB getNotesDatabase() {
+    private NotesDb getNotesDatabase() {
         return App.getAppContainer().getNotesDB();
     }
 }

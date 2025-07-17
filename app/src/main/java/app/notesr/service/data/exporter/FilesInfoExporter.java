@@ -2,8 +2,8 @@ package app.notesr.service.data.exporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.table.DataBlockTable;
-import app.notesr.db.notes.table.FileInfoTable;
+import app.notesr.db.notes.table.DataBlockDao;
+import app.notesr.db.notes.table.FileInfoDao;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.dto.FileInfo;
@@ -17,15 +17,15 @@ class FilesInfoExporter extends BaseExporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    private final FileInfoTable fileInfoTable;
-    private final DataBlockTable dataBlockTable;
+    private final FileInfoDao fileInfoTable;
+    private final DataBlockDao dataBlockTable;
 
     private final DateTimeFormatter timestampFormatter;
 
     FilesInfoExporter(ExportThread thread,
                       JsonGenerator jsonGenerator,
-                      FileInfoTable fileInfoTable,
-                      DataBlockTable dataBlockTable,
+                      FileInfoDao fileInfoTable,
+                      DataBlockDao dataBlockTable,
                       DateTimeFormatter timestampFormatter) {
         super(thread);
 

@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import app.notesr.App;
 import app.notesr.files.viewer.FileViewerActivityBase;
-import app.notesr.db.service.table.TempFileTable;
+import app.notesr.db.service.table.TempFileDao;
 import app.notesr.model.TempFile;
 import app.notesr.util.Wiper;
 
@@ -99,10 +99,10 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
         };
     }
 
-    private TempFileTable getTempFileTable() {
+    private TempFileDao getTempFileTable() {
         return App.getAppContainer()
                 .getServicesDB()
-                .getTable(TempFileTable.class);
+                .getTable(TempFileDao.class);
     }
 
     @Override
