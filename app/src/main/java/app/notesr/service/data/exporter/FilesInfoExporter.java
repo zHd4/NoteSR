@@ -17,21 +17,21 @@ class FilesInfoExporter extends BaseExporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    private final FileInfoDao fileInfoTable;
-    private final DataBlockDao dataBlockTable;
+    private final FileInfoDao fileInfoDao;
+    private final DataBlockDao dataBlockDao;
 
     private final DateTimeFormatter timestampFormatter;
 
     FilesInfoExporter(ExportThread thread,
                       JsonGenerator jsonGenerator,
-                      FileInfoDao fileInfoTable,
-                      DataBlockDao dataBlockTable,
+                      FileInfoDao fileInfoDao,
+                      DataBlockDao dataBlockDao,
                       DateTimeFormatter timestampFormatter) {
         super(thread);
 
         this.jsonGenerator = jsonGenerator;
-        this.fileInfoTable = fileInfoTable;
-        this.dataBlockTable = dataBlockTable;
+        this.fileInfoDao = fileInfoDao;
+        this.dataBlockDao = dataBlockDao;
         this.timestampFormatter = timestampFormatter;
     }
 
@@ -40,8 +40,8 @@ class FilesInfoExporter extends BaseExporter {
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
 
-            writeFilesInfo(fileInfoTable.getAll());
-            writeDataBlocksInfo(dataBlockTable.getAllWithoutData());
+            writeFilesInfo(fileInfoDao.getAll());
+            writeDataBlocksInfo(dataBlockDao.getAllWithoutData());
 
             jsonGenerator.writeEndObject();
         }
@@ -49,7 +49,7 @@ class FilesInfoExporter extends BaseExporter {
 
     @Override
     long getTotal() {
-        return fileInfoTable.getRowsCount() + dataBlockTable.getRowsCount();
+        return fileInfoDao.getRowsCount() + dataBlockDao.getRowsCount();
     }
 
     private void writeFilesInfo(List<EncryptedFileInfo> encryptedFilesInfo) throws IOException,
