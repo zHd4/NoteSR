@@ -11,12 +11,12 @@ public class NotesDb extends BaseDb {
     public NotesDb() {
         super(NAME);
 
-        NoteDao noteTable = new NoteDao(this, "notes");
-        FileInfoDao fileInfoTable = new FileInfoDao(this, "files_info", noteTable);
-        DataBlockDao dataBlockTable = new DataBlockDao(this, "data_blocks", fileInfoTable);
+        NoteDao noteDao = new NoteDao(this, "notes");
+        FileInfoDao fileInfoDao = new FileInfoDao(this, "files_info", noteDao);
+        DataBlockDao dataBlockDao = new DataBlockDao(this, "data_blocks", fileInfoDao);
 
-        daoMap.put(NoteDao.class, noteTable);
-        daoMap.put(FileInfoDao.class, fileInfoTable);
-        daoMap.put(DataBlockDao.class, dataBlockTable);
+        daoMap.put(NoteDao.class, noteDao);
+        daoMap.put(FileInfoDao.class, fileInfoDao);
+        daoMap.put(DataBlockDao.class, dataBlockDao);
     }
 }
