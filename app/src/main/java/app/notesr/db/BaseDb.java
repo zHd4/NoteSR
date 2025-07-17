@@ -10,7 +10,7 @@ import java.util.Map;
 public abstract class BaseDb extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
-    protected final Map<Class<? extends BaseDao>, BaseDao> tables = new HashMap<>();
+    protected final Map<Class<? extends BaseDao>, BaseDao> daoMap = new HashMap<>();
 
     public final SQLiteDatabase readableDatabase;
     public final SQLiteDatabase writableDatabase;
@@ -22,8 +22,8 @@ public abstract class BaseDb extends SQLiteOpenHelper {
         this.writableDatabase = getWritableDatabase();
     }
 
-    public <T extends BaseDao> T getDao(Class<? extends BaseDao> tableClass) {
-        return (T) tables.get(tableClass);
+    public <T extends BaseDao> T getDao(Class<? extends BaseDao> daoClass) {
+        return (T) daoMap.get(daoClass);
     }
 
     public void beginTransaction() {

@@ -15,8 +15,8 @@ public class NotesDb extends BaseDb {
         FileInfoDao fileInfoTable = new FileInfoDao(this, "files_info", noteTable);
         DataBlockDao dataBlockTable = new DataBlockDao(this, "data_blocks", fileInfoTable);
 
-        tables.put(NoteDao.class, noteTable);
-        tables.put(FileInfoDao.class, fileInfoTable);
-        tables.put(DataBlockDao.class, dataBlockTable);
+        daoMap.put(NoteDao.class, noteTable);
+        daoMap.put(FileInfoDao.class, fileInfoTable);
+        daoMap.put(DataBlockDao.class, dataBlockTable);
     }
 }

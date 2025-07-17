@@ -9,6 +9,6 @@ public class ServicesDb extends BaseDb {
     public ServicesDb() {
         super(NAME);
 
-        tables.put(TempFileDao.class, new TempFileDao(this, "temp_files"));
+        daoMap.put(TempFileDao.class, new TempFileDao(this, "temp_files"));
     }
 }
