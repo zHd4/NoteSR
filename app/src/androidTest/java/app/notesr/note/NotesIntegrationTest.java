@@ -32,15 +32,15 @@ public class NotesIntegrationTest {
 
     private static CryptoKey cryptoKey;
 
-    private final NoteDao noteTable = App.getAppContainer()
+    private final NoteDao noteDao = App.getAppContainer()
             .getNotesDB()
             .getDao(NoteDao.class);
 
-    private final FileInfoDao fileInfoTable = App.getAppContainer()
+    private final FileInfoDao fileInfoDao = App.getAppContainer()
             .getNotesDB()
             .getDao(FileInfoDao.class);
 
-    private final DataBlockDao dataBlockTable = App.getAppContainer()
+    private final DataBlockDao dataBlockDao = App.getAppContainer()
             .getNotesDB()
             .getDao(DataBlockDao.class);
 
@@ -63,13 +63,13 @@ public class NotesIntegrationTest {
 
     @After
     public void after() {
-        noteTable.getAll().forEach(note -> {
-            fileInfoTable.getByNoteId(note.getId()).forEach(file -> {
-                dataBlockTable.getBlocksIdsByFileId(file.getId()).forEach(dataBlockTable::delete);
-                fileInfoTable.delete(file.getId());
+        noteDao.getAll().forEach(note -> {
+            fileInfoDao.getByNoteId(note.getId()).forEach(file -> {
+                dataBlockDao.getBlocksIdsByFileId(file.getId()).forEach(dataBlockDao::delete);
+                fileInfoDao.delete(file.getId());
             });
 
-            noteTable.delete(note.getId());
+            noteDao.delete(note.getId());
         });
     }
 
@@ -78,7 +78,7 @@ public class NotesIntegrationTest {
         saveTestNote();
         assertNotNull(testNote.getId());
 
-        EncryptedNote encryptedActual = noteTable.get(testNote.getId());
+        EncryptedNote encryptedActual = noteDao.get(testNote.getId());
         assertNotNull(encryptedActual);
 
         Note actual = NoteCryptor.decrypt(encryptedActual, cryptoKey);
@@ -99,9 +99,9 @@ public class NotesIntegrationTest {
         Note note = new Note(newName, newText);
         note.setId(testNote.getId());
 
-        noteTable.save(NoteCryptor.encrypt(note, cryptoKey));
+        noteDao.save(NoteCryptor.encrypt(note, cryptoKey));
 
-        EncryptedNote encryptedActual = noteTable.get(testNote.getId());
+        EncryptedNote encryptedActual = noteDao.get(testNote.getId());
         assertNotNull(encryptedActual);
 
         Note actual = NoteCryptor.decrypt(encryptedActual, cryptoKey);
@@ -129,20 +129,20 @@ public class NotesIntegrationTest {
         fileInfo.setName(fileName);
 
         EncryptedFileInfo encryptedFileInfo = FileCryptor.encryptInfo(fileInfo, cryptoKey);
-        fileInfoTable.save(encryptedFileInfo);
+        fileInfoDao.save(encryptedFileInfo);
 
         DataBlock dataBlock = DataBlock.builder()
                 .fileId(encryptedFileInfo.getId())
                 .order(1L).data(testFileData)
                 .build();
 
-        dataBlockTable.save(dataBlock);
+        dataBlockDao.save(dataBlock);
 
         assertNotNull(encryptedFileInfo.getId());
         assertNotNull(dataBlock.getId());
 
         assertEquals(encryptedFileInfo.getId(), dataBlock.getFileId());
-        assertArrayEquals(dataBlockTable.get(dataBlock.getId()).getData(), dataBlock.getData());
+        assertArrayEquals(dataBlockDao.get(dataBlock.getId()).getData(), dataBlock.getData());
     }
 
     @Test
@@ -150,15 +150,15 @@ public class NotesIntegrationTest {
         saveTestNote();
         assertNotNull(testNote.getId());
 
-        noteTable.delete(testNote.getId());
-        EncryptedNote actual = noteTable.get(testNote.getId());
+        noteDao.delete(testNote.getId());
+        EncryptedNote actual = noteDao.get(testNote.getId());
 
         assertNull(actual);
     }
 
     private void saveTestNote() {
         EncryptedNote encryptedNote = NoteCryptor.encrypt(testNote, cryptoKey);
-        noteTable.save(encryptedNote);
+        noteDao.save(encryptedNote);
 
         testNote.setId(encryptedNote.getId());
         testNote.setUpdatedAt(encryptedNote.getUpdatedAt());
