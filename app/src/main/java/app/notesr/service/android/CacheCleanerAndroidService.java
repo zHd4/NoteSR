@@ -102,7 +102,7 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
     private TempFileDao getTempFileTable() {
         return App.getAppContainer()
                 .getServicesDB()
-                .getTable(TempFileDao.class);
+                .getDao(TempFileDao.class);
     }
 
     @Override

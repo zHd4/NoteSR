@@ -22,7 +22,7 @@ public abstract class BaseDb extends SQLiteOpenHelper {
         this.writableDatabase = getWritableDatabase();
     }
 
-    public <T extends BaseDao> T getTable(Class<? extends BaseDao> tableClass) {
+    public <T extends BaseDao> T getDao(Class<? extends BaseDao> tableClass) {
         return (T) tables.get(tableClass);
     }
 

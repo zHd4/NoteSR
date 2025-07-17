@@ -71,7 +71,7 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
 
         TempFileDao tempFileTable = App.getAppContainer()
                 .getServicesDB()
-                .getTable(TempFileDao.class);
+                .getDao(TempFileDao.class);
 
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);

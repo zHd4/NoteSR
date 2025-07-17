@@ -1,15 +1,18 @@
 package app.notesr.service.file;
 
+import static java.util.Objects.requireNonNull;
+
 import app.notesr.App;
 import app.notesr.crypto.FileCryptor;
 import app.notesr.db.notes.NotesDb;
 import app.notesr.db.notes.dao.DataBlockDao;
 import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.dto.FileInfo;
-import app.notesr.service.ServiceBase;
 import app.notesr.util.HashHelper;
+import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,11 +23,16 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class FileService extends ServiceBase {
+@RequiredArgsConstructor
+public class FileService {
     private static final int CHUNK_SIZE = 500000;
 
+    private final NoteDao noteDao;
+    private final FileInfoDao fileInfoDao;
+    private final DataBlockDao dataBlockDao;
+
     public long getFilesCount(String noteId) {
-        Long count = getFileInfoTable().getCountByNoteId(noteId);
+        Long count = fileInfoDao.getCountByNoteId(noteId);
 
         if (count == null) {
             throw new NullPointerException("Files count is null");
@@ -34,7 +42,7 @@ public class FileService extends ServiceBase {
     }
 
     public List<FileInfo> getFilesInfo(String noteId) {
-        List<EncryptedFileInfo> encryptedFilesInfo = getFileInfoTable().getByNoteId(noteId);
+        List<EncryptedFileInfo> encryptedFilesInfo = fileInfoDao.getByNoteId(noteId);
 
         return FileCryptor.decryptInfo(encryptedFilesInfo).stream()
                 .map(this::setDecimalId)
@@ -42,7 +50,7 @@ public class FileService extends ServiceBase {
     }
 
     public FileInfo getInfo(String fileId) {
-        EncryptedFileInfo encryptedFileInfo = getFileInfoTable().get(fileId);
+        EncryptedFileInfo encryptedFileInfo = fileInfoDao.get(fileId);
         return setDecimalId(FileCryptor.decryptInfo(encryptedFileInfo));
     }
 
@@ -65,15 +73,13 @@ public class FileService extends ServiceBase {
     public String saveInfo(FileInfo fileInfo) {
         EncryptedFileInfo encryptedFileInfo = FileCryptor.encryptInfo(fileInfo);
 
-        getFileInfoTable().save(encryptedFileInfo);
-        getNoteTable().markAsModified(encryptedFileInfo.getNoteId());
+        fileInfoDao.save(encryptedFileInfo);
+        noteDao.markAsModified(encryptedFileInfo.getNoteId());
 
         return encryptedFileInfo.getId();
     }
 
     public void saveData(String fileId, File sourceFile) throws IOException {
-        DataBlockDao dataBlockTable = getDataBlockTable();
-
         try (FileInputStream stream = new FileInputStream(sourceFile)) {
             byte[] chunk = new byte[CHUNK_SIZE];
 
@@ -95,7 +101,7 @@ public class FileService extends ServiceBase {
                         .data(chunk)
                         .build();
 
-                dataBlockTable.save(dataBlock);
+                dataBlockDao.save(dataBlock);
 
                 chunk = new byte[CHUNK_SIZE];
                 bytesRead = stream.read(chunk);
@@ -106,16 +112,14 @@ public class FileService extends ServiceBase {
     }
 
     public byte[] read(String fileId) {
-        FileInfoDao fileInfoTable = getFileInfoTable();
-        DataBlockDao dataBlockTable = getDataBlockTable();
 
-        Set<String> ids = dataBlockTable.getBlocksIdsByFileId(fileId);
+        Set<String> ids = dataBlockDao.getBlocksIdsByFileId(fileId);
 
-        byte[] data = new byte[Math.toIntExact(fileInfoTable.get(fileId).getSize())];
+        byte[] data = new byte[Math.toIntExact(requireNonNull(fileInfoDao.get(fileId)).getSize())];
         int readBytes = 0;
 
         for (String id : ids) {
-            DataBlock dataBlock = dataBlockTable.get(id);
+            DataBlock dataBlock = dataBlockDao.get(id);
             byte[] blockData = FileCryptor.decryptData(dataBlock.getData());
 
             System.arraycopy(blockData, 0, data, readBytes, blockData.length);
@@ -126,13 +130,12 @@ public class FileService extends ServiceBase {
     }
 
     public long read(String fileId, Consumer<byte[]> actionPerChunk) {
-        DataBlockDao dataBlockTable = getDataBlockTable();
-        Set<String> ids = dataBlockTable.getBlocksIdsByFileId(fileId);
+        Set<String> ids = dataBlockDao.getBlocksIdsByFileId(fileId);
 
         long readBytes = 0;
 
         for (String id : ids) {
-            DataBlock dataBlock = dataBlockTable.get(id);
+            DataBlock dataBlock = dataBlockDao.get(id);
             byte[] data = FileCryptor.decryptData(dataBlock.getData());
 
             actionPerChunk.accept(data);
@@ -146,9 +149,9 @@ public class FileService extends ServiceBase {
         NotesDb db = App.getAppContainer().getNotesDB();
         db.beginTransaction();
 
-        getDataBlockTable().deleteByFileId(fileId);
-        getNoteTable().markAsModified(getFileInfoTable().get(fileId).getNoteId());
-        getFileInfoTable().delete(fileId);
+        dataBlockDao.deleteByFileId(fileId);
+        noteDao.markAsModified(requireNonNull(fileInfoDao.get(fileId)).getNoteId());
+        fileInfoDao.delete(fileId);
 
         db.commitTransaction();
     }

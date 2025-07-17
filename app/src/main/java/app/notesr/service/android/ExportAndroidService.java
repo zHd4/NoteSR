@@ -17,7 +17,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import app.notesr.App;
 import app.notesr.R;
+import app.notesr.db.notes.NotesDb;
+import app.notesr.db.notes.dao.DataBlockDao;
+import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.service.data.exporter.ExportResult;
 import app.notesr.service.data.exporter.ExportService;
 
@@ -46,11 +51,11 @@ public class ExportAndroidService extends Service implements Runnable {
 
     @Override
     public void run() {
-        Context context = this;
         File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
-        exportService = new ExportService(context, outputFile);
+        exportService = getExportService(getApplicationContext(), outputFile,
+                App.getAppContainer().getNotesDB());
 
         exportService.start();
 
@@ -128,6 +133,14 @@ public class ExportAndroidService extends Service implements Runnable {
         Path outputPath = Paths.get(dirPath, filename);
 
         return new File(outputPath.toUri());
+    }
+
+    private ExportService getExportService(Context context, File outputFile, NotesDb notesDb) {
+        NoteDao noteDao = notesDb.getDao(NoteDao.class);
+        FileInfoDao fileInfoDao = notesDb.getDao(FileInfoDao.class);
+        DataBlockDao dataBlockDao = notesDb.getDao(DataBlockDao.class);
+
+        return new ExportService(context, outputFile, noteDao, fileInfoDao, dataBlockDao);
     }
 
     @Override

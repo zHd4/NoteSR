@@ -6,12 +6,13 @@ import java.io.File;
 import java.time.format.DateTimeFormatter;
 
 import app.notesr.App;
-import app.notesr.service.ServiceBase;
+import app.notesr.db.notes.NotesDb;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public abstract class ImportServiceBase extends ServiceBase {
+public abstract class ImportServiceBase {
     protected final Context context;
+    protected final NotesDb notesDb;
     protected final File file;
 
     private boolean transactionStarted = false;
@@ -25,17 +26,17 @@ public abstract class ImportServiceBase extends ServiceBase {
     }
 
     protected void begin() {
-        App.getAppContainer().getNotesDB().beginTransaction();
+        notesDb.beginTransaction();
         transactionStarted = true;
     }
 
     protected void rollback() {
-        App.getAppContainer().getNotesDB().rollbackTransaction();
+        notesDb.rollbackTransaction();
         transactionStarted = false;
     }
 
     protected void end() {
-        App.getAppContainer().getNotesDB().commitTransaction();
+        notesDb.commitTransaction();
         transactionStarted = false;
     }
 

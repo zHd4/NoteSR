@@ -10,10 +10,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import app.notesr.App;
 import app.notesr.R;
 import app.notesr.crypto.BackupCryptor;
+import app.notesr.db.notes.NotesDb;
 import app.notesr.exception.DecryptionFailedException;
-import app.notesr.service.ServiceBase;
 import app.notesr.service.data.importer.v1.ImportServiceV1;
 import app.notesr.service.data.importer.v2.ImportServiceV2;
 import app.notesr.util.Wiper;
@@ -21,7 +22,7 @@ import app.notesr.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class MainImportService extends ServiceBase {
+public class MainImportService {
 
     private static final String TAG = MainImportService.class.getName();
 
@@ -42,10 +43,12 @@ public class MainImportService extends ServiceBase {
                 FileOutputStream outputStream = new FileOutputStream(tempDecryptedFile);
                 decrypt(sourceStream, outputStream);
 
+                NotesDb notesDb = App.getAppContainer().getNotesDB();
+
                 if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
-                    usingService = new ImportServiceV2(context, tempDecryptedFile);
+                    usingService = new ImportServiceV2(context, notesDb, tempDecryptedFile);
                 } else {
-                    usingService = new ImportServiceV1(context, tempDecryptedFile);
+                    usingService = new ImportServiceV1(context, notesDb, tempDecryptedFile);
                 }
 
                 usingService.start();

@@ -16,7 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import app.notesr.App;
 import app.notesr.R;
+import app.notesr.crypto.CryptoManager;
+import app.notesr.db.notes.NotesDb;
 import app.notesr.dto.CryptoKey;
 import app.notesr.exception.ReEncryptionFailedException;
 import app.notesr.service.ServiceHandler;
@@ -67,10 +70,19 @@ public class ReEncryptionAndroidService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
+        NotesDb notesDb = App.getAppContainer().getNotesDB();
+
+        CryptoKey oldCryptoKey = CryptoKey.from(cryptoManager.getCryptoKeyInstance());
         CryptoKey newCryptoKey =
                 requireNonNull((CryptoKey) intent.getSerializableExtra("newCryptoKey"));
 
-        keyUpdateServiceServiceHandler.setService(new KeyUpdateService(newCryptoKey));
+        keyUpdateServiceServiceHandler.setService(new KeyUpdateService(
+                cryptoManager,
+                oldCryptoKey,
+                newCryptoKey,
+                notesDb
+        ));
 
         String channelName = getResources().getString(R.string.re_encrypting_data);
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,

@@ -1,6 +1,5 @@
 package app.notesr.service.crypto;
 
-import app.notesr.App;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.FileCryptor;
 import app.notesr.crypto.NoteCryptor;
@@ -12,16 +11,19 @@ import app.notesr.db.notes.dao.FileInfoDao;
 import app.notesr.exception.ReEncryptionFailedException;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
-import app.notesr.service.ServiceBase;
 import lombok.Getter;
 
 import java.util.Set;
 
-public class KeyUpdateService extends ServiceBase {
+public class KeyUpdateService {
 
     private final CryptoManager cryptoManager;
     private final CryptoKey newKey;
     private final CryptoKey oldKey;
+    private final NotesDb db;
+    private final NoteDao noteDao;
+    private final FileInfoDao fileInfoDao;
+    private final DataBlockDao dataBlockDao;
 
     @Getter
     private final long total;
@@ -29,44 +31,42 @@ public class KeyUpdateService extends ServiceBase {
     @Getter
     private long progress;
 
-    public KeyUpdateService(CryptoKey newKey) {
-        this.cryptoManager = App.getAppContainer().getCryptoManager();
+    public KeyUpdateService(CryptoManager cryptoManager, CryptoKey oldKey, CryptoKey newKey, NotesDb db) {
+        this.cryptoManager = cryptoManager;
         this.newKey = newKey;
-        this.oldKey = CryptoKey.from(cryptoManager.getCryptoKeyInstance());
+        this.oldKey = oldKey;
+        this.db = db;
+        this.noteDao = db.getDao(NoteDao.class);
+        this.fileInfoDao = db.getDao(FileInfoDao.class);
+        this.dataBlockDao = db.getDao(DataBlockDao.class);
         this.total = calculateTotal() + 1;
     }
 
     public void updateEncryptedData() {
-        NotesDb db = getNotesDB();
-
-        NoteDao noteTable = getNoteTable();
-        FileInfoDao fileInfoTable = getFileInfoTable();
-        DataBlockDao dataBlockTable = getDataBlockTable();
-
         db.beginTransaction();
 
         try {
-            noteTable.getAll().forEach(note -> {
-                noteTable.save(NoteCryptor.updateKey(note, oldKey, newKey));
+            noteDao.getAll().forEach(note -> {
+                noteDao.save(NoteCryptor.updateKey(note, oldKey, newKey));
                 progress += 1;
 
-                fileInfoTable.getByNoteId(note.getId())
+                fileInfoDao.getByNoteId(note.getId())
                         .forEach(fileInfo -> {
                             EncryptedFileInfo updatedFileInfo =
                                     FileCryptor.updateKey(fileInfo, oldKey, newKey);
 
                             Set<String> blockIds =
-                                    dataBlockTable.getBlocksIdsByFileId(updatedFileInfo.getId());
+                                    dataBlockDao.getBlocksIdsByFileId(updatedFileInfo.getId());
 
                             for (String blockId : blockIds) {
-                                DataBlock block = dataBlockTable.get(blockId);
+                                DataBlock block = dataBlockDao.get(blockId);
 
                                 block.setData(FileCryptor.updateKey(block.getData(), oldKey, newKey));
-                                dataBlockTable.save(block);
+                                dataBlockDao.save(block);
                                 progress += 1;
                             }
 
-                            fileInfoTable.save(updatedFileInfo);
+                            fileInfoDao.save(updatedFileInfo);
                             progress += 1;
                         });
             });
@@ -82,12 +82,8 @@ public class KeyUpdateService extends ServiceBase {
     }
 
     private long calculateTotal() {
-        return getNoteTable().getRowsCount()
-                + getFileInfoTable().getRowsCount()
-                + getDataBlockTable().getRowsCount();
-    }
-
-    private NotesDb getNotesDB() {
-        return App.getAppContainer().getNotesDB();
+        return noteDao.getRowsCount()
+                + fileInfoDao.getRowsCount()
+                + dataBlockDao.getRowsCount();
     }
 }

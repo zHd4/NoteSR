@@ -71,7 +71,7 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
 
                 TempFileDao tempFileTable = App.getAppContainer()
                         .getServicesDB()
-                        .getTable(TempFileDao.class);
+                        .getDao(TempFileDao.class);
 
                 TempFile tempImageFile = new TempFile(imageUri);
 

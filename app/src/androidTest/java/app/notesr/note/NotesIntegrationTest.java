@@ -34,15 +34,15 @@ public class NotesIntegrationTest {
 
     private final NoteDao noteTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(NoteDao.class);
+            .getDao(NoteDao.class);
 
     private final FileInfoDao fileInfoTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(FileInfoDao.class);
+            .getDao(FileInfoDao.class);
 
     private final DataBlockDao dataBlockTable = App.getAppContainer()
             .getNotesDB()
-            .getTable(DataBlockDao.class);
+            .getDao(DataBlockDao.class);
 
     private Note testNote;
 

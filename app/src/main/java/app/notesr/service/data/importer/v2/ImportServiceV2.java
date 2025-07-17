@@ -13,6 +13,10 @@ import java.io.IOException;
 import java.util.Map;
 
 import app.notesr.R;
+import app.notesr.db.notes.NotesDb;
+import app.notesr.db.notes.dao.DataBlockDao;
+import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.service.data.importer.ImportServiceBase;
 import app.notesr.service.data.importer.ImportResult;
@@ -26,6 +30,10 @@ public class ImportServiceV2 extends ImportServiceBase {
     private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
     private static final String DATA_BLOCKS_DIR_NAME = "data_blocks";
 
+    private final NoteDao noteDao;
+    private final FileInfoDao fileInfoDao;
+    private final DataBlockDao dataBlockDao;
+
     @Getter
     private ImportResult result = ImportResult.NONE;
 
@@ -34,8 +42,12 @@ public class ImportServiceV2 extends ImportServiceBase {
 
     private File tempDir;
 
-    public ImportServiceV2(Context context, File file) {
-        super(context, file);
+    public ImportServiceV2(Context context, NotesDb notesDb, File file) {
+        super(context, notesDb, file);
+
+        this.noteDao = notesDb.getDao(NoteDao.class);
+        this.fileInfoDao = notesDb.getDao(FileInfoDao.class);
+        this.dataBlockDao = notesDb.getDao(DataBlockDao.class);
     }
 
     @Override
@@ -90,7 +102,7 @@ public class ImportServiceV2 extends ImportServiceBase {
     }
 
     private NotesImporter getNotesImporter(JsonParser parser) {
-        return new NotesImporter(parser, getNoteTable(), getTimestampFormatter());
+        return new NotesImporter(parser, noteDao, getTimestampFormatter());
     }
 
     private FilesImporter getFilesImporter(
@@ -99,8 +111,8 @@ public class ImportServiceV2 extends ImportServiceBase {
             Map<String, String> adaptedNotesIdMap) {
         return new FilesImporter(
                 parser,
-                getFileInfoTable(),
-                getDataBlockTable(),
+                fileInfoDao,
+                dataBlockDao,
                 adaptedNotesIdMap,
                 dataBlocksDir,
                 getTimestampFormatter()

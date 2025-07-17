@@ -11,7 +11,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.crypto.BackupCryptor;
-import app.notesr.service.ServiceBase;
+import app.notesr.db.notes.dao.DataBlockDao;
+import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.service.data.TempDataWiper;
 import app.notesr.util.FilesUtils;
 import app.notesr.util.VersionFetcher;
@@ -27,7 +29,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ExportService extends ServiceBase {
+public class ExportService {
     
     private static final String VERSION_FILE_NAME = "version";
     private static final String NOTES_JSON_FILE_NAME = "notes.json";
@@ -36,6 +38,9 @@ public class ExportService extends ServiceBase {
 
     private final Context context;
     private final File outputFile;
+    private final NoteDao noteDao;
+    private final FileInfoDao fileInfoDao;
+    private final DataBlockDao dataBlockDao;
 
     private NotesExporter notesExporter;
     private FilesInfoExporter filesInfoExporter;
@@ -53,7 +58,7 @@ public class ExportService extends ServiceBase {
     private String status = "";
 
     public void start() {
-        if (getNoteTable().getRowsCount() == 0) {
+        if (noteDao.getRowsCount() == 0) {
             throw new RuntimeException("No notes in table");
         }
 
@@ -198,7 +203,7 @@ public class ExportService extends ServiceBase {
         return new NotesExporter(
                 thread,
                 jsonGenerator,
-                getNoteTable(),
+                noteDao,
                 getTimestampFormatter()
         );
     }
@@ -207,15 +212,15 @@ public class ExportService extends ServiceBase {
         return new FilesInfoExporter(
                 thread,
                 jsonGenerator,
-                getFileInfoTable(),
-                getDataBlockTable(),
+                fileInfoDao,
+                dataBlockDao,
                 getTimestampFormatter()
         );
     }
 
     private FilesDataExporter createFilesDataExporter() {
         File dir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
-        return new FilesDataExporter(thread, dir, getDataBlockTable());
+        return new FilesDataExporter(thread, dir, dataBlockDao);
     }
 
     private DateTimeFormatter getTimestampFormatter() {

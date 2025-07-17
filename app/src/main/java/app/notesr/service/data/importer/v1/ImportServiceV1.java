@@ -6,6 +6,10 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
 import app.notesr.R;
+import app.notesr.db.notes.NotesDb;
+import app.notesr.db.notes.dao.DataBlockDao;
+import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.service.data.importer.ImportServiceBase;
 import app.notesr.service.data.importer.ImportResult;
@@ -22,11 +26,19 @@ import lombok.Getter;
 public class ImportServiceV1 extends ImportServiceBase {
     private static final String TAG = ImportServiceV1.class.getName();
 
+    private final NoteDao noteDao;
+    private final FileInfoDao fileInfoDao;
+    private final DataBlockDao dataBlockDao;
+
     private ImportResult result = ImportResult.NONE;
     private String status = "";
 
-    public ImportServiceV1(Context context, File file) {
-        super(context, file);
+    public ImportServiceV1(Context context, NotesDb notesDb, File file) {
+        super(context, notesDb, file);
+
+        this.noteDao = notesDb.getDao(NoteDao.class);
+        this.fileInfoDao = notesDb.getDao(FileInfoDao.class);
+        this.dataBlockDao = notesDb.getDao(DataBlockDao.class);
     }
 
     @Override
@@ -80,7 +92,7 @@ public class ImportServiceV1 extends ImportServiceBase {
     private NotesImporter getNotesImporter(JsonParser parser) {
         return new NotesImporter(
                 parser,
-                getNoteTable(),
+                noteDao,
                 getTimestampFormatter()
         );
     }
@@ -88,8 +100,8 @@ public class ImportServiceV1 extends ImportServiceBase {
     private FilesImporter getFilesImporter(JsonParser parser, Map<String, String> adaptedNotesIdMap) {
         return new FilesImporter(
                 parser,
-                getFileInfoTable(),
-                getDataBlockTable(),
+                fileInfoDao,
+                dataBlockDao,
                 adaptedNotesIdMap,
                 getTimestampFormatter()
         );

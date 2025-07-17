@@ -3,23 +3,29 @@ package app.notesr.service.note;
 import app.notesr.crypto.NoteCryptor;
 import app.notesr.db.notes.dao.DataBlockDao;
 import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.model.EncryptedNote;
 import app.notesr.dto.Note;
-import app.notesr.service.ServiceBase;
 import app.notesr.util.HashHelper;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class NoteService extends ServiceBase {
+@RequiredArgsConstructor
+public class NoteService {
+    private final NoteDao noteDao;
+    private final FileInfoDao fileInfoDao;
+    private final DataBlockDao dataBlockDao;
+
     public void save(Note note) {
         EncryptedNote encryptedNote = NoteCryptor.encrypt(note);
-        getNoteTable().save(encryptedNote);
+        noteDao.save(encryptedNote);
     }
 
     public List<Note> getAll() {
-        return getNoteTable()
+        return noteDao
                 .getAll()
                 .stream()
                 .map(NoteCryptor::decrypt)
@@ -28,7 +34,7 @@ public class NoteService extends ServiceBase {
     }
 
     public Note get(String id) {
-        EncryptedNote encryptedNote = getNoteTable().get(id);
+        EncryptedNote encryptedNote = noteDao.get(id);
 
         if (encryptedNote != null) {
             Note note = NoteCryptor.decrypt(encryptedNote);
@@ -60,15 +66,12 @@ public class NoteService extends ServiceBase {
     }
 
     public void delete(String id) {
-        FileInfoDao fileInfoTable = getFileInfoTable();
-        DataBlockDao dataBlockTable = getDataBlockTable();
-
-        fileInfoTable.getByNoteId(id).forEach(fileInfo -> {
-            dataBlockTable.deleteByFileId(fileInfo.getId());
-            fileInfoTable.delete(fileInfo.getId());
+        fileInfoDao.getByNoteId(id).forEach(fileInfo -> {
+            dataBlockDao.deleteByFileId(fileInfo.getId());
+            fileInfoDao.delete(fileInfo.getId());
         });
 
-        getNoteTable().delete(id);
+        noteDao.delete(id);
     }
 
     private Note setDecimalId(Note note) {

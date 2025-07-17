@@ -157,10 +157,10 @@ public class ExportActivity extends ActivityBase {
     }
 
     private long getNotesCount() {
-        return App.getAppContainer().getNotesDB().getTable(NoteDao.class).getRowsCount();
+        return App.getAppContainer().getNotesDB().getDao(NoteDao.class).getRowsCount();
     }
 
     private long getFilesCount() {
-        return App.getAppContainer().getNotesDB().getTable(FileInfoDao.class).getRowsCount();
+        return App.getAppContainer().getNotesDB().getDao(FileInfoDao.class).getRowsCount();
     }
 }
