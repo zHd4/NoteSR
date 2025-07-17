@@ -57,52 +57,52 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".notes.NoteListActivity"
+            android:name=".note.NoteListActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".notes.OpenNoteActivity"
+            android:name=".note.OpenNoteActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".notes.SearchNotesActivity"
+            android:name=".note.SearchNotesActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".notes.ViewNotesSearchResultsActivity"
+            android:name=".note.ViewNotesSearchResultsActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".files.FileListActivity"
+            android:name=".file.FileListActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".files.AddFileActivity"
+            android:name=".file.AddFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".files.viewer.OpenImageActivity"
+            android:name=".file.viewer.OpenImageActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".files.viewer.OpenVideoActivity"
+            android:name=".file.viewer.OpenVideoActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".files.viewer.OpenTextFileActivity"
+            android:name=".file.viewer.OpenTextFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".files.viewer.OpenUnknownFileActivity"
+            android:name=".file.viewer.OpenUnknownFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />

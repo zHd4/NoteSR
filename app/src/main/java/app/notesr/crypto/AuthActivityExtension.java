@@ -9,7 +9,7 @@ import app.notesr.App;
 import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.data.MigrationActivity;
-import app.notesr.notes.NoteListActivity;
+import app.notesr.note.NoteListActivity;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.util.ActivityUtils;
 

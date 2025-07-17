@@ -2,9 +2,9 @@ package app.notesr.service;
 
 import app.notesr.App;
 import app.notesr.db.notes.NotesDb;
-import app.notesr.db.notes.table.DataBlockDao;
-import app.notesr.db.notes.table.FileInfoDao;
-import app.notesr.db.notes.table.NoteDao;
+import app.notesr.db.notes.dao.DataBlockDao;
+import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.notes.dao.NoteDao;
 
 public class ServiceBase {
     protected NoteDao getNoteTable() {

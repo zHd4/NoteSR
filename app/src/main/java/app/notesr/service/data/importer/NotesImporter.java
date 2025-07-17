@@ -3,7 +3,7 @@ package app.notesr.service.data.importer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import app.notesr.crypto.NoteCryptor;
-import app.notesr.db.notes.table.NoteDao;
+import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.model.EncryptedNote;
 import app.notesr.dto.Note;

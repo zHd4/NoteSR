@@ -13,7 +13,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.notes.NoteListActivity;
+import app.notesr.note.NoteListActivity;
 import app.notesr.dto.CryptoKey;
 import app.notesr.service.android.ReEncryptionAndroidService;
 

@@ -15,9 +15,9 @@ import android.widget.Toast;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.crypto.service.KeySetupService;
+import app.notesr.service.crypto.KeySetupService;
 import app.notesr.data.ReEncryptionActivity;
-import app.notesr.notes.NoteListActivity;
+import app.notesr.note.NoteListActivity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

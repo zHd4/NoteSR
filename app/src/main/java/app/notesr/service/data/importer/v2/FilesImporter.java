@@ -9,8 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.table.DataBlockDao;
-import app.notesr.db.notes.table.FileInfoDao;
+import app.notesr.db.notes.dao.DataBlockDao;
+import app.notesr.db.notes.dao.FileInfoDao;
 import app.notesr.service.data.importer.BaseFilesImporter;
 import app.notesr.model.DataBlock;
 import app.notesr.util.FilesUtils;

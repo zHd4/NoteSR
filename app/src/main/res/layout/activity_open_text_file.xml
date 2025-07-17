@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/activity_background"
-    tools:context=".files.viewer.OpenTextFileActivity">
+    tools:context=".file.viewer.OpenTextFileActivity">
 
     <EditText
         android:id="@+id/textFileField"

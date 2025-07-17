@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.table.DataBlockDao;
+import app.notesr.db.notes.dao.DataBlockDao;
 import app.notesr.model.DataBlock;
 import app.notesr.util.FilesUtils;
 

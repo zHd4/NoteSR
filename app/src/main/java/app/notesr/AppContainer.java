@@ -3,8 +3,8 @@ package app.notesr;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.db.notes.NotesDb;
 import app.notesr.db.service.ServicesDb;
-import app.notesr.service.FileService;
-import app.notesr.service.NoteService;
+import app.notesr.service.file.FileService;
+import app.notesr.service.note.NoteService;
 import lombok.Getter;
 
 import java.time.format.DateTimeFormatter;

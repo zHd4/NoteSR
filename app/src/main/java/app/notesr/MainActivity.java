@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import app.notesr.data.ExportActivity;
 import app.notesr.data.ImportActivity;
 import app.notesr.data.ReEncryptionActivity;
-import app.notesr.notes.NoteListActivity;
+import app.notesr.note.NoteListActivity;
 import app.notesr.crypto.AuthActivity;
 import app.notesr.crypto.KeyRecoveryActivity;
 import app.notesr.crypto.CryptoManager;

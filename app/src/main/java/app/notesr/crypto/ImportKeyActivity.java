@@ -18,9 +18,9 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.crypto.service.KeySetupService;
+import app.notesr.service.crypto.KeySetupService;
 import app.notesr.data.ReEncryptionActivity;
-import app.notesr.notes.NoteListActivity;
+import app.notesr.note.NoteListActivity;
 
 public class ImportKeyActivity extends ActivityBase {
 

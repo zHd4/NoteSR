@@ -18,9 +18,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.notes.NoteListActivity;
-import app.notesr.db.notes.table.FileInfoDao;
-import app.notesr.db.notes.table.NoteDao;
+import app.notesr.note.NoteListActivity;
+import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.service.android.ExportAndroidService;
 
 public class ExportActivity extends ActivityBase {

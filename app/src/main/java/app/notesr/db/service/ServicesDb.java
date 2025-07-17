@@ -1,7 +1,7 @@
 package app.notesr.db.service;
 
 import app.notesr.db.BaseDb;
-import app.notesr.db.service.table.TempFileDao;
+import app.notesr.db.service.dao.TempFileDao;
 
 public class ServicesDb extends BaseDb {
     private static final String NAME = "services_db5";
