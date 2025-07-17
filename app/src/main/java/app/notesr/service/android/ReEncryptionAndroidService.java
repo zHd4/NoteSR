@@ -20,7 +20,7 @@ import app.notesr.R;
 import app.notesr.dto.CryptoKey;
 import app.notesr.exception.ReEncryptionFailedException;
 import app.notesr.service.ServiceHandler;
-import app.notesr.service.activity.security.KeyUpdateService;
+import app.notesr.crypto.service.KeyUpdateService;
 
 public class ReEncryptionAndroidService extends Service implements Runnable {
 

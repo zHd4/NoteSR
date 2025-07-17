@@ -5,6 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/activity_background"
-    tools:context=".activity.data.MigrationActivity">
+    tools:context=".data.MigrationActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

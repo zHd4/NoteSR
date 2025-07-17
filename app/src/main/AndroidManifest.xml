@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
@@ -27,97 +27,97 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.StartActivity"
+            android:name=".StartActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.security.SetupKeyActivity"
+            android:name=".crypto.SetupKeyActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.security.AuthActivity"
+            android:name=".crypto.AuthActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.security.KeyRecoveryActivity"
+            android:name=".crypto.KeyRecoveryActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.security.ImportKeyActivity"
+            android:name=".crypto.ImportKeyActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.data.ReEncryptionActivity"
+            android:name=".data.ReEncryptionActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.notes.NoteListActivity"
+            android:name=".notes.NoteListActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.notes.OpenNoteActivity"
+            android:name=".notes.OpenNoteActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.notes.SearchNotesActivity"
+            android:name=".notes.SearchNotesActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.notes.ViewNotesSearchResultsActivity"
+            android:name=".notes.ViewNotesSearchResultsActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.files.FileListActivity"
+            android:name=".files.FileListActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.files.AddFileActivity"
+            android:name=".files.AddFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.files.viewer.OpenImageActivity"
+            android:name=".files.viewer.OpenImageActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.files.viewer.OpenVideoActivity"
+            android:name=".files.viewer.OpenVideoActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.files.viewer.OpenTextFileActivity"
+            android:name=".files.viewer.OpenTextFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.files.viewer.OpenUnknownFileActivity"
+            android:name=".files.viewer.OpenUnknownFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.data.ExportActivity"
+            android:name=".data.ExportActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.data.ImportActivity"
+            android:name=".data.ImportActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.data.MigrationActivity"
+            android:name=".data.MigrationActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />

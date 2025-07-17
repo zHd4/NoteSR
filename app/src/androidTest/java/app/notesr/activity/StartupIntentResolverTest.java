@@ -9,6 +9,8 @@ import org.junit.Test;
 import java.util.List;
 import java.util.function.Supplier;
 
+import app.notesr.StartupIntentResolver;
+
 public class StartupIntentResolverTest {
     @Test
     public void testResolveReturnsFirstNonNullIntent() {

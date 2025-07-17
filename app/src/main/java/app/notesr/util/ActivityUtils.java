@@ -8,7 +8,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 
-import app.notesr.activity.ActivityBase;
+import app.notesr.ActivityBase;
 
 public final class ActivityUtils {
     public static void showToastMessage(ActivityBase activity, String text, int duration) {
