@@ -9,9 +9,9 @@ import org.mockito.InOrder;
 
 import java.util.List;
 
-public class AppMigrationServiceTest {
+class AppMigrationServiceTest {
     @Test
-    public void testRunsMigrationsInCorrectOrder() {
+    void testRunsMigrationsInCorrectOrder() {
         AppMigration migration1 = mock(AppMigration.class);
         AppMigration migration2 = mock(AppMigration.class);
 
