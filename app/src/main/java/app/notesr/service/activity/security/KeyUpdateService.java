@@ -29,7 +29,7 @@ public class KeyUpdateService extends ServiceBase {
     @Getter
     private long progress;
 
-    public KeyUpdateService(CryptoKey newKey) throws CloneNotSupportedException {
+    public KeyUpdateService(CryptoKey newKey) {
         this.cryptoManager = App.getAppContainer().getCryptoManager();
         this.newKey = newKey;
         this.oldKey = CryptoKey.from(cryptoManager.getCryptoKeyInstance());
