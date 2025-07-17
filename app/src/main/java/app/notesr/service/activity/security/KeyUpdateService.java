@@ -32,7 +32,7 @@ public class KeyUpdateService extends ServiceBase {
     public KeyUpdateService(CryptoKey newKey) throws CloneNotSupportedException {
         this.cryptoManager = App.getAppContainer().getCryptoManager();
         this.newKey = newKey;
-        this.oldKey = cryptoManager.getCryptoKeyInstance().clone();
+        this.oldKey = CryptoKey.from(cryptoManager.getCryptoKeyInstance());
         this.total = calculateTotal() + 1;
     }
 
