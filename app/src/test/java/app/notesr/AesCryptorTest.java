@@ -17,7 +17,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-public class AesCryptorTest extends TestBase {
+public class AesCryptorTest {
     private static final String AVAILABLE_SYMBOLS = "0123456789qwertyuiopasdfghjklzxcvbnm";
     private static final int PASSWORD_LENGTH = 20;
     private static final int MIN_DATA_SIZE = 4096;

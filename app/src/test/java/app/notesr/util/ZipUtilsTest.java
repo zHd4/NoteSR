@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static java.util.UUID.randomUUID;
 
+import static app.notesr.TestUtils.getFixturePath;
+import static app.notesr.TestUtils.getTempPath;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
@@ -13,16 +16,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Random;
 
-import app.notesr.TestBase;
-
-class ZipUtilsTest extends TestBase {
+class ZipUtilsTest {
     private static final Random RANDOM = new Random();
 
     private static final String DIR_PATH = getFixturePath("exported");
     private static final String ZIP_PATH = getFixturePath("exported.zip");
 
     private static final String TEMP_EXTRACTED_DIR_PATH = getTempPath(randomUUID().toString());
-    private static final String TEMP_ZIP_PATH = getTempPath(randomUUID().toString() + ".zip");
+    private static final String TEMP_ZIP_PATH = getTempPath(randomUUID().toString()
+            + ".zip");
 
     @Test
     public void testZipDirectory() throws IOException {
