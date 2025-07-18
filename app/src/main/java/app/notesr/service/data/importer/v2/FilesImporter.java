@@ -44,7 +44,7 @@ class FilesImporter extends BaseFilesImporter {
                         byte[] data = FileCryptor.encryptData(readDataBlock(dataFileName));
 
                         dataBlock.setData(data);
-                        dataBlockTable.save(dataBlock, false);
+                        dataBlockDao.save(dataBlock, false);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }

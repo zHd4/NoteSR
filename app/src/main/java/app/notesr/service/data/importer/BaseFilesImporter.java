@@ -18,21 +18,21 @@ import app.notesr.dto.FileInfo;
 
 public abstract class BaseFilesImporter extends BaseImporter {
 
-    protected final FileInfoDao fileInfoTable;
-    protected final DataBlockDao dataBlockTable;
+    protected final FileInfoDao fileInfoDao;
+    protected final DataBlockDao dataBlockDao;
     protected final Map<String, String> adaptedNotesIdMap;
     protected final Map<String, String> adaptedFilesIdMap = new HashMap<>();
     protected final Map<String, String> dataBlocksIdMap = new HashMap<>();
 
     public BaseFilesImporter(JsonParser parser,
-                             FileInfoDao fileInfoTable,
-                             DataBlockDao dataBlockTable,
+                             FileInfoDao fileInfoDao,
+                             DataBlockDao dataBlockDao,
                              Map<String, String> adaptedNotesIdMap,
                              DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
 
-        this.fileInfoTable = fileInfoTable;
-        this.dataBlockTable = dataBlockTable;
+        this.fileInfoDao = fileInfoDao;
+        this.dataBlockDao = dataBlockDao;
         this.adaptedNotesIdMap = adaptedNotesIdMap;
     }
 
@@ -50,7 +50,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
 
                     if (fileInfo.getId() != null) {
                         EncryptedFileInfo encryptedFileInfo = FileCryptor.encryptInfo(fileInfo);
-                        fileInfoTable.save(encryptedFileInfo, false);
+                        fileInfoDao.save(encryptedFileInfo, false);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
