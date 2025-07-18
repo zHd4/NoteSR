@@ -69,13 +69,13 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
             runOnUiThread(() -> {
                 Uri imageUri = Uri.parse(imageFile.getAbsolutePath());
 
-                TempFileDao tempFileTable = App.getAppContainer()
+                TempFileDao tempFileDao = App.getAppContainer()
                         .getServicesDB()
                         .getDao(TempFileDao.class);
 
                 TempFile tempImageFile = new TempFile(imageUri);
 
-                tempFileTable.save(tempImageFile);
+                tempFileDao.save(tempImageFile);
 
                 if (!isImageTooLarge(imageFile)) {
                     imageView.setImageURI(imageUri);
