@@ -16,11 +16,11 @@ import java.util.Map;
 class FilesImporter extends BaseFilesImporter {
 
     public FilesImporter(JsonParser parser,
-                         FileInfoDao fileInfoTable,
-                         DataBlockDao dataBlockTable,
+                         FileInfoDao fileInfoDao,
+                         DataBlockDao dataBlockDao,
                          Map<String, String> adaptedNotesIdMap,
                          DateTimeFormatter timestampFormatter) {
-        super(parser, fileInfoTable, dataBlockTable, adaptedNotesIdMap, timestampFormatter);
+        super(parser, fileInfoDao, dataBlockDao, adaptedNotesIdMap, timestampFormatter);
     }
 
     @Override
