@@ -20,12 +20,12 @@ class FilesImporter extends BaseFilesImporter {
     private final File dataBlocksDir;
 
     public FilesImporter(JsonParser parser,
-                         FileInfoDao fileInfoTable,
-                         DataBlockDao dataBlockTable,
+                         FileInfoDao fileInfoDao,
+                         DataBlockDao dataBlockDao,
                          Map<String, String> adaptedNotesIdMap,
                          File dataBlocksDir,
                          DateTimeFormatter timestampFormatter) {
-        super(parser, fileInfoTable, dataBlockTable, adaptedNotesIdMap, timestampFormatter);
+        super(parser, fileInfoDao, dataBlockDao, adaptedNotesIdMap, timestampFormatter);
         this.dataBlocksDir = dataBlocksDir;
     }
 
