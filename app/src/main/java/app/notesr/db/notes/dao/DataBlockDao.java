@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public class DataBlockDao extends BaseDao {
-    public DataBlockDao(NotesDb db, String name, FileInfoDao fileInfoTable) {
+    public DataBlockDao(NotesDb db, String name, FileInfoDao fileInfoDao) {
         super(db, name);
 
         db.writableDatabase.execSQL(
@@ -23,7 +23,7 @@ public class DataBlockDao extends BaseDao {
                         "file_id varchar(36) NOT NULL, " +
                         "block_order bigint NOT NULL, " +
                         "data blob NOT NULL, " +
-                        "FOREIGN KEY(file_id) REFERENCES " + fileInfoTable.getName() + "(id))"
+                        "FOREIGN KEY(file_id) REFERENCES " + fileInfoDao.getName() + "(id))"
         );
     }
 
