@@ -14,17 +14,17 @@ class NotesExporter extends BaseExporter {
     @Getter
     private final JsonGenerator jsonGenerator;
 
-    private final NoteDao noteTable;
+    private final NoteDao noteDao;
     private final DateTimeFormatter timestampFormatter;
 
     NotesExporter(ExportThread thread,
                   JsonGenerator jsonGenerator,
-                  NoteDao noteTable,
+                  NoteDao noteDao,
                   DateTimeFormatter timestampFormatter) {
         super(thread);
 
         this.jsonGenerator = jsonGenerator;
-        this.noteTable = noteTable;
+        this.noteDao = noteDao;
         this.timestampFormatter = timestampFormatter;
     }
 
@@ -34,7 +34,7 @@ class NotesExporter extends BaseExporter {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeArrayFieldStart("notes");
 
-            for (EncryptedNote encryptedNote : noteTable.getAll()) {
+            for (EncryptedNote encryptedNote : noteDao.getAll()) {
                 Note note = NoteCryptor.decrypt(encryptedNote);
                 writeNote(note);
 
@@ -63,6 +63,6 @@ class NotesExporter extends BaseExporter {
 
     @Override
     long getTotal() {
-        return noteTable.getRowsCount();
+        return noteDao.getRowsCount();
     }
 }
