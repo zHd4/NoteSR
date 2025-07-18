@@ -69,7 +69,7 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
         AlertDialog progressDialog = builder.create();
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        TempFileDao tempFileTable = App.getAppContainer()
+        TempFileDao tempFileDao = App.getAppContainer()
                 .getServicesDB()
                 .getDao(TempFileDao.class);
 
@@ -86,7 +86,7 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
                 Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
                 TempFile tempFile = new TempFile(videoUri);
 
-                tempFileTable.save(tempFile);
+                tempFileDao.save(tempFile);
 
                 setVideo(videoUri);
                 videoView.start();
