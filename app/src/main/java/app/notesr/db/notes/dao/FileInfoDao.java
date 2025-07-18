@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class FileInfoDao extends BaseDao {
-    public FileInfoDao(NotesDb db, String name, NoteDao noteTable) {
+    public FileInfoDao(NotesDb db, String name, NoteDao noteDao) {
         super(db, name);
 
         db.writableDatabase.execSQL(
@@ -26,7 +26,7 @@ public final class FileInfoDao extends BaseDao {
                         + "size bigint NOT NULL, "
                         + "created_at varchar(255) NOT NULL, "
                         + "updated_at varchar(255) NOT NULL, "
-                        + "FOREIGN KEY(note_id) REFERENCES " + noteTable.getName() + "(id))"
+                        + "FOREIGN KEY(note_id) REFERENCES " + noteDao.getName() + "(id))"
         );
     }
 
