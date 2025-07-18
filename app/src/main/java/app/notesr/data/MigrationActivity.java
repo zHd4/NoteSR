@@ -1,9 +1,5 @@
 package app.notesr.data;
 
-import static app.notesr.service.android.AppMigrationAndroidService.EXTRA_COMPLETE;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -24,30 +20,26 @@ public class MigrationActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_migration);
 
+        MigrationBroadcastReceiver receiver = new MigrationBroadcastReceiver(
+                this::onMigrationComplete);
+
         LocalBroadcastManager.getInstance(getApplicationContext())
-                .registerReceiver(broadcastReceiver(),
+                .registerReceiver(receiver,
                         new IntentFilter(AppMigrationAndroidService.BROADCAST_ACTION));
 
+        startMigrationService();
+    }
+
+    protected void startMigrationService() {
         Intent serviceIntent = new Intent(getApplicationContext(), AppMigrationAndroidService.class);
         startForegroundService(serviceIntent);
     }
 
-    private BroadcastReceiver broadcastReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (AppMigrationAndroidService.BROADCAST_ACTION.equals(intent.getAction())) {
-                    boolean isCompleted = intent.getBooleanExtra(EXTRA_COMPLETE, false);
+    private void onMigrationComplete() {
+        DataVersionManager dataVersionManager = new DataVersionManager(getApplicationContext());
+        dataVersionManager.setCurrentVersion(BuildConfig.DATA_SCHEMA_VERSION);
 
-                    if (isCompleted) {
-                        new DataVersionManager(getApplicationContext())
-                                .setCurrentVersion(BuildConfig.DATA_SCHEMA_VERSION);
-
-                        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
-                        finish();
-                    }
-                }
-            }
-        };
+        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
+        finish();
     }
 }
