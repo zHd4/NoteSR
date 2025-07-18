@@ -11,13 +11,13 @@ import app.notesr.util.FilesUtils;
 
 class FilesDataExporter extends BaseExporter {
     private final File outputDir;
-    private final DataBlockDao dataBlockTable;
+    private final DataBlockDao dataBlockDao;
 
-    FilesDataExporter(ExportThread thread, File outputDir, DataBlockDao dataBlockTable) {
+    FilesDataExporter(ExportThread thread, File outputDir, DataBlockDao dataBlockDao) {
         super(thread);
 
         this.outputDir = outputDir;
-        this.dataBlockTable = dataBlockTable;
+        this.dataBlockDao = dataBlockDao;
     }
 
     @Override
@@ -28,10 +28,10 @@ class FilesDataExporter extends BaseExporter {
             }
         }
 
-        List<DataBlock> dataBlocksWithoutData = dataBlockTable.getAllWithoutData();
+        List<DataBlock> dataBlocksWithoutData = dataBlockDao.getAllWithoutData();
 
         for (DataBlock blockWithoutData : dataBlocksWithoutData) {
-            DataBlock dataBlock = dataBlockTable.get(blockWithoutData.getId());
+            DataBlock dataBlock = dataBlockDao.get(blockWithoutData.getId());
             byte[] data = FileCryptor.decryptData(dataBlock.getData());
 
             FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId()), data);
@@ -43,6 +43,6 @@ class FilesDataExporter extends BaseExporter {
 
     @Override
     long getTotal() {
-        return dataBlockTable.getRowsCount();
+        return dataBlockDao.getRowsCount();
     }
 }
