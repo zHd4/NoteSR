@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout project
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
@@ -27,11 +27,15 @@ jobs:
       - name: Accept SDK licenses
         run: yes | sdkmanager --licenses
 
-      - name: Create AVD and start emulator
+      - name: Run instrumentation tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           target: google_apis
           arch: x86_64
-          profile: pixel
+          profile: pixel_3
+          ram-size: 4096M
+          sdcard-path-or-size: 100M
+          disk-size: 6000M
+          emulator-options: "-no-window -gpu swiftshader_indirect -noaudio"
           script: ./gradlew connectedDebugAndroidTest
