@@ -20,13 +20,13 @@ public class NotesImporter extends BaseImporter {
     @Getter
     private final Map<String, String> adaptedIdMap = new HashMap<>();
 
-    private final NoteDao noteTable;
+    private final NoteDao noteDao;
 
     public NotesImporter(JsonParser parser,
-                         NoteDao noteTable,
+                         NoteDao noteDao,
                          DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
-        this.noteTable = noteTable;
+        this.noteDao = noteDao;
     }
 
     public void importNotes() throws IOException, ImportFailedException {
@@ -52,7 +52,7 @@ public class NotesImporter extends BaseImporter {
             }
 
             EncryptedNote encryptedNote = NoteCryptor.encrypt(note);
-            noteTable.save(encryptedNote, false);
+            noteDao.save(encryptedNote, false);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 
