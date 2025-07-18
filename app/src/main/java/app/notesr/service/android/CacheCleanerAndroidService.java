@@ -66,7 +66,7 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
     }
 
     private void clearCache() {
-        List<TempFile> tempFiles = getTempFileTable().getAll();
+        List<TempFile> tempFiles = getTempFileDao().getAll();
 
         tempFiles.stream()
                 .filter(tempFile -> !runningJobs.containsKey(tempFile))
@@ -94,12 +94,12 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
                 }
             }
 
-            getTempFileTable().delete(tempFile.getId());
+            getTempFileDao().delete(tempFile.getId());
             runningJobs.remove(tempFile);
         };
     }
 
-    private TempFileDao getTempFileTable() {
+    private TempFileDao getTempFileDao() {
         return App.getAppContainer()
                 .getServicesDB()
                 .getDao(TempFileDao.class);
