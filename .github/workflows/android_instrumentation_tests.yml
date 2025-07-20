@@ -7,7 +7,6 @@ on:
 jobs:
   instrumentation-tests:
     name: Run Instrumentation Tests
-    if: false
     runs-on: macos-latest
 
     steps:
