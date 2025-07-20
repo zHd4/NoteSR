@@ -8,6 +8,7 @@ jobs:
   instrumentation-tests:
     name: Run Instrumentation Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -25,6 +26,9 @@ jobs:
       - name: Accept SDK licenses
         run: yes | sdkmanager --licenses
 
+      - name: Install system image (API 30 x86_64)
+        run: sdkmanager "system-images;android-30;google_apis;x86_64"
+
       - name: Run instrumentation tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -35,5 +39,5 @@ jobs:
           ram-size: 4096M
           sdcard-path-or-size: 100M
           disk-size: 6000M
-          emulator-options: "-no-window -gpu swiftshader_indirect -noaudio"
+          emulator-options: "-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics"
           script: ./gradlew connectedDebugAndroidTest
