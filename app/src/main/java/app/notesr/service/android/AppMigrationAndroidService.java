@@ -72,5 +72,7 @@ public class AppMigrationAndroidService extends Service implements Runnable {
                 .putExtra(EXTRA_COMPLETE, true);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
+        stopForeground(true);
+        stopSelf();
     }
 }
