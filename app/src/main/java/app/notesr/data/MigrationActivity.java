@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import app.notesr.App;
 import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.ActivityBase;
@@ -31,8 +32,12 @@ public class MigrationActivity extends ActivityBase {
     }
 
     protected void startMigrationService() {
-        Intent serviceIntent = new Intent(getApplicationContext(), AppMigrationAndroidService.class);
-        startForegroundService(serviceIntent);
+        if (!App.getContext().isServiceRunning(AppMigrationAndroidService.class)) {
+            Intent serviceIntent = new Intent(getApplicationContext(),
+                    AppMigrationAndroidService.class);
+
+            startForegroundService(serviceIntent);
+        }
     }
 
     private void onMigrationComplete() {
