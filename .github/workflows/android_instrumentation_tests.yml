@@ -36,8 +36,8 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_6
-          ram-size: 4096M
+          ram-size: 2048M
           sdcard-path-or-size: 100M
           disk-size: 6000M
-          emulator-options: "-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics"
+          emulator-options: "-no-window -gpu swiftshader_indirect -noaudio -accel off"
           script: ./gradlew connectedDebugAndroidTest
