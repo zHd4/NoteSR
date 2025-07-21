@@ -8,11 +8,13 @@ import java.util.function.Supplier;
 
 import app.notesr.data.ExportActivity;
 import app.notesr.data.ImportActivity;
+import app.notesr.data.MigrationActivity;
 import app.notesr.data.ReEncryptionActivity;
 import app.notesr.note.NoteListActivity;
 import app.notesr.crypto.AuthActivity;
 import app.notesr.crypto.KeyRecoveryActivity;
 import app.notesr.crypto.CryptoManager;
+import app.notesr.service.android.AppMigrationAndroidService;
 import app.notesr.service.android.ExportAndroidService;
 import app.notesr.service.android.ImportAndroidService;
 import app.notesr.service.android.ReEncryptionAndroidService;
@@ -41,6 +43,10 @@ public class MainActivity extends ActivityBase {
 
                 () -> cryptoManager.isBlocked()
                         ? new Intent(context, KeyRecoveryActivity.class)
+                        : null,
+
+                () -> context.isServiceRunning(AppMigrationAndroidService.class)
+                        ? new Intent(context, MigrationActivity.class)
                         : null,
 
                 () -> context.isServiceRunning(ExportAndroidService.class)
