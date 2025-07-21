@@ -20,24 +20,22 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
+      - name: Decrypt service account key
+        run: echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > ${HOME}/gcloud_key.json
 
-      - name: Accept SDK licenses
-        run: yes | sdkmanager --licenses
-
-      - name: Install system image (API 30 x86_64)
-        run: sdkmanager "system-images;android-30;google_apis;x86_64"
-
-      - name: Run instrumentation tests on emulator
-        uses: reactivecircus/android-emulator-runner@v2
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: pixel_6
-          ram-size: 2048M
-          sdcard-path-or-size: 100M
-          disk-size: 6000M
-          emulator-options: "-no-window -gpu swiftshader_indirect -noaudio -accel off"
-          script: ./gradlew connectedDebugAndroidTest
+          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          export_default_credentials: true
+
+      - name: Build test APKs
+        run: ./gradlew assembleDebug assembleAndroidTest
+
+      - name: Run tests in Firebase Test Lab
+        run: |
+          gcloud firebase test android run \
+            --type instrumentation \
+            --app app/build/outputs/apk/debug/app-debug.apk \
+            --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --device model=Pixel6,version=34,locale=en,orientation=portrait
