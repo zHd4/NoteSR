@@ -96,8 +96,14 @@ public class SetupKeyActivity extends ActivityBase {
 
     private View.OnClickListener nextButtonOnClick() {
         return view -> {
-            if (mode == Mode.FIRST_RUN) proceedFirstRun();
-            else if (mode == Mode.REGENERATION) proceedRegeneration();
+            if (mode == Mode.FIRST_RUN){
+                proceedFirstRun();
+            } else if (mode == Mode.REGENERATION) {
+                proceedRegeneration();
+            } else {
+                throw new RuntimeException("Unknown " + this.getClass().getName() + " mode: "
+                        + mode);
+            }
         };
     }
 
