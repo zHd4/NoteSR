@@ -18,13 +18,9 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
     
     @Override
     public void onClick(View view) {
-        if (mode == KeySetupMode.FIRST_RUN){
-            proceedFirstRun();
-        } else if (mode == KeySetupMode.REGENERATION) {
-            proceedRegeneration();
-        } else {
-            throw new RuntimeException("Unknown " + this.getClass().getName() + " mode: "
-                    + mode);
+        switch (mode) {
+            case FIRST_RUN -> proceedFirstRun();
+            case REGENERATION -> proceedRegeneration();
         }
     }
 
