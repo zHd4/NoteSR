@@ -4,29 +4,22 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 import static java.util.Objects.requireNonNull;
 
-import static app.notesr.util.ActivityUtils.showToastMessage;
-
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.service.crypto.KeySetupService;
-import app.notesr.data.ReEncryptionActivity;
-import app.notesr.note.NoteListActivity;
 
 public class ImportKeyActivity extends ActivityBase {
 
     private static final String TAG = ImportKeyActivity.class.getName();
 
-    private SetupKeyActivity.Mode mode;
+    private KeySetupMode mode;
     private EditText keyField;
     private KeySetupService keySetupService;
 
@@ -40,7 +33,7 @@ public class ImportKeyActivity extends ActivityBase {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(getResources().getString(R.string.import_key));
 
-        mode = SetupKeyActivity.Mode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
+        mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
 
         String password = requireNonNull(getIntent().getStringExtra("password"));
         keySetupService = new KeySetupService(password);
@@ -63,23 +56,8 @@ public class ImportKeyActivity extends ActivityBase {
             String hexKey = keyField.getText().toString();
 
             if (!hexKey.isBlank()) {
-                try {
-                    keySetupService.setHexKey(hexKey);
-
-                    if (mode == SetupKeyActivity.Mode.FIRST_RUN) {
-                        keySetupService.apply();
-                        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
-                    } else if (mode == SetupKeyActivity.Mode.REGENERATION) {
-                        Intent intent = new Intent(getApplicationContext(), ReEncryptionActivity.class)
-                                .putExtra("newCryptoKey", keySetupService.getCryptoKey());
-
-                        startActivity(intent);
-                        finish();
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Cannot parse or apply the key", e);
-                    showToastMessage(this, getString(R.string.wrong_key), Toast.LENGTH_SHORT);
-                }
+                new FinishKeySetupOnClick(this, keySetupService, mode)
+                        .onClick(view);
             }
         };
     }
