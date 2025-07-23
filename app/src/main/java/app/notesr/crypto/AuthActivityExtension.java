@@ -53,7 +53,7 @@ public class AuthActivityExtension {
         if (password != null) {
             Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
 
-            setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.Mode.FIRST_RUN.toString());
+            setupKeyActivityIntent.putExtra("mode", KeySetupMode.FIRST_RUN.toString());
             setupKeyActivityIntent.putExtra("password", password);
 
             activity.startActivity(getNextIntent(setupKeyActivityIntent, false));

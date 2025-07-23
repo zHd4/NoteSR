@@ -16,26 +16,14 @@ import android.widget.Toast;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.service.crypto.KeySetupService;
-import app.notesr.data.ReEncryptionActivity;
-import app.notesr.note.NoteListActivity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 public class SetupKeyActivity extends ActivityBase {
-
-    @AllArgsConstructor
-    public enum Mode {
-        FIRST_RUN("first_run"),
-        REGENERATION("regeneration");
-
-        public final String mode;
-    }
-
     private static final int LOW_SCREEN_HEIGHT = 800;
     private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
 
-    private Mode mode;
+    private KeySetupMode mode;
     private String password;
     private KeySetupService keySetupService;
 
@@ -44,9 +32,9 @@ public class SetupKeyActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_key);
 
-        mode = Mode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
+        mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
 
-        if (mode == Mode.REGENERATION) {
+        if (mode == KeySetupMode.REGENERATION) {
             disableBackButton(this);
         }
 
@@ -64,7 +52,8 @@ public class SetupKeyActivity extends ActivityBase {
 
         copyToClipboardButton.setOnClickListener(copyKeyButtonOnClick());
         importButton.setOnClickListener(importKeyButtonOnClick());
-        nextButton.setOnClickListener(nextButtonOnClick());
+        nextButton.setOnClickListener(new FinishKeySetupOnClick(this, keySetupService,
+                mode));
     }
 
     private void adaptKeyView() {
@@ -92,35 +81,5 @@ public class SetupKeyActivity extends ActivityBase {
 
             startActivity(intent);
         };
-    }
-
-    private View.OnClickListener nextButtonOnClick() {
-        return view -> {
-            if (mode == Mode.FIRST_RUN){
-                proceedFirstRun();
-            } else if (mode == Mode.REGENERATION) {
-                proceedRegeneration();
-            } else {
-                throw new RuntimeException("Unknown " + this.getClass().getName() + " mode: "
-                        + mode);
-            }
-        };
-    }
-
-    private void proceedFirstRun() {
-        try {
-            keySetupService.apply();
-            startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void proceedRegeneration() {
-        Intent intent = new Intent(getApplicationContext(), ReEncryptionActivity.class)
-                .putExtra("newCryptoKey", keySetupService.getCryptoKey());
-        
-        startActivity(intent);
-        finish();
     }
 }
