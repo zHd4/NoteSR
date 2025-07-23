@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public final class DataVersionManager {
-    private static final int DEFAULT_FIRST_VERSION = 0;
+    public static final int DEFAULT_FIRST_VERSION = 0;
     private static final String PREF_NAME = "migration_prefs";
     private static final String KEY_DATA_VERSION = "data_schema_version";
 
