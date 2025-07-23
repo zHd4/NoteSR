@@ -8,7 +8,7 @@ jobs:
   instrumentation-tests:
     name: Run Instrumentation Tests on Emulator
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Checkout
@@ -21,21 +21,29 @@ jobs:
           java-version: 17
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3
 
-      - name: Accept SDK licenses
-        run: yes | sdkmanager --licenses
+      - name: Install required tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils mesa-utils xvfb
 
-      - name: Build debug and test APKs
+      - name: Create emulator
+        run: |
+          echo "y" | sdkmanager "system-images;android-30;google_apis;x86"
+          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel"
+
+      - name: Start emulator
+        run: |
+          nohup Xvfb :0 -screen 0 1280x800x24 &   # X virtual framebuffer
+          export DISPLAY=:0
+          nohup emulator -avd test -no-snapshot -noaudio -no-window -gpu swiftshader_indirect > /dev/null 2>&1 &
+          adb wait-for-device
+          adb shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+          adb shell input keyevent 82
+
+      - name: Build Debug APK
         run: ./gradlew assembleDebug assembleDebugAndroidTest
 
-      - name: Run connected tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: Nexus 6
-          emulator-options: -no-window -no-audio -gpu swiftshader_indirect
-          disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest
+      - name: Run Instrumentation Tests
+        run: ./gradlew connectedDebugAndroidTest
