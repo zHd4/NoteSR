@@ -41,9 +41,9 @@ public class AuthActivityExtension {
         CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
 
         if (cryptoManager.configure(password)) {
-            onCorrectPassword();
+            onAuthorizationSuccessful();
         } else {
-            onIncorrectPassword();
+            onAuthorizationFailed();
         }
     }
 
@@ -56,7 +56,7 @@ public class AuthActivityExtension {
             setupKeyActivityIntent.putExtra("mode", SetupKeyActivity.Mode.FIRST_RUN.toString());
             setupKeyActivityIntent.putExtra("password", password);
 
-            activity.startActivity(setupKeyActivityIntent);
+            activity.startActivity(getNextIntent(setupKeyActivityIntent, false));
         }
     }
 
@@ -76,7 +76,10 @@ public class AuthActivityExtension {
                 throw new RuntimeException(e);
             }
 
-            activity.startActivity(new Intent(App.getContext(), NoteListActivity.class));
+            Intent defaultIntent = new Intent(activity.getApplicationContext(),
+                    NoteListActivity.class);
+
+            activity.startActivity(getNextIntent(defaultIntent, true));
         }
     }
 
@@ -86,9 +89,12 @@ public class AuthActivityExtension {
         if (password != null) {
             try {
                 App.getAppContainer().getCryptoManager().changePassword(password);
-
                 showToastMessage(R.string.updated);
-                activity.startActivity(new Intent(App.getContext(), NoteListActivity.class));
+
+                Intent defaultIntent = new Intent(activity.getApplicationContext(),
+                        NoteListActivity.class);
+
+                activity.startActivity(getNextIntent(defaultIntent, false));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -120,24 +126,18 @@ public class AuthActivityExtension {
         return null;
     }
 
-    private void onCorrectPassword() {
+    private void onAuthorizationSuccessful() {
         TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
         censoredPasswordView.setText("");
 
-        Context context = activity.getApplicationContext();
+        Intent defaultIntent = new Intent(activity.getApplicationContext(),
+                NoteListActivity.class);
 
-        int lastMigrationVersion = new DataVersionManager(context).getCurrentVersion();
-        int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
-
-        Intent nextActivityIntent = lastMigrationVersion < currentDataSchemaVersion
-                ? new Intent(context, MigrationActivity.class)
-                : new Intent(context, NoteListActivity.class);
-
-        activity.startActivity(nextActivityIntent);
+        activity.startActivity(getNextIntent(defaultIntent,true));
         activity.finish();
     }
 
-    private void onIncorrectPassword() {
+    private void onAuthorizationFailed() {
         attempts--;
 
         if (attempts == 0) {
@@ -159,6 +159,21 @@ public class AuthActivityExtension {
         }
 
         resetPassword();
+    }
+
+    private Intent getNextIntent(Intent defaultIntent, boolean checkForMigrations) {
+        Context context = activity.getApplicationContext();
+
+        if (checkForMigrations) {
+            int lastMigrationVersion = new DataVersionManager(context).getCurrentVersion();
+            int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
+
+            return lastMigrationVersion < currentDataSchemaVersion
+                    ? new Intent(context, MigrationActivity.class)
+                    : defaultIntent;
+        }
+
+        return defaultIntent;
     }
 
     private void resetPassword() {
