@@ -29,12 +29,12 @@ jobs:
       - name: Build debug and test APKs
         run: ./gradlew assembleDebug assembleDebugAndroidTest
 
-      - name: Run tests on emulator
+      - name: Run connected tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
-          target: google_apis
+          api-level: 29
           arch: x86_64
-          profile: pixel_3
+          target: google_apis
+          profile: Nexus 6
+          emulator-options: -no-window -no-audio -gpu swiftshader_indirect
           script: ./gradlew connectedDebugAndroidTest
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio
