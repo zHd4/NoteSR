@@ -25,19 +25,22 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Download Android SDK
+        uses: android-actions/setup-android@v2
 
       - name: Install system image
-        run: echo "y" | sdkmanager "system-images;android-${API_LEVEL};${TARGET};${ABI}"
+        run: |
+          sdkmanager --install "system-images;android-${API_LEVEL};${TARGET};${ABI}"
+          sdkmanager --licenses <<< "y"
 
       - name: Create AVD
         run: |
           echo "no" | avdmanager create avd -n $AVD_NAME -k "system-images;android-${API_LEVEL};${TARGET};${ABI}" --device "pixel"
 
-      - name: Launch emulator
+      - name: Start AVD and wait for boot
         run: |
           nohup emulator -avd $AVD_NAME -no-audio -no-window -gpu swiftshader_indirect > emulator.log 2>&1 &
+          sleep 30
           adb wait-for-device
           boot_completed=""
           retry=0
@@ -48,14 +51,21 @@ jobs:
             ((retry++))
           done
           if [[ "$boot_completed" != "1" ]]; then
-            echo "Emulator failed to boot"
-            cat emulator.log
+            echo "❌ Emulator failed to boot"
+            echo "------ emulator.log ------"
+            cat emulator.log || echo "(No log)"
             exit 1
           fi
           adb shell input keyevent 82 # unlock
 
-      - name: Build APKs
-        run: ./gradlew assembleDebug assembleDebugAndroidTest
+      - name: Build debug APK and test APK
+        run: ./gradlew assembleDebug assembleAndroidTest
 
-      - name: Run Instrumentation Tests
+      - name: Run instrumented tests
         run: ./gradlew connectedDebugAndroidTest
+
+      - name: Save emulator log on failure
+        if: failure()
+        run: |
+          echo "------ emulator.log ------"
+          cat emulator.log || echo "(No log found)"
