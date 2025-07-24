@@ -5,7 +5,7 @@ import app.notesr.dto.CryptoKey;
 
 import java.nio.ByteBuffer;
 
-public class CryptoUtils {
+public final class CryptoUtils {
     private static final int HEX_LINE_SIZE_LIMIT = 4;
 
     public static String cryptoKeyToHex(CryptoKey cryptoKey) {
