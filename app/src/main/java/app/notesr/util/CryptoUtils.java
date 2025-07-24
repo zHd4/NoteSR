@@ -1,6 +1,7 @@
-package app.notesr.crypto;
+package app.notesr.util;
 
 import app.notesr.App;
+import app.notesr.crypto.AesCryptor;
 import app.notesr.dto.CryptoKey;
 
 import java.nio.ByteBuffer;

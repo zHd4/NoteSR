@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import app.notesr.dto.CryptoKey;
+import app.notesr.util.CryptoUtils;
 import io.bloco.faker.Faker;
 
 import org.junit.BeforeClass;

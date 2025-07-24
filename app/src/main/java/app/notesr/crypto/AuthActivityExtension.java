@@ -12,6 +12,7 @@ import app.notesr.data.MigrationActivity;
 import app.notesr.note.NoteListActivity;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.util.ActivityUtils;
+import app.notesr.util.CryptoUtils;
 
 public class AuthActivityExtension {
     private static final int MAX_ATTEMPTS = 3;

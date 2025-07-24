@@ -18,6 +18,7 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.util.CryptoUtils;
 
 import java.util.Objects;
 
