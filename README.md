@@ -8,7 +8,7 @@
 <p align="center">
     <a href="https://github.com/zHd4/NoteSR/releases"><img src="https://img.shields.io/github/v/release/zHd4/NoteSR" /></a>
     <a href="https://github.com/zHd4/NoteSR/actions/workflows/java_ci.yml"><img src="https://github.com/zHd4/NoteSR/actions/workflows/java_ci.yml/badge.svg" /></a>
-    <a href="https://codeclimate.com/github/zHd4/NoteSR/maintainability"><img src="https://api.codeclimate.com/v1/badges/5ea743b7a5adc15c9450/maintainability" /></a>
+    <a href="https://qlty.sh/gh/zHd4/projects/NoteSR"><img src="https://qlty.sh/gh/zHd4/projects/NoteSR/maintainability.svg" alt="Maintainability" /></a>
 </p>
 
 **NoteSR** is a secure and offline-first note-taking Android app that creates an encrypted storage space on your device. You can write text notes, attach any type of file to them, and open files directly inside the app — all fully encrypted using AES-256.
