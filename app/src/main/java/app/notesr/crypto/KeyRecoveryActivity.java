@@ -45,7 +45,7 @@ public class KeyRecoveryActivity extends ActivityBase {
 
             if (!hexKey.isBlank()) {
                 try {
-                    CryptoTools.hexToCryptoKey(hexKey, null);
+                    CryptoUtils.hexToCryptoKey(hexKey, null);
 
                     Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
                     String authActivityMode = AuthActivity.Mode.KEY_RECOVERY.toString();

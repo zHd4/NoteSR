@@ -1,7 +1,7 @@
 package app.notesr.service.crypto;
 
-import static app.notesr.crypto.CryptoTools.cryptoKeyToHex;
-import static app.notesr.crypto.CryptoTools.hexToCryptoKey;
+import static app.notesr.crypto.CryptoUtils.cryptoKeyToHex;
+import static app.notesr.crypto.CryptoUtils.hexToCryptoKey;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;

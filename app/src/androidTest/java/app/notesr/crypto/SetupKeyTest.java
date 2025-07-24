@@ -59,11 +59,11 @@ public class SetupKeyTest {
                 AesCryptor.KEY_GENERATOR_ALGORITHM);
         CryptoKey cryptoKey = new CryptoKey(secretKey, TEST_SALT, testPassword);
 
-        String actual = CryptoTools.cryptoKeyToHex(cryptoKey);
+        String actual = CryptoUtils.cryptoKeyToHex(cryptoKey);
         assertThat(actual, is(TEST_HEX_CRYPTO_KEY));
 
         CryptoKey actualCryptoKey =
-                CryptoTools.hexToCryptoKey(TEST_HEX_CRYPTO_KEY, testPassword, true);
+                CryptoUtils.hexToCryptoKey(TEST_HEX_CRYPTO_KEY, testPassword, true);
 
         assertThat(actualCryptoKey, is(cryptoKey));
     }

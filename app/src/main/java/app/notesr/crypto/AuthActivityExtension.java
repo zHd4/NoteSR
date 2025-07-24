@@ -71,7 +71,7 @@ public class AuthActivityExtension {
 
                 App.getAppContainer()
                         .getCryptoManager()
-                        .applyNewKey(CryptoTools.hexToCryptoKey(hexKey, password));
+                        .applyNewKey(CryptoUtils.hexToCryptoKey(hexKey, password));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
