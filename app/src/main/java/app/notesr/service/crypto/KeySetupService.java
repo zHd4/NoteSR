@@ -1,8 +1,5 @@
 package app.notesr.service.crypto;
 
-import static app.notesr.util.CryptoUtils.cryptoKeyToHex;
-import static app.notesr.util.CryptoUtils.hexToCryptoKey;
-
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -17,26 +14,15 @@ import app.notesr.App;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.dto.CryptoKey;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class KeySetupService {
-    private CryptoKey cryptoKey;
+    private final CryptoKey cryptoKey;
 
-    public KeySetupService(String password) {
-        try {
-            this.cryptoKey = getCryptoManager().generateNewKey(password);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String getHexKey() {
-        return cryptoKeyToHex(cryptoKey);
-    }
-
-    public void setHexKey(String hexKey) throws Exception {
-        String password = cryptoKey.getPassword();
-        this.cryptoKey = hexToCryptoKey(hexKey, password, true);
+    public KeySetupService(String password) throws NoSuchAlgorithmException {
+        this.cryptoKey = getCryptoManager().generateNewKey(password);
     }
 
     public void apply() throws InvalidAlgorithmParameterException, NoSuchPaddingException,

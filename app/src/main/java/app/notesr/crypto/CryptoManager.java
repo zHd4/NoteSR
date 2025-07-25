@@ -2,7 +2,6 @@ package app.notesr.crypto;
 
 import android.util.Log;
 
-import app.notesr.App;
 import app.notesr.dto.CryptoKey;
 import app.notesr.util.FilesUtils;
 import app.notesr.util.HashHelper;
@@ -87,17 +86,6 @@ public class CryptoManager {
         return new CryptoKey(mainKey, mainSalt, password);
     }
 
-    public CryptoKey createCryptoKey(byte[] keyBytes, byte[] salt, String password, boolean checkKey) throws
-            Exception {
-        SecretKey newKey = new SecretKeySpec(keyBytes, 0, keyBytes.length,
-                AesCryptor.KEY_GENERATOR_ALGORITHM);
-        if (checkKey && !checkImportedKey(newKey, salt)) {
-            throw new Exception("Wrong key");
-        }
-
-        return new CryptoKey(newKey, salt, password);
-    }
-
     public void applyNewKey(CryptoKey newKey) throws
             NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException,
@@ -159,20 +147,18 @@ public class CryptoManager {
         return HashHelper.toSha256Bytes(cryptoKeyBytes);
     }
 
-    private boolean checkImportedKey(SecretKey key, byte[] salt) {
-        if (App.onAndroid()) {
-            try {
-                File hashedKeyFile = getHashedCryptoKeyFile();
+    public boolean verifyCryptoKey(CryptoKey cryptoKey) throws IOException,
+            NoSuchAlgorithmException {
+        File hashedKeyFile = getHashedCryptoKeyFile();
 
-                if (hashedKeyFile.exists()) {
-                    byte[] originalCryptoKeyHash = FilesUtils.readFileBytes(hashedKeyFile);
-                    byte[] hashedUserCryptoKey = hashCryptoKeyData(key.getEncoded(), salt);
+        if (hashedKeyFile.exists()) {
+            byte[] originalCryptoKeyHash = FilesUtils.readFileBytes(hashedKeyFile);
+            byte[] providedCryptoKeyHash = hashCryptoKeyData(
+                    cryptoKey.getKey().getEncoded(),
+                    cryptoKey.getSalt()
+            );
 
-                    return Arrays.equals(originalCryptoKeyHash, hashedUserCryptoKey);
-                }
-            } catch (IOException | NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
+            return Arrays.equals(originalCryptoKeyHash, providedCryptoKeyHash);
         }
 
         return true;

@@ -3,7 +3,6 @@ package app.notesr.crypto;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.view.View;
 
 import app.notesr.BuildConfig;
 import app.notesr.data.MigrationActivity;
@@ -14,13 +13,12 @@ import app.notesr.service.migration.DataVersionManager;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class FinishKeySetupOnClick implements View.OnClickListener {
-    private final Activity parentActivity;
+public class KeySetupCompletionHandler {
+    private final Activity activity;
     private final KeySetupService keySetupService;
     private final KeySetupMode mode;
-    
-    @Override
-    public void onClick(View view) {
+
+    public void handle() {
         switch (mode) {
             case FIRST_RUN -> proceedFirstRun();
             case REGENERATION -> proceedRegeneration();
@@ -31,7 +29,7 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
         try {
             keySetupService.apply();
 
-            Context context = parentActivity.getApplicationContext();
+            Context context = activity.getApplicationContext();
             Intent nextIntent = new Intent(context, NoteListActivity.class);
 
             DataVersionManager dataVersionManager = new DataVersionManager(context);
@@ -45,19 +43,19 @@ public class FinishKeySetupOnClick implements View.OnClickListener {
                 nextIntent = new Intent(context, MigrationActivity.class);
             }
 
-            parentActivity.startActivity(nextIntent);
-            parentActivity.finish();
+            activity.startActivity(nextIntent);
+            activity.finish();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private void proceedRegeneration() {
-        Context context = parentActivity.getApplicationContext();
+        Context context = activity.getApplicationContext();
         Intent intent = new Intent(context, ReEncryptionActivity.class)
                 .putExtra("newCryptoKey", keySetupService.getCryptoKey());
 
-        parentActivity.startActivity(intent);
-        parentActivity.finish();
+        activity.startActivity(intent);
+        activity.finish();
     }
 }

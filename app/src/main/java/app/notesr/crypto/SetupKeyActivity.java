@@ -5,13 +5,17 @@ import static java.util.Objects.requireNonNull;
 import static app.notesr.util.ActivityUtils.copyToClipboard;
 import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.CryptoUtils.cryptoKeyToHex;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.security.NoSuchAlgorithmException;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
@@ -20,6 +24,8 @@ import lombok.Getter;
 
 @Getter
 public class SetupKeyActivity extends ActivityBase {
+
+    private static final String TAG = SetupKeyActivity.class.getName();
     private static final int LOW_SCREEN_HEIGHT = 800;
     private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
 
@@ -38,11 +44,19 @@ public class SetupKeyActivity extends ActivityBase {
             disableBackButton(this);
         }
 
-        password = requireNonNull(getIntent().getStringExtra("password"));
-        keySetupService = new KeySetupService(password);
+        try {
+            password = getIntent().getStringExtra("password");
+            keySetupService = new KeySetupService(password);
+        } catch (NoSuchAlgorithmException e) {
+            Log.e(TAG, "Key generation error", e);
+            throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Password is null", e);
+            throw new RuntimeException(e);
+        }
 
         TextView keyView = findViewById(R.id.aesKeyHex);
-        keyView.setText(keySetupService.getHexKey());
+        keyView.setText(cryptoKeyToHex(keySetupService.getCryptoKey()));
 
         adaptKeyView();
 
@@ -52,8 +66,7 @@ public class SetupKeyActivity extends ActivityBase {
 
         copyToClipboardButton.setOnClickListener(copyKeyButtonOnClick());
         importButton.setOnClickListener(importKeyButtonOnClick());
-        nextButton.setOnClickListener(new FinishKeySetupOnClick(this, keySetupService,
-                mode));
+        nextButton.setOnClickListener(nextButtonOnClick());
     }
 
     private void adaptKeyView() {
@@ -81,5 +94,10 @@ public class SetupKeyActivity extends ActivityBase {
 
             startActivity(intent);
         };
+    }
+
+    private View.OnClickListener nextButtonOnClick() {
+        return view ->
+                new KeySetupCompletionHandler(this, keySetupService, mode).handle();
     }
 }

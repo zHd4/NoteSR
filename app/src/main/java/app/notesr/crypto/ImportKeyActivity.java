@@ -4,15 +4,21 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 import static java.util.Objects.requireNonNull;
 
+import static app.notesr.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.CryptoUtils.hexToCryptoKey;
+
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.dto.CryptoKey;
 import app.notesr.service.crypto.KeySetupService;
 
 public class ImportKeyActivity extends ActivityBase {
@@ -21,7 +27,6 @@ public class ImportKeyActivity extends ActivityBase {
 
     private KeySetupMode mode;
     private EditText keyField;
-    private KeySetupService keySetupService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +39,6 @@ public class ImportKeyActivity extends ActivityBase {
         actionBar.setTitle(getResources().getString(R.string.import_key));
 
         mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
-
-        String password = requireNonNull(getIntent().getStringExtra("password"));
-        keySetupService = new KeySetupService(password);
 
         keyField = findViewById(R.id.importKeyField);
         keyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -56,8 +58,17 @@ public class ImportKeyActivity extends ActivityBase {
             String hexKey = keyField.getText().toString();
 
             if (!hexKey.isBlank()) {
-                new FinishKeySetupOnClick(this, keySetupService, mode)
-                        .onClick(view);
+                try {
+                    String password = getIntent().getStringExtra("password");
+                    CryptoKey cryptoKey = hexToCryptoKey(hexKey, password);
+                    KeySetupService keySetupService = new KeySetupService(cryptoKey);
+
+                    new KeySetupCompletionHandler(this, keySetupService, mode).handle();
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "Invalid key", e);
+                    showToastMessage(this,getString(R.string.invalid_key),
+                            Toast.LENGTH_SHORT);
+                }
             }
         };
     }

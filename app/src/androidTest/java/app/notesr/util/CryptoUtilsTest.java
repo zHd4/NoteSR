@@ -1,19 +1,21 @@
-package app.notesr.crypto;
+package app.notesr.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import app.notesr.crypto.AesCryptor;
 import app.notesr.dto.CryptoKey;
-import app.notesr.util.CryptoUtils;
 import io.bloco.faker.Faker;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.security.InvalidKeyException;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-public class SetupKeyTest {
+public class CryptoUtilsTest {
 
     private static final Faker FAKER = new Faker();
 
@@ -55,7 +57,7 @@ public class SetupKeyTest {
     }
 
     @Test
-    public void testCryptoKeyConvertation() throws Exception {
+    public void testCryptoKeyConvertation() throws InvalidKeyException {
         SecretKey secretKey = new SecretKeySpec(TEST_KEY_BYTES, 0, TEST_KEY_BYTES.length,
                 AesCryptor.KEY_GENERATOR_ALGORITHM);
         CryptoKey cryptoKey = new CryptoKey(secretKey, TEST_SALT, testPassword);
@@ -63,8 +65,7 @@ public class SetupKeyTest {
         String actual = CryptoUtils.cryptoKeyToHex(cryptoKey);
         assertThat(actual, is(TEST_HEX_CRYPTO_KEY));
 
-        CryptoKey actualCryptoKey =
-                CryptoUtils.hexToCryptoKey(TEST_HEX_CRYPTO_KEY, testPassword, true);
+        CryptoKey actualCryptoKey = CryptoUtils.hexToCryptoKey(TEST_HEX_CRYPTO_KEY, testPassword);
 
         assertThat(actualCryptoKey, is(cryptoKey));
     }

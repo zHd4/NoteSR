@@ -4,6 +4,7 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.CryptoUtils.hexToCryptoKey;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,11 +19,15 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.util.CryptoUtils;
+import app.notesr.dto.CryptoKey;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 public class KeyRecoveryActivity extends ActivityBase {
+    private static final String TAG = KeyRecoveryActivity.class.toString();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,18 +51,26 @@ public class KeyRecoveryActivity extends ActivityBase {
 
             if (!hexKey.isBlank()) {
                 try {
-                    CryptoUtils.hexToCryptoKey(hexKey, null);
+                    CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
+                    CryptoKey cryptoKey = hexToCryptoKey(hexKey, null);
 
-                    Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
-                    String authActivityMode = AuthActivity.Mode.KEY_RECOVERY.toString();
+                    if (cryptoManager.verifyCryptoKey(cryptoKey)) {
+                        startActivity(new Intent(App.getContext(), AuthActivity.class)
+                                .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString())
+                                .putExtra("hexKey", hexKey));
 
-                    authActivityIntent.putExtra("mode", authActivityMode);
-                    authActivityIntent.putExtra("hexKey", hexKey);
-
-                    startActivity(authActivityIntent);
-                } catch (Exception e) {
-                    Log.e("Key recovery error", e.toString());
-                    showToastMessage(this,getString(R.string.wrong_key), Toast.LENGTH_SHORT);
+                        finish();
+                    } else {
+                        Log.e(TAG, "Wrong key: " + hexKey);
+                        showToastMessage(this,getString(R.string.wrong_key), Toast.LENGTH_SHORT);
+                    }
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "Invalid key", e);
+                    showToastMessage(this,getString(R.string.invalid_key),
+                            Toast.LENGTH_SHORT);
+                } catch (IOException | NoSuchAlgorithmException e) {
+                    Log.e(TAG, e.toString());
+                    throw new RuntimeException(e);
                 }
             }
         };
