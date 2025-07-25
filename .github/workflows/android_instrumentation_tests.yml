@@ -39,9 +39,14 @@ jobs:
 
       - name: Start AVD and wait for boot
         run: |
+          set -o pipefail
+          trap 'echo "------ emulator.log ------"; cat emulator.log || echo "(no log)"' EXIT
+          
           nohup emulator -avd $AVD_NAME -no-audio -no-window -gpu swiftshader_indirect > emulator.log 2>&1 &
+          echo "⏳ Waiting for emulator to start..."
           sleep 30
           adb wait-for-device
+          
           boot_completed=""
           retry=0
           until [[ "$boot_completed" == "1" || $retry -gt 60 ]]; do
@@ -50,22 +55,17 @@ jobs:
             sleep 5
             ((retry++))
           done
+          
           if [[ "$boot_completed" != "1" ]]; then
             echo "❌ Emulator failed to boot"
-            echo "------ emulator.log ------"
-            cat emulator.log || echo "(No log)"
             exit 1
           fi
-          adb shell input keyevent 82 # unlock
+
+          echo "✅ Emulator booted"
+          adb shell input keyevent 82
 
       - name: Build debug APK and test APK
         run: ./gradlew assembleDebug assembleAndroidTest
 
       - name: Run instrumented tests
         run: ./gradlew connectedDebugAndroidTest
-
-      - name: Save emulator log on failure
-        if: failure()
-        run: |
-          echo "------ emulator.log ------"
-          cat emulator.log || echo "(No log found)"
