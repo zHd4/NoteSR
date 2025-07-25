@@ -26,23 +26,23 @@ jobs:
           java-version: 17
 
       - name: Download Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3
 
-      - name: Install system image
+      - name: Install emulator and system image
         run: |
-          sdkmanager --install "system-images;android-${API_LEVEL};${TARGET};${ABI}"
-          sdkmanager --licenses <<< "y"
+          sdkmanager "platforms;android-${API_LEVEL}" "system-images;android-${API_LEVEL};${TARGET};${ABI}" "emulator" "platform-tools"
 
       - name: Create AVD
         run: |
-          echo "no" | avdmanager create avd -n $AVD_NAME -k "system-images;android-${API_LEVEL};${TARGET};${ABI}" --device "pixel"
+          echo "no" | avdmanager create avd -n $AVD_NAME -k "system-images;android-${API_LEVEL};${TARGET};${ABI}" --force
 
       - name: Start AVD and wait for boot
         run: |
           set -o pipefail
           trap 'echo "------ emulator.log ------"; cat emulator.log || echo "(no log)"' EXIT
           
-          nohup emulator -avd $AVD_NAME -no-audio -no-window -gpu swiftshader_indirect > emulator.log 2>&1 &
+          nohup $ANDROID_HOME/emulator/emulator -avd $AVD_NAME -no-window -no-audio -gpu swiftshader_indirect > emulator.log 2>&1 &
+
           echo "⏳ Waiting for emulator to start..."
           sleep 30
           adb wait-for-device
