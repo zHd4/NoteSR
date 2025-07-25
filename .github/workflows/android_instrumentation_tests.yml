@@ -13,7 +13,7 @@ jobs:
       AVD_NAME: test
       API_LEVEL: 30
       TARGET: google_apis
-      ABI: x86
+      ABI: arm64-v8a
 
     steps:
       - name: Checkout code
@@ -28,9 +28,8 @@ jobs:
       - name: Download Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install emulator and system image
-        run: |
-          sdkmanager "platforms;android-${API_LEVEL}" "system-images;android-${API_LEVEL};${TARGET};${ABI}" "emulator" "platform-tools"
+      - name: Install system image
+        run: sdkmanager "system-images;android-${API_LEVEL};${TARGET};${ABI}"
 
       - name: Create AVD
         run: |
@@ -44,7 +43,7 @@ jobs:
           set -o pipefail
           trap 'echo "------ emulator.log ------"; cat emulator.log || echo "(no log)"' EXIT
           
-          nohup $ANDROID_HOME/emulator/emulator -avd $AVD_NAME -no-window -no-audio -gpu swiftshader_indirect > emulator.log 2>&1 &
+          nohup $ANDROID_HOME/emulator/emulator -avd $AVD_NAME -no-window -no-audio -gpu off -no-snapshot -no-accel -no-boot-anim > emulator.log 2>&1 &
 
           echo "⏳ Waiting for emulator to start..."
           sleep 30
