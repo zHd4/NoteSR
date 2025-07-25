@@ -34,10 +34,13 @@ jobs:
 
       - name: Create AVD
         run: |
+          export ANDROID_AVD_HOME=$HOME/.android/avd
+          mkdir -p "$ANDROID_AVD_HOME"
           echo "no" | avdmanager create avd -n $AVD_NAME -k "system-images;android-${API_LEVEL};${TARGET};${ABI}" --force
 
       - name: Start AVD and wait for boot
         run: |
+          export ANDROID_AVD_HOME=$HOME/.android/avd
           set -o pipefail
           trap 'echo "------ emulator.log ------"; cat emulator.log || echo "(no log)"' EXIT
           
