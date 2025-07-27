@@ -17,7 +17,7 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.data.ExportActivity;
 import app.notesr.data.ImportActivity;
-import app.notesr.dto.Note;
+import app.notesr.model.Note;
 
 import java.util.HashMap;
 import java.util.List;

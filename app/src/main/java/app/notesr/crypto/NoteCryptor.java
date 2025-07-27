@@ -4,7 +4,7 @@ import android.util.Log;
 import app.notesr.App;
 import app.notesr.dto.CryptoKey;
 import app.notesr.model.EncryptedNote;
-import app.notesr.dto.Note;
+import app.notesr.model.Note;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

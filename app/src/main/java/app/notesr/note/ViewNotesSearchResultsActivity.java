@@ -7,7 +7,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.service.note.NoteService;
-import app.notesr.dto.Note;
+import app.notesr.model.Note;
 import app.notesr.dto.SearchNotesResults;
 
 import java.util.HashMap;

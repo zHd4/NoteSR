@@ -20,7 +20,7 @@ import app.notesr.ActivityBase;
 import app.notesr.file.FileListActivity;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
-import app.notesr.dto.Note;
+import app.notesr.model.Note;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 

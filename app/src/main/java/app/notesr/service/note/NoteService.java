@@ -5,7 +5,7 @@ import app.notesr.db.notes.dao.DataBlockDao;
 import app.notesr.db.notes.dao.FileInfoDao;
 import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.model.EncryptedNote;
-import app.notesr.dto.Note;
+import app.notesr.model.Note;
 import app.notesr.util.HashHelper;
 import lombok.RequiredArgsConstructor;
 

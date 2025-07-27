@@ -17,7 +17,7 @@ import app.notesr.ActivityBase;
 import app.notesr.note.OpenNoteActivity;
 import app.notesr.service.note.NoteService;
 import app.notesr.dto.FileInfo;
-import app.notesr.dto.Note;
+import app.notesr.model.Note;
 
 import java.util.HashMap;
 import java.util.List;

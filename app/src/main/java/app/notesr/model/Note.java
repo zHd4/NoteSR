@@ -1,4 +1,4 @@
-package app.notesr.dto;
+package app.notesr.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
