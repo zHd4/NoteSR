@@ -19,7 +19,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.service.file.FileService;
-import app.notesr.dto.FileInfo;
+import app.notesr.model.FileInfo;
 import app.notesr.util.FileExifDataResolver;
 import app.notesr.util.Wiper;
 import app.notesr.util.thumbnail.ImageThumbnailCreator;

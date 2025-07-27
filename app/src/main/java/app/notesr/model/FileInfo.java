@@ -1,4 +1,4 @@
-package app.notesr.dto;
+package app.notesr.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

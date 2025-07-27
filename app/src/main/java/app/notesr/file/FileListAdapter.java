@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 
 import app.notesr.ElementListAdapter;
 import app.notesr.R;
-import app.notesr.dto.FileInfo;
+import app.notesr.model.FileInfo;
 
 import java.text.DecimalFormat;
 import java.util.List;

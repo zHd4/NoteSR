@@ -18,7 +18,7 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.file.FileListActivity;
 import app.notesr.service.file.FileService;
-import app.notesr.dto.FileInfo;
+import app.notesr.model.FileInfo;
 import app.notesr.util.FilesUtils;
 import app.notesr.util.HashHelper;
 import lombok.Getter;

@@ -6,7 +6,7 @@ import app.notesr.db.notes.dao.DataBlockDao;
 import app.notesr.db.notes.dao.FileInfoDao;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
-import app.notesr.dto.FileInfo;
+import app.notesr.model.FileInfo;
 import lombok.Getter;
 
 import java.io.IOException;

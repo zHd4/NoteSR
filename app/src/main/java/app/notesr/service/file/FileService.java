@@ -10,7 +10,7 @@ import app.notesr.db.notes.dao.FileInfoDao;
 import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
-import app.notesr.dto.FileInfo;
+import app.notesr.model.FileInfo;
 import app.notesr.util.HashHelper;
 import lombok.RequiredArgsConstructor;
 

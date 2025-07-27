@@ -15,7 +15,7 @@ import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.model.DataBlock;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.EncryptedNote;
-import app.notesr.dto.FileInfo;
+import app.notesr.model.FileInfo;
 import app.notesr.model.Note;
 import io.bloco.faker.Faker;
 import org.junit.After;
