@@ -1,5 +1,7 @@
 package app.notesr.model;
 
+import androidx.room.Entity;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
