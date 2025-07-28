@@ -23,18 +23,18 @@ public interface FileInfoDao {
     @Delete
     void delete(FileInfo fileInfo);
 
-    @Query("DELETE FROM file_info WHERE id = :id")
+    @Query("DELETE FROM files_info WHERE id = :id")
     void deleteById(String id);
 
-    @Query("SELECT * FROM file_info ORDER BY id")
+    @Query("SELECT * FROM files_info ORDER BY id")
     List<FileInfo> getAll();
 
-    @Query("SELECT * FROM file_info WHERE id = :id LIMIT 1")
+    @Query("SELECT * FROM files_info WHERE id = :id LIMIT 1")
     FileInfo get(String id);
 
-    @Query("SELECT * FROM file_info WHERE note_id = :noteId ORDER BY updated_at DESC")
+    @Query("SELECT * FROM files_info WHERE note_id = :noteId ORDER BY updated_at DESC")
     List<FileInfo> getByNoteId(String noteId);
 
-    @Query("SELECT COUNT(*) FROM file_info WHERE note_id = :noteId")
+    @Query("SELECT COUNT(*) FROM files_info WHERE note_id = :noteId")
     Long getCountByNoteId(String noteId);
 }
