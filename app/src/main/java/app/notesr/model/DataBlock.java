@@ -35,7 +35,6 @@ public class DataBlock {
     @NonNull
     private Long order;
 
-    @NonNull
     private byte[] data;
 
     @NonNull
