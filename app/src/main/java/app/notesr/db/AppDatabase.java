@@ -7,7 +7,7 @@ import androidx.room.TypeConverters;
 import app.notesr.db.dao.DataBlockDao;
 import app.notesr.db.dao.FileInfoDao;
 import app.notesr.db.dao.NoteDao;
-import app.notesr.db.service.dao.TempFileDao;
+import app.notesr.db.dao.TempFileDao;
 import app.notesr.model.DataBlock;
 import app.notesr.model.FileInfo;
 import app.notesr.model.Note;
