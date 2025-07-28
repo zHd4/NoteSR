@@ -5,6 +5,7 @@ import app.notesr.db.notes.dao.DataBlockDao;
 import app.notesr.db.notes.dao.FileInfoDao;
 import app.notesr.db.notes.dao.NoteDao;
 
+@Deprecated(forRemoval = true)
 public class NotesDb extends BaseDb {
     private static final String NAME = "notes_db5";
 

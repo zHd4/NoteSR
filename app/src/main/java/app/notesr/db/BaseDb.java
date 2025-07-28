@@ -7,6 +7,7 @@ import app.notesr.App;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated(forRemoval = true)
 public abstract class BaseDb extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 

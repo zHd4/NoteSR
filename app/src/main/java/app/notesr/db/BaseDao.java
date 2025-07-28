@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.time.format.DateTimeFormatter;
 
+@Deprecated(forRemoval = true)
 @AllArgsConstructor
 public abstract class BaseDao {
 
