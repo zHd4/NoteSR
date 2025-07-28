@@ -12,10 +12,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+/** @noinspection LombokGetterMayBeUsed, LombokSetterMayBeUsed */
 @Entity(
         tableName = "files_info",
         foreignKeys = @ForeignKey(
@@ -27,8 +26,6 @@ import lombok.Setter;
 )
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class FileInfo implements Serializable {
 
     @PrimaryKey
@@ -59,4 +56,82 @@ public class FileInfo implements Serializable {
 
     @Ignore
     private Long decimalId;
+
+    @NonNull
+    public String getId() {
+        return id;
+    }
+
+    public void setId(@NonNull String id) {
+        this.id = id;
+    }
+
+    @NonNull
+    public String getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(@NonNull String noteId) {
+        this.noteId = noteId;
+    }
+
+    @NonNull
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(@NonNull Long size) {
+        this.size = size;
+    }
+
+    @NonNull
+    public String getName() {
+        return name;
+    }
+
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public byte[] getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(byte[] thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    @NonNull
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(@NonNull LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @NonNull
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(@NonNull LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getDecimalId() {
+        return decimalId;
+    }
+
+    public void setDecimalId(Long decimalId) {
+        this.decimalId = decimalId;
+    }
 }
