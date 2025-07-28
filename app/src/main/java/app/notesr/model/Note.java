@@ -11,13 +11,11 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 /** @noinspection LombokGetterMayBeUsed, LombokSetterMayBeUsed */
 @Entity(tableName = "notes")
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 public final class Note {
     @PrimaryKey
     @NonNull
