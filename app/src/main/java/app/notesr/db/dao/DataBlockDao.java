@@ -26,7 +26,7 @@ public interface DataBlockDao {
     @Query("DELETE FROM data_block WHERE id = :id")
     void deleteById(String id);
 
-    @Query("DELETE FROM data_block WHERE fileId = :fileId")
+    @Query("DELETE FROM data_block WHERE file_id = :fileId")
     void deleteByFileId(String fileId);
 
     @Query("SELECT * FROM data_block WHERE id = :id LIMIT 1")
