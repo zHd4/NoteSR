@@ -1,5 +1,7 @@
 package app.notesr.db;
 
+import android.net.Uri;
+
 import androidx.room.TypeConverter;
 
 import java.time.LocalDateTime;
@@ -17,5 +19,15 @@ public class DatabaseTypeConverters {
     @TypeConverter
     public static LocalDateTime toLocalDateTime(String value) {
         return value == null ? null : LocalDateTime.parse(value, FORMATTER);
+    }
+
+    @TypeConverter
+    public static String fromUri(Uri uri) {
+        return uri == null ? null : uri.toString();
+    }
+
+    @TypeConverter
+    public static Uri toUri(String uriString) {
+        return uriString == null ? null : Uri.parse(uriString);
     }
 }
