@@ -2,6 +2,7 @@ package app.notesr.db;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import app.notesr.db.notes.dao.DataBlockDao;
 import app.notesr.db.notes.dao.FileInfoDao;
@@ -15,6 +16,7 @@ import app.notesr.model.TempFile;
 @Database(entities = {Note.class, FileInfo.class, DataBlock.class, TempFile.class},
         version = 1,
         exportSchema = false)
+@TypeConverters({DatabaseTypeConverters.class})
 public abstract class AppDatabase extends RoomDatabase {
     public abstract NoteDao getNoteDao();
     public abstract FileInfoDao getFileInfoDao();
