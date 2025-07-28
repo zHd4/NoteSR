@@ -2,23 +2,39 @@ package app.notesr.model;
 
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
-
-import org.jetbrains.annotations.NotNull;
+import androidx.room.PrimaryKey;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-@Entity
+/** @noinspection LombokGetterMayBeUsed, LombokSetterMayBeUsed */
+@Entity(tableName = "temp_files")
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
-@Data
 public class TempFile {
+
+    @PrimaryKey(autoGenerate = true)
     private Long id;
 
-    @NotNull
+    @NonNull
     private Uri uri;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @NonNull
+    public Uri getUri() {
+        return uri;
+    }
+
+    public void setUri(@NonNull Uri uri) {
+        this.uri = uri;
+    }
 }
