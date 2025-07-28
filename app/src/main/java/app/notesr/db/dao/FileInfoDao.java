@@ -1,4 +1,4 @@
-package app.notesr.db.notes.dao;
+package app.notesr.db.dao;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
