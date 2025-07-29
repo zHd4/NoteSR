@@ -1,183 +1,212 @@
 package app.notesr.crypto;
 
+import static app.notesr.util.HashHelper.fromSha256HexString;
+import static app.notesr.util.HashHelper.toSha256Bytes;
+import static app.notesr.util.HashHelper.toSha256String;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
+import app.notesr.exception.DecryptionFailedException;
+import app.notesr.exception.EncryptionFailedException;
 import app.notesr.util.FilesUtils;
-import app.notesr.util.HashHelper;
 import app.notesr.util.Wiper;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
-@Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CryptoManager {
+    private static final String TAG = CryptoManager.class.getName();
+    private static final String PREF_NAME = "crypto_prefs";
+    private static final String KEY_HASH_PREF = "key_hash";
+    private static final String BLOCK_MARKER_PREF = "is_blocked";
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
-    private static final String HASHED_CRYPTO_KEY_FILENAME = "key.sha256";
-    private static final String BLOCKED_FILENAME = ".blocked";
-    private static final int KEY_BYTES_COUNT = AesCryptor.KEY_SIZE / 8;
-    private CryptoKey cryptoKeyInstance;
+    private static final String KEY_HASH_FILENAME = "key.sha256";
+    private static final String BLOCK_MARKER_FILENAME = ".blocked";
+    private static final int KEY_SIZE = 48;
+
+    private static CryptoManager instance;
+
+    private final SharedPreferences prefs;
+
+    @Getter
+    private CryptoSecrets secrets;
+
+    public static CryptoManager getInstance(Context context) {
+        if (instance == null) {
+            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            instance = new CryptoManager(prefs);
+        }
+
+        return instance;
+    }
 
     public boolean configure(String password) {
         try {
-            byte[] secondarySalt = AesCryptor.generatePasswordBasedSalt(password);
-            AesCryptor aesCryptor = new AesCryptor(password, secondarySalt);
-
-            byte[] encryptedKeyFileBytes = FilesUtils.readFileBytes(getEncryptedKeyFile());
-            byte[] keyFileBytes = aesCryptor.decrypt(encryptedKeyFileBytes);
-
-            byte[] mainKeyBytes = new byte[KEY_BYTES_COUNT];
-            byte[] mainSaltBytes = new byte[AesCryptor.SALT_SIZE];
-
-            System.arraycopy(keyFileBytes, 0, mainKeyBytes, 0,KEY_BYTES_COUNT);
-            System.arraycopy(keyFileBytes, KEY_BYTES_COUNT, mainSaltBytes, 0, AesCryptor.SALT_SIZE);
-
-            SecretKey mainKey = new SecretKeySpec(
-                    mainKeyBytes,
-                    0,
-                    mainKeyBytes.length,
-                    AesCryptor.KEY_GENERATOR_ALGORITHM);
-
-            cryptoKeyInstance = new CryptoKey(mainKey, mainSaltBytes, password);
-
+            this.secrets = tryGetSecretsWithFallback(password);
             return true;
-        } catch (Exception e) {
-            Log.e("CryptoManager configuration error", e.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (DecryptionFailedException e) {
+            Log.e(TAG, "Key decryption failed", e);
             return false;
         }
     }
 
-    public boolean ready() {
-        return cryptoKeyInstance != null;
+    public boolean isConfigured() {
+        return secrets != null;
     }
 
-    public boolean isFirstRun() {
-        return !getEncryptedKeyFile().exists() && !getBlockFile().exists();
+    public boolean isKeyExists() {
+        return getEncryptedKeyFile().exists();
+    }
+
+    public boolean isBlocked() {
+        boolean isBlocked = prefs.getBoolean(BLOCK_MARKER_PREF, false);
+        return isBlocked || getBlockMarkerFile().exists();
+    }
+
+    public CryptoSecrets generateSecrets(String password) {
+        byte[] key = new byte[KEY_SIZE];
+        new SecureRandom().nextBytes(key);
+
+        return new CryptoSecrets(key, password);
+    }
+
+    public void updateSecrets(CryptoSecrets secrets) throws EncryptionFailedException, IOException {
+        saveSecrets(secrets);
+        this.secrets = secrets;
+    }
+
+    public boolean verifyKey(byte[] key) throws IOException,
+            NoSuchAlgorithmException {
+        byte[] originalHash = getKeyHash();
+
+        if (originalHash != null) {
+            byte[] providedHash = toSha256Bytes(key);
+            return Arrays.equals(originalHash, providedHash);
+        }
+
+        return true;
+    }
+
+    public void block() throws IOException {
+        Wiper.wipeFile(getEncryptedKeyFile());
+        prefs.edit().putBoolean(BLOCK_MARKER_PREF, true).apply();
+    }
+
+    public void unblock() throws IOException {
+        prefs.edit().putBoolean(BLOCK_MARKER_PREF, false).apply();
+        File blockMarkerFile = getBlockMarkerFile();
+
+        if (blockMarkerFile.exists()) {
+            Files.delete(blockMarkerFile.toPath());
+        }
+    }
+
+    public void destroySecrets() {
+        secrets = null;
+    }
+
+    private CryptoSecrets tryGetSecretsWithFallback(String password)
+            throws IOException, DecryptionFailedException {
+        try {
+            return getSecrets(password, AesCryptor.AesMode.GCM);
+        } catch (DecryptionFailedException e) {
+            return getSecrets(password, AesCryptor.AesMode.CBC);
+        }
+    }
+
+    private void saveSecrets(CryptoSecrets secrets)
+            throws EncryptionFailedException, IOException {
+        try {
+            AesCryptor.AesMode mode = AesCryptor.AesMode.GCM;
+
+            byte[] keyHash = toSha256Bytes(secrets.getKey());
+            byte[] encryptedKeyFileBytes = getKeyCryptor(secrets.getPassword(), mode)
+                    .encrypt(secrets.getKey());
+
+            FilesUtils.writeFileBytes(getEncryptedKeyFile(), encryptedKeyFileBytes);
+            setKeyHash(keyHash);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException |
+                 InvalidAlgorithmParameterException | InvalidKeyException |
+                 IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException e) {
+            throw new EncryptionFailedException(e);
+        }
+    }
+
+    private CryptoSecrets getSecrets(String password, AesCryptor.AesMode aesMode)
+            throws DecryptionFailedException, IOException {
+        try {
+            byte[] encryptedKeyFileBytes = FilesUtils.readFileBytes(getEncryptedKeyFile());
+            byte[] keyFileBytes = getKeyCryptor(password, aesMode).decrypt(encryptedKeyFileBytes);
+
+            return new CryptoSecrets(keyFileBytes, password);
+        } catch (NoSuchAlgorithmException | InvalidKeyException | BadPaddingException |
+                 InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException |
+                 InvalidAlgorithmParameterException e) {
+            throw new DecryptionFailedException(e);
+        }
+    }
+
+    private AesCryptor getKeyCryptor(String password, AesCryptor.AesMode aesMode)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
+        byte[] salt = AesCryptor.generatePasswordBasedSalt(password);
+        return new AesCryptor(password, salt, aesMode);
+    }
+
+    private byte[] getKeyHash() throws IOException {
+        String keyHash = prefs.getString(KEY_HASH_PREF, null);
+
+        if (keyHash != null) {
+            return fromSha256HexString(keyHash);
+        }
+
+        File keyHashFile = getKeyHashFile();
+
+        if (keyHashFile.exists()) {
+            return FilesUtils.readFileBytes(keyHashFile);
+        }
+
+        return null;
+    }
+
+    private void setKeyHash(byte[] keyHash) throws NoSuchAlgorithmException, IOException {
+        prefs.edit().putString(KEY_HASH_PREF, toSha256String(keyHash)).apply();
+
+        File keyHashFile = getKeyHashFile();
+
+        if (keyHashFile.exists()) {
+            Wiper.wipeFile(keyHashFile);
+        }
     }
 
     private File getEncryptedKeyFile() {
         return FilesUtils.getInternalFile(ENCRYPTED_KEY_FILENAME);
     }
 
-    private File getBlockFile() {
-        return FilesUtils.getInternalFile(BLOCKED_FILENAME);
+    private File getBlockMarkerFile() {
+        return FilesUtils.getInternalFile(BLOCK_MARKER_FILENAME);
     }
 
-    private File getHashedCryptoKeyFile() {
-        return FilesUtils.getInternalFile(HASHED_CRYPTO_KEY_FILENAME);
-    }
-
-    public CryptoKey generateNewKey(String password) throws NoSuchAlgorithmException {
-        SecretKey mainKey = AesCryptor.generateRandomKey();
-        byte[] mainSalt = AesCryptor.generateRandomSalt();
-
-        return new CryptoKey(mainKey, mainSalt, password);
-    }
-
-    public void applyNewKey(CryptoKey newKey) throws
-            NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidAlgorithmParameterException, NoSuchPaddingException,
-            IllegalBlockSizeException, BadPaddingException,
-            InvalidKeyException, IOException {
-        String password = newKey.getPassword();
-
-        byte[] mainKey = newKey.getKey().getEncoded();
-        byte[] mainSalt = newKey.getSalt();
-
-        byte[] secondarySalt = AesCryptor.generatePasswordBasedSalt(password);
-        byte[] keyFileData = new byte[KEY_BYTES_COUNT + AesCryptor.SALT_SIZE];
-
-        System.arraycopy(mainKey, 0, keyFileData, 0, mainKey.length);
-        System.arraycopy(mainSalt, 0, keyFileData, mainKey.length, mainSalt.length);
-
-        AesCryptor aesCryptor = new AesCryptor(password, secondarySalt);
-        FilesUtils.writeFileBytes(getEncryptedKeyFile(), aesCryptor.encrypt(keyFileData));
-
-        cryptoKeyInstance = newKey;
-        File blockFile = getBlockFile();
-
-        if (blockFile.exists()) {
-            //noinspection ResultOfMethodCallIgnored
-            blockFile.delete();
-        }
-
-        FilesUtils.writeFileBytes(getHashedCryptoKeyFile(), hashCryptoKeyData(mainKey, mainSalt));
-    }
-
-    public void changePassword(String newPassword) throws NoSuchAlgorithmException, IOException,
-            InvalidKeySpecException, InvalidAlgorithmParameterException,
-            NoSuchPaddingException, IllegalBlockSizeException,
-            BadPaddingException, InvalidKeyException {
-        File keyFile = getEncryptedKeyFile();
-        String currentPassword = cryptoKeyInstance.getPassword();
-
-        byte[] currentSecondarySalt = AesCryptor.generatePasswordBasedSalt(currentPassword);
-        byte[] newSecondarySalt = AesCryptor.generatePasswordBasedSalt(newPassword);
-
-        AesCryptor aesCryptor = new AesCryptor(currentPassword, currentSecondarySalt);
-        byte[] keyFileData = aesCryptor.decrypt(FilesUtils.readFileBytes(keyFile));
-
-        aesCryptor = new AesCryptor(newPassword, newSecondarySalt);
-        FilesUtils.writeFileBytes(keyFile, aesCryptor.encrypt(keyFileData));
-
-        cryptoKeyInstance = new CryptoKey(
-                cryptoKeyInstance.getKey(),
-                cryptoKeyInstance.getSalt(),
-                newPassword);
-    }
-
-    private byte[] hashCryptoKeyData(byte[] key, byte[] salt) throws NoSuchAlgorithmException {
-        byte[] cryptoKeyBytes = new byte[key.length + salt.length];
-
-        System.arraycopy(key, 0, cryptoKeyBytes, 0, key.length);
-        System.arraycopy(salt, 0, cryptoKeyBytes, key.length, salt.length);
-
-        return HashHelper.toSha256Bytes(cryptoKeyBytes);
-    }
-
-    public boolean verifyCryptoKey(CryptoKey cryptoKey) throws IOException,
-            NoSuchAlgorithmException {
-        File hashedKeyFile = getHashedCryptoKeyFile();
-
-        if (hashedKeyFile.exists()) {
-            byte[] originalCryptoKeyHash = FilesUtils.readFileBytes(hashedKeyFile);
-            byte[] providedCryptoKeyHash = hashCryptoKeyData(
-                    cryptoKey.getKey().getEncoded(),
-                    cryptoKey.getSalt()
-            );
-
-            return Arrays.equals(originalCryptoKeyHash, providedCryptoKeyHash);
-        }
-
-        return true;
-    }
-
-    public boolean isBlocked() {
-        return getBlockFile().exists() && !getEncryptedKeyFile().exists();
-    }
-
-    public void block() {
-        try {
-            Wiper.wipeFile(getEncryptedKeyFile());
-            FilesUtils.writeFileBytes(getBlockFile(), new byte[0]);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void destroyKey() {
-        cryptoKeyInstance = null;
+    private File getKeyHashFile() {
+        return FilesUtils.getInternalFile(KEY_HASH_FILENAME);
     }
 }
