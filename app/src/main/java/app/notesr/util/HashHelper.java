@@ -27,6 +27,18 @@ public class HashHelper {
         return toSha256String(message.getBytes(StandardCharsets.UTF_8));
     }
 
+    public static byte[] fromSha256HexString(String hex) {
+        int len = hex.length();
+        byte[] result = new byte[len / 2];
+
+        for (int i = 0; i < len; i += 2) {
+            result[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+                    + Character.digit(hex.charAt(i + 1), 16));
+        }
+
+        return result;
+    }
+
     public static long getUUIDHash(UUID uuid) {
         CRC32 crc = new CRC32();
         crc.update(uuid.toString().getBytes());
