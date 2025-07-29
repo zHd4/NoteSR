@@ -2,9 +2,11 @@ package app.notesr.util;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
@@ -27,6 +29,58 @@ public class HashHelperTest {
     }
 
     @Test
+    public void testToSha256StringFromBytes() throws NoSuchAlgorithmException {
+        byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
+
+        String expected = bytesToHex(MessageDigest.getInstance("SHA-256").digest(data));
+        String actual = HashHelper.toSha256String(data);
+
+        assertEquals(expected, actual, "Actual hex string different");
+    }
+
+    @Test
+    public void testToSha256StringFromString() throws NoSuchAlgorithmException {
+        String message = "hello world";
+
+        byte[] hash = MessageDigest.getInstance("SHA-256")
+                .digest(message.getBytes(StandardCharsets.UTF_8));
+
+        String expected = bytesToHex(hash);
+        String actual = HashHelper.toSha256String(message);
+
+        assertEquals(expected, actual, "Actual hex string from string different");
+    }
+
+    @Test
+    public void testFromSha256HexString() throws NoSuchAlgorithmException {
+        String message = "some test input";
+
+        byte[] hashBytes = MessageDigest.getInstance("SHA-256")
+                .digest(message.getBytes(StandardCharsets.UTF_8));
+
+        String hex = bytesToHex(hashBytes);
+
+        byte[] actual = HashHelper.fromSha256HexString(hex);
+
+        assertArrayEquals(hashBytes, actual, "Restored bytes do not match original hash");
+    }
+
+    @Test
+    public void testFromSha256HexStringWithInvalidLengthThrowsException() {
+        String invalidHex = "abc";
+
+        assertThrows(StringIndexOutOfBoundsException.class, () ->
+                HashHelper.fromSha256HexString(invalidHex));
+    }
+
+    @Test
+    public void testFromSha256HexStringWithInvalidCharacterThrowsException() {
+        String invalidHex = "zzzz";
+
+        assertThrows(NumberFormatException.class, () -> HashHelper.fromSha256HexString(invalidHex));
+    }
+
+    @Test
     public void testGetUUIDHash() {
         UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
@@ -34,5 +88,15 @@ public class HashHelperTest {
         long actual = HashHelper.getUUIDHash(uuid);
 
         assertEquals(expected, actual, "Actual hash different");
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder hex = new StringBuilder(bytes.length * 2);
+
+        for (byte b : bytes) {
+            hex.append(String.format("%02x", b & 0xFF));
+        }
+
+        return hex.toString();
     }
 }
