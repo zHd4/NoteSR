@@ -1,75 +1,130 @@
 package app.notesr;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import app.notesr.crypto.AesCryptor;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Random;
+import java.util.Arrays;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-public class AesCryptorTest {
-    private static final String AVAILABLE_SYMBOLS = "0123456789qwertyuiopasdfghjklzxcvbnm";
-    private static final int PASSWORD_LENGTH = 20;
-    private static final int MIN_DATA_SIZE = 4096;
-    private static final int MAX_DATA_SIZE = 10240;
-    private static byte[] plainData;
-    private static String password;
+class AesCryptorTest {
 
-    @BeforeAll
-    public static void beforeAll() {
-        Random random = new Random();
-        int plainDataSize = random.nextInt((MAX_DATA_SIZE - MIN_DATA_SIZE) + 1) +
-                MIN_DATA_SIZE;
+    private static final String PASSWORD = "SuperSecret123!";
+    private static final byte[] SAMPLE_DATA = "Test data to encrypt".getBytes();
 
-        plainData = new byte[plainDataSize];
-        random.nextBytes(plainData);
+    private byte[] salt;
 
-        StringBuilder passwordBuilder = new StringBuilder();
-
-        for(int i = 0; i < PASSWORD_LENGTH; i++) {
-            passwordBuilder.append(AVAILABLE_SYMBOLS.charAt(random.nextInt(PASSWORD_LENGTH)));
-        }
-
-        password = passwordBuilder.toString();
+    @BeforeEach
+    void setup() throws NoSuchAlgorithmException {
+        salt = AesCryptor.generatePasswordBasedSalt(PASSWORD);
     }
 
     @Test
-    public void testEncryptionAndDecryptionWithKey() throws
-            NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-            NoSuchPaddingException, IllegalBlockSizeException,
-            BadPaddingException, InvalidKeyException {
+    void testEncryptDecryptWithPasswordCbcShouldMatchOriginal() throws Exception {
+        AesCryptor cryptor = new AesCryptor(PASSWORD, salt, AesCryptor.AesMode.CBC);
+
+        byte[] encrypted = cryptor.encrypt(SAMPLE_DATA);
+        byte[] decrypted = cryptor.decrypt(encrypted);
+
+        assertArrayEquals(SAMPLE_DATA, decrypted);
+    }
+
+    @Test
+    void testEncryptDecryptWithPasswordGcmShouldMatchOriginal() throws Exception {
+        AesCryptor cryptor = new AesCryptor(PASSWORD, salt, AesCryptor.AesMode.GCM);
+
+        byte[] encrypted = cryptor.encrypt(SAMPLE_DATA);
+        byte[] decrypted = cryptor.decrypt(encrypted);
+
+        assertArrayEquals(SAMPLE_DATA, decrypted);
+    }
+
+    @Test
+    void testEncryptDecryptWithGeneratedKeyCbcShouldMatchOriginal() throws Exception {
         SecretKey key = AesCryptor.generateRandomKey();
-        byte[] salt = AesCryptor.generateRandomSalt();
+        AesCryptor cryptor = new AesCryptor(key, salt, AesCryptor.AesMode.CBC);
 
-        AesCryptor aesCryptor = new AesCryptor(key, salt);
+        byte[] encrypted = cryptor.encrypt(SAMPLE_DATA);
+        byte[] decrypted = cryptor.decrypt(encrypted);
 
-        byte[] actualEncryptedData = aesCryptor.encrypt(plainData);
-        byte[] actualDecryptedData = aesCryptor.decrypt(actualEncryptedData);
-
-        Assertions.assertArrayEquals(plainData, actualDecryptedData);
+        assertArrayEquals(SAMPLE_DATA, decrypted);
     }
 
     @Test
-    public void testEncryptionAndDecryptionWithPassword() throws
-            NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidAlgorithmParameterException, NoSuchPaddingException,
-            IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        byte[] salt = AesCryptor.generateRandomSalt();
-        AesCryptor aesCryptor = new AesCryptor(password, salt);
+    void testEncryptDecryptWithGeneratedKeyGcmShouldMatchOriginal() throws Exception {
+        SecretKey key = AesCryptor.generateRandomKey();
+        AesCryptor cryptor = new AesCryptor(key, salt, AesCryptor.AesMode.GCM);
 
-        byte[] actualEncryptedData = aesCryptor.encrypt(plainData);
-        byte[] actualDecryptedData = aesCryptor.decrypt(actualEncryptedData);
+        byte[] encrypted = cryptor.encrypt(SAMPLE_DATA);
+        byte[] decrypted = cryptor.decrypt(encrypted);
 
-        Assertions.assertArrayEquals(plainData, actualDecryptedData);
+        assertArrayEquals(SAMPLE_DATA, decrypted);
+    }
+
+    @Test
+    void testDifferentIvShouldProduceDifferentCiphertexts() throws Exception {
+        AesCryptor cryptor = new AesCryptor(PASSWORD, salt, AesCryptor.AesMode.GCM);
+
+        byte[] encrypted1 = cryptor.encrypt(SAMPLE_DATA);
+        byte[] encrypted2 = cryptor.encrypt(SAMPLE_DATA);
+
+        assertFalse(Arrays.equals(encrypted1, encrypted2),
+                "Encrypted data should differ due to random IV");
+    }
+
+    @RepeatedTest(5)
+    void testEncryptDecryptWithRandomKeyGcmShouldAlwaysSucceed() throws Exception {
+        SecretKey key = AesCryptor.generateRandomKey();
+        AesCryptor cryptor = new AesCryptor(key, salt, AesCryptor.AesMode.GCM);
+
+        byte[] encrypted = cryptor.encrypt(SAMPLE_DATA);
+        byte[] decrypted = cryptor.decrypt(encrypted);
+
+        assertArrayEquals(SAMPLE_DATA, decrypted);
+    }
+
+    @Test
+    void testDecryptWithWrongKeyShouldFail() throws Exception {
+        AesCryptor correctCryptor = new AesCryptor(PASSWORD, salt, AesCryptor.AesMode.CBC);
+        AesCryptor wrongCryptor = new AesCryptor("WrongPassword", salt,
+                AesCryptor.AesMode.CBC);
+
+        byte[] encrypted = correctCryptor.encrypt(SAMPLE_DATA);
+
+        assertThrows(Exception.class, () -> wrongCryptor.decrypt(encrypted));
+    }
+
+    @Test
+    void testDecryptWithWrongModeShouldFail() throws Exception {
+        AesCryptor gcmCryptor = new AesCryptor(PASSWORD, salt, AesCryptor.AesMode.GCM);
+        AesCryptor cbcCryptor = new AesCryptor(PASSWORD, salt, AesCryptor.AesMode.CBC);
+
+        byte[] encrypted = gcmCryptor.encrypt(SAMPLE_DATA);
+
+        assertThrows(Exception.class, () -> cbcCryptor.decrypt(encrypted));
+    }
+
+    @Test
+    void testGeneratePasswordBasedSaltShouldBeDeterministic() throws Exception {
+        byte[] salt1 = AesCryptor.generatePasswordBasedSalt("pass123");
+        byte[] salt2 = AesCryptor.generatePasswordBasedSalt("pass123");
+
+        assertArrayEquals(salt1, salt2);
+    }
+
+    @Test
+    void testGenerateRandomSaltShouldBeRandom() {
+        byte[] salt1 = AesCryptor.generateRandomSalt();
+        byte[] salt2 = AesCryptor.generateRandomSalt();
+
+        assertFalse(Arrays.equals(salt1, salt2));
     }
 }
