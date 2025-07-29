@@ -1,3 +1,10 @@
 package app.notesr.exception;
 
-public class DecryptionFailedException extends Exception {}
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+public class DecryptionFailedException extends Exception {
+    public DecryptionFailedException(Throwable cause) {
+        super(cause);
+    }
+}
