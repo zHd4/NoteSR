@@ -11,9 +11,8 @@ public class HashHelper {
         return getSha256Instance().digest(raw);
     }
 
-    public static String toSha256String(String message) throws NoSuchAlgorithmException {
-        byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
-        byte[] hashBytes = getSha256Instance().digest(messageBytes);
+    public static String toSha256String(byte[] raw) throws NoSuchAlgorithmException {
+        byte[] hashBytes = getSha256Instance().digest(raw);
 
         StringBuilder hex = new StringBuilder(hashBytes.length * 2);
 
@@ -22,6 +21,10 @@ public class HashHelper {
         }
 
         return hex.toString();
+    }
+
+    public static String toSha256String(String message) throws NoSuchAlgorithmException {
+        return toSha256String(message.getBytes(StandardCharsets.UTF_8));
     }
 
     public static long getUUIDHash(UUID uuid) {
