@@ -10,19 +10,10 @@ public class App extends Application {
     @Getter
     private static App context;
 
-    @Getter
-    private static AppContainer appContainer;
-
     @Override
     public void onCreate() {
         super.onCreate();
-
         context = this;
-        appContainer = new AppContainer();
-    }
-
-    public static boolean onAndroid() {
-        return context != null;
     }
 
     public boolean isServiceRunning(Class<?> serviceClass) {

@@ -1,45 +1,39 @@
 package app.notesr.service.data.exporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import app.notesr.crypto.NoteCryptor;
-import app.notesr.db.notes.dao.NoteDao;
-import app.notesr.model.EncryptedNote;
+
+import app.notesr.db.dao.NoteDao;
 import app.notesr.model.Note;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-class NotesExporter extends BaseExporter {
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+class NotesExporter implements Exporter {
+
     @Getter
     private final JsonGenerator jsonGenerator;
-
     private final NoteDao noteDao;
+    private final Runnable checkCancelled;
     private final DateTimeFormatter timestampFormatter;
 
-    NotesExporter(ExportThread thread,
-                  JsonGenerator jsonGenerator,
-                  NoteDao noteDao,
-                  DateTimeFormatter timestampFormatter) {
-        super(thread);
-
-        this.jsonGenerator = jsonGenerator;
-        this.noteDao = noteDao;
-        this.timestampFormatter = timestampFormatter;
-    }
+    @Getter
+    private long exported = 0;
 
     @Override
-    public void export() throws IOException, InterruptedException {
+    public void export() throws IOException {
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeArrayFieldStart("notes");
 
-            for (EncryptedNote encryptedNote : noteDao.getAll()) {
-                Note note = NoteCryptor.decrypt(encryptedNote);
+            for (Note note : noteDao.getAll()) {
                 writeNote(note);
 
-                increaseExported();
-                getThread().breakOnInterrupted();
+                exported++;
+                checkCancelled.run();
             }
 
             jsonGenerator.writeEndArray();
@@ -62,7 +56,7 @@ class NotesExporter extends BaseExporter {
     }
 
     @Override
-    long getTotal() {
+    public long getTotal() {
         return noteDao.getRowsCount();
     }
 }

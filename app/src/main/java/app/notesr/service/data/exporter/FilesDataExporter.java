@@ -5,23 +5,24 @@ import java.io.IOException;
 import java.util.List;
 
 import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.dao.DataBlockDao;
+import app.notesr.db.dao.DataBlockDao;
 import app.notesr.model.DataBlock;
 import app.notesr.util.FilesUtils;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-class FilesDataExporter extends BaseExporter {
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+class FilesDataExporter implements Exporter {
     private final File outputDir;
     private final DataBlockDao dataBlockDao;
+    private final Runnable checkCancelled;
 
-    FilesDataExporter(ExportThread thread, File outputDir, DataBlockDao dataBlockDao) {
-        super(thread);
-
-        this.outputDir = outputDir;
-        this.dataBlockDao = dataBlockDao;
-    }
+    @Getter
+    private long exported = 0;
 
     @Override
-    public void export() throws IOException, InterruptedException {
+    public void export() throws IOException {
         if (!outputDir.exists()) {
             if (!outputDir.mkdir()) {
                 throw new IOException("Failed to create temporary directory to export data blocks");
@@ -36,13 +37,13 @@ class FilesDataExporter extends BaseExporter {
 
             FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId()), data);
 
-            increaseExported();
-            getThread().breakOnInterrupted();
+            exported++;
+            checkCancelled.run();
         }
     }
 
     @Override
-    long getTotal() {
+    public long getTotal() {
         return dataBlockDao.getRowsCount();
     }
 }

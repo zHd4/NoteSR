@@ -2,7 +2,7 @@ package app.notesr.crypto;
 
 import android.util.Log;
 import app.notesr.App;
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
 import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
 
@@ -11,43 +11,43 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileCryptor {
-    public static EncryptedFileInfo updateKey(EncryptedFileInfo fileInfo, CryptoKey oldKey, CryptoKey newKey) {
+    public static EncryptedFileInfo updateKey(EncryptedFileInfo fileInfo, CryptoSecrets oldKey, CryptoSecrets newKey) {
         return encryptInfo(decryptInfo(fileInfo, oldKey), newKey);
     }
 
-    public static byte[] updateKey(byte[] data, CryptoKey oldKey, CryptoKey newKey) {
+    public static byte[] updateKey(byte[] data, CryptoSecrets oldKey, CryptoSecrets newKey) {
         return encryptData(decryptData(data, oldKey), newKey);
     }
 
     public static List<FileInfo> decryptInfo(List<EncryptedFileInfo> filesInfo) {
-        return decryptInfo(filesInfo, getCryptoManager().getCryptoKeyInstance());
+        return decryptInfo(filesInfo, getCryptoManager().getSecrets());
     }
 
     public static List<FileInfo> decryptInfo(
             List<EncryptedFileInfo> filesInfo,
-            CryptoKey cryptoKey) {
+            CryptoSecrets cryptoKey) {
         return filesInfo.stream()
                 .map(fileInfo -> decryptInfo(fileInfo, cryptoKey))
                 .collect(Collectors.toList());
     }
 
     public static byte[] encryptData(byte[] data) {
-        return encryptData(data, getCryptoManager().getCryptoKeyInstance());
+        return encryptData(data, getCryptoManager().getSecrets());
     }
 
     public static byte[] decryptData(byte[] data) {
-        return decryptData(data, getCryptoManager().getCryptoKeyInstance());
+        return decryptData(data, getCryptoManager().getSecrets());
     }
 
     public static EncryptedFileInfo encryptInfo(FileInfo fileInfo) {
-        return encryptInfo(fileInfo, getCryptoManager().getCryptoKeyInstance());
+        return encryptInfo(fileInfo, getCryptoManager().getSecrets());
     }
 
     public static FileInfo decryptInfo(EncryptedFileInfo encryptedFileInfo) {
-        return decryptInfo(encryptedFileInfo, getCryptoManager().getCryptoKeyInstance());
+        return decryptInfo(encryptedFileInfo, getCryptoManager().getSecrets());
     }
 
-    public static byte[] encryptData(byte[] data, CryptoKey cryptoKey) {
+    public static byte[] encryptData(byte[] data, CryptoSecrets cryptoKey) {
         try {
             AesCryptor aesCryptor = new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
             return aesCryptor.encrypt(data);
@@ -57,7 +57,7 @@ public class FileCryptor {
         }
     }
 
-    public static byte[] decryptData(byte[] data, CryptoKey cryptoKey) {
+    public static byte[] decryptData(byte[] data, CryptoSecrets cryptoKey) {
         try {
             AesCryptor aesCryptor = new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
             return aesCryptor.decrypt(data);
@@ -67,7 +67,7 @@ public class FileCryptor {
         }
     }
 
-    public static EncryptedFileInfo encryptInfo(FileInfo fileInfo, CryptoKey cryptoKey) {
+    public static EncryptedFileInfo encryptInfo(FileInfo fileInfo, CryptoSecrets cryptoKey) {
         AesCryptor aesCryptor = new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
 
         try {
@@ -100,7 +100,7 @@ public class FileCryptor {
         }
     }
 
-    public static FileInfo decryptInfo(EncryptedFileInfo encryptedFileInfo, CryptoKey cryptoKey) {
+    public static FileInfo decryptInfo(EncryptedFileInfo encryptedFileInfo, CryptoSecrets cryptoKey) {
         AesCryptor aesCryptor = new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
 
         try {

@@ -8,12 +8,9 @@ import android.content.pm.PackageManager;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import app.notesr.App;
-import app.notesr.R;
+
 import app.notesr.crypto.BackupCryptor;
-import app.notesr.db.notes.dao.DataBlockDao;
-import app.notesr.db.notes.dao.FileInfoDao;
-import app.notesr.db.notes.dao.NoteDao;
+import app.notesr.db.AppDatabase;
 import app.notesr.service.data.TempDataWiper;
 import app.notesr.util.FilesUtils;
 import app.notesr.util.VersionFetcher;
@@ -22,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.format.DateTimeFormatter;
 
 import app.notesr.util.ZipUtils;
@@ -30,17 +28,17 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ExportService {
-    
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     private static final String VERSION_FILE_NAME = "version";
     private static final String NOTES_JSON_FILE_NAME = "notes.json";
     private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
     private static final String DATA_BLOCKS_DIR_NAME = "data_blocks";
 
     private final Context context;
+    private final AppDatabase db;
     private final File outputFile;
-    private final NoteDao noteDao;
-    private final FileInfoDao fileInfoDao;
-    private final DataBlockDao dataBlockDao;
 
     private NotesExporter notesExporter;
     private FilesInfoExporter filesInfoExporter;
@@ -48,52 +46,60 @@ public class ExportService {
 
     private File tempDir;
     private File tempArchive;
-
-    private ExportThread thread;
-
-    @Getter
-    private ExportResult result = ExportResult.NONE;
+    private boolean isCancelled = false;
 
     @Getter
-    private String status = "";
+    private ExportStatus status;
 
-    public void start() {
-        if (noteDao.getRowsCount() == 0) {
-            throw new RuntimeException("No notes in table");
+    public void doExport() {
+        if (db.getNoteDao().getRowsCount() == 0) {
+            throw new DataNotFoundException("No notes in table");
         }
 
-        thread = new ExportThread(this);
-        thread.start();
+        try {
+            init();
+            export();
+            archive();
+            encrypt();
+            wipe();
+            finish();
+        } catch (IOException e) {
+            try {
+                TempDataWiper.wipeTempData(tempArchive, tempDir);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            status = ExportStatus.ERROR;
+        }
     }
 
     public void cancel() {
-        if (thread == null || !thread.isAlive()) {
-            throw new IllegalStateException("Export has not been started");
-        }
-
-        status = context.getString(R.string.canceling);
-        thread.interrupt();
+        isCancelled = true;
+        status = ExportStatus.CANCELLING;
     }
 
-    public void onThreadInterrupted() {
-        if (isFileExists(tempDir) || isFileExists(tempArchive)) {
-            wipeTempData();
-        }
+    private void checkCancelled() {
+        if (isCancelled) {
+            try {
+                TempDataWiper.wipeTempData(tempArchive, tempDir);
 
-        if (outputFile.exists()) {
-            delete(outputFile);
-        }
+                if (outputFile.exists()) {
+                    Files.delete(outputFile.toPath());
+                }
 
-        status = "";
-        result = ExportResult.CANCELED;
+                status = ExportStatus.CANCELED;
+                throw new ExportCancelledException();
+            } catch (IOException e) {
+                throw new ExportCancelledException(e);
+            }
+        }
     }
 
     public int calculateProgress() {
-        if (notesExporter == null || filesInfoExporter == null) {
+        if (status == null) {
             return 0;
-        }
-
-        if (result == ExportResult.FINISHED_SUCCESSFULLY) {
+        } else if (status == ExportStatus.DONE) {
             return 100;
         }
 
@@ -108,23 +114,14 @@ public class ExportService {
         return Math.round((exported * 99.0f) / total);
     }
 
-    void doExport() throws IOException, InterruptedException {
-        init();
-        export();
-        archive();
-        encrypt();
-        wipe();
-        finish();
-    }
-
-    private void init() throws IOException, InterruptedException {
-        thread.breakOnInterrupted();
-        status = context.getString(R.string.initializing);
+    private void init() throws IOException {
+        checkCancelled();
+        status = ExportStatus.INITIALIZING;
 
         tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
         if (!tempDir.mkdir()) {
-            throw new RuntimeException("Failed to create temporary directory to export");
+            throw new ExportFailedException("Failed to create temporary directory to export");
         }
 
         filesDataExporter = createFilesDataExporter();
@@ -144,52 +141,43 @@ public class ExportService {
         }
     }
 
-    private void export() throws IOException, InterruptedException {
-        thread.breakOnInterrupted();
-        status = context.getString(R.string.exporting_data);
+    private void export() throws IOException {
+        checkCancelled();
+        status = ExportStatus.EXPORTING_DATA;
 
         notesExporter.export();
         filesInfoExporter.export();
         filesDataExporter.export();
     }
 
-    private void archive() throws IOException, InterruptedException {
-        thread.breakOnInterrupted();
-        status = context.getString(R.string.compressing);
+    private void archive() throws IOException {
+        checkCancelled();
+        status = ExportStatus.COMPRESSING;
 
         tempArchive = new File(context.getCacheDir(), tempDir.getName() + ".zip");
-        ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath(), thread);
+        ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath());
     }
 
-    private void encrypt() throws InterruptedException, IOException {
-        thread.breakOnInterrupted();
-        status = context.getString(R.string.encrypting_data);
+    private void encrypt() throws IOException {
+        checkCancelled();
+        status = ExportStatus.ENCRYPTING_DATA;
 
-        if (result == ExportResult.NONE) {
-            FileInputStream inputStream = new FileInputStream(tempArchive);
-            FileOutputStream outputStream = new FileOutputStream(outputFile);
+        FileInputStream inputStream = new FileInputStream(tempArchive);
+        FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-            BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream);
-            backupCryptor.encrypt();
-        }
+        BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream);
+        backupCryptor.encrypt();
     }
 
-    private void wipe() throws InterruptedException {
-        thread.breakOnInterrupted();
-        status = context.getString(R.string.wiping_temp_data);
+    private void wipe() throws IOException {
+        checkCancelled();
+        status = ExportStatus.WIPING_TEMP_DATA;
 
-        wipeTempData();
+        TempDataWiper.wipeTempData(tempArchive, tempDir);
     }
 
     void finish() {
-        status = "";
-        result = ExportResult.FINISHED_SUCCESSFULLY;
-    }
-
-    private void wipeTempData() {
-        if (result == ExportResult.NONE) {
-            TempDataWiper.wipeTempData(tempArchive, tempDir);
-        }
+        status = ExportStatus.DONE;
     }
 
     private JsonGenerator createJsonGenerator(File tempDir, String filename) throws IOException {
@@ -200,40 +188,24 @@ public class ExportService {
     }
 
     private NotesExporter createNotesExporter(JsonGenerator jsonGenerator) {
-        return new NotesExporter(
-                thread,
-                jsonGenerator,
-                noteDao,
-                getTimestampFormatter()
+        return new NotesExporter(jsonGenerator,
+                db.getNoteDao(),
+                this::checkCancelled,
+                TIMESTAMP_FORMATTER
         );
     }
 
     private FilesInfoExporter createFilesInfoExporter(JsonGenerator jsonGenerator) {
-        return new FilesInfoExporter(
-                thread,
-                jsonGenerator,
-                fileInfoDao,
-                dataBlockDao,
-                getTimestampFormatter()
+        return new FilesInfoExporter(jsonGenerator,
+                db.getFileInfoDao(),
+                db.getDataBlockDao(),
+                this::checkCancelled,
+                TIMESTAMP_FORMATTER
         );
     }
 
     private FilesDataExporter createFilesDataExporter() {
         File dir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
-        return new FilesDataExporter(thread, dir, dataBlockDao);
-    }
-
-    private DateTimeFormatter getTimestampFormatter() {
-        return App.getAppContainer().getTimestampFormatter();
-    }
-
-    private void delete(File file) {
-        if (!file.delete()) {
-            throw new RuntimeException("Cannot delete file " + file.getAbsolutePath());
-        }
-    }
-
-    private boolean isFileExists(File file) {
-        return file != null && file.exists();
+        return new FilesDataExporter(dir, db.getDataBlockDao(), this::checkCancelled);
     }
 }

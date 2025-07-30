@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -28,7 +29,7 @@ public class ZipUtils {
         return false;
     }
 
-    public static void zipDirectory(String sourceDirPath, String output, Thread thread) throws
+    public static void zipDirectory(String sourceDirPath, String output) throws
             IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(output);
         ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
@@ -40,15 +41,15 @@ public class ZipUtils {
                 throw new IllegalArgumentException("sourceDirPath must be a directory");
             }
 
-            zipFilesRecursively(sourceDir, sourceDir, zipOutputStream, thread);
+            zipFilesRecursively(sourceDir, sourceDir, zipOutputStream);
         }
     }
 
-    public static void unzip(String zipPath, String destDir, Thread thread) throws IOException {
+    public static void unzip(String zipPath, String destDir) throws IOException {
         File destDirectory = new File(destDir);
 
         if (!destDirectory.exists()) {
-            destDirectory.mkdirs();
+            Files.createDirectories(destDirectory.toPath());
         }
 
         FileInputStream fileInputStream = new FileInputStream(zipPath);
@@ -58,10 +59,6 @@ public class ZipUtils {
             ZipEntry zipEntry;
 
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                if (thread != null && thread.isInterrupted()) {
-                    break;
-                }
-
                 File newFile = unzipFile(destDirectory, zipEntry);
 
                 if (zipEntry.isDirectory()) {
@@ -93,13 +90,8 @@ public class ZipUtils {
     private static void zipFilesRecursively(
             File rootDir,
             File currentDir,
-            ZipOutputStream zipOutputStream,
-            Thread thread)
+            ZipOutputStream zipOutputStream)
             throws IOException {
-        if (thread != null && thread.isInterrupted()) {
-            return;
-        }
-
         File[] files = currentDir.listFiles();
 
         if (files == null) {
@@ -110,7 +102,7 @@ public class ZipUtils {
             String relativePath = rootDir.toURI().relativize(file.toURI()).getPath();
 
             if (file.isDirectory()) {
-                zipFilesRecursively(rootDir, file, zipOutputStream, thread);
+                zipFilesRecursively(rootDir, file, zipOutputStream);
             } else {
                 zipFile(file, relativePath, zipOutputStream);
             }

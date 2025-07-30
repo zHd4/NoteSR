@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
+
 import androidx.appcompat.app.AlertDialog;
-import app.notesr.App;
+
 import app.notesr.R;
-import app.notesr.db.service.dao.TempFileDao;
+import app.notesr.db.DatabaseProvider;
+import app.notesr.db.dao.TempFileDao;
 import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerAndroidService;
 
@@ -69,10 +71,6 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
         AlertDialog progressDialog = builder.create();
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        TempFileDao tempFileDao = App.getAppContainer()
-                .getServicesDB()
-                .getDao(TempFileDao.class);
-
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
             videoFile = dropToCache(fileInfo);
@@ -84,9 +82,14 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
             runOnUiThread(progressDialog::dismiss);
             runOnUiThread(() -> {
                 Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
-                TempFile tempFile = new TempFile(videoUri);
 
-                tempFileDao.save(tempFile);
+                TempFileDao tempFileDao = DatabaseProvider.getInstance(this)
+                        .getTempFileDao();
+
+                TempFile tempFile = new TempFile();
+
+                tempFile.setUri(videoUri);
+                tempFileDao.insert(tempFile);
 
                 setVideo(videoUri);
                 videoView.start();

@@ -1,7 +1,7 @@
 package app.notesr.crypto;
 
 import app.notesr.App;
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -20,7 +20,7 @@ public class BackupCryptor {
 
     private final FileInputStream sourceFileStream;
     private final FileOutputStream outputFileStream;
-    private final CryptoKey cryptoKey;
+    private final CryptoSecrets cryptoKey;
 
     public BackupCryptor(FileInputStream sourceFileStream, FileOutputStream outputFileStream) {
         this.sourceFileStream = sourceFileStream;
@@ -81,13 +81,15 @@ public class BackupCryptor {
     private Cipher getCipher(int mode) {
         try {
             return AesCryptor.createCipher(cryptoKey.getKey(), cryptoKey.getSalt(), mode);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
-                 InvalidKeyException e) {
+        } catch (NoSuchPaddingException
+                 | NoSuchAlgorithmException
+                 | InvalidAlgorithmParameterException
+                 | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private CryptoKey getCryptoKey() {
+    private CryptoSecrets getCryptoKey() {
         return App.getAppContainer()
                 .getCryptoManager()
                 .getCryptoKeyInstance();

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import app.notesr.model.Note;
@@ -15,13 +16,16 @@ import app.notesr.model.Note;
 public interface NoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void save(Note note);
+    void insert(Note note);
 
     @Update
     void update(Note note);
 
     @Delete
     void delete(Note note);
+
+    @Query("UPDATE notes SET updated_at = :updatedAt WHERE id = :id")
+    void setUpdatedAtById(String id, LocalDateTime updatedAt);
 
     @Query("DELETE FROM notes WHERE id = :id")
     void deleteById(String id);
@@ -31,4 +35,7 @@ public interface NoteDao {
 
     @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
     Note get(String id);
+
+    @Query("SELECT COUNT(*) FROM notes")
+    Long getRowsCount();
 }

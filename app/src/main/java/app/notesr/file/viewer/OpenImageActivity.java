@@ -16,9 +16,9 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import app.notesr.App;
 import app.notesr.R;
-import app.notesr.db.service.dao.TempFileDao;
+import app.notesr.db.DatabaseProvider;
+import app.notesr.db.dao.TempFileDao;
 import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerAndroidService;
 
@@ -69,13 +69,13 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
             runOnUiThread(() -> {
                 Uri imageUri = Uri.parse(imageFile.getAbsolutePath());
 
-                TempFileDao tempFileDao = App.getAppContainer()
-                        .getServicesDB()
-                        .getDao(TempFileDao.class);
+                TempFileDao tempFileDao = DatabaseProvider.getInstance(this)
+                        .getTempFileDao();
 
-                TempFile tempImageFile = new TempFile(imageUri);
+                TempFile tempImageFile = new TempFile();
 
-                tempFileDao.save(tempImageFile);
+                tempImageFile.setUri(imageUri);
+                tempFileDao.insert(tempImageFile);
 
                 if (!isImageTooLarge(imageFile)) {
                     imageView.setImageURI(imageUri);

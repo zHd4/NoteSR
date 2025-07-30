@@ -12,8 +12,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import app.notesr.App;
+import app.notesr.db.dao.TempFileDao;
 import app.notesr.file.viewer.FileViewerActivityBase;
-import app.notesr.db.service.dao.TempFileDao;
 import app.notesr.model.TempFile;
 import app.notesr.util.Wiper;
 

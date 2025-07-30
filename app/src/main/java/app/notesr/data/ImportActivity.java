@@ -3,8 +3,6 @@ package app.notesr.data;
 import static app.notesr.util.ActivityUtils.disableBackButton;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -25,8 +23,8 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.note.NoteListActivity;
-import app.notesr.service.data.importer.ImportResult;
 import app.notesr.service.android.ImportAndroidService;
+import app.notesr.service.data.importer.ImportStatus;
 import app.notesr.util.FileExifDataResolver;
 
 public class ImportActivity extends ActivityBase {
@@ -34,8 +32,6 @@ public class ImportActivity extends ActivityBase {
     private static final String TAG = ImportActivity.class.getName();
 
     private Uri selectedFileUri;
-    private ImportResult result;
-
     private ActivityResultLauncher<Intent> fileChooserLauncher;
     private ActionBar actionBar;
     private Button selectFileButton;
@@ -52,8 +48,13 @@ public class ImportActivity extends ActivityBase {
         actionBar = getSupportActionBar();
         assert actionBar != null;
 
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(dataReceiver(), new IntentFilter(ImportAndroidService.BROADCAST_ACTION));
+        ImportBroadcastReceiver broadcastReceiver = new ImportBroadcastReceiver(
+                this::onImportRunning,
+                this::onImportFinished
+        );
+
+        LocalBroadcastManager.getInstance(this) .registerReceiver(broadcastReceiver,
+                new IntentFilter(ImportAndroidService.BROADCAST_ACTION));
 
         boolean importRunning = isImportRunning();
 
@@ -175,43 +176,35 @@ public class ImportActivity extends ActivityBase {
         };
     }
 
-    private BroadcastReceiver dataReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String status = intent.getStringExtra("status");
-                String resultStr = intent.getStringExtra("result");
-
-                result = resultStr != null ? ImportResult.valueOf(resultStr) : null;
-
-                if (result != null && result != ImportResult.NONE) {
-                    onImportFinished();
-                } else {
-                    statusTextView.setText(status);
-                }
-            }
-        };
+    private void onImportRunning(ImportStatus status) {
+        switch (status) {
+            case DECRYPTING -> statusTextView.setText(R.string.decrypting_data);
+            case IMPORTING -> statusTextView.setText(R.string.importing);
+            case CLEANING_UP -> statusTextView.setText(R.string.wiping_temp_data);
+        }
     }
 
-    private void onImportFinished() {
-        if (result == ImportResult.FINISHED_SUCCESSFULLY) {
-            startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
-            finish();
-        } else {
-            findViewById(R.id.importCannotBeCanceledLabel).setVisibility(View.INVISIBLE);
+    private void onImportFinished(ImportStatus status) {
+        progressBar.setVisibility(View.INVISIBLE);
 
-            progressBar.setVisibility(View.INVISIBLE);
-            statusTextView.setTextColor(getColor(android.R.color.holo_red_light));
-
-            if (result == ImportResult.DECRYPTION_FAILED) {
+        switch (status) {
+            case DECRYPTION_FAILED -> {
+                statusTextView.setTextColor(getColor(android.R.color.holo_red_light));
                 statusTextView.setText(R.string.cannot_decrypt_file);
-            } else if (result == ImportResult.IMPORT_FAILED) {
+            }
+            case IMPORT_FAILED -> {
+                statusTextView.setTextColor(getColor(android.R.color.holo_red_light));
                 statusTextView.setText(R.string.cannot_import_data);
             }
-
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(R.string.import_text);
+            case DONE -> {
+                statusTextView.setVisibility(View.INVISIBLE);
+                startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
+                finish();
+            }
         }
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.import_text);
     }
 
     private void startImport() {

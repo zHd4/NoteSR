@@ -37,4 +37,7 @@ public interface DataBlockDao {
 
     @Query("SELECT id FROM data_block WHERE file_id = :fileId ORDER BY block_order")
     List<String> getBlockIdsByFileId(String fileId);
+
+    @Query("SELECT COUNT(*) FROM data_block")
+    Long getRowsCount();
 }

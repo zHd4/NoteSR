@@ -4,7 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import app.notesr.crypto.AesCryptor;
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
 import io.bloco.faker.Faker;
 
 import org.junit.BeforeClass;
@@ -60,12 +60,12 @@ public class CryptoUtilsTest {
     public void testCryptoKeyConvertation() throws InvalidKeyException {
         SecretKey secretKey = new SecretKeySpec(TEST_KEY_BYTES, 0, TEST_KEY_BYTES.length,
                 AesCryptor.KEY_GENERATOR_ALGORITHM);
-        CryptoKey cryptoKey = new CryptoKey(secretKey, TEST_SALT, testPassword);
+        CryptoSecrets cryptoKey = new CryptoSecrets(secretKey, TEST_SALT, testPassword);
 
         String actual = CryptoUtils.cryptoKeyToHex(cryptoKey);
         assertThat(actual, is(TEST_HEX_CRYPTO_KEY));
 
-        CryptoKey actualCryptoKey = CryptoUtils.hexToCryptoKey(TEST_HEX_CRYPTO_KEY, testPassword);
+        CryptoSecrets actualCryptoKey = CryptoUtils.hexToCryptoKey(TEST_HEX_CRYPTO_KEY, testPassword);
 
         assertThat(actualCryptoKey, is(cryptoKey));
     }

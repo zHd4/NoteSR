@@ -3,7 +3,7 @@ package app.notesr.util;
 import static java.util.Objects.requireNonNull;
 
 import app.notesr.crypto.AesCryptor;
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
 
 import java.nio.ByteBuffer;
 
@@ -13,7 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 public final class CryptoUtils {
     private static final int HEX_LINE_SIZE_LIMIT = 4;
 
-    public static String cryptoKeyToHex(CryptoKey cryptoKey) {
+    public static String cryptoKeyToHex(CryptoSecrets cryptoKey) {
         byte[] keyBytes = cryptoKey.getKey().getEncoded();
         byte[] salt = cryptoKey.getSalt();
         byte[] bytes = new byte[keyBytes.length + salt.length];
@@ -44,7 +44,7 @@ public final class CryptoUtils {
         return result.toString().toUpperCase();
     }
 
-    public static CryptoKey hexToCryptoKey(String hex, String password) {
+    public static CryptoSecrets hexToCryptoKey(String hex, String password) {
         try {
             requireNonNull(hex, "hex must not be null");
             String[] hexArray = hex.toLowerCase().split("\\s+");
@@ -72,7 +72,7 @@ public final class CryptoUtils {
             SecretKey key = new SecretKeySpec(keyBytes, 0, keyBytes.length,
                     AesCryptor.KEY_GENERATOR_ALGORITHM);
 
-            return new CryptoKey(key, salt, password);
+            return new CryptoSecrets(key, salt, password);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             throw new IllegalArgumentException("Invalid hex key", e);
         }

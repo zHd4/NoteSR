@@ -10,76 +10,61 @@ import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import app.notesr.R;
-import app.notesr.db.notes.NotesDb;
-import app.notesr.db.notes.dao.DataBlockDao;
-import app.notesr.db.notes.dao.FileInfoDao;
-import app.notesr.db.notes.dao.NoteDao;
+import app.notesr.db.AppDatabase;
 import app.notesr.exception.ImportFailedException;
-import app.notesr.service.data.importer.ImportServiceBase;
-import app.notesr.service.data.importer.ImportResult;
+import app.notesr.service.data.importer.ImportStrategy;
+import app.notesr.service.data.importer.ImportStatus;
 import app.notesr.service.data.importer.NotesImporter;
 import app.notesr.util.ZipUtils;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public class ImportServiceV2 extends ImportServiceBase {
+@RequiredArgsConstructor
+public class ImportV2Strategy implements ImportStrategy {
 
+    private static final String TAG = ImportV2Strategy.class.getName();
     private static final String NOTES_JSON_FILE_NAME = "notes.json";
     private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
     private static final String DATA_BLOCKS_DIR_NAME = "data_blocks";
 
-    private final NoteDao noteDao;
-    private final FileInfoDao fileInfoDao;
-    private final DataBlockDao dataBlockDao;
+    private final Context context;
+    private final AppDatabase db;
+    private final File file;
+    private final DateTimeFormatter timestampFormatter;
 
     @Getter
-    private ImportResult result = ImportResult.NONE;
-
-    @Getter
-    private String status = "";
+    private ImportStatus status;
 
     private File tempDir;
 
-    public ImportServiceV2(Context context, NotesDb notesDb, File file) {
-        super(context, notesDb, file);
-
-        this.noteDao = notesDb.getDao(NoteDao.class);
-        this.fileInfoDao = notesDb.getDao(FileInfoDao.class);
-        this.dataBlockDao = notesDb.getDao(DataBlockDao.class);
-    }
-
     @Override
-    public void start() {
-        Thread thread = new Thread(() -> {
-            try {
+    public void doImport() {
+        try {
+            db.runInTransaction(() -> {
                 tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
-                status = context.getString(R.string.importing);
-                ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath(), null);
-
-                begin();
+                status = ImportStatus.IMPORTING;
+                ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath());
                 importData();
-                end();
 
-                status = context.getString(R.string.wiping_temp_data);
+                status = ImportStatus.CLEANING_UP;
                 wipeTempData(file, tempDir);
-
-                result = ImportResult.FINISHED_SUCCESSFULLY;
-            } catch (IOException | ImportFailedException e) {
-                if (isTransactionStarted()) {
-                    rollback();
+                return null;
+            });
+        } catch (Exception e) {
+            if (tempDir != null && tempDir.exists()) {
+                try {
+                    wipeTempData(tempDir);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
-
-                wipeTempData(file, tempDir);
-
-                status = context.getString(R.string.cannot_import_data);
-                result = ImportResult.IMPORT_FAILED;
             }
-        });
 
-        thread.start();
+            status = ImportStatus.IMPORT_FAILED;
+        }
     }
 
     private void importData() throws ImportFailedException, IOException {
@@ -102,7 +87,7 @@ public class ImportServiceV2 extends ImportServiceBase {
     }
 
     private NotesImporter getNotesImporter(JsonParser parser) {
-        return new NotesImporter(parser, noteDao, getTimestampFormatter());
+        return new NotesImporter(parser, db.getNoteDao(), timestampFormatter);
     }
 
     private FilesImporter getFilesImporter(
@@ -111,11 +96,11 @@ public class ImportServiceV2 extends ImportServiceBase {
             Map<String, String> adaptedNotesIdMap) {
         return new FilesImporter(
                 parser,
-                fileInfoDao,
-                dataBlockDao,
+                db.getFileInfoDao(),
+                db.getDataBlockDao(),
                 adaptedNotesIdMap,
                 dataBlocksDir,
-                getTimestampFormatter()
+                timestampFormatter
         );
     }
 }

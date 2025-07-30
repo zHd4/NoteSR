@@ -15,11 +15,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.security.NoSuchAlgorithmException;
-
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.service.crypto.KeySetupService;
+import app.notesr.service.crypto.SecretsSetupService;
 import lombok.Getter;
 
 @Getter
@@ -31,7 +29,7 @@ public class SetupKeyActivity extends ActivityBase {
 
     private KeySetupMode mode;
     private String password;
-    private KeySetupService keySetupService;
+    private SecretsSetupService keySetupService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,17 +44,14 @@ public class SetupKeyActivity extends ActivityBase {
 
         try {
             password = getIntent().getStringExtra("password");
-            keySetupService = new KeySetupService(password);
-        } catch (NoSuchAlgorithmException e) {
-            Log.e(TAG, "Key generation error", e);
-            throw new RuntimeException(e);
+            keySetupService = new SecretsSetupService(CryptoManager.getInstance(this), password);
         } catch (NullPointerException e) {
             Log.e(TAG, "Password is null", e);
             throw new RuntimeException(e);
         }
 
         TextView keyView = findViewById(R.id.aesKeyHex);
-        keyView.setText(cryptoKeyToHex(keySetupService.getCryptoKey()));
+        keyView.setText(cryptoKeyToHex(keySetupService.getCryptoSecrets()));
 
         adaptKeyView();
 

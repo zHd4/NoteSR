@@ -31,12 +31,12 @@
         app:layout_constraintTop_toBottomOf="@+id/reEncryptionNameLabel" />
 
     <TextView
-        android:id="@+id/reEncryptionProgressLabel"
+        android:id="@+id/reEncryptionWarningLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="0%"
-        android:textSize="25sp"
+        android:text="@string/this_may_take_a_long_time"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/reEncryptionProgressBar" />

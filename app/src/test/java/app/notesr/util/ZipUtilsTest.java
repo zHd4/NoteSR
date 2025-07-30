@@ -28,7 +28,7 @@ class ZipUtilsTest {
 
     @Test
     public void testZipDirectory() throws IOException {
-        ZipUtils.zipDirectory(DIR_PATH, TEMP_ZIP_PATH, null);
+        ZipUtils.zipDirectory(DIR_PATH, TEMP_ZIP_PATH);
         File zipFile = new File(TEMP_ZIP_PATH);
 
         assertTrue(zipFile.exists(), "Zip file not found");
@@ -36,7 +36,7 @@ class ZipUtilsTest {
 
     @Test
     public void testUnzip() throws IOException {
-        ZipUtils.unzip(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH, null);
+        ZipUtils.unzip(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH);
         File dir = new File(TEMP_EXTRACTED_DIR_PATH);
 
         assertTrue(dir.exists(), "Extract directory not found");
@@ -60,10 +60,10 @@ class ZipUtilsTest {
     }
 
     @AfterAll
-    public static void afterAll() {
+    public static void afterAll() throws Exception {
         File tempZipFile = new File(TEMP_ZIP_PATH);
 
-        tempZipFile.delete();
+        Files.delete(tempZipFile.toPath());
         removeDir(new File(TEMP_EXTRACTED_DIR_PATH));
     }
 

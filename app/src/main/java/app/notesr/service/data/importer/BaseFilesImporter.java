@@ -1,5 +1,7 @@
 package app.notesr.service.data.importer;
 
+import static java.util.Objects.requireNonNull;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
@@ -9,11 +11,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.dao.DataBlockDao;
-import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.dao.DataBlockDao;
+import app.notesr.db.dao.FileInfoDao;
 import app.notesr.model.DataBlock;
-import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
 
 public abstract class BaseFilesImporter extends BaseImporter {
@@ -45,19 +45,14 @@ public abstract class BaseFilesImporter extends BaseImporter {
         if (skipTo("files_info")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
-                    FileInfo fileInfo = new FileInfo();
-                    parseFileInfoObject(fileInfo);
-
-                    if (fileInfo.getId() != null) {
-                        EncryptedFileInfo encryptedFileInfo = FileCryptor.encryptInfo(fileInfo);
-                        fileInfoDao.save(encryptedFileInfo, false);
-                    }
+                    fileInfoDao.insert(parseFileInfoObject());
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }
     }
 
-    protected void parseFileInfoObject(FileInfo fileInfo) throws IOException {
+    protected FileInfo parseFileInfoObject() throws IOException {
+        FileInfo fileInfo = new FileInfo();
         String field;
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -76,7 +71,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
                         if (parser.getValueAsString().equals("note_id")) continue;
 
                         String id = parser.getValueAsString();
-                        fileInfo.setNoteId(adaptedNotesIdMap.getOrDefault(id, id));
+                        fileInfo.setNoteId(requireNonNull(adaptedNotesIdMap.getOrDefault(id, id)));
                     }
 
                     case "size" -> {
@@ -127,6 +122,8 @@ public abstract class BaseFilesImporter extends BaseImporter {
                 }
             }
         }
+
+        return fileInfo;
     }
 
     protected void adaptId(DataBlock dataBlock) {
@@ -141,7 +138,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
 
     protected abstract void importFilesData() throws IOException;
 
-    protected abstract void parseDataBlockObject(DataBlock dataBlock) throws IOException;
+    protected abstract DataBlock parseDataBlockObject() throws IOException;
 
     private void adaptId(FileInfo fileInfo) {
         String id = fileInfo.getId();

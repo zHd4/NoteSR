@@ -1,5 +1,7 @@
 package app.notesr.service.data.importer.v2;
 
+import static java.util.Objects.requireNonNull;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
@@ -9,8 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.dao.DataBlockDao;
-import app.notesr.db.notes.dao.FileInfoDao;
+import app.notesr.db.dao.DataBlockDao;
+import app.notesr.db.dao.FileInfoDao;
 import app.notesr.service.data.importer.BaseFilesImporter;
 import app.notesr.model.DataBlock;
 import app.notesr.util.FilesUtils;
@@ -34,25 +36,22 @@ class FilesImporter extends BaseFilesImporter {
         if (skipTo("files_data_blocks")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
-                    DataBlock dataBlock = new DataBlock();
-                    parseDataBlockObject(dataBlock);
-
+                    DataBlock dataBlock = parseDataBlockObject();
                     String id = dataBlock.getId();
 
-                    if (id != null) {
-                        String dataFileName = dataBlocksIdMap.getOrDefault(id, id);
-                        byte[] data = FileCryptor.encryptData(readDataBlock(dataFileName));
+                    String dataFileName = dataBlocksIdMap.getOrDefault(id, id);
+                    byte[] data = FileCryptor.encryptData(readDataBlock(dataFileName));
 
-                        dataBlock.setData(data);
-                        dataBlockDao.save(dataBlock, false);
-                    }
+                    dataBlock.setData(data);
+                    dataBlockDao.insert(dataBlock);
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }
     }
 
     @Override
-    protected void parseDataBlockObject(DataBlock dataBlock) throws IOException {
+    protected DataBlock parseDataBlockObject() throws IOException {
+        DataBlock dataBlock = new DataBlock();
         String field;
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -71,7 +70,7 @@ class FilesImporter extends BaseFilesImporter {
                         if (parser.getValueAsString().equals("file_id")) continue;
 
                         String id = parser.getValueAsString();
-                        dataBlock.setFileId(adaptedFilesIdMap.getOrDefault(id, id));
+                        dataBlock.setFileId(requireNonNull(adaptedFilesIdMap.getOrDefault(id, id)));
                     }
 
                     case "order" -> {
@@ -83,6 +82,8 @@ class FilesImporter extends BaseFilesImporter {
                 }
             }
         }
+
+        return dataBlock;
     }
 
     private byte[] readDataBlock(String id) throws IOException {

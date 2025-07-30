@@ -1,42 +1,35 @@
 package app.notesr.service.data.exporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import app.notesr.crypto.FileCryptor;
-import app.notesr.db.notes.dao.DataBlockDao;
-import app.notesr.db.notes.dao.FileInfoDao;
+
+import app.notesr.db.dao.DataBlockDao;
+import app.notesr.db.dao.FileInfoDao;
 import app.notesr.model.DataBlock;
-import app.notesr.model.EncryptedFileInfo;
 import app.notesr.model.FileInfo;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-class FilesInfoExporter extends BaseExporter {
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+class FilesInfoExporter implements Exporter {
+
     @Getter
     private final JsonGenerator jsonGenerator;
-
     private final FileInfoDao fileInfoDao;
     private final DataBlockDao dataBlockDao;
-
+    private final Runnable checkCancelled;
     private final DateTimeFormatter timestampFormatter;
 
-    FilesInfoExporter(ExportThread thread,
-                      JsonGenerator jsonGenerator,
-                      FileInfoDao fileInfoDao,
-                      DataBlockDao dataBlockDao,
-                      DateTimeFormatter timestampFormatter) {
-        super(thread);
+    @Getter
+    private long exported = 0;
 
-        this.jsonGenerator = jsonGenerator;
-        this.fileInfoDao = fileInfoDao;
-        this.dataBlockDao = dataBlockDao;
-        this.timestampFormatter = timestampFormatter;
-    }
 
     @Override
-    public void export() throws IOException, InterruptedException {
+    public void export() throws IOException{
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
 
@@ -47,35 +40,27 @@ class FilesInfoExporter extends BaseExporter {
         }
     }
 
-    @Override
-    long getTotal() {
-        return fileInfoDao.getRowsCount() + dataBlockDao.getRowsCount();
-    }
-
-    private void writeFilesInfo(List<EncryptedFileInfo> encryptedFilesInfo) throws IOException,
-            InterruptedException {
+    private void writeFilesInfo(List<FileInfo> fileInfos) throws IOException {
         jsonGenerator.writeArrayFieldStart("files_info");
 
-        for (EncryptedFileInfo encryptedFileInfo : encryptedFilesInfo) {
-            FileInfo fileInfo = FileCryptor.decryptInfo(encryptedFileInfo);
+        for (FileInfo fileInfo : fileInfos) {
             writeFileInfo(fileInfo);
 
-            increaseExported();
-            getThread().breakOnInterrupted();
+            exported++;
+            checkCancelled.run();
         }
 
         jsonGenerator.writeEndArray();
     }
 
-    private void writeDataBlocksInfo(List<DataBlock> dataBlocks) throws IOException,
-            InterruptedException {
+    private void writeDataBlocksInfo(List<DataBlock> dataBlocks) throws IOException {
         jsonGenerator.writeArrayFieldStart("files_data_blocks");
 
         for (DataBlock dataBlock : dataBlocks) {
             writeDataBlockInfo(dataBlock);
 
-            increaseExported();
-            getThread().breakOnInterrupted();
+            exported++;
+            checkCancelled.run();
         }
 
         jsonGenerator.writeEndArray();
@@ -112,5 +97,10 @@ class FilesInfoExporter extends BaseExporter {
         jsonGenerator.writeNumberField("order", dataBlock.getOrder());
 
         jsonGenerator.writeEndObject();
+    }
+
+    @Override
+    public long getTotal() {
+        return fileInfoDao.getRowsCount() + dataBlockDao.getRowsCount();
     }
 }

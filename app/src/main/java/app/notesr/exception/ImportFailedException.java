@@ -1,6 +1,6 @@
 package app.notesr.exception;
 
-public class ImportFailedException extends Exception {
+public class ImportFailedException extends RuntimeException {
 
     public ImportFailedException(String message) {
         super(message);

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import app.notesr.App;
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
 import app.notesr.crypto.FileCryptor;
 import app.notesr.crypto.NoteCryptor;
 import app.notesr.db.notes.dao.DataBlockDao;
@@ -30,7 +30,7 @@ public class NotesIntegrationTest {
     private static final Faker FAKER = new Faker();
     private static final Random RANDOM = new Random();
 
-    private static CryptoKey cryptoKey;
+    private static CryptoSecrets cryptoKey;
 
     private final NoteDao noteDao = App.getAppContainer()
             .getNotesDB()

@@ -37,7 +37,7 @@ public class MainActivity extends ActivityBase {
 
     private List<Supplier<Intent>> getIntentSuppliers(App context, CryptoManager cryptoManager) {
         return List.of(
-                () -> cryptoManager.isFirstRun()
+                () -> cryptoManager.isKeyExists()
                         ? new Intent(context, StartActivity.class)
                         : null,
 
@@ -62,7 +62,7 @@ public class MainActivity extends ActivityBase {
                         : null,
 
                 () -> {
-                    if (!cryptoManager.ready()) {
+                    if (!cryptoManager.isConfigured()) {
                         Intent intent = new Intent(context, AuthActivity.class);
                         intent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
 

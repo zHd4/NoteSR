@@ -18,8 +18,8 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.dto.CryptoKey;
-import app.notesr.service.crypto.KeySetupService;
+import app.notesr.dto.CryptoSecrets;
+import app.notesr.service.crypto.SecretsSetupService;
 
 public class ImportKeyActivity extends ActivityBase {
 
@@ -60,8 +60,9 @@ public class ImportKeyActivity extends ActivityBase {
             if (!hexKey.isBlank()) {
                 try {
                     String password = getIntent().getStringExtra("password");
-                    CryptoKey cryptoKey = hexToCryptoKey(hexKey, password);
-                    KeySetupService keySetupService = new KeySetupService(cryptoKey);
+                    CryptoSecrets cryptoSecrets = hexToCryptoKey(hexKey, password);
+                    CryptoManager cryptoManager = CryptoManager.getInstance(this);
+                    SecretsSetupService keySetupService = new SecretsSetupService(cryptoManager, cryptoSecrets);
 
                     new KeySetupCompletionHandler(this, keySetupService, mode).handle();
                 } catch (IllegalArgumentException e) {

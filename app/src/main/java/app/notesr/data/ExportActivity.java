@@ -18,13 +18,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.db.AppDatabase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.note.NoteListActivity;
-import app.notesr.db.notes.dao.FileInfoDao;
-import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.service.android.ExportAndroidService;
 
 public class ExportActivity extends ActivityBase {
 
+    private AppDatabase db;
     private ActionBar actionBar;
     private Button startStopButton;
 
@@ -32,6 +33,8 @@ public class ExportActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
+
+        db = DatabaseProvider.getInstance(this);
 
         actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -55,8 +58,8 @@ public class ExportActivity extends ActivityBase {
         TextView notesCountLabel = findViewById(R.id.notesCountLabel);
         TextView filesCountLabel = findViewById(R.id.filesCountLabel);
 
-        long notesCount = getNotesCount();
-        long filesCount = getFilesCount();
+        long notesCount = db.getNoteDao().getRowsCount();
+        long filesCount = db.getFileInfoDao().getRowsCount();
 
         notesCountLabel.setText(String.format(getString(R.string.d_notes), notesCount));
         filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
@@ -64,7 +67,7 @@ public class ExportActivity extends ActivityBase {
 
     private View.OnClickListener startStopButtonOnClick() {
         return view -> {
-            if (getNotesCount() == 0) {
+            if (db.getNoteDao().getRowsCount() == 0) {
                 showToastMessage(this, getString(R.string.no_notes), Toast.LENGTH_SHORT);
                 return;
             }
@@ -90,6 +93,13 @@ public class ExportActivity extends ActivityBase {
             public void onReceive(Context context, Intent intent) {
                 int progress = intent.getIntExtra("progress", 0);
                 boolean canceled = intent.getBooleanExtra("canceled", false);
+
+                // status = context.getString(R.string.initializing)
+                // status = context.getString(R.string.exporting_data)
+                // status = context.getString(R.string.compressing)
+                // status = context.getString(R.string.encrypting_data)
+                // status = context.getString(R.string.wiping_temp_data)
+                // status = context.getString(R.string.canceling)
 
                 String status = intent.getStringExtra("status");
                 String outputPath = intent.getStringExtra("outputPath");
@@ -154,13 +164,5 @@ public class ExportActivity extends ActivityBase {
     private void cancelExport() {
         LocalBroadcastManager.getInstance(this)
                 .sendBroadcast(new Intent(ExportAndroidService.CANCEL_EXPORT_SIGNAL));
-    }
-
-    private long getNotesCount() {
-        return App.getAppContainer().getNotesDB().getDao(NoteDao.class).getRowsCount();
-    }
-
-    private long getFilesCount() {
-        return App.getAppContainer().getNotesDB().getDao(FileInfoDao.class).getRowsCount();
     }
 }

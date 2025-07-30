@@ -11,15 +11,16 @@ import android.widget.TextView;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.note.NoteListActivity;
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
 import app.notesr.service.android.ReEncryptionAndroidService;
 
 public class ReEncryptionActivity extends ActivityBase {
 
-    private TextView progressView;
+    public static final String EXTRA_NEW_SECRETS = "new_secrets";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,36 +29,30 @@ public class ReEncryptionActivity extends ActivityBase {
 
         disableBackButton(this);
 
-        progressView = findViewById(R.id.reEncryptionProgressLabel);
-        CryptoKey newCryptoKey = (CryptoKey) getIntent().getSerializableExtra("newCryptoKey");
+        ReEncryptionBroadcastReceiver broadcastReceiver =
+                new ReEncryptionBroadcastReceiver(this::onReEncryptionComplete);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver(),
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(ReEncryptionAndroidService.BROADCAST_ACTION));
 
-        if (newCryptoKey != null) {
-            Intent serviceIntent = new Intent(this, ReEncryptionAndroidService.class)
-                    .putExtra("newCryptoKey", newCryptoKey);
+        startReEncryptionService();
+    }
 
+    protected void startReEncryptionService() {
+        CryptoSecrets newCryptoKey = (CryptoSecrets) getIntent()
+                .getSerializableExtra(EXTRA_NEW_SECRETS);
+
+        if (!App.getContext().isServiceRunning(ReEncryptionAndroidService.class)) {
+            Intent serviceIntent = new Intent(getApplicationContext(),
+                    ReEncryptionAndroidService.class);
+
+            serviceIntent.putExtra(ReEncryptionAndroidService.EXTRA_NEW_SECRETS, newCryptoKey);
             startForegroundService(serviceIntent);
         }
     }
 
-    private BroadcastReceiver broadcastReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                int progress = intent.getIntExtra("progress", -1);
-
-                if (progress != -1) {
-                    String progressStr = progress + "%";
-                    progressView.setText(progressStr);
-
-                    if (progress == 100) {
-                        startActivity(new Intent(context, NoteListActivity.class));
-                        finish();
-                    }
-                }
-            }
-        };
+    private void onReEncryptionComplete() {
+        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
+        finish();
     }
 }

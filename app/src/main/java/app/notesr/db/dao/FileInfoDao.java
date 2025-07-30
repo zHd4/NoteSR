@@ -37,4 +37,7 @@ public interface FileInfoDao {
 
     @Query("SELECT COUNT(*) FROM files_info WHERE note_id = :noteId")
     Long getCountByNoteId(String noteId);
+
+    @Query("SELECT COUNT(*) FROM files_info")
+    Long getRowsCount();
 }

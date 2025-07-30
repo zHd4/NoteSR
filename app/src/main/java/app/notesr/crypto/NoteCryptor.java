@@ -2,7 +2,7 @@ package app.notesr.crypto;
 
 import android.util.Log;
 import app.notesr.App;
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
 import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
 
@@ -11,27 +11,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NoteCryptor {
-    public static EncryptedNote updateKey(EncryptedNote note, CryptoKey oldKey, CryptoKey newKey) {
+    public static EncryptedNote updateKey(EncryptedNote note, CryptoSecrets oldKey, CryptoSecrets newKey) {
         return encrypt(decrypt(note, oldKey), newKey);
     }
 
     public static List<Note> decrypt(List<EncryptedNote> notes) {
-        return decrypt(notes, getCryptoManager().getCryptoKeyInstance());
+        return decrypt(notes, getCryptoManager().getSecrets());
     }
 
-    public static List<Note> decrypt(List<EncryptedNote> notes, CryptoKey cryptoKey) {
+    public static List<Note> decrypt(List<EncryptedNote> notes, CryptoSecrets cryptoKey) {
         return notes.stream().map(note -> decrypt(note, cryptoKey)).collect(Collectors.toList());
     }
 
     public static EncryptedNote encrypt(Note note) {
-        return encrypt(note, getCryptoManager().getCryptoKeyInstance());
+        return encrypt(note, getCryptoManager().getSecrets());
     }
 
     public static Note decrypt(EncryptedNote encryptedNote) {
-        return decrypt(encryptedNote, getCryptoManager().getCryptoKeyInstance());
+        return decrypt(encryptedNote, getCryptoManager().getSecrets());
     }
 
-    public static EncryptedNote encrypt(Note note, CryptoKey cryptoKey) {
+    public static EncryptedNote encrypt(Note note, CryptoSecrets cryptoKey) {
         byte[] encryptedName = encryptValue(note.getName(), cryptoKey);
         byte[] encryptedText = encryptValue(note.getText(), cryptoKey);
 
@@ -42,7 +42,7 @@ public class NoteCryptor {
         return encryptedNote;
     }
 
-    public static Note decrypt(EncryptedNote encryptedNote, CryptoKey cryptoKey) {
+    public static Note decrypt(EncryptedNote encryptedNote, CryptoSecrets cryptoKey) {
         String name = decryptValue(encryptedNote.getEncryptedName(), cryptoKey);
         String text = decryptValue(encryptedNote.getEncryptedText(), cryptoKey);
 
@@ -53,7 +53,7 @@ public class NoteCryptor {
         return note;
     }
 
-    private static byte[] encryptValue(String value, CryptoKey cryptoKey) {
+    private static byte[] encryptValue(String value, CryptoSecrets cryptoKey) {
         try {
             return getAesInstance(cryptoKey)
                     .encrypt(value.getBytes(StandardCharsets.UTF_8));
@@ -63,7 +63,7 @@ public class NoteCryptor {
         }
     }
 
-    private static String decryptValue(byte[] value, CryptoKey cryptoKey) {
+    private static String decryptValue(byte[] value, CryptoSecrets cryptoKey) {
         try {
             byte[] decrypted = getAesInstance(cryptoKey).decrypt(value);
             return new String(decrypted);
@@ -73,7 +73,7 @@ public class NoteCryptor {
         }
     }
 
-    private static AesCryptor getAesInstance(CryptoKey cryptoKey) {
+    private static AesCryptor getAesInstance(CryptoSecrets cryptoKey) {
         return new AesCryptor(cryptoKey.getKey(), cryptoKey.getSalt());
     }
     

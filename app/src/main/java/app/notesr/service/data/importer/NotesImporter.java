@@ -2,10 +2,9 @@ package app.notesr.service.data.importer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import app.notesr.crypto.NoteCryptor;
-import app.notesr.db.notes.dao.NoteDao;
+
+import app.notesr.db.dao.NoteDao;
 import app.notesr.exception.ImportFailedException;
-import app.notesr.model.EncryptedNote;
 import app.notesr.model.Note;
 import lombok.Getter;
 
@@ -51,8 +50,7 @@ public class NotesImporter extends BaseImporter {
                 note.setUpdatedAt(LocalDateTime.now());
             }
 
-            EncryptedNote encryptedNote = NoteCryptor.encrypt(note);
-            noteDao.save(encryptedNote, false);
+            noteDao.insert(note);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 

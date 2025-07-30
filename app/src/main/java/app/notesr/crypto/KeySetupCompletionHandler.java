@@ -8,14 +8,14 @@ import app.notesr.BuildConfig;
 import app.notesr.data.MigrationActivity;
 import app.notesr.data.ReEncryptionActivity;
 import app.notesr.note.NoteListActivity;
-import app.notesr.service.crypto.KeySetupService;
+import app.notesr.service.crypto.SecretsSetupService;
 import app.notesr.service.migration.DataVersionManager;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class KeySetupCompletionHandler {
     private final Activity activity;
-    private final KeySetupService keySetupService;
+    private final SecretsSetupService keySetupService;
     private final KeySetupMode mode;
 
     public void handle() {
@@ -52,8 +52,9 @@ public class KeySetupCompletionHandler {
 
     private void proceedRegeneration() {
         Context context = activity.getApplicationContext();
-        Intent intent = new Intent(context, ReEncryptionActivity.class)
-                .putExtra("newCryptoKey", keySetupService.getCryptoKey());
+
+        Intent intent = new Intent(context, ReEncryptionActivity.class);
+        intent.putExtra(ReEncryptionActivity.EXTRA_NEW_SECRETS, keySetupService.getCryptoSecrets());
 
         activity.startActivity(intent);
         activity.finish();

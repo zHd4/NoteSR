@@ -19,7 +19,7 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.dto.CryptoKey;
+import app.notesr.dto.CryptoSecrets;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -52,9 +52,9 @@ public class KeyRecoveryActivity extends ActivityBase {
             if (!hexKey.isBlank()) {
                 try {
                     CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
-                    CryptoKey cryptoKey = hexToCryptoKey(hexKey, null);
+                    CryptoSecrets cryptoKey = hexToCryptoKey(hexKey, null);
 
-                    if (cryptoManager.verifyCryptoKey(cryptoKey)) {
+                    if (cryptoManager.verifyKey(cryptoKey)) {
                         startActivity(new Intent(App.getContext(), AuthActivity.class)
                                 .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString())
                                 .putExtra("hexKey", hexKey));
