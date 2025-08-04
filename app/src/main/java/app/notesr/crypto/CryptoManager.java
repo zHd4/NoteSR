@@ -19,17 +19,11 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CryptoManager {
@@ -90,7 +84,7 @@ public class CryptoManager {
         return new CryptoSecrets(key, password);
     }
 
-    public void updateSecrets(CryptoSecrets secrets) throws EncryptionFailedException, IOException {
+    public void updateSecrets(CryptoSecrets secrets) throws EncryptionFailedException {
         saveSecrets(secrets);
         this.secrets = secrets;
     }
@@ -128,48 +122,51 @@ public class CryptoManager {
     private CryptoSecrets tryGetSecretsWithFallback(String password)
             throws IOException, DecryptionFailedException {
         try {
-            return getSecrets(password, AesCryptor.AesMode.GCM);
+            return getSecrets(password, AesGcmCryptor.class);
         } catch (DecryptionFailedException e) {
-            return getSecrets(password, AesCryptor.AesMode.CBC);
+            Log.e(TAG, "GCM decryption failed", e);
+            return getSecrets(password, AesCbcCryptor.class);
         }
     }
 
     private void saveSecrets(CryptoSecrets secrets)
-            throws EncryptionFailedException, IOException {
+            throws EncryptionFailedException {
         try {
-            AesCryptor.AesMode mode = AesCryptor.AesMode.GCM;
-
             byte[] keyHash = toSha256Bytes(secrets.getKey());
-            byte[] encryptedKeyFileBytes = getKeyCryptor(secrets.getPassword(), mode)
+            byte[] encryptedKeyFileBytes = getKeyCryptor(secrets.getPassword(), AesGcmCryptor.class)
                     .encrypt(secrets.getKey());
 
             FilesUtils.writeFileBytes(getEncryptedKeyFile(), encryptedKeyFileBytes);
             setKeyHash(keyHash);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException |
-                 InvalidAlgorithmParameterException | InvalidKeyException |
-                 IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException e) {
+        } catch (Exception e) {
             throw new EncryptionFailedException(e);
         }
     }
 
-    private CryptoSecrets getSecrets(String password, AesCryptor.AesMode aesMode)
-            throws DecryptionFailedException, IOException {
+    private CryptoSecrets getSecrets(String password, Class<? extends AesCryptor> cryptorClass)
+            throws DecryptionFailedException {
         try {
             byte[] encryptedKeyFileBytes = FilesUtils.readFileBytes(getEncryptedKeyFile());
-            byte[] keyFileBytes = getKeyCryptor(password, aesMode).decrypt(encryptedKeyFileBytes);
+            byte[] keyFileBytes = getKeyCryptor(password, cryptorClass)
+                    .decrypt(encryptedKeyFileBytes);
 
             return new CryptoSecrets(keyFileBytes, password);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | BadPaddingException |
-                 InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException |
-                 InvalidAlgorithmParameterException e) {
+        } catch (Exception e) {
             throw new DecryptionFailedException(e);
         }
     }
 
-    private AesCryptor getKeyCryptor(String password, AesCryptor.AesMode aesMode)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private AesCryptor getKeyCryptor(String password, Class<? extends AesCryptor> cryptorClass)
+            throws NoSuchAlgorithmException {
         byte[] salt = AesCryptor.generatePasswordBasedSalt(password);
-        return new AesCryptor(password, salt, aesMode);
+
+        try {
+            return cryptorClass.getConstructor(String.class, byte[].class)
+                    .newInstance(password, salt);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private byte[] getKeyHash() throws IOException {
