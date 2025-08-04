@@ -3,8 +3,6 @@ package app.notesr.data;
 import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -15,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
@@ -22,6 +21,7 @@ import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.note.NoteListActivity;
 import app.notesr.service.android.ExportAndroidService;
+import app.notesr.service.data.exporter.ExportStatus;
 
 public class ExportActivity extends ActivityBase {
 
@@ -37,15 +37,20 @@ public class ExportActivity extends ActivityBase {
         db = DatabaseProvider.getInstance(this);
 
         actionBar = getSupportActionBar();
-        assert actionBar != null;
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(dataReceiver(),
-                new IntentFilter(ExportAndroidService.EXPORT_DATA_BROADCAST));
+        ExportBroadcastReceiver dataReceiver = new ExportBroadcastReceiver(
+                this::onOutputPathReceived,
+                this::onExportRunning,
+                this::onExportComplete
+        );
 
-        startStopButton = findViewById(R.id.startStopExportButton);
+        LocalBroadcastManager.getInstance(this).registerReceiver(dataReceiver,
+                new IntentFilter(ExportAndroidService.BROADCAST_ACTION));
+
+        startStopButton = findViewById(R.id.start_stop_export_button);
         startStopButton.setOnClickListener(startStopButtonOnClick());
 
-        if (exportRunning()) {
+        if (isExportRunning()) {
             actionBar.setTitle(getString(R.string.exporting));
 
             disableBackButton(this);
@@ -55,8 +60,8 @@ public class ExportActivity extends ActivityBase {
             actionBar.setTitle(getString(R.string.export));
         }
 
-        TextView notesCountLabel = findViewById(R.id.notesCountLabel);
-        TextView filesCountLabel = findViewById(R.id.filesCountLabel);
+        TextView notesCountLabel = findViewById(R.id.notes_count_view);
+        TextView filesCountLabel = findViewById(R.id.files_count_label);
 
         long notesCount = db.getNoteDao().getRowsCount();
         long filesCount = db.getFileInfoDao().getRowsCount();
@@ -72,7 +77,7 @@ public class ExportActivity extends ActivityBase {
                 return;
             }
 
-            if (!exportRunning()) {
+            if (!isExportRunning()) {
                 actionBar.setDisplayHomeAsUpEnabled(false);
                 actionBar.setTitle(getString(R.string.exporting));
 
@@ -87,54 +92,47 @@ public class ExportActivity extends ActivityBase {
         };
     }
 
-    private BroadcastReceiver dataReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                int progress = intent.getIntExtra("progress", 0);
-                boolean canceled = intent.getBooleanExtra("canceled", false);
+    private void onOutputPathReceived(String outputPath) {
+        TextView outputPathView = findViewById(R.id.export_output_path_view);
 
-                // status = context.getString(R.string.initializing)
-                // status = context.getString(R.string.exporting_data)
-                // status = context.getString(R.string.compressing)
-                // status = context.getString(R.string.encrypting_data)
-                // status = context.getString(R.string.wiping_temp_data)
-                // status = context.getString(R.string.canceling)
-
-                String status = intent.getStringExtra("status");
-                String outputPath = intent.getStringExtra("outputPath");
-
-                updateViews(progress, status, outputPath);
-
-                if (progress == 100) {
-                    finishExporting(false);
-                }
-
-                if (canceled) {
-                    finishExporting(true);
-                }
-            }
-        };
+        outputPathView.setVisibility(View.VISIBLE);
+        outputPathView.setText(String.format("%s\n%s", getString(R.string.saving_in), outputPath));
     }
 
-    private void updateViews(int progress, String status, String outputPath) {
-        ProgressBar progressBar = findViewById(R.id.exportProgressBar);
+    private void onExportRunning(ExportStatus status, int progress) {
+        ProgressBar progressBar = findViewById(R.id.export_progress_bar);
         progressBar.setProgress(progress);
 
+        TextView percentageView = findViewById(R.id.export_percentage_view);
         String progressStr = progress + "%";
 
-        TextView percentageLabel = findViewById(R.id.exportPercentageLabel);
-        TextView statusLabel = findViewById(R.id.exportStatusLabel);
-        TextView outputPathLabel = findViewById(R.id.exportOutputPathLabel);
+        percentageView.setText(progressStr);
+        percentageView.setVisibility(View.VISIBLE);
 
-        makeViewVisible(percentageLabel);
-        makeViewVisible(statusLabel);
-        makeViewVisible(outputPathLabel);
+        TextView statusView = findViewById(R.id.export_status_view);
 
-        percentageLabel.setText(progressStr);
-        statusLabel.setText(status);
+        switch (status) {
+            case INITIALIZING -> statusView.setText(getString(R.string.initializing));
+            case EXPORTING_DATA -> statusView.setText(getString(R.string.exporting_data));
+            case COMPRESSING -> statusView.setText(getString(R.string.compressing));
+            case ENCRYPTING_DATA -> statusView.setText(getString(R.string.encrypting_data));
+            case WIPING_TEMP_DATA -> statusView.setText(getString(R.string.wiping_temp_data));
+            case CANCELLING -> statusView.setText(getString(R.string.cancelling));
+        }
 
-        outputPathLabel.setText(String.format("%s\n%s", getString(R.string.saving_in), outputPath));
+        statusView.setVisibility(View.VISIBLE);
+    }
+
+    private void onExportComplete(ExportStatus status) {
+        if (status == ExportStatus.DONE) {
+            showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
+        } else if (status == ExportStatus.ERROR) {
+            showToastMessage(this, getString(R.string.export_failed), Toast.LENGTH_LONG);
+            return;
+        }
+
+        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
+        finish();
     }
 
     private void setCancelButton() {
@@ -142,22 +140,7 @@ public class ExportActivity extends ActivityBase {
         startStopButton.setTextColor(getColor(android.R.color.holo_red_light));
     }
 
-    private void finishExporting(boolean canceled) {
-        if (!canceled) {
-            showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
-        }
-
-        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
-        finish();
-    }
-
-    private void makeViewVisible(View view) {
-        if (view.getVisibility() == View.INVISIBLE) {
-            view.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private boolean exportRunning() {
+    private boolean isExportRunning() {
         return App.getContext().isServiceRunning(ExportAndroidService.class);
     }
 

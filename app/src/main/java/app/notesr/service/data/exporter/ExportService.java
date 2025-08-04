@@ -71,6 +71,9 @@ public class ExportService {
             }
 
             status = ExportStatus.ERROR;
+
+        } catch (ExportCancelledException e) {
+            status = ExportStatus.CANCELED;
         }
     }
 
@@ -88,7 +91,6 @@ public class ExportService {
                     Files.delete(outputFile.toPath());
                 }
 
-                status = ExportStatus.CANCELED;
                 throw new ExportCancelledException();
             } catch (IOException e) {
                 throw new ExportCancelledException(e);

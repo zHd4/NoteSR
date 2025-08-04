@@ -74,6 +74,7 @@
     <string name="importing">Importing…</string>
     <string name="export">Export</string>
     <string name="exported">Exported!</string>
+    <string name="export_failed">Export failed!</string>
     <string name="saved_to">Saved to %s</string>
     <string name="import_text">Import</string>
     <string name="import_key">Import key</string>
@@ -103,7 +104,7 @@
     <string name="this_may_take_a_long_time">This may take a long time</string>
     <string name="saving_in">Saving in:</string>
     <string name="cancel">Cancel</string>
-    <string name="canceling">Canceling…</string>
+    <string name="cancelling">Cancelling…</string>
     <string name="select_the_data_file">Select the data file\nThe file must be encrypted with the same key that is set in the app</string>
     <string name="import_cannot_be_canceled">Import cannot be canceled</string>
     <string name="select_file">Select file</string>

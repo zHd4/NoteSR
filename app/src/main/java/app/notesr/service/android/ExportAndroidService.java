@@ -4,7 +4,10 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Environment;
@@ -28,7 +31,7 @@ import java.util.Set;
 
 public class ExportAndroidService extends Service implements Runnable {
     private static final String TAG = ExportAndroidService.class.getName();
-    public static final String EXPORT_DATA_BROADCAST = "export_data_broadcast";
+    public static final String BROADCAST_ACTION = "export_data_broadcast";
     public static final String STATUS_EXTRA = "status";
     public static final String PROGRESS_EXTRA = "progress";
     public static final String OUTPUT_PATH_EXTRA = "output_path";
@@ -85,6 +88,8 @@ public class ExportAndroidService extends Service implements Runnable {
 
     @Override
     public void run() {
+        registerCancelSignalReceiver();
+        broadcastOutputPath(outputFile.getPath());
         exportService.doExport();
 
         try {
@@ -108,17 +113,27 @@ public class ExportAndroidService extends Service implements Runnable {
             status = exportService.getStatus();
             progress = exportService.calculateProgress();
 
-            Intent broadcast = new Intent(EXPORT_DATA_BROADCAST)
+            Intent broadcast = new Intent(BROADCAST_ACTION)
                     .putExtra(STATUS_EXTRA, status)
                     .putExtra(PROGRESS_EXTRA, progress);
-
-            if (status == ExportStatus.DONE) {
-                broadcast.putExtra(OUTPUT_PATH_EXTRA, outputFile.getAbsolutePath());
-            }
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
             Thread.sleep(BROADCAST_DELAY);
         } while (status != null && !FINISH_STATUSES.contains(status));
+    }
+
+    private void broadcastOutputPath(String outputPath) {
+        Intent broadcast = new Intent(BROADCAST_ACTION).putExtra(OUTPUT_PATH_EXTRA, outputPath);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+    }
+
+    private void registerCancelSignalReceiver() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                exportService.cancel();
+            }
+        }, new IntentFilter(CANCEL_EXPORT_SIGNAL));
     }
 
     private File getOutputFile(String dirPath) {

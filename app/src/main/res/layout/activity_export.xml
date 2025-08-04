@@ -20,42 +20,42 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
-        android:id="@+id/exportProgressBar"
+        android:id="@+id/export_progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="13dp"
         android:layout_margin="4dp"
         android:max="100"
         android:progress="0"
-        app:layout_constraintBottom_toTopOf="@+id/startStopExportButton"
+        app:layout_constraintBottom_toTopOf="@+id/start_stop_export_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/exportStatusLabel"
+        android:id="@+id/export_status_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="4dp"
         android:text="Status"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/exportProgressBar"
+        app:layout_constraintBottom_toTopOf="@+id/export_progress_bar"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/exportPercentageLabel"
+        android:id="@+id/export_percentage_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="4dp"
         android:text="0%"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/exportProgressBar"
+        app:layout_constraintBottom_toTopOf="@+id/export_progress_bar"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/startStopExportButton"
+        android:id="@+id/start_stop_export_button"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:layout_margin="4dp"
@@ -68,13 +68,13 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/exportOutputPathLabel"
+        android:id="@+id/export_output_path_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="@string/saving_in"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/exportStatusLabel"
+        app:layout_constraintBottom_toTopOf="@+id/export_status_view"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -98,7 +98,7 @@
             app:srcCompat="@drawable/note" />
 
         <TextView
-            android:id="@+id/filesCountLabel"
+            android:id="@+id/files_count_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
@@ -109,7 +109,7 @@
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/file_export_image_view"
-            app:layout_constraintTop_toBottomOf="@+id/notesCountLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/notes_count_view" />
 
         <ImageView
             android:id="@+id/file_export_image_view"
@@ -123,7 +123,7 @@
             app:srcCompat="@drawable/file" />
 
         <TextView
-            android:id="@+id/notesCountLabel"
+            android:id="@+id/notes_count_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="60dp"

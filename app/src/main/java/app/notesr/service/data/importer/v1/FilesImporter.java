@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.notesr.crypto.FileCryptor;
 import app.notesr.db.dao.DataBlockDao;
 import app.notesr.db.dao.FileInfoDao;
 import app.notesr.service.data.importer.BaseFilesImporter;
@@ -33,7 +32,7 @@ class FilesImporter extends BaseFilesImporter {
                 do {
                     DataBlock dataBlock = parseDataBlockObject();
 
-                    dataBlock.setData(FileCryptor.encryptData(dataBlock.getData()));
+                    dataBlock.setData(dataBlock.getData());
                     dataBlockDao.insert(dataBlock);
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }

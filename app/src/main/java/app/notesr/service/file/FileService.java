@@ -2,8 +2,6 @@ package app.notesr.service.file;
 
 import static java.util.Objects.requireNonNull;
 
-import app.notesr.crypto.FileCryptor;
-
 import app.notesr.db.AppDatabase;
 import app.notesr.model.DataBlock;
 import app.notesr.model.FileInfo;
@@ -59,9 +57,7 @@ public class FileService {
 
     public String saveInfo(FileInfo fileInfo) {
         return db.runInTransaction(() -> {
-            if (fileInfo.getId() == null) {
-                fileInfo.setId(UUID.randomUUID().toString());
-            }
+            fileInfo.setId(UUID.randomUUID().toString());
 
             db.getFileInfoDao().insert(fileInfo);
             db.getNoteDao().setUpdatedAtById(fileInfo.getNoteId(), LocalDateTime.now());
@@ -84,8 +80,6 @@ public class FileService {
                     chunk = subChunk;
                 }
 
-                chunk = FileCryptor.encryptData(chunk);
-
                 DataBlock dataBlock = new DataBlock();
                 dataBlock.setId(UUID.randomUUID().toString());
                 dataBlock.setFileId(fileId);
@@ -106,18 +100,18 @@ public class FileService {
         Set<String> ids = new LinkedHashSet<>(db.getDataBlockDao().getBlockIdsByFileId(fileId));
 
         Long fileSize = requireNonNull(db.getFileInfoDao().get(fileId)).getSize();
-        byte[] data = new byte[Math.toIntExact(fileSize)];
+        byte[] fileBytes = new byte[Math.toIntExact(fileSize)];
         int readBytes = 0;
 
         for (String id : ids) {
             DataBlock dataBlock = db.getDataBlockDao().get(id);
-            byte[] blockData = FileCryptor.decryptData(dataBlock.getData());
+            byte[] data = dataBlock.getData();
 
-            System.arraycopy(blockData, 0, data, readBytes, blockData.length);
-            readBytes += blockData.length;
+            System.arraycopy(data, 0, fileBytes, readBytes, data.length);
+            readBytes += data.length;
         }
 
-        return data;
+        return fileBytes;
     }
 
     public long read(String fileId, Consumer<byte[]> actionPerChunk) {
@@ -127,10 +121,8 @@ public class FileService {
 
         for (String id : ids) {
             DataBlock dataBlock = db.getDataBlockDao().get(id);
-            byte[] data = FileCryptor.decryptData(dataBlock.getData());
-
-            actionPerChunk.accept(data);
-            readBytes += data.length;
+            actionPerChunk.accept(dataBlock.getData());
+            readBytes += dataBlock.getData().length;
         }
 
         return readBytes;

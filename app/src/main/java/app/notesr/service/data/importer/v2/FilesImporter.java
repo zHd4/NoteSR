@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import app.notesr.crypto.FileCryptor;
 import app.notesr.db.dao.DataBlockDao;
 import app.notesr.db.dao.FileInfoDao;
 import app.notesr.service.data.importer.BaseFilesImporter;
@@ -40,9 +39,7 @@ class FilesImporter extends BaseFilesImporter {
                     String id = dataBlock.getId();
 
                     String dataFileName = dataBlocksIdMap.getOrDefault(id, id);
-                    byte[] data = FileCryptor.encryptData(readDataBlock(dataFileName));
-
-                    dataBlock.setData(data);
+                    dataBlock.setData(readFile(dataFileName));
                     dataBlockDao.insert(dataBlock);
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
@@ -86,7 +83,7 @@ class FilesImporter extends BaseFilesImporter {
         return dataBlock;
     }
 
-    private byte[] readDataBlock(String id) throws IOException {
+    private byte[] readFile(String id) throws IOException {
         return FilesUtils.readFileBytes(new File(dataBlocksDir, id));
     }
 }

@@ -9,9 +9,12 @@ import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
 import app.notesr.App;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.db.dao.TempFileDao;
 import app.notesr.file.viewer.FileViewerActivityBase;
 import app.notesr.model.TempFile;
@@ -20,7 +23,6 @@ import app.notesr.util.Wiper;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -29,14 +31,42 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
     private static final String TAG = CacheCleanerAndroidService.class.getName();
     private static final String CHANNEL_ID = "cache_cleaner_service_channel";
     private static final int DELAY = 2000;
-
     private final Map<TempFile, Thread> runningJobs = new LinkedHashMap<>();
     private Thread thread;
+    private TempFileDao tempFileDao;
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     @Override
-    public void onCreate() {
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Cleaning cache",
+                NotificationManager.IMPORTANCE_NONE);
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .build();
+
+        int type = 0;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
+        }
+
+        tempFileDao = DatabaseProvider.getInstance(getApplicationContext())
+                .getTempFileDao();
+
         thread = new Thread(this);
         thread.start();
+
+        startForeground(startId, notification, type);
+
+        return START_STICKY;
     }
 
     @Override
@@ -66,9 +96,7 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
     }
 
     private void clearCache() {
-        List<TempFile> tempFiles = getTempFileDao().getAll();
-
-        tempFiles.stream()
+        tempFileDao.getAll().stream()
                 .filter(tempFile -> !runningJobs.containsKey(tempFile))
                 .forEach(tempFile -> {
                     Thread thread = new Thread(wipeFile(tempFile));
@@ -94,42 +122,8 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
                 }
             }
 
-            getTempFileDao().delete(tempFile.getId());
+            tempFileDao.deleteById(tempFile.getId());
             runningJobs.remove(tempFile);
         };
-    }
-
-    private TempFileDao getTempFileDao() {
-        return App.getAppContainer()
-                .getServicesDB()
-                .getDao(TempFileDao.class);
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Cleaning cache",
-                NotificationManager.IMPORTANCE_NONE);
-
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
-
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .build();
-
-        int type = 0;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-        }
-
-        startForeground(startId, notification, type);
-
-        return START_STICKY;
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 }
