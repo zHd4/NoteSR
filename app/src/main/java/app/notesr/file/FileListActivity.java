@@ -14,7 +14,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.db.AppDatabase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.note.OpenNoteActivity;
+import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.model.FileInfo;
 import app.notesr.model.Note;
@@ -28,8 +31,9 @@ import java.util.concurrent.Executors;
 public class FileListActivity extends ActivityBase {
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
+    private FileService fileService;
     private Note note;
-    private boolean noteModified;
+    private boolean isNoteModified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +46,13 @@ public class FileListActivity extends ActivityBase {
             throw new RuntimeException("Note id didn't provided");
         }
 
-        noteModified = getIntent().getBooleanExtra("modified", false);
-        note = getNotesManager().get(noteId);
+        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+
+        fileService = new FileService(db);
+        isNoteModified = getIntent().getBooleanExtra("modified", false);
+
+        NoteService noteService = new NoteService(db);
+        note = noteService.get(noteId);
 
         if (note == null) {
             throw new RuntimeException("Note with id " + noteId + " not found");
@@ -62,13 +71,15 @@ public class FileListActivity extends ActivityBase {
         });
 
         ListView filesListView = findViewById(R.id.filesListView);
-        filesListView.setOnItemClickListener(new OpenFileOnClick(this, filesIdsMap));
+        filesListView.setOnItemClickListener(
+                new OpenFileOnClick(this, fileService, filesIdsMap)
+        );
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (noteModified) {
+            if (isNoteModified) {
                 Intent intent = new Intent(App.getContext(), OpenNoteActivity.class)
                         .putExtra("noteId", note.getId())
                         .putExtra("modified", true)
@@ -89,7 +100,7 @@ public class FileListActivity extends ActivityBase {
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
 
-        long filesCount = App.getAppContainer().getFileService().getFilesCount(note.getId());
+        long filesCount = fileService.getFilesCount(note.getId());
 
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("(" + filesCount + ") Files of: " + note.getName());
@@ -107,9 +118,7 @@ public class FileListActivity extends ActivityBase {
         executor.execute(() -> {
             handler.post(progressDialog::show);
 
-            List<FileInfo> filesInfo = App.getAppContainer()
-                    .getFileService()
-                    .getFilesInfo(note.getId());
+            List<FileInfo> filesInfo = fileService.getFilesInfo(note.getId());
 
             filesInfo.forEach(
                     fileInfo -> filesIdsMap.put(fileInfo.getDecimalId(), fileInfo.getId())
@@ -133,9 +142,5 @@ public class FileListActivity extends ActivityBase {
 
             runOnUiThread(() -> filesView.setAdapter(adapter));
         }
-    }
-
-    private NoteService getNotesManager() {
-        return App.getAppContainer().getNoteService();
     }
 }

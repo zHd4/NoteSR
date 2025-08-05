@@ -20,6 +20,6 @@ public class SecretsSetupService {
     }
 
     public void apply() throws EncryptionFailedException, IOException {
-        cryptoManager.updateSecrets(cryptoSecrets);
+        cryptoManager.setSecrets(cryptoSecrets);
     }
 }

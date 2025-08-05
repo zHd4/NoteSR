@@ -4,15 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+
 import androidx.appcompat.app.ActionBar;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.db.AppDatabase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.service.note.NoteService;
 import app.notesr.dto.SearchNotesResults;
 
 public class SearchNotesActivity extends ActivityBase {
-    /** @noinspection DataFlowIssue*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +31,6 @@ public class SearchNotesActivity extends ActivityBase {
         findViewById(R.id.searchNotesButton).setOnClickListener(searchButtonOnClick(queryField));
     }
 
-    /** @noinspection deprecation*/
     @Override
     public boolean onSupportNavigateUp() {
         super.onBackPressed();
@@ -49,7 +52,8 @@ public class SearchNotesActivity extends ActivityBase {
     }
 
     private SearchNotesResults search(String query) {
-        NoteService noteService = App.getAppContainer().getNoteService();
+        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+        NoteService noteService = new NoteService(db);
         return new SearchNotesResults(noteService.search(query));
     }
 }

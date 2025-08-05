@@ -17,14 +17,15 @@ import androidx.core.widget.TextViewKt;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.db.AppDatabase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.file.FileListActivity;
 import app.notesr.service.file.FileService;
-import app.notesr.service.note.NoteService;
 import app.notesr.model.Note;
+import app.notesr.service.note.NoteService;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -38,19 +39,26 @@ public class OpenNoteActivity extends ActivityBase {
     private static final long MAX_COUNT_IN_BADGE = 9;
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
 
+    private NoteService noteService;
+    private FileService fileService;
     private Note note;
     private Menu menu;
-    private boolean noteModified;
+    private boolean isNoteModified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_note);
 
-        String noteId = getIntent().getStringExtra("noteId");
-        note = getNoteService().get(noteId);
+        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
 
-        noteModified = getIntent().getBooleanExtra("modified", false);
+        noteService = new NoteService(db);
+        fileService = new FileService(db);
+
+        String noteId = getIntent().getStringExtra("noteId");
+        note = noteService.get(noteId);
+
+        isNoteModified = getIntent().getBooleanExtra("modified", false);
 
         initializeActionBar();
         prepareEditorFields();
@@ -85,8 +93,8 @@ public class OpenNoteActivity extends ActivityBase {
         }
 
         Function1<Editable, Unit> afterTextChangedAction = editable -> {
-            if (!noteModified) {
-                noteModified = true;
+            if (!isNoteModified) {
+                isNoteModified = true;
 
                 MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
                 saveNoteButton.setVisible(true);
@@ -131,7 +139,6 @@ public class OpenNoteActivity extends ActivityBase {
     }
 
     private void setAttachedFilesCountBadge(MenuItem openFilesListButton) {
-        FileService fileService = App.getAppContainer().getFileService();
         long filesCount = fileService.getFilesCount(note.getId());
 
         if (filesCount > 0) {
@@ -156,7 +163,7 @@ public class OpenNoteActivity extends ActivityBase {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            if (noteModified) {
+            if (isNoteModified) {
                 Intent intent = new Intent(App.getContext(), NoteListActivity.class);
                 startActivity(intent);
             } else {
@@ -179,18 +186,14 @@ public class OpenNoteActivity extends ActivityBase {
         String text = textField.getText().toString();
 
         if (!name.isBlank() && !text.isBlank()) {
-            LocalDateTime now = LocalDateTime.now();
-
-            if (note != null) {
-                note.setName(name);
-                note.setText(text);
-            } else {
-                note = new Note(name, text);
+            if (note == null) {
+                note = new Note();
             }
 
-            note.setUpdatedAt(now);
+            note.setName(name);
+            note.setText(text);
+            noteService.save(note);
 
-            getNoteService().save(note);
             startActivity(new Intent(App.getContext(), NoteListActivity.class));
         }
     }
@@ -227,7 +230,7 @@ public class OpenNoteActivity extends ActivityBase {
 
                 executor.execute(() -> {
                     runOnUiThread(progressDialog::show);
-                    getNoteService().delete(note.getId());
+                    noteService.delete(note.getId());
 
                     runOnUiThread(() -> {
                         progressDialog.dismiss();
@@ -241,9 +244,5 @@ public class OpenNoteActivity extends ActivityBase {
     private void disableMenuItem(MenuItem item) {
         item.setEnabled(false);
         item.setVisible(false);
-    }
-
-    private NoteService getNoteService() {
-        return App.getAppContainer().getNoteService();
     }
 }

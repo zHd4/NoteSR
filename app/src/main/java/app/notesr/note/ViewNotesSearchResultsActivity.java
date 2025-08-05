@@ -2,10 +2,14 @@ package app.notesr.note;
 
 import android.os.Bundle;
 import android.widget.ListView;
+
 import androidx.appcompat.app.ActionBar;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.db.AppDatabase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.service.note.NoteService;
 import app.notesr.model.Note;
 import app.notesr.dto.SearchNotesResults;
@@ -19,7 +23,6 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
     private SearchNotesResults results;
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 
-    /** @noinspection DataFlowIssue*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +33,6 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
         ActionBar actionBar = getSupportActionBar();
         String actionBarTitleFormat = getResources().getString(R.string.found_n);
 
-        //noinspection deprecation
         results = (SearchNotesResults) getIntent().getSerializableExtra("results");
 
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -41,7 +43,6 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
         resultsView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
     }
 
-    /** @noinspection deprecation*/
     @Override
     public boolean onSupportNavigateUp() {
         super.onBackPressed();
@@ -49,11 +50,12 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
     }
 
     private void fillResultsList(ListView resultsView) {
-        NoteService service = App.getAppContainer().getNoteService();
+        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+        NoteService noteService = new NoteService(db);
 
         List<Note> notes = results.results()
                 .stream()
-                .map(service::get)
+                .map(noteService::get)
                 .collect(Collectors.toList());
 
         notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));

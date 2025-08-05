@@ -4,7 +4,7 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
-import static app.notesr.util.CryptoUtils.hexToCryptoKey;
+import static app.notesr.util.KeyUtils.getSecretsFromHex;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,10 +51,10 @@ public class KeyRecoveryActivity extends ActivityBase {
 
             if (!hexKey.isBlank()) {
                 try {
-                    CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
-                    CryptoSecrets cryptoKey = hexToCryptoKey(hexKey, null);
+                    CryptoManager cryptoManager = CryptoManager.getInstance(getApplicationContext());
+                    CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, null);
 
-                    if (cryptoManager.verifyKey(cryptoKey)) {
+                    if (cryptoManager.verifyKey(cryptoSecrets.getKey())) {
                         startActivity(new Intent(App.getContext(), AuthActivity.class)
                                 .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString())
                                 .putExtra("hexKey", hexKey));

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.file.FileListActivity;
 import app.notesr.service.file.FileService;
 import app.notesr.model.FileInfo;
@@ -33,6 +34,7 @@ import java.util.concurrent.Executors;
 
 public class FileViewerActivityBase extends ActivityBase {
     protected FileInfo fileInfo;
+    protected FileService fileService;
     protected java.io.File saveDir;
 
     @Getter
@@ -54,7 +56,12 @@ public class FileViewerActivityBase extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        loadFileInfo();
+        fileService = new FileService(DatabaseProvider.getInstance(getApplicationContext()));
+        fileInfo = (FileInfo) getIntent().getSerializableExtra("fileInfo");
+
+        if (fileInfo == null) {
+            throw new RuntimeException("File info not provided");
+        }
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -109,14 +116,6 @@ public class FileViewerActivityBase extends ActivityBase {
         startActivity(intent);
     }
 
-    protected void loadFileInfo() {
-        fileInfo = (FileInfo) getIntent().getSerializableExtra("fileInfo");
-
-        if (fileInfo == null) {
-            throw new RuntimeException("File info not provided");
-        }
-    }
-
     protected void saveFileOnClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setView(R.layout.dialog_are_you_sure)
@@ -134,12 +133,21 @@ public class FileViewerActivityBase extends ActivityBase {
         int dialogLayoutId = R.layout.progress_dialog_saving;
 
         if (destFile.exists()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                    .setView(R.layout.dialog_file_already_exists)
-                    .setTitle(R.string.warning)
-                    .setPositiveButton(R.string.overwrite, (dialog, result) -> executeTask(saveRunnable, dialogLayoutId))
-                    .setNegativeButton(R.string.no, (dialog, result) ->
-                            showToastMessage(this, getResources().getString(R.string.saving_canceled), Toast.LENGTH_SHORT));
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                            .setView(R.layout.dialog_file_already_exists)
+                            .setTitle(R.string.warning)
+                            .setPositiveButton(
+                                    R.string.overwrite,
+                                    (dialog, result) ->
+                                            executeTask(saveRunnable, dialogLayoutId))
+                            .setNegativeButton(
+                                    R.string.no,
+                                    (dialog, result) ->
+                                            showToastMessage(
+                                                    this,
+                                                    getResources().getString(R.string.saving_canceled),
+                                                    Toast.LENGTH_SHORT));
 
             builder.create().show();
         } else {
@@ -149,8 +157,6 @@ public class FileViewerActivityBase extends ActivityBase {
 
     private Runnable getSaveRunnable(File destFile) {
         return () -> {
-            FileService fileService = App.getAppContainer().getFileService();
-
             try {
                 fileService.read(fileInfo.getId(), chunk -> {
                     try {
@@ -161,9 +167,10 @@ public class FileViewerActivityBase extends ActivityBase {
                 });
 
                 String messageFormat = getResources().getString(R.string.saved_to);
+                String message = String.format(messageFormat, destFile.getAbsolutePath());
 
                 Looper.prepare();
-                showToastMessage(this, String.format(messageFormat, destFile.getAbsolutePath()), Toast.LENGTH_LONG);
+                showToastMessage(this, message, Toast.LENGTH_LONG);
             } catch (RuntimeException e) {
                 Log.e("NoteSR", e.toString());
 
@@ -180,7 +187,7 @@ public class FileViewerActivityBase extends ActivityBase {
                 .setNegativeButton(R.string.no, (dialog, result) -> {
                 })
                 .setPositiveButton(R.string.delete, (dialog, result) -> executeTask(() -> {
-                    deleteFile();
+                    fileService.delete(fileInfo.getId());
                     returnToListActivity();
                 }, R.layout.progress_dialog_deleting));
 
@@ -194,8 +201,6 @@ public class FileViewerActivityBase extends ActivityBase {
 
             File tempDir = getCacheDir();
             File tempFile = File.createTempFile(name, "." + extension, tempDir);
-
-            FileService fileService = App.getAppContainer().getFileService();
 
             try (FileOutputStream stream = new FileOutputStream(tempFile)) {
                 fileService.read(fileInfo.getId(), chunk -> {
@@ -219,11 +224,5 @@ public class FileViewerActivityBase extends ActivityBase {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void deleteFile() {
-        App.getAppContainer()
-                .getFileService()
-                .delete(fileInfo.getId());
     }
 }

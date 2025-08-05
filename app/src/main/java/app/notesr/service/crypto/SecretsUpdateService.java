@@ -17,7 +17,7 @@ public class SecretsUpdateService {
 
             db.getOpenHelper().getWritableDatabase()
                     .execSQL("PRAGMA rekey = x'" + keyHex + "'");
-            cryptoManager.updateSecrets(newSecrets);
+            cryptoManager.setSecrets(newSecrets);
             return null;
         });
     }

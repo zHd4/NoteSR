@@ -5,7 +5,7 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import static java.util.Objects.requireNonNull;
 
 import static app.notesr.util.ActivityUtils.showToastMessage;
-import static app.notesr.util.CryptoUtils.hexToCryptoKey;
+import static app.notesr.util.KeyUtils.getSecretsFromHex;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -60,7 +60,7 @@ public class ImportKeyActivity extends ActivityBase {
             if (!hexKey.isBlank()) {
                 try {
                     String password = getIntent().getStringExtra("password");
-                    CryptoSecrets cryptoSecrets = hexToCryptoKey(hexKey, password);
+                    CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, password);
                     CryptoManager cryptoManager = CryptoManager.getInstance(this);
                     SecretsSetupService keySetupService = new SecretsSetupService(cryptoManager, cryptoSecrets);
 

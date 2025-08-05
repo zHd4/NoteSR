@@ -84,7 +84,7 @@ public class CryptoManager {
         return new CryptoSecrets(key, password);
     }
 
-    public void updateSecrets(CryptoSecrets secrets) throws EncryptionFailedException {
+    public void setSecrets(CryptoSecrets secrets) throws EncryptionFailedException {
         saveSecrets(secrets);
         this.secrets = secrets;
     }

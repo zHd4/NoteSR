@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.App;
 import app.notesr.R;
+import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.KeySetupMode;
 import app.notesr.crypto.SetupKeyActivity;
 
@@ -20,28 +21,24 @@ public class GenerateNewKeyOnClick implements Consumer<NoteListActivity> {
         builder.setView(R.layout.dialog_re_encryption_warning);
         builder.setTitle(R.string.warning);
 
-        builder.setPositiveButton(R.string.yes, getRegenerateKeyDialogOnClick(activity));
-        builder.setNegativeButton(R.string.no, getRegenerateKeyDialogOnClick(activity));
+        builder.setPositiveButton(R.string.yes, regenerateKeyDialogOnClick(activity));
+        builder.setNegativeButton(R.string.no, regenerateKeyDialogOnClick(activity));
 
         builder.create().show();
     }
 
-    private DialogInterface.OnClickListener getRegenerateKeyDialogOnClick(NoteListActivity activity) {
+    private DialogInterface.OnClickListener regenerateKeyDialogOnClick(NoteListActivity activity) {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
+                Intent intent = new Intent(App.getContext(), SetupKeyActivity.class);
 
-                String password = App.getAppContainer()
-                        .getCryptoManager()
-                        .getCryptoKeyInstance()
-                        .getPassword();
+                CryptoManager cryptoManager = CryptoManager.getInstance(activity);
+                String password = cryptoManager.getSecrets().getPassword();
 
-                setupKeyActivityIntent.putExtra("mode",
-                        KeySetupMode.REGENERATION.toString());
+                intent.putExtra("mode", KeySetupMode.REGENERATION.toString());
+                intent.putExtra("password", password);
 
-                setupKeyActivityIntent.putExtra("password", password);
-
-                activity.startActivity(setupKeyActivityIntent);
+                activity.startActivity(intent);
             }
         };
     }

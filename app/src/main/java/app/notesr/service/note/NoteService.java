@@ -1,8 +1,6 @@
 package app.notesr.service.note;
 
-import app.notesr.db.dao.DataBlockDao;
-import app.notesr.db.dao.FileInfoDao;
-import app.notesr.db.dao.NoteDao;
+import app.notesr.db.AppDatabase;
 import app.notesr.model.Note;
 import app.notesr.util.HashHelper;
 import lombok.RequiredArgsConstructor;
@@ -14,17 +12,22 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class NoteService {
-    private final NoteDao noteDao;
-    private final FileInfoDao fileInfoDao;
-    private final DataBlockDao dataBlockDao;
+    private final AppDatabase db;
 
     public void save(Note note) {
-        note.setUpdatedAt(LocalDateTime.now());
-        noteDao.insert(note);
+        if (note.getId() == null) {
+            note.setId(UUID.randomUUID().toString());
+        }
+
+        if (note.getUpdatedAt() == null) {
+            note.setUpdatedAt(LocalDateTime.now());
+        }
+
+        db.getNoteDao().insert(note);
     }
 
     public List<Note> getAll() {
-        return noteDao
+        return db.getNoteDao()
                 .getAll()
                 .stream()
                 .map(this::setDecimalId)
@@ -32,7 +35,7 @@ public class NoteService {
     }
 
     public Note get(String id) {
-        Note note = noteDao.get(id);
+        Note note = db.getNoteDao().get(id);
 
         if (note != null) {
             setDecimalId(note);
@@ -62,12 +65,12 @@ public class NoteService {
     }
 
     public void delete(String id) {
-        fileInfoDao.getByNoteId(id).forEach(fileInfo -> {
-            dataBlockDao.deleteByFileId(fileInfo.getId());
-            fileInfoDao.deleteById(fileInfo.getId());
+        db.getFileInfoDao().getByNoteId(id).forEach(fileInfo -> {
+            db.getDataBlockDao().deleteByFileId(fileInfo.getId());
+            db.getFileInfoDao().deleteById(fileInfo.getId());
         });
 
-        noteDao.deleteById(id);
+        db.getNoteDao().deleteById(id);
     }
 
     private Note setDecimalId(Note note) {

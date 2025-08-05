@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static app.notesr.util.ActivityUtils.copyToClipboard;
 import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
-import static app.notesr.util.CryptoUtils.cryptoKeyToHex;
+import static app.notesr.util.KeyUtils.getHexFromKeyBytes;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -44,14 +44,16 @@ public class SetupKeyActivity extends ActivityBase {
 
         try {
             password = getIntent().getStringExtra("password");
-            keySetupService = new SecretsSetupService(CryptoManager.getInstance(this), password);
+
+            CryptoManager cryptoManager = CryptoManager.getInstance(this);
+            keySetupService = new SecretsSetupService(cryptoManager, password);
         } catch (NullPointerException e) {
             Log.e(TAG, "Password is null", e);
             throw new RuntimeException(e);
         }
 
         TextView keyView = findViewById(R.id.aesKeyHex);
-        keyView.setText(cryptoKeyToHex(keySetupService.getCryptoSecrets()));
+        keyView.setText(getHexFromKeyBytes(keySetupService.getCryptoSecrets()));
 
         adaptKeyView();
 

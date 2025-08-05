@@ -4,13 +4,17 @@ import static java.util.UUID.randomUUID;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 import app.notesr.crypto.BackupCryptor;
+import app.notesr.crypto.CryptoManager;
 import app.notesr.db.AppDatabase;
+import app.notesr.dto.CryptoSecrets;
+import app.notesr.exception.EncryptionFailedException;
 import app.notesr.service.data.TempDataWiper;
 import app.notesr.util.FilesUtils;
 import app.notesr.util.VersionFetcher;
@@ -28,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ExportService {
+    private static final String TAG = ExportService.class.getName();
     private static final DateTimeFormatter TIMESTAMP_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -63,7 +68,9 @@ public class ExportService {
             encrypt();
             wipe();
             finish();
-        } catch (IOException e) {
+        } catch (EncryptionFailedException | IOException e) {
+            Log.e(TAG, "Export failed", e);
+
             try {
                 TempDataWiper.wipeTempData(tempArchive, tempDir);
             } catch (IOException ex) {
@@ -160,14 +167,17 @@ public class ExportService {
         ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath());
     }
 
-    private void encrypt() throws IOException {
+    private void encrypt() throws EncryptionFailedException, IOException {
         checkCancelled();
         status = ExportStatus.ENCRYPTING_DATA;
 
         FileInputStream inputStream = new FileInputStream(tempArchive);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-        BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream);
+        CryptoManager cryptoManager = CryptoManager.getInstance(context);
+        CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
+
+        BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream, cryptoSecrets);
         backupCryptor.encrypt();
     }
 

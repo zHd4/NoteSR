@@ -12,8 +12,10 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 import app.notesr.crypto.BackupCryptor;
+import app.notesr.crypto.CryptoManager;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
+import app.notesr.dto.CryptoSecrets;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.service.data.importer.v1.ImportV1Strategy;
 import app.notesr.service.data.importer.v2.ImportV2Strategy;
@@ -70,10 +72,14 @@ public class ImportService {
         return status;
     }
 
-    private static void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws
+    private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws
             DecryptionFailedException {
         try {
-            BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream);
+            CryptoManager cryptoManager = CryptoManager.getInstance(context);
+            CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
+
+            BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream,
+                    cryptoSecrets);
             backupCryptor.decrypt();
         } catch (IOException e) {
             Log.e(TAG, "IOException", e);

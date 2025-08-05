@@ -18,6 +18,8 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.db.AppDatabase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.service.file.FileService;
 import app.notesr.model.FileInfo;
 import app.notesr.util.FileExifDataResolver;
@@ -101,7 +103,8 @@ public class AddFileActivity extends ActivityBase {
         executor.execute(() -> {
             runOnUiThread(progressDialog::show);
 
-            FileService fileService = App.getAppContainer().getFileService();
+            AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+            FileService fileService = new FileService(db);
 
             filesMap.forEach((info, file) -> {
                 try {
@@ -176,12 +179,14 @@ public class AddFileActivity extends ActivityBase {
 
         long size = resolver.getFileSize();
 
-        return FileInfo.builder()
-                .noteId(noteId)
-                .size(size)
-                .name(filename)
-                .type(type)
-                .build();
+        FileInfo fileInfo = new FileInfo();
+
+        fileInfo.setNoteId(noteId);
+        fileInfo.setSize(size);
+        fileInfo.setName(filename);
+        fileInfo.setType(type);
+
+        return fileInfo;
     }
 
     private InputStream getFileStream(Uri uri) {

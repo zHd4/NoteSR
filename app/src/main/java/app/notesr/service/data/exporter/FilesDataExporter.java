@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import app.notesr.crypto.FileCryptor;
 import app.notesr.db.dao.DataBlockDao;
 import app.notesr.model.DataBlock;
 import app.notesr.util.FilesUtils;
@@ -33,9 +32,7 @@ class FilesDataExporter implements Exporter {
 
         for (DataBlock blockWithoutData : dataBlocksWithoutData) {
             DataBlock dataBlock = dataBlockDao.get(blockWithoutData.getId());
-            byte[] data = FileCryptor.decryptData(dataBlock.getData());
-
-            FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId()), data);
+            FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId()), dataBlock.getData());
 
             exported++;
             checkCancelled.run();

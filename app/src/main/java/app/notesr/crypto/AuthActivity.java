@@ -186,7 +186,9 @@ public class AuthActivity extends ActivityBase {
     }
 
     private View.OnClickListener authButtonOnClick() {
-        AuthActivityExtension helper = new AuthActivityExtension(this, passwordBuilder);
+        CryptoManager cryptoManager = CryptoManager.getInstance(getApplicationContext());
+        AuthActivityExtension helper = new AuthActivityExtension(this, cryptoManager,
+                passwordBuilder);
 
         return view -> {
             switch (currentMode) {

@@ -26,7 +26,7 @@ public class MainActivity extends ActivityBase {
         setContentView(R.layout.activity_main);
 
         App context = App.getContext();
-        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
+        CryptoManager cryptoManager = CryptoManager.getInstance(context);
 
         List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(context, cryptoManager);
         Intent defaultIntent = new Intent(context, NoteListActivity.class);

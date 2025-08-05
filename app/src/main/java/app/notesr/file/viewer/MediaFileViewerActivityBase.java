@@ -3,7 +3,8 @@ package app.notesr.file.viewer;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import app.notesr.App;
+import app.notesr.db.AppDatabase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.service.file.FileService;
 import app.notesr.util.thumbnail.ImageThumbnailCreator;
 import app.notesr.util.thumbnail.ThumbnailCreator;
@@ -29,7 +30,9 @@ public class MediaFileViewerActivityBase extends FileViewerActivityBase {
 
         try {
             byte[] thumbnail = creator.getThumbnail(mediaFile);
-            FileService fileService = App.getAppContainer().getFileService();
+
+            AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+            FileService fileService = new FileService(db);
 
             fileInfo.setThumbnail(thumbnail);
             fileService.saveInfo(fileInfo);

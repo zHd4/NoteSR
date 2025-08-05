@@ -5,30 +5,31 @@ import android.content.Intent;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import app.notesr.App;
 import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.data.MigrationActivity;
+import app.notesr.dto.CryptoSecrets;
 import app.notesr.note.NoteListActivity;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.util.ActivityUtils;
-import app.notesr.util.CryptoUtils;
+import app.notesr.util.KeyUtils;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class AuthActivityExtension {
     private static final int MAX_ATTEMPTS = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
 
     private final AuthActivity activity;
+    private final CryptoManager cryptoManager;
     private final StringBuilder passwordBuilder;
 
     private int attempts = MAX_ATTEMPTS;
     private String createdPassword;
-
-    public AuthActivityExtension(AuthActivity activity, StringBuilder passwordBuilder) {
-        this.activity = activity;
-        this.passwordBuilder = passwordBuilder;
-    }
 
     public void authorize() {
         String password = passwordBuilder.toString();
@@ -38,8 +39,6 @@ public class AuthActivityExtension {
             showToastMessage(enterCodeMessage);
             return;
         }
-
-        CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
 
         if (cryptoManager.configure(password)) {
             onAuthorizationSuccessful();
@@ -70,9 +69,7 @@ public class AuthActivityExtension {
             try {
                 if (hexKey == null) throw new Exception("Missing hex key");
 
-                App.getAppContainer()
-                        .getCryptoManager()
-                        .applyNewKey(CryptoUtils.hexToCryptoKey(hexKey, password));
+                cryptoManager.setSecrets(KeyUtils.getSecretsFromHex(hexKey, password));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -89,7 +86,11 @@ public class AuthActivityExtension {
 
         if (password != null) {
             try {
-                App.getAppContainer().getCryptoManager().changePassword(password);
+                CryptoSecrets secrets = cryptoManager.getSecrets();
+
+                secrets.setPassword(password);
+                cryptoManager.setSecrets(secrets);
+
                 showToastMessage(R.string.updated);
 
                 Intent defaultIntent = new Intent(activity.getApplicationContext(),
@@ -142,8 +143,11 @@ public class AuthActivityExtension {
         attempts--;
 
         if (attempts == 0) {
-            CryptoManager cryptoManager = App.getAppContainer().getCryptoManager();
-            cryptoManager.block();
+            try {
+                cryptoManager.block();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             showToastMessage(R.string.blocked);
             activity.startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));

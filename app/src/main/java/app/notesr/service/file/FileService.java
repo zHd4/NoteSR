@@ -57,7 +57,17 @@ public class FileService {
 
     public String saveInfo(FileInfo fileInfo) {
         return db.runInTransaction(() -> {
-            fileInfo.setId(UUID.randomUUID().toString());
+            if (fileInfo.getId() == null) {
+                fileInfo.setId(UUID.randomUUID().toString());
+            }
+
+            if (fileInfo.getCreatedAt() == null) {
+                fileInfo.setCreatedAt(LocalDateTime.now());
+            }
+
+            if (fileInfo.getUpdatedAt() == null) {
+                fileInfo.setUpdatedAt(LocalDateTime.now());
+            }
 
             db.getFileInfoDao().insert(fileInfo);
             db.getNoteDao().setUpdatedAtById(fileInfo.getNoteId(), LocalDateTime.now());
