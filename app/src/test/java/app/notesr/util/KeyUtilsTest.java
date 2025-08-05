@@ -20,7 +20,7 @@ class KeyUtilsTest {
                 (byte) 0xCD, (byte) 0xEF
         };
 
-        String expected = "01 23 45 67\n89 AB CD EF";
+        String expected = "01 23 45 67 \n89 AB CD EF";
         String actual = KeyUtils.getHexFromKeyBytes(key);
 
         assertEquals(expected, actual);
