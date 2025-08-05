@@ -31,7 +31,12 @@ public final class KeyUtils {
 
                 lineLength++;
             } else {
-                result.append('\n').append(hex).append(' ');
+                result.append('\n').append(hex);
+
+                if (i < key.length - 1) {
+                    result.append(' ');
+                }
+
                 lineLength = 1;
             }
         }
