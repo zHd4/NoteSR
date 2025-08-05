@@ -1,0 +1,70 @@
+package app.notesr.util;
+
+import static java.util.Objects.requireNonNull;
+
+import app.notesr.dto.CryptoSecrets;
+
+public final class KeyUtils {
+    private static final int HEX_LINE_SIZE_LIMIT = 4;
+
+    public static String getHexFromKeyBytes(CryptoSecrets cryptoSecrets) {
+        return getHexFromKeyBytes(cryptoSecrets.getKey());
+    }
+
+    public static CryptoSecrets getSecretsFromHex(String hex, String password) {
+        return new CryptoSecrets(getKeyBytesFromHex(hex), password);
+    }
+
+    public static String getHexFromKeyBytes(byte[] key) {
+        StringBuilder result = new StringBuilder();
+        int lineLength = 0;
+
+        for (int i = 0; i < key.length; i++) {
+            String hex = byteToHex(key[i]);
+
+            if (lineLength < HEX_LINE_SIZE_LIMIT) {
+                result.append(hex);
+
+                if (i < key.length - 1) {
+                    result.append(' ');
+                }
+
+                lineLength++;
+            } else {
+                result.append('\n').append(hex).append(' ');
+                lineLength = 1;
+            }
+        }
+
+        return result.toString().toUpperCase();
+    }
+
+    public static byte[] getKeyBytesFromHex(String hex) {
+        try {
+            requireNonNull(hex, "hex must not be null");
+            String[] hexArray = hex.toLowerCase().split("\\s+");
+
+            byte[] key = new byte[hexArray.length];
+
+            for (int i = 0; i < hexArray.length; i++) {
+                String hexDigit = hexArray[i];
+                if (!hexDigit.isBlank()) {
+                    key[i] = (byte) Integer.parseInt(hexDigit, 16);
+                }
+            }
+
+            return key;
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Invalid hex key", e);
+        }
+    }
+
+    private static String byteToHex(byte value) {
+        char[] hexDigits = new char[2];
+
+        hexDigits[0] = Character.forDigit((value >> 4) & 0xF, 16);
+        hexDigits[1] = Character.forDigit((value & 0xF), 16);
+
+        return String.valueOf(hexDigits);
+    }
+}
