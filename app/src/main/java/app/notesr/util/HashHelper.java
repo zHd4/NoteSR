@@ -29,11 +29,22 @@ public class HashHelper {
 
     public static byte[] fromSha256HexString(String hex) {
         int len = hex.length();
+
+        if (len % 2 != 0) {
+            throw new IllegalArgumentException("Hex string must have even length");
+        }
+
         byte[] result = new byte[len / 2];
 
         for (int i = 0; i < len; i += 2) {
-            result[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
-                    + Character.digit(hex.charAt(i + 1), 16));
+            int highNibble = Character.digit(hex.charAt(i), 16);
+            int lowNibble = Character.digit(hex.charAt(i + 1), 16);
+
+            if (highNibble == -1 || lowNibble == -1) {
+                throw new NumberFormatException("Invalid hex character at position " + i);
+            }
+
+            result[i / 2] = (byte) ((highNibble << 4) + lowNibble);
         }
 
         return result;
