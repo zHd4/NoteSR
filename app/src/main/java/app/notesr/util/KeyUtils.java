@@ -42,15 +42,12 @@ public final class KeyUtils {
     public static byte[] getKeyBytesFromHex(String hex) {
         try {
             requireNonNull(hex, "hex must not be null");
-            String[] hexArray = hex.toLowerCase().split("\\s+");
 
+            String[] hexArray = hex.toLowerCase().trim().split("\\s+");
             byte[] key = new byte[hexArray.length];
 
             for (int i = 0; i < hexArray.length; i++) {
-                String hexDigit = hexArray[i];
-                if (!hexDigit.isBlank()) {
-                    key[i] = (byte) Integer.parseInt(hexDigit, 16);
-                }
+                key[i] = (byte) Integer.parseInt(hexArray[i], 16);
             }
 
             return key;
