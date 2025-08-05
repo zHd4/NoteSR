@@ -5,84 +5,74 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import app.notesr.App;
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import app.notesr.crypto.CryptoManager;
+import app.notesr.db.AppDatabase;
+import app.notesr.db.DatabaseProvider;
 import app.notesr.dto.CryptoSecrets;
-import app.notesr.crypto.FileCryptor;
-import app.notesr.crypto.NoteCryptor;
-import app.notesr.db.notes.dao.DataBlockDao;
-import app.notesr.db.notes.dao.FileInfoDao;
-import app.notesr.db.notes.dao.NoteDao;
 import app.notesr.model.DataBlock;
-import app.notesr.model.EncryptedFileInfo;
-import app.notesr.model.EncryptedNote;
 import app.notesr.model.FileInfo;
 import app.notesr.model.Note;
+import app.notesr.service.file.FileService;
+import app.notesr.service.note.NoteService;
 import io.bloco.faker.Faker;
-import org.junit.After;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Random;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class NotesIntegrationTest {
+    private static final SecureRandom RANDOM = new SecureRandom();
     private static final Faker FAKER = new Faker();
-    private static final Random RANDOM = new Random();
 
-    private static CryptoSecrets cryptoKey;
-
-    private final NoteDao noteDao = App.getAppContainer()
-            .getNotesDB()
-            .getDao(NoteDao.class);
-
-    private final FileInfoDao fileInfoDao = App.getAppContainer()
-            .getNotesDB()
-            .getDao(FileInfoDao.class);
-
-    private final DataBlockDao dataBlockDao = App.getAppContainer()
-            .getNotesDB()
-            .getDao(DataBlockDao.class);
+    private static Context context;
+    private static AppDatabase db;
+    private static NoteService noteService;
+    private static FileService fileService;
 
     private Note testNote;
 
-
     @BeforeClass
-    public static void beforeAll() throws NoSuchAlgorithmException {
-        String password = FAKER.internet.password();
-        cryptoKey = App.getAppContainer().getCryptoManager().generateNewKey(password);
+    public static void beforeAll() throws Exception {
+        context = ApplicationProvider.getApplicationContext();
+
+        CryptoManager cryptoManager = CryptoManager.getInstance(context);
+        CryptoSecrets cryptoSecrets = getTestSecrets();
+
+        cryptoManager.setSecrets(cryptoSecrets);
+
+        db = DatabaseProvider.getInstance(context);
+        noteService = new NoteService(db);
+        fileService = new FileService(db);
     }
 
     @Before
     public void before() {
-        String noteName = FAKER.lorem.word();
-        String noteText = FAKER.lorem.paragraph();
+        testNote = new Note();
 
-        testNote = new Note(noteName, noteText);
-    }
-
-    @After
-    public void after() {
-        noteDao.getAll().forEach(note -> {
-            fileInfoDao.getByNoteId(note.getId()).forEach(file -> {
-                dataBlockDao.getBlocksIdsByFileId(file.getId()).forEach(dataBlockDao::delete);
-                fileInfoDao.delete(file.getId());
-            });
-
-            noteDao.delete(note.getId());
-        });
+        testNote.setName(FAKER.lorem.word());
+        testNote.setText(FAKER.lorem.paragraph());
     }
 
     @Test
     public void testCreateNote() {
-        saveTestNote();
+        noteService.save(testNote);
+
         assertNotNull(testNote.getId());
+        assertNotNull(testNote.getUpdatedAt());
 
-        EncryptedNote encryptedActual = noteDao.get(testNote.getId());
-        assertNotNull(encryptedActual);
+        Note actual = db.getNoteDao().get(testNote.getId());
 
-        Note actual = NoteCryptor.decrypt(encryptedActual, cryptoKey);
-
+        assertNotNull(actual);
         assertEquals(testNote.getName(), actual.getName());
         assertEquals(testNote.getText(), actual.getText());
         assertNotNull(actual.getUpdatedAt());
@@ -90,37 +80,44 @@ public class NotesIntegrationTest {
 
     @Test
     public void testUpdateNote() {
-        saveTestNote();
+        noteService.save(testNote);
+
         assertNotNull(testNote.getId());
+        assertNotNull(testNote.getUpdatedAt());
 
-        String newName = FAKER.lorem.word();
-        String newText = FAKER.lorem.paragraph();
+        LocalDateTime newUpdatedAt = LocalDateTime.now();
 
-        Note note = new Note(newName, newText);
-        note.setId(testNote.getId());
+        testNote.setName(FAKER.lorem.word());
+        testNote.setText(FAKER.lorem.paragraph());
+        testNote.setUpdatedAt(newUpdatedAt);
 
-        noteDao.save(NoteCryptor.encrypt(note, cryptoKey));
+        noteService.save(testNote);
 
-        EncryptedNote encryptedActual = noteDao.get(testNote.getId());
-        assertNotNull(encryptedActual);
+        Note actual = db.getNoteDao().get(testNote.getId());
 
-        Note actual = NoteCryptor.decrypt(encryptedActual, cryptoKey);
+        assertNotNull(actual);
 
-        assertEquals(actual.getName(), note.getName());
-        assertEquals(actual.getText(), note.getText());
-        assertNotNull(actual.getUpdatedAt());
+        assertEquals(testNote.getName(), actual.getName());
+        assertEquals(testNote.getText(), actual.getText());
+
+        LocalDateTime expectedUpdatedAt = testNote.getUpdatedAt().truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime actualUpdatedAt = actual.getUpdatedAt().truncatedTo(ChronoUnit.SECONDS);
+
+        assertEquals(expectedUpdatedAt, actualUpdatedAt);
     }
 
     @Test
-    public void testAttachFile() {
-        saveTestNote();
-        assertNotNull(testNote.getId());
+    public void testAttachFile() throws Exception {
+        noteService.save(testNote);
 
-        byte[] testFileData = new byte[1024];
-        RANDOM.nextBytes(testFileData);
+        assertNotNull(testNote.getId());
+        assertNotNull(testNote.getUpdatedAt());
+
+        byte[] fileData = new byte[1024];
+        RANDOM.nextBytes(fileData);
 
         String fileName = FAKER.lorem.word();
-        long fileSize = testFileData.length;
+        long fileSize = fileData.length;
 
         FileInfo fileInfo = new FileInfo();
 
@@ -128,39 +125,53 @@ public class NotesIntegrationTest {
         fileInfo.setSize(fileSize);
         fileInfo.setName(fileName);
 
-        EncryptedFileInfo encryptedFileInfo = FileCryptor.encryptInfo(fileInfo, cryptoKey);
-        fileInfoDao.save(encryptedFileInfo);
+        fileService.saveInfo(fileInfo);
 
-        DataBlock dataBlock = DataBlock.builder()
-                .fileId(encryptedFileInfo.getId())
-                .order(1L).data(testFileData)
-                .build();
+        assertNotNull(fileInfo.getId());
 
-        dataBlockDao.save(dataBlock);
+        assertEquals(testNote.getId(), fileInfo.getNoteId());
+        assertEquals(fileSize, (long) fileInfo.getSize());
+        assertEquals(fileName, fileInfo.getName());
 
-        assertNotNull(encryptedFileInfo.getId());
-        assertNotNull(dataBlock.getId());
+        assertNull(fileInfo.getType());
+        assertNull(fileInfo.getThumbnail());
 
-        assertEquals(encryptedFileInfo.getId(), dataBlock.getFileId());
-        assertArrayEquals(dataBlockDao.get(dataBlock.getId()).getData(), dataBlock.getData());
+        assertNotNull(fileInfo.getCreatedAt());
+        assertNotNull(fileInfo.getUpdatedAt());
+
+        Path tempFilePath = Path.of(context.getCacheDir().getPath(), fileName);
+        Files.write(tempFilePath, fileData);
+
+        fileService.saveData(fileInfo.getId(), tempFilePath.toFile());
+
+        String dataBlockId = db.getDataBlockDao().getBlockIdsByFileId(fileInfo.getId()).get(0);
+        DataBlock dataBlock = db.getDataBlockDao().get(dataBlockId);
+
+        assertNotNull(dataBlock);
+
+        assertEquals(fileInfo.getId(), dataBlock.getFileId());
+        assertEquals(0L, (long) dataBlock.getOrder());
+        assertArrayEquals(fileData, dataBlock.getData());
     }
 
     @Test
     public void testDeleteNote() {
-        saveTestNote();
+        noteService.save(testNote);
+
         assertNotNull(testNote.getId());
+        assertNotNull(testNote.getUpdatedAt());
 
-        noteDao.delete(testNote.getId());
-        EncryptedNote actual = noteDao.get(testNote.getId());
+        noteService.delete(testNote.getId());
 
+        Note actual = db.getNoteDao().get(testNote.getId());
         assertNull(actual);
     }
 
-    private void saveTestNote() {
-        EncryptedNote encryptedNote = NoteCryptor.encrypt(testNote, cryptoKey);
-        noteDao.save(encryptedNote);
+    private static CryptoSecrets getTestSecrets() {
+        byte[] key = new byte[CryptoManager.KEY_SIZE];
+        RANDOM.nextBytes(key);
 
-        testNote.setId(encryptedNote.getId());
-        testNote.setUpdatedAt(encryptedNote.getUpdatedAt());
+        String password = FAKER.internet.password();
+        return new CryptoSecrets(key, password);
     }
 }

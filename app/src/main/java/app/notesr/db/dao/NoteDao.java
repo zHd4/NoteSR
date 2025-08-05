@@ -33,7 +33,7 @@ public interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY updated_at DESC")
     List<Note> getAll();
 
-    @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
+    @Query("SELECT * FROM notes WHERE id = :id")
     Note get(String id);
 
     @Query("SELECT COUNT(*) FROM notes")

@@ -27,6 +27,7 @@ import java.util.Arrays;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CryptoManager {
+    public static final int KEY_SIZE = 48;
     private static final String TAG = CryptoManager.class.getName();
     private static final String PREF_NAME = "crypto_prefs";
     private static final String KEY_HASH_PREF = "key_hash";
@@ -34,7 +35,6 @@ public class CryptoManager {
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
     private static final String KEY_HASH_FILENAME = "key.sha256";
     private static final String BLOCK_MARKER_FILENAME = ".blocked";
-    private static final int KEY_SIZE = 48;
 
     private static CryptoManager instance;
 
