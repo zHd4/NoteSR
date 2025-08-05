@@ -13,7 +13,6 @@ import java.util.Random;
 import java.util.UUID;
 
 public class HashHelperTest {
-
     private static final int MAX_DATA_SIZE = 100000;
     private final Random random = new Random();
 
@@ -69,7 +68,7 @@ public class HashHelperTest {
     public void testFromSha256HexStringWithInvalidLengthThrowsException() {
         String invalidHex = "abc";
 
-        assertThrows(StringIndexOutOfBoundsException.class, () ->
+        assertThrows(IllegalArgumentException.class, () ->
                 HashHelper.fromSha256HexString(invalidHex));
     }
 
