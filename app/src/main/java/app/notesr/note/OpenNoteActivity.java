@@ -56,12 +56,16 @@ public class OpenNoteActivity extends ActivityBase {
         fileService = new FileService(db);
 
         String noteId = getIntent().getStringExtra("noteId");
-        note = noteService.get(noteId);
 
-        isNoteModified = getIntent().getBooleanExtra("modified", false);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            note = noteService.get(noteId);
+            isNoteModified = getIntent().getBooleanExtra("modified", false);
 
-        initializeActionBar();
-        prepareEditorFields();
+            runOnUiThread(() -> {
+                initializeActionBar();
+                prepareEditorFields();
+            });
+        });
     }
 
     private void initializeActionBar() {
