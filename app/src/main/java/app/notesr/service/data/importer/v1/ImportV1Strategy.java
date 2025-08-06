@@ -32,7 +32,7 @@ public class ImportV1Strategy implements ImportStrategy {
     private ImportStatus status;
 
     @Override
-    public void doImport() {
+    public void execute() {
         try {
             db.runInTransaction(() -> {
                 status = ImportStatus.IMPORTING;

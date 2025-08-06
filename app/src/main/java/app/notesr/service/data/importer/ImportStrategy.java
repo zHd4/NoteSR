@@ -1,6 +1,6 @@
 package app.notesr.service.data.importer;
 
 public interface ImportStrategy {
-    void doImport();
+    void execute();
     ImportStatus getStatus();
 }

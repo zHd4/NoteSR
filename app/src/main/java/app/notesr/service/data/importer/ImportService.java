@@ -14,7 +14,6 @@ import java.time.format.DateTimeFormatter;
 import app.notesr.crypto.BackupCryptor;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
 import app.notesr.dto.CryptoSecrets;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.service.data.importer.v1.ImportV1Strategy;
@@ -52,7 +51,7 @@ public class ImportService {
                 importStrategy = new ImportV1Strategy(db, tempDecryptedFile, TIMESTAMP_FORMATTER);
             }
 
-            importStrategy.doImport();
+            importStrategy.execute();
         } catch (DecryptionFailedException e) {
             if (tempDecryptedFile.exists()) {
                 wipeFile(tempDecryptedFile);

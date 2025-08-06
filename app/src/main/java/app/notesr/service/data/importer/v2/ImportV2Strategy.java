@@ -41,7 +41,7 @@ public class ImportV2Strategy implements ImportStrategy {
     private File tempDir;
 
     @Override
-    public void doImport() {
+    public void execute() {
         try {
             db.runInTransaction(() -> {
                 tempDir = new File(context.getCacheDir(), randomUUID().toString());
