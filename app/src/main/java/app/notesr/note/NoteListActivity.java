@@ -91,10 +91,8 @@ public class NoteListActivity extends ActivityBase {
     }
 
     private void loadNotes() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(
-                getApplicationContext(),
-                R.style.AlertDialogTheme
-        );
+        AlertDialog.Builder builder = new AlertDialog.Builder(this,
+                R.style.AlertDialogTheme);
 
         builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
