@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class FileListAdapter extends ElementListAdapter<FileInfo> {
+public class FilesListAdapter extends ElementListAdapter<FileInfo> {
     private static final Map<String, Integer> FILES_TYPES_ICONS = Map.of(
             "text", R.drawable.text_file,
             "image", R.drawable.image_file,
@@ -41,7 +41,7 @@ public class FileListAdapter extends ElementListAdapter<FileInfo> {
         return "0 B";
     }
 
-    public FileListAdapter(@NonNull Context context, int resource, @NonNull List<FileInfo> objects) {
+    public FilesListAdapter(@NonNull Context context, int resource, @NonNull List<FileInfo> objects) {
         super(context, resource, objects);
     }
 

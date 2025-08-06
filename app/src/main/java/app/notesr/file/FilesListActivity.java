@@ -135,7 +135,7 @@ public class FilesListActivity extends ActivityBase {
 
         if (!filesInfo.isEmpty()) {
             missingFilesLabel.setVisibility(View.INVISIBLE);
-            FileListAdapter adapter = new FileListAdapter(
+            FilesListAdapter adapter = new FilesListAdapter(
                     App.getContext(),
                     R.layout.files_list_item,
                     filesInfo);
