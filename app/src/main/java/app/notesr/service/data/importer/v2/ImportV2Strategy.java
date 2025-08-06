@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ImportV2Strategy implements ImportStrategy {
 
-    private static final String TAG = ImportV2Strategy.class.getName();
     private static final String NOTES_JSON_FILE_NAME = "notes.json";
     private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
     private static final String DATA_BLOCKS_DIR_NAME = "data_blocks";
