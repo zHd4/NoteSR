@@ -37,7 +37,7 @@ public class MainActivity extends ActivityBase {
 
     private List<Supplier<Intent>> getIntentSuppliers(App context, CryptoManager cryptoManager) {
         return List.of(
-                () -> cryptoManager.isKeyExists()
+                () -> !cryptoManager.isKeyExists()
                         ? new Intent(context, StartActivity.class)
                         : null,
 
