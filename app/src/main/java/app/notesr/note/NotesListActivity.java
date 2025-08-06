@@ -9,9 +9,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
@@ -41,12 +44,12 @@ public class NotesListActivity extends ActivityBase {
 
         getOnBackPressedDispatcher()
                 .addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                LockOnClick lock = new LockOnClick();
-                lock.accept(NotesListActivity.this);
-            }
-        });
+                    @Override
+                    public void handleOnBackPressed() {
+                        LockOnClick lock = new LockOnClick();
+                        lock.accept(NotesListActivity.this);
+                    }
+                });
 
         ListView notesView = findViewById(R.id.notesListView);
         FloatingActionButton newNoteButton = findViewById(R.id.addNoteButton);
