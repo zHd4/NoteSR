@@ -8,6 +8,8 @@ import androidx.room.PrimaryKey;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -16,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity(tableName = "notes")
 @NoArgsConstructor
 @AllArgsConstructor
-public final class Note {
+public final class Note implements Serializable {
     @PrimaryKey
     @NonNull
     @JsonProperty("id")

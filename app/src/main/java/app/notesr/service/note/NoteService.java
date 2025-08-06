@@ -45,7 +45,7 @@ public class NoteService {
         return null;
     }
 
-    public List<String> search(String query) {
+    public List<Note> search(String query) {
         return db.getNoteDao().search(query.trim());
     }
 
