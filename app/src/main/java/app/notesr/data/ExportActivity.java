@@ -19,7 +19,7 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
-import app.notesr.note.NoteListActivity;
+import app.notesr.note.NotesListActivity;
 import app.notesr.service.android.ExportAndroidService;
 import app.notesr.service.data.exporter.ExportStatus;
 
@@ -131,7 +131,7 @@ public class ExportActivity extends ActivityBase {
             return;
         }
 
-        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
+        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
         finish();
     }
 

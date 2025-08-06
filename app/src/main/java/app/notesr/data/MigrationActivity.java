@@ -10,7 +10,7 @@ import app.notesr.App;
 import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.note.NoteListActivity;
+import app.notesr.note.NotesListActivity;
 import app.notesr.service.android.AppMigrationAndroidService;
 import app.notesr.service.migration.DataVersionManager;
 
@@ -44,7 +44,7 @@ public class MigrationActivity extends ActivityBase {
         DataVersionManager dataVersionManager = new DataVersionManager(getApplicationContext());
         dataVersionManager.setCurrentVersion(BuildConfig.DATA_SCHEMA_VERSION);
 
-        startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
+        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
         finish();
     }
 }

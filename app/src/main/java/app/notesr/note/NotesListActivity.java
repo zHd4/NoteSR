@@ -30,8 +30,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-public class NoteListActivity extends ActivityBase {
-    private final Map<Integer, Consumer<NoteListActivity>> menuItemsMap = new HashMap<>();
+public class NotesListActivity extends ActivityBase {
+    private final Map<Integer, Consumer<NotesListActivity>> menuItemsMap = new HashMap<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 
     @Override
@@ -44,7 +44,7 @@ public class NoteListActivity extends ActivityBase {
             @Override
             public void handleOnBackPressed() {
                 LockOnClick lock = new LockOnClick();
-                lock.accept(NoteListActivity.this);
+                lock.accept(NotesListActivity.this);
             }
         });
 

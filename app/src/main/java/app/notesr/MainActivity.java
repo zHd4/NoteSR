@@ -10,7 +10,7 @@ import app.notesr.data.ExportActivity;
 import app.notesr.data.ImportActivity;
 import app.notesr.data.MigrationActivity;
 import app.notesr.data.ReEncryptionActivity;
-import app.notesr.note.NoteListActivity;
+import app.notesr.note.NotesListActivity;
 import app.notesr.crypto.AuthActivity;
 import app.notesr.crypto.KeyRecoveryActivity;
 import app.notesr.crypto.CryptoManager;
@@ -29,7 +29,7 @@ public class MainActivity extends ActivityBase {
         CryptoManager cryptoManager = CryptoManager.getInstance(context);
 
         List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(context, cryptoManager);
-        Intent defaultIntent = new Intent(context, NoteListActivity.class);
+        Intent defaultIntent = new Intent(context, NotesListActivity.class);
 
         startActivity(new StartupIntentResolver(intentSuppliers, defaultIntent).resolve());
         finish();

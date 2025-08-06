@@ -7,7 +7,7 @@ import android.content.Intent;
 import app.notesr.BuildConfig;
 import app.notesr.data.MigrationActivity;
 import app.notesr.data.ReEncryptionActivity;
-import app.notesr.note.NoteListActivity;
+import app.notesr.note.NotesListActivity;
 import app.notesr.service.crypto.SecretsSetupService;
 import app.notesr.service.migration.DataVersionManager;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class KeySetupCompletionHandler {
             keySetupService.apply();
 
             Context context = activity.getApplicationContext();
-            Intent nextIntent = new Intent(context, NoteListActivity.class);
+            Intent nextIntent = new Intent(context, NotesListActivity.class);
 
             DataVersionManager dataVersionManager = new DataVersionManager(context);
 

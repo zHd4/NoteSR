@@ -57,7 +57,7 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".note.NoteListActivity"
+            android:name=".note.NotesListActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />

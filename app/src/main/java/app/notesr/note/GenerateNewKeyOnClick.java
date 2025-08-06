@@ -13,9 +13,9 @@ import app.notesr.crypto.SetupKeyActivity;
 
 import java.util.function.Consumer;
 
-public class GenerateNewKeyOnClick implements Consumer<NoteListActivity> {
+public class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
     @Override
-    public void accept(NoteListActivity activity) {
+    public void accept(NotesListActivity activity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AlertDialogTheme);
 
         builder.setView(R.layout.dialog_re_encryption_warning);
@@ -27,7 +27,7 @@ public class GenerateNewKeyOnClick implements Consumer<NoteListActivity> {
         builder.create().show();
     }
 
-    private DialogInterface.OnClickListener regenerateKeyDialogOnClick(NoteListActivity activity) {
+    private DialogInterface.OnClickListener regenerateKeyDialogOnClick(NotesListActivity activity) {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
                 Intent intent = new Intent(App.getContext(), SetupKeyActivity.class);

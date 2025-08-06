@@ -6,9 +6,9 @@ import app.notesr.crypto.AuthActivity;
 
 import java.util.function.Consumer;
 
-public class ChangePasswordOnClick implements Consumer<NoteListActivity> {
+public class ChangePasswordOnClick implements Consumer<NotesListActivity> {
     @Override
-    public void accept(NoteListActivity activity) {
+    public void accept(NotesListActivity activity) {
         Intent authActivityIntent = new Intent(activity.getApplicationContext(), AuthActivity.class);
         authActivityIntent.putExtra("mode", AuthActivity.Mode.CHANGE_PASSWORD.toString());
 

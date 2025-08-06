@@ -22,7 +22,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.note.NoteListActivity;
+import app.notesr.note.NotesListActivity;
 import app.notesr.service.android.ImportAndroidService;
 import app.notesr.service.data.importer.ImportStatus;
 import app.notesr.util.FileExifDataResolver;
@@ -76,7 +76,7 @@ public class ImportActivity extends ActivityBase {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(this, NoteListActivity.class)
+            Intent intent = new Intent(this, NotesListActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             startActivity(intent);
@@ -198,7 +198,7 @@ public class ImportActivity extends ActivityBase {
             }
             case DONE -> {
                 statusTextView.setVisibility(View.INVISIBLE);
-                startActivity(new Intent(getApplicationContext(), NoteListActivity.class));
+                startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
                 finish();
             }
         }

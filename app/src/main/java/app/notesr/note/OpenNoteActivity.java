@@ -164,7 +164,7 @@ public class OpenNoteActivity extends ActivityBase {
 
         if (id == android.R.id.home) {
             if (isNoteModified) {
-                Intent intent = new Intent(App.getContext(), NoteListActivity.class);
+                Intent intent = new Intent(App.getContext(), NotesListActivity.class);
                 startActivity(intent);
             } else {
                 finish();
@@ -194,7 +194,7 @@ public class OpenNoteActivity extends ActivityBase {
             note.setText(text);
             noteService.save(note);
 
-            startActivity(new Intent(App.getContext(), NoteListActivity.class));
+            startActivity(new Intent(App.getContext(), NotesListActivity.class));
         }
     }
 
@@ -234,7 +234,7 @@ public class OpenNoteActivity extends ActivityBase {
 
                     runOnUiThread(() -> {
                         progressDialog.dismiss();
-                        startActivity(new Intent(App.getContext(), NoteListActivity.class));
+                        startActivity(new Intent(App.getContext(), NotesListActivity.class));
                     });
                 });
             }

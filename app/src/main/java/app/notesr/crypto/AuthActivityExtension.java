@@ -12,7 +12,7 @@ import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.data.MigrationActivity;
 import app.notesr.dto.CryptoSecrets;
-import app.notesr.note.NoteListActivity;
+import app.notesr.note.NotesListActivity;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.util.ActivityUtils;
 import app.notesr.util.KeyUtils;
@@ -75,7 +75,7 @@ public class AuthActivityExtension {
             }
 
             Intent defaultIntent = new Intent(activity.getApplicationContext(),
-                    NoteListActivity.class);
+                    NotesListActivity.class);
 
             activity.startActivity(getNextIntent(defaultIntent, true));
         }
@@ -94,7 +94,7 @@ public class AuthActivityExtension {
                 showToastMessage(R.string.updated);
 
                 Intent defaultIntent = new Intent(activity.getApplicationContext(),
-                        NoteListActivity.class);
+                        NotesListActivity.class);
 
                 activity.startActivity(getNextIntent(defaultIntent, false));
             } catch (Exception e) {
@@ -133,7 +133,7 @@ public class AuthActivityExtension {
         censoredPasswordView.setText("");
 
         Intent defaultIntent = new Intent(activity.getApplicationContext(),
-                NoteListActivity.class);
+                NotesListActivity.class);
 
         activity.startActivity(getNextIntent(defaultIntent,true));
         activity.finish();
