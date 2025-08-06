@@ -122,7 +122,7 @@ public class NotesListActivity extends ActivityBase {
 
         if (!notes.isEmpty()) {
             missingNotesLabel.setVisibility(View.INVISIBLE);
-            NoteListAdapter adapter = new NoteListAdapter(
+            NotesListAdapter adapter = new NotesListAdapter(
                     App.getContext(),
                     R.layout.notes_list_item,
                     notes);

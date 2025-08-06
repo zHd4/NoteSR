@@ -60,7 +60,7 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
 
         notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
 
-        NoteListAdapter adapter = new NoteListAdapter(
+        NotesListAdapter adapter = new NotesListAdapter(
                 App.getContext(),
                 R.layout.notes_list_item,
                 notes);
