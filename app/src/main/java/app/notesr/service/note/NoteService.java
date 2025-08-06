@@ -46,22 +46,7 @@ public class NoteService {
     }
 
     public List<String> search(String query) {
-        return getAll().stream()
-                .filter(note -> {
-                    String formattedQuery = query.trim().toLowerCase();
-
-                    boolean foundInName = note.getName()
-                            .toLowerCase()
-                            .contains(formattedQuery);
-
-                    boolean foundInText = note.getText()
-                            .toLowerCase()
-                            .contains(formattedQuery);
-
-                    return foundInName || foundInText;
-                })
-                .map(Note::getId)
-                .collect(Collectors.toList());
+        return db.getNoteDao().search(query.trim());
     }
 
     public void delete(String id) {

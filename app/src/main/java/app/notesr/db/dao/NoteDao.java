@@ -36,6 +36,13 @@ public interface NoteDao {
     @Query("SELECT * FROM notes WHERE id = :id")
     Note get(String id);
 
+    @Query("""
+                SELECT id FROM notes
+                WHERE name LIKE '%' || :query || '%' COLLATE NOCASE
+                   OR text LIKE '%' || :query || '%' COLLATE NOCASE
+            """)
+    List<String> search(String query);
+
     @Query("SELECT COUNT(*) FROM notes")
     Long getRowsCount();
 }
