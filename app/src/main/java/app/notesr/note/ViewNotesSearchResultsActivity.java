@@ -1,5 +1,7 @@
 package app.notesr.note;
 
+import static java.util.Objects.requireNonNull;
+
 import android.os.Bundle;
 import android.widget.ListView;
 
@@ -8,19 +10,15 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.service.note.NoteService;
 import app.notesr.model.Note;
-import app.notesr.dto.SearchNotesResults;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ViewNotesSearchResultsActivity extends ActivityBase {
-    private SearchNotesResults results;
+    private List<Note> results;
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 
     @Override
@@ -30,13 +28,15 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
 
         ListView resultsView = findViewById(R.id.notesSearchResultsListView);
 
+        results = (LinkedList<Note>) getIntent().getSerializableExtra("results");
+
         ActionBar actionBar = getSupportActionBar();
         String actionBarTitleFormat = getResources().getString(R.string.found_n);
 
-        results = (SearchNotesResults) getIntent().getSerializableExtra("results");
+        requireNonNull(actionBar);
 
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(String.format(actionBarTitleFormat, results.results().size()));
+        actionBar.setTitle(String.format(actionBarTitleFormat, results.size()));
 
         fillResultsList(resultsView);
 
@@ -50,20 +50,12 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
     }
 
     private void fillResultsList(ListView resultsView) {
-        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
-        NoteService noteService = new NoteService(db);
-
-        List<Note> notes = results.results()
-                .stream()
-                .map(noteService::get)
-                .collect(Collectors.toList());
-
-        notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
+        results.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
 
         NotesListAdapter adapter = new NotesListAdapter(
-                App.getContext(),
+                getApplicationContext(),
                 R.layout.notes_list_item,
-                notes);
+                results);
 
         resultsView.setAdapter(adapter);
     }
