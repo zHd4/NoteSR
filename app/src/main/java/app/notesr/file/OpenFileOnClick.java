@@ -25,7 +25,7 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
 //                    "audio", null
             );
 
-    private final FileListActivity activity;
+    private final FilesListActivity activity;
     private final FileService fileService;
     private final Map<Long, String> filesIdsMap;
 

@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FileListActivity extends ActivityBase {
+public class FilesListActivity extends ActivityBase {
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
     private FileService fileService;

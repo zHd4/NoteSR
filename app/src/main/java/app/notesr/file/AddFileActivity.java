@@ -69,7 +69,7 @@ public class AddFileActivity extends ActivityBase {
 
     @Override
     public void finish() {
-        Intent intent = new Intent(App.getContext(), FileListActivity.class);
+        Intent intent = new Intent(App.getContext(), FilesListActivity.class);
 
         intent.putExtra("noteId", noteId);
         intent.putExtra("modified", noteModified);

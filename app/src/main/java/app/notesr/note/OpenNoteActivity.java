@@ -19,7 +19,7 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
-import app.notesr.file.FileListActivity;
+import app.notesr.file.FilesListActivity;
 import app.notesr.service.file.FileService;
 import app.notesr.model.Note;
 import app.notesr.service.note.NoteService;
@@ -211,7 +211,7 @@ public class OpenNoteActivity extends ActivityBase {
     }
 
     private void openFilesListOnClick() {
-        Intent intent = new Intent(App.getContext(), FileListActivity.class);
+        Intent intent = new Intent(App.getContext(), FilesListActivity.class);
 
         intent.putExtra("noteId", note.getId());
         startActivity(intent);
