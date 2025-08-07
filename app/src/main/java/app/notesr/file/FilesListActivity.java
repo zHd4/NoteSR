@@ -1,5 +1,8 @@
 package app.notesr.file;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,9 +11,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
@@ -25,8 +31,6 @@ import app.notesr.model.Note;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class FilesListActivity extends ActivityBase {
     private final Map<Long, String> filesIdsMap = new HashMap<>();
@@ -52,28 +56,37 @@ public class FilesListActivity extends ActivityBase {
         isNoteModified = getIntent().getBooleanExtra("modified", false);
 
         NoteService noteService = new NoteService(db);
-        note = noteService.get(noteId);
 
-        if (note == null) {
-            throw new RuntimeException("Note with id " + noteId + " not found");
-        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this,
+                R.style.AlertDialogTheme);
+        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
-        configureActionBar();
-        loadFiles();
+        AlertDialog progressDialog = builder.create();
+        Handler handler = new Handler(Looper.getMainLooper());
 
-        FloatingActionButton addFileButton = findViewById(R.id.addFileButton);
+        newSingleThreadExecutor().execute(() -> {
+            handler.post(progressDialog::show);
+            note = noteService.get(noteId);
 
-        addFileButton.setOnClickListener(view -> {
-            Intent intent = new Intent(App.getContext(), AddFileActivity.class);
+            if (note == null) {
+                throw new RuntimeException("Note with id " + noteId + " not found");
+            }
 
-            intent.putExtra("noteId", noteId);
-            startActivity(intent);
+            long filesCount = fileService.getFilesCount(note.getId());
+            runOnUiThread(() -> configureActionBar(filesCount));
+
+            List<FileInfo> filesInfos = fileService.getFilesInfo(note.getId());
+            filesInfos.forEach(fileInfo ->
+                    filesIdsMap.put(fileInfo.getDecimalId(), fileInfo.getId()));
+
+            progressDialog.dismiss();
+
+            runOnUiThread(() -> {
+                fillFilesListView(filesInfos);
+                configureFilesListView();
+                configureButtons();
+            });
         });
-
-        ListView filesListView = findViewById(R.id.filesListView);
-        filesListView.setOnItemClickListener(
-                new OpenFileOnClick(this, fileService, filesIdsMap)
-        );
     }
 
     @Override
@@ -96,51 +109,44 @@ public class FilesListActivity extends ActivityBase {
         return super.onOptionsItemSelected(item);
     }
 
-    private void configureActionBar() {
+    private void configureActionBar(long filesCount) {
         ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-
-        long filesCount = fileService.getFilesCount(note.getId());
+        requireNonNull(actionBar);
 
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("(" + filesCount + ") Files of: " + note.getName());
     }
 
-    private void loadFiles() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+    private void configureButtons() {
+        FloatingActionButton addFileButton = findViewById(R.id.addFileButton);
 
-        AlertDialog progressDialog = builder.create();
+        addFileButton.setOnClickListener(view -> {
+            Intent intent = new Intent(App.getContext(), AddFileActivity.class);
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        executor.execute(() -> {
-            handler.post(progressDialog::show);
-
-            List<FileInfo> filesInfo = fileService.getFilesInfo(note.getId());
-
-            filesInfo.forEach(
-                    fileInfo -> filesIdsMap.put(fileInfo.getDecimalId(), fileInfo.getId())
-            );
-
-            fillFilesListView(filesInfo);
-            progressDialog.dismiss();
+            intent.putExtra("noteId", note.getId());
+            startActivity(intent);
         });
     }
 
-    private void fillFilesListView(List<FileInfo> filesInfo) {
+    private void configureFilesListView() {
+        ListView filesListView = findViewById(R.id.filesListView);
+        filesListView.setOnItemClickListener(
+                new OpenFileOnClick(this, fileService, filesIdsMap)
+        );
+    }
+
+    private void fillFilesListView(List<FileInfo> filesInfos) {
         ListView filesView = findViewById(R.id.filesListView);
         TextView missingFilesLabel = findViewById(R.id.missingFilesLabel);
 
-        if (!filesInfo.isEmpty()) {
+        if (!filesInfos.isEmpty()) {
             missingFilesLabel.setVisibility(View.INVISIBLE);
             FilesListAdapter adapter = new FilesListAdapter(
                     App.getContext(),
                     R.layout.files_list_item,
-                    filesInfo);
+                    filesInfos);
 
-            runOnUiThread(() -> filesView.setAdapter(adapter));
+            filesView.setAdapter(adapter);
         }
     }
 }

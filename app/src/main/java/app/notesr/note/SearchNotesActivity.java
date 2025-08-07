@@ -1,6 +1,7 @@
 package app.notesr.note;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,6 @@ import android.widget.EditText;
 import androidx.appcompat.app.ActionBar;
 
 import java.util.LinkedList;
-import java.util.concurrent.Executors;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
@@ -51,7 +51,7 @@ public class SearchNotesActivity extends ActivityBase {
             String query = queryField.getText().toString();
 
             if (!query.isBlank()) {
-                Executors.newSingleThreadExecutor().execute(() -> {
+                newSingleThreadExecutor().execute(() -> {
                     LinkedList<Note> results = search(query);
 
                     runOnUiThread(() -> {

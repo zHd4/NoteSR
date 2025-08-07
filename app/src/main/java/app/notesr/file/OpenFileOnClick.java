@@ -1,5 +1,7 @@
 package app.notesr.file;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,14 +34,20 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String fileId = filesIdsMap.get(id);
-        FileInfo fileInfo = fileService.getFileInfo(fileId);
-        String type = getFileType(fileInfo);
 
-        Class<? extends FileViewerActivityBase> viewer = type != null
-                ? FILES_VIEWERS.get(type)
-                : OpenUnknownFileActivity.class;
+        newSingleThreadExecutor().execute(() -> {
+            FileInfo fileInfo = fileService.getFileInfo(fileId);
 
-        openViewer(viewer, fileInfo);
+            activity.runOnUiThread(() -> {
+                String type = getFileType(fileInfo);
+
+                Class<? extends FileViewerActivityBase> viewer = type != null
+                        ? FILES_VIEWERS.get(type)
+                        : OpenUnknownFileActivity.class;
+
+                openViewer(viewer, fileInfo);
+            });
+        });
     }
 
     private void openViewer(Class<? extends FileViewerActivityBase> viewer, FileInfo fileInfo) {

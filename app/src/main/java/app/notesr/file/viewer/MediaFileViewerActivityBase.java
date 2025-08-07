@@ -1,5 +1,7 @@
 package app.notesr.file.viewer;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -35,7 +37,7 @@ public class MediaFileViewerActivityBase extends FileViewerActivityBase {
             FileService fileService = new FileService(db);
 
             fileInfo.setThumbnail(thumbnail);
-            fileService.saveInfo(fileInfo);
+            newSingleThreadExecutor().execute(() -> fileService.saveInfo(fileInfo));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -2,6 +2,7 @@ package app.notesr.file;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -18,7 +19,6 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.service.file.FileService;
 import app.notesr.model.FileInfo;
@@ -37,10 +37,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class AddFileActivity extends ActivityBase {
+    private FileService fileService;
     private String noteId;
     private boolean noteModified = false;
 
@@ -49,6 +48,7 @@ public class AddFileActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_file);
 
+        fileService = new FileService(DatabaseProvider.getInstance(getApplicationContext()));
         noteId = getIntent().getStringExtra("noteId");
 
         if (noteId == null) {
@@ -95,16 +95,11 @@ public class AddFileActivity extends ActivityBase {
     }
 
     private void addFiles(Intent data) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
         AlertDialog progressDialog = createProgressDialog();
-
         Map<FileInfo, File> filesMap = cacheFiles(getFilesUri(data));
 
-        executor.execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);
-
-            AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
-            FileService fileService = new FileService(db);
 
             filesMap.forEach((info, file) -> {
                 try {

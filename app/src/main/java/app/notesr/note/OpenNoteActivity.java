@@ -29,11 +29,10 @@ import kotlin.jvm.functions.Function1;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public class OpenNoteActivity extends ActivityBase {
     private static final long MAX_COUNT_IN_BADGE = 9;
@@ -57,7 +56,7 @@ public class OpenNoteActivity extends ActivityBase {
 
         String noteId = getIntent().getStringExtra("noteId");
 
-        Executors.newSingleThreadExecutor().execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             note = noteService.get(noteId);
             isNoteModified = getIntent().getBooleanExtra("modified", false);
 
@@ -196,9 +195,12 @@ public class OpenNoteActivity extends ActivityBase {
 
             note.setName(name);
             note.setText(text);
-            noteService.save(note);
 
-            startActivity(new Intent(App.getContext(), NotesListActivity.class));
+            newSingleThreadExecutor().execute(() -> {
+                noteService.save(note);
+                runOnUiThread(() -> startActivity(new Intent(App.getContext(),
+                        NotesListActivity.class)));
+            });
         }
     }
 
@@ -226,13 +228,11 @@ public class OpenNoteActivity extends ActivityBase {
             if (result == DialogInterface.BUTTON_POSITIVE) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this,
                         R.style.AlertDialogTheme);
-
                 builder.setView(R.layout.progress_dialog_deleting).setCancelable(false);
 
                 AlertDialog progressDialog = builder.create();
-                ExecutorService executor = Executors.newSingleThreadExecutor();
 
-                executor.execute(() -> {
+                newSingleThreadExecutor().execute(() -> {
                     runOnUiThread(progressDialog::show);
                     noteService.delete(note.getId());
 

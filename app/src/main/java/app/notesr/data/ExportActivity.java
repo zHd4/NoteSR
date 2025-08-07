@@ -1,5 +1,6 @@
 package app.notesr.data;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
 
@@ -63,11 +64,15 @@ public class ExportActivity extends ActivityBase {
         TextView notesCountLabel = findViewById(R.id.notes_count_view);
         TextView filesCountLabel = findViewById(R.id.files_count_label);
 
-        long notesCount = db.getNoteDao().getRowsCount();
-        long filesCount = db.getFileInfoDao().getRowsCount();
+        newSingleThreadExecutor().execute(() -> {
+            long notesCount = db.getNoteDao().getRowsCount();
+            long filesCount = db.getFileInfoDao().getRowsCount();
 
-        notesCountLabel.setText(String.format(getString(R.string.d_notes), notesCount));
-        filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
+            runOnUiThread(() -> {
+                notesCountLabel.setText(String.format(getString(R.string.d_notes), notesCount));
+                filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
+            });
+        });
     }
 
     private View.OnClickListener startStopButtonOnClick() {
