@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.data.ExportActivity;
@@ -56,7 +55,7 @@ public class NotesListActivity extends ActivityBase {
 
         loadNotes();
 
-        notesView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
+        notesView.setOnItemClickListener(new OpenNoteOnClick(getApplicationContext(), notesIdsMap));
         newNoteButton.setOnClickListener((view) ->
                 startActivity(new Intent(getApplicationContext(), OpenNoteActivity.class)));
     }
@@ -124,7 +123,7 @@ public class NotesListActivity extends ActivityBase {
         if (!notes.isEmpty()) {
             missingNotesLabel.setVisibility(View.INVISIBLE);
             NotesListAdapter adapter = new NotesListAdapter(
-                    App.getContext(),
+                    getApplicationContext(),
                     R.layout.notes_list_item,
                     notes);
 

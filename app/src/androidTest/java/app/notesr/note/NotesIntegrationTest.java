@@ -45,7 +45,7 @@ public class NotesIntegrationTest {
     public static void beforeAll() throws Exception {
         context = ApplicationProvider.getApplicationContext();
 
-        CryptoManager cryptoManager = CryptoManager.getInstance(context);
+        CryptoManager cryptoManager = CryptoManager.getInstance();
         CryptoSecrets cryptoSecrets = getTestSecrets();
 
         cryptoManager.setSecrets(cryptoSecrets);

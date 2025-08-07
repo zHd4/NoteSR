@@ -61,7 +61,7 @@ public class ImportKeyActivity extends ActivityBase {
                 try {
                     String password = getIntent().getStringExtra("password");
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, password);
-                    CryptoManager cryptoManager = CryptoManager.getInstance(this);
+                    CryptoManager cryptoManager = CryptoManager.getInstance();
                     SecretsSetupService keySetupService = new SecretsSetupService(cryptoManager, cryptoSecrets);
 
                     new KeySetupCompletionHandler(this, keySetupService, mode).handle();

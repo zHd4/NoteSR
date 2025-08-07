@@ -23,7 +23,7 @@ public class StartActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        Intent authActivityIntent = new Intent(App.getContext(), AuthActivity.class);
+        Intent authActivityIntent = new Intent(getApplicationContext(), AuthActivity.class);
         authActivityIntent.putExtra("mode", AuthActivity.Mode.CREATE_PASSWORD.toString());
 
         View.OnClickListener onGetStartedButtonClick = view -> startActivity(authActivityIntent);

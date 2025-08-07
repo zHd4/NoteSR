@@ -16,7 +16,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.db.DatabaseProvider;
@@ -69,7 +68,7 @@ public class AddFileActivity extends ActivityBase {
 
     @Override
     public void finish() {
-        Intent intent = new Intent(App.getContext(), FilesListActivity.class);
+        Intent intent = new Intent(getApplicationContext(), FilesListActivity.class);
 
         intent.putExtra("noteId", noteId);
         intent.putExtra("modified", noteModified);
@@ -167,7 +166,7 @@ public class AddFileActivity extends ActivityBase {
     }
 
     private FileInfo getFileInfo(Uri uri) {
-        FileExifDataResolver resolver = new FileExifDataResolver(uri);
+        FileExifDataResolver resolver = new FileExifDataResolver(getApplicationContext(), uri);
 
         String filename = resolver.getFileName();
         String type = resolver.getMimeType();

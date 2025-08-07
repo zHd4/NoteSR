@@ -14,7 +14,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.TextViewKt;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.db.AppDatabase;
@@ -167,7 +166,7 @@ public class OpenNoteActivity extends ActivityBase {
 
         if (id == android.R.id.home) {
             if (isNoteModified) {
-                Intent intent = new Intent(App.getContext(), NotesListActivity.class);
+                Intent intent = new Intent(getApplicationContext(), NotesListActivity.class);
                 startActivity(intent);
             } else {
                 finish();
@@ -198,7 +197,7 @@ public class OpenNoteActivity extends ActivityBase {
 
             newSingleThreadExecutor().execute(() -> {
                 noteService.save(note);
-                runOnUiThread(() -> startActivity(new Intent(App.getContext(),
+                runOnUiThread(() -> startActivity(new Intent(getApplicationContext(),
                         NotesListActivity.class)));
             });
         }
@@ -217,7 +216,7 @@ public class OpenNoteActivity extends ActivityBase {
     }
 
     private void openFilesListOnClick() {
-        Intent intent = new Intent(App.getContext(), FilesListActivity.class);
+        Intent intent = new Intent(getApplicationContext(), FilesListActivity.class);
 
         intent.putExtra("noteId", note.getId());
         startActivity(intent);
@@ -238,7 +237,7 @@ public class OpenNoteActivity extends ActivityBase {
 
                     runOnUiThread(() -> {
                         progressDialog.dismiss();
-                        startActivity(new Intent(App.getContext(), NotesListActivity.class));
+                        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
                     });
                 });
             }

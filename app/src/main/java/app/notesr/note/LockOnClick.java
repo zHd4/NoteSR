@@ -15,7 +15,7 @@ public class LockOnClick implements Consumer<NotesListActivity> {
 
         authActivityIntent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
 
-        CryptoManager cryptoManager = CryptoManager.getInstance(activity);
+        CryptoManager cryptoManager = CryptoManager.getInstance();
         cryptoManager.destroySecrets();
 
         activity.startActivity(authActivityIntent);

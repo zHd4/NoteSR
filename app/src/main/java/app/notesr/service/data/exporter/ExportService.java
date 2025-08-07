@@ -174,7 +174,7 @@ public class ExportService {
         FileInputStream inputStream = new FileInputStream(tempArchive);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-        CryptoManager cryptoManager = CryptoManager.getInstance(context);
+        CryptoManager cryptoManager = CryptoManager.getInstance();
         CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
 
         BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream, cryptoSecrets);

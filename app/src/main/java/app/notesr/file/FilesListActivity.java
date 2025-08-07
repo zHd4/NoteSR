@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.db.AppDatabase;
@@ -93,7 +92,7 @@ public class FilesListActivity extends ActivityBase {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             if (isNoteModified) {
-                Intent intent = new Intent(App.getContext(), OpenNoteActivity.class)
+                Intent intent = new Intent(getApplicationContext(), OpenNoteActivity.class)
                         .putExtra("noteId", note.getId())
                         .putExtra("modified", true)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -121,7 +120,7 @@ public class FilesListActivity extends ActivityBase {
         FloatingActionButton addFileButton = findViewById(R.id.addFileButton);
 
         addFileButton.setOnClickListener(view -> {
-            Intent intent = new Intent(App.getContext(), AddFileActivity.class);
+            Intent intent = new Intent(getApplicationContext(), AddFileActivity.class);
 
             intent.putExtra("noteId", note.getId());
             startActivity(intent);
@@ -142,7 +141,7 @@ public class FilesListActivity extends ActivityBase {
         if (!filesInfos.isEmpty()) {
             missingFilesLabel.setVisibility(View.INVISIBLE);
             FilesListAdapter adapter = new FilesListAdapter(
-                    App.getContext(),
+                    getApplicationContext(),
                     R.layout.files_list_item,
                     filesInfos);
 

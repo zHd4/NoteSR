@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.dto.CryptoSecrets;
@@ -51,11 +50,11 @@ public class KeyRecoveryActivity extends ActivityBase {
 
             if (!hexKey.isBlank()) {
                 try {
-                    CryptoManager cryptoManager = CryptoManager.getInstance(getApplicationContext());
+                    CryptoManager cryptoManager = CryptoManager.getInstance();
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, null);
 
                     if (cryptoManager.verifyKey(cryptoSecrets.getKey())) {
-                        startActivity(new Intent(App.getContext(), AuthActivity.class)
+                        startActivity(new Intent(getApplicationContext(), AuthActivity.class)
                                 .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString())
                                 .putExtra("hexKey", hexKey));
 

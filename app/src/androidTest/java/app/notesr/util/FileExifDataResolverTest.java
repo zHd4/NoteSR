@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.provider.MediaStore;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
-import app.notesr.App;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,7 +27,7 @@ public class FileExifDataResolverTest {
 
     @BeforeClass
     public static void beforeAll() throws IOException {
-        Context context = App.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         File cacheDir = context.getCacheDir();
 
         testFile = File.createTempFile("image", ".jpg", cacheDir);
@@ -45,7 +47,7 @@ public class FileExifDataResolverTest {
         }
 
         Uri uri = getImageContentUri(context, testFile, testFileSize);
-        resolver = new FileExifDataResolver(uri);
+        resolver = new FileExifDataResolver(context, uri);
     }
 
     @Test

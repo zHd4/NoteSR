@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-import app.notesr.App;
 import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.data.MigrationActivity;
@@ -51,7 +50,8 @@ public class AuthActivityExtension {
         String password = proceedPasswordSetting();
 
         if (password != null) {
-            Intent setupKeyActivityIntent = new Intent(App.getContext(), SetupKeyActivity.class);
+            Intent setupKeyActivityIntent = new Intent(activity.getApplicationContext(),
+                    SetupKeyActivity.class);
 
             setupKeyActivityIntent.putExtra("mode", KeySetupMode.FIRST_RUN.toString());
             setupKeyActivityIntent.putExtra("password", password);
@@ -135,7 +135,7 @@ public class AuthActivityExtension {
         Intent defaultIntent = new Intent(activity.getApplicationContext(),
                 NotesListActivity.class);
 
-        activity.startActivity(getNextIntent(defaultIntent,true));
+        activity.startActivity(getNextIntent(defaultIntent, true));
         activity.finish();
     }
 
@@ -150,7 +150,8 @@ public class AuthActivityExtension {
             }
 
             showToastMessage(R.string.blocked);
-            activity.startActivity(new Intent(App.getContext(), KeyRecoveryActivity.class));
+            activity.startActivity(new Intent(activity.getApplicationContext(),
+                    KeyRecoveryActivity.class));
         } else {
             try {
                 Thread.sleep(ON_WRONG_PASSWORD_DELAY_MS);

@@ -8,24 +8,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import app.notesr.App;
 import app.notesr.dto.CryptoSecrets;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.EncryptionFailedException;
 import app.notesr.util.FilesUtils;
 import app.notesr.util.Wiper;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CryptoManager {
     public static final int KEY_SIZE = 48;
     private static final String TAG = CryptoManager.class.getName();
@@ -36,20 +35,25 @@ public class CryptoManager {
     private static final String KEY_HASH_FILENAME = "key.sha256";
     private static final String BLOCK_MARKER_FILENAME = ".blocked";
 
-    private static CryptoManager instance;
+    private static WeakReference<CryptoManager> instanceRef;
+    private final Context context;
 
     private final SharedPreferences prefs;
 
     @Getter
     private CryptoSecrets secrets;
 
-    public static CryptoManager getInstance(Context context) {
-        if (instance == null) {
-            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-            instance = new CryptoManager(prefs);
+    private CryptoManager(Context context) {
+        this.context = context;
+        this.prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    }
+
+    public static CryptoManager getInstance() {
+        if (instanceRef == null) {
+            instanceRef = new WeakReference<>(new CryptoManager(App.getContext()));
         }
 
-        return instance;
+        return instanceRef.get();
     }
 
     public boolean configure(String password) {
@@ -196,14 +200,14 @@ public class CryptoManager {
     }
 
     private File getEncryptedKeyFile() {
-        return FilesUtils.getInternalFile(ENCRYPTED_KEY_FILENAME);
+        return FilesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
     }
 
     private File getBlockMarkerFile() {
-        return FilesUtils.getInternalFile(BLOCK_MARKER_FILENAME);
+        return FilesUtils.getInternalFile(context, BLOCK_MARKER_FILENAME);
     }
 
     private File getKeyHashFile() {
-        return FilesUtils.getInternalFile(KEY_HASH_FILENAME);
+        return FilesUtils.getInternalFile(context, KEY_HASH_FILENAME);
     }
 }

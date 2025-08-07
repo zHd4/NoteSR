@@ -45,7 +45,7 @@ public class SetupKeyActivity extends ActivityBase {
         try {
             password = getIntent().getStringExtra("password");
 
-            CryptoManager cryptoManager = CryptoManager.getInstance(this);
+            CryptoManager cryptoManager = CryptoManager.getInstance();
             keySetupService = new SecretsSetupService(cryptoManager, password);
         } catch (NullPointerException e) {
             Log.e(TAG, "Password is null", e);

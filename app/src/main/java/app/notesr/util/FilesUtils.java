@@ -1,5 +1,7 @@
 package app.notesr.util;
 
+import android.content.Context;
+
 import app.notesr.App;
 
 import java.io.File;
@@ -29,8 +31,8 @@ public class FilesUtils {
         }
     }
 
-    public static File getInternalFile(String path) {
-        return new File(App.getContext().getFilesDir(), path);
+    public static File getInternalFile(Context context, String path) {
+        return new File(context.getFilesDir(), path);
     }
 
     public static String getFileExtension(String fileName) {

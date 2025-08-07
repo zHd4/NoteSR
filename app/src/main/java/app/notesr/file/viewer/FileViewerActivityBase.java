@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 
-import app.notesr.App;
 import app.notesr.DialogFactory;
 import app.notesr.R;
 import app.notesr.ActivityBase;
@@ -143,7 +142,7 @@ public class FileViewerActivityBase extends ActivityBase {
     }
 
     protected void returnToListActivity() {
-        Intent intent = new Intent(App.getContext(), FilesListActivity.class)
+        Intent intent = new Intent(getApplicationContext(), FilesListActivity.class)
                 .putExtra("noteId", fileInfo.getNoteId())
                 .putExtra("modified", true)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

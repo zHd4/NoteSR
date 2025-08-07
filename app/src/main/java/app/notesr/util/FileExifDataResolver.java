@@ -1,18 +1,18 @@
 package app.notesr.util;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
-import app.notesr.App;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class FileExifDataResolver {
 
+    private final Context context;
     private final Uri uri;
-
-    public FileExifDataResolver(Uri uri) {
-        this.uri = uri;
-    }
 
     public String getFileName() {
         try (Cursor cursor = getCursor(uri)) {
@@ -37,8 +37,7 @@ public class FileExifDataResolver {
     }
 
     private Cursor getCursor(Uri uri) {
-        Cursor cursor = App.getContext()
-                .getContentResolver()
+        Cursor cursor = context.getContentResolver()
                 .query(uri, null, null, null, null);
 
         if (cursor == null) {

@@ -74,7 +74,7 @@ public class ImportService {
     private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws
             DecryptionFailedException {
         try {
-            CryptoManager cryptoManager = CryptoManager.getInstance(context);
+            CryptoManager cryptoManager = CryptoManager.getInstance();
             CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
 
             BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream,

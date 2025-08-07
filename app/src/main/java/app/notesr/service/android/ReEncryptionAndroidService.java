@@ -60,7 +60,7 @@ public class ReEncryptionAndroidService extends Service implements Runnable {
                 requireNonNull((CryptoSecrets) intent.getSerializableExtra(EXTRA_NEW_SECRETS));
 
         AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
-        CryptoManager cryptoManager = CryptoManager.getInstance(getApplicationContext());
+        CryptoManager cryptoManager = CryptoManager.getInstance();
 
         secretsUpdateService = new SecretsUpdateService(db, cryptoManager, newSecrets);
         Thread thread = new Thread(this);

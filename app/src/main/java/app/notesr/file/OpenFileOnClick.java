@@ -5,7 +5,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
-import app.notesr.App;
+
 import app.notesr.file.viewer.FileViewerActivityBase;
 import app.notesr.file.viewer.OpenImageActivity;
 import app.notesr.file.viewer.OpenTextFileActivity;
@@ -51,7 +51,7 @@ public class OpenFileOnClick implements AdapterView.OnItemClickListener {
     }
 
     private void openViewer(Class<? extends FileViewerActivityBase> viewer, FileInfo fileInfo) {
-        Intent intent = new Intent(App.getContext(), viewer);
+        Intent intent = new Intent(activity.getApplicationContext(), viewer);
 
         intent.putExtra("fileInfo", fileInfo);
         activity.startActivity(intent);

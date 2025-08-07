@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import lombok.AllArgsConstructor;
@@ -164,7 +163,7 @@ public class AuthActivity extends ActivityBase {
                     R.color.caps_button_pressed :
                     R.color.caps_button_unpressed;
 
-            self.setTextColor(ContextCompat.getColor(App.getContext(), colorId));
+            self.setTextColor(ContextCompat.getColor(getApplicationContext(), colorId));
         };
     }
 
@@ -186,7 +185,7 @@ public class AuthActivity extends ActivityBase {
     }
 
     private View.OnClickListener authButtonOnClick() {
-        CryptoManager cryptoManager = CryptoManager.getInstance(getApplicationContext());
+        CryptoManager cryptoManager = CryptoManager.getInstance();
         AuthActivityExtension helper = new AuthActivityExtension(this, cryptoManager,
                 passwordBuilder);
 

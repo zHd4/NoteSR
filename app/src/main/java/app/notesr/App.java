@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
 
 import lombok.Getter;
 
-public class App extends Application implements Application.ActivityLifecycleCallbacks {
+public final class App extends Application implements Application.ActivityLifecycleCallbacks {
     @Getter
     private static App context;
 
@@ -57,17 +57,17 @@ public class App extends Application implements Application.ActivityLifecycleCal
     }
 
     @Override
-    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {}
+    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) { }
 
     @Override
-    public void onActivityStarted(@NonNull Activity activity) {}
+    public void onActivityStarted(@NonNull Activity activity) { }
 
     @Override
-    public void onActivityStopped(@NonNull Activity activity) {}
+    public void onActivityStopped(@NonNull Activity activity) { }
 
     @Override
-    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) {}
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) { }
 
     @Override
-    public void onActivityDestroyed(@NonNull Activity activity) {}
+    public void onActivityDestroyed(@NonNull Activity activity) { }
 }

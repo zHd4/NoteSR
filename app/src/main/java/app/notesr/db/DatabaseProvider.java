@@ -17,7 +17,7 @@ public class DatabaseProvider {
         if (instance == null) {
             SQLiteDatabase.loadLibs(context);
 
-            CryptoManager cryptoManager = CryptoManager.getInstance(context);
+            CryptoManager cryptoManager = CryptoManager.getInstance();
             byte[] passphrase = cryptoManager.getSecrets().getKey();
 
             SupportFactory factory = new SupportFactory(passphrase);

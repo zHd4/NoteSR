@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.util.Size;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
@@ -15,10 +16,10 @@ import app.notesr.App;
 
 public class ThumbnailCreatorTestBase {
     protected static File getFixture(String fileName) throws IOException {
-        Context appContext = App.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Context instrumentationContext = InstrumentationRegistry.getInstrumentation().getContext();
 
-        File tempFixture = new File(appContext.getCacheDir(), fileName);
+        File tempFixture = new File(context.getCacheDir(), fileName);
 
         try(InputStream inputStream = instrumentationContext.getAssets().open(fileName);
             FileOutputStream outputStream = new FileOutputStream(tempFixture)) {

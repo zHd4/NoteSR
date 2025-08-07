@@ -4,8 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static java.util.UUID.randomUUID;
 
-import app.notesr.App;
+import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -16,11 +19,18 @@ import java.util.Random;
 public class WiperTest {
     private static final int MIN_FILE_SIZE = 1024;
     private static final int MAX_FILE_SIZE = 1024 * 10;
-    private final Random random = new Random();
+    private static final Random RANDOM = new Random();
+
+    private static Context context;
+
+    @BeforeClass
+    public static void beforeAll() {
+        context = ApplicationProvider.getApplicationContext();
+    }
 
     @Test
     public void testWipeFile() throws IOException {
-        File cacheDir = App.getContext().getCacheDir();
+        File cacheDir = context.getCacheDir();
         File testFile = File.createTempFile("test", "file", cacheDir);
 
         byte[] testData = getRandomFileData();
@@ -34,7 +44,7 @@ public class WiperTest {
 
     @Test
     public void testWipeDir() throws IOException {
-        File cacheDir = App.getContext().getCacheDir();
+        File cacheDir = context.getCacheDir();
         File testDir = new File(cacheDir, randomUUID().toString());
 
         boolean isDirCreated = testDir.mkdir();
@@ -53,10 +63,10 @@ public class WiperTest {
     }
 
     private byte[] getRandomFileData() {
-        int size = random.nextInt(MAX_FILE_SIZE - MIN_FILE_SIZE + 1) + MIN_FILE_SIZE;
+        int size = RANDOM.nextInt(MAX_FILE_SIZE - MIN_FILE_SIZE + 1) + MIN_FILE_SIZE;
         byte[] data = new byte[size];
 
-        random.nextBytes(data);
+        RANDOM.nextBytes(data);
         return data;
     }
 }

@@ -7,7 +7,6 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.ActionBar;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.model.Note;
@@ -40,7 +39,8 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
 
         fillResultsList(resultsView);
 
-        resultsView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
+        resultsView.setOnItemClickListener(new OpenNoteOnClick(getApplicationContext(),
+                notesIdsMap));
     }
 
     @Override

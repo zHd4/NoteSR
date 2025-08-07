@@ -5,7 +5,6 @@ import android.content.Intent;
 
 import androidx.appcompat.app.AlertDialog;
 
-import app.notesr.App;
 import app.notesr.R;
 import app.notesr.crypto.CryptoManager;
 import app.notesr.crypto.KeySetupMode;
@@ -30,9 +29,10 @@ public class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
     private DialogInterface.OnClickListener regenerateKeyDialogOnClick(NotesListActivity activity) {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                Intent intent = new Intent(App.getContext(), SetupKeyActivity.class);
+                Intent intent = new Intent(activity.getApplicationContext(),
+                        SetupKeyActivity.class);
 
-                CryptoManager cryptoManager = CryptoManager.getInstance(activity);
+                CryptoManager cryptoManager = CryptoManager.getInstance();
                 String password = cryptoManager.getSecrets().getPassword();
 
                 intent.putExtra("mode", KeySetupMode.REGENERATION.toString());

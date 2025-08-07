@@ -129,7 +129,8 @@ public class ImportActivity extends ActivityBase {
                 if (data != null) {
                     selectedFileUri = data.getData();
 
-                    FileExifDataResolver resolver = new FileExifDataResolver(selectedFileUri);
+                    FileExifDataResolver resolver = new FileExifDataResolver(
+                            getApplicationContext(), selectedFileUri);
                     String filename = resolver.getFileName();
 
                     infoTextView.setVisibility(View.INVISIBLE);
