@@ -1,5 +1,6 @@
 package app.notesr.service.android;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -73,7 +74,9 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
     public void run() {
         try {
             while (thread.isAlive()) {
-                if (!FileViewerActivityBase.isRunning()) {
+                Activity currentActivity = App.getContext().getCurrentActivity();
+
+                if (!(currentActivity instanceof FileViewerActivityBase)) {
                     clearCache();
 
                     if (runningJobs.isEmpty()) {
@@ -82,7 +85,7 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
                         stopForeground(STOP_FOREGROUND_REMOVE);
                         stopSelf();
 
-                        if (!App.getContext().isAnyActivityVisible()) {
+                        if (currentActivity == null) {
                             System.exit(0);
                         }
                     }

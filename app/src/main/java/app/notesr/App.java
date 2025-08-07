@@ -1,19 +1,46 @@
 package app.notesr;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.lang.ref.WeakReference;
 
 import lombok.Getter;
 
-public class App extends Application {
+public class App extends Application implements Application.ActivityLifecycleCallbacks {
     @Getter
     private static App context;
+
+    private WeakReference<Activity> currentActivityRef = new WeakReference<>(null);
 
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
+    }
+
+    public Activity getCurrentActivity() {
+        return currentActivityRef.get();
+    }
+
+    @Override
+    public void onActivityResumed(@NonNull Activity activity) {
+        currentActivityRef = new WeakReference<>(activity);
+    }
+
+    @Override
+    public void onActivityPaused(@NonNull Activity activity) {
+        Activity current = currentActivityRef.get();
+
+        if (current == activity) {
+            currentActivityRef.clear();
+        }
     }
 
     public boolean isServiceRunning(Class<?> serviceClass) {
@@ -29,24 +56,18 @@ public class App extends Application {
         return foundName != null;
     }
 
-    public boolean isAnyActivityVisible() {
-        ActivityManager activityManager = (ActivityManager)
-                context.getSystemService(Context.ACTIVITY_SERVICE);
+    @Override
+    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {}
 
-        if (activityManager != null) {
-            for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
-                ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
+    @Override
+    public void onActivityStarted(@NonNull Activity activity) {}
 
-                if (taskInfo != null && taskInfo.topActivity != null) {
-                    String packageName = taskInfo.topActivity.getPackageName();
+    @Override
+    public void onActivityStopped(@NonNull Activity activity) {}
 
-                    if (context.getPackageName().equals(packageName)) {
-                        return true;
-                    }
-                }
-            }
-        }
+    @Override
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) {}
 
-        return false;
-    }
+    @Override
+    public void onActivityDestroyed(@NonNull Activity activity) {}
 }
