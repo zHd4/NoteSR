@@ -1,5 +1,7 @@
 package app.notesr.file.viewer;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -13,8 +15,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import app.notesr.R;
 import app.notesr.db.DatabaseProvider;
@@ -55,27 +55,26 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
         builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
         AlertDialog progressDialog = builder.create();
-        ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        executor.execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);
-            imageFile = dropToCache(fileInfo);
+
+            imageFile = dropToCache();
 
             if (!isThumbnailSet()) {
                 setThumbnail(imageFile);
             }
 
-            runOnUiThread(progressDialog::dismiss);
+            Uri imageUri = Uri.parse(imageFile.getAbsolutePath());
+
+            TempFileDao tempFileDao = DatabaseProvider.getInstance(this).getTempFileDao();
+            TempFile tempImageFile = new TempFile();
+
+            tempImageFile.setUri(imageUri);
+            tempFileDao.insert(tempImageFile);
+
             runOnUiThread(() -> {
-                Uri imageUri = Uri.parse(imageFile.getAbsolutePath());
-
-                TempFileDao tempFileDao = DatabaseProvider.getInstance(this)
-                        .getTempFileDao();
-
-                TempFile tempImageFile = new TempFile();
-
-                tempImageFile.setUri(imageUri);
-                tempFileDao.insert(tempImageFile);
+                progressDialog.dismiss();
 
                 if (!isImageTooLarge(imageFile)) {
                     imageView.setImageURI(imageUri);

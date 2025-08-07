@@ -1,5 +1,7 @@
 package app.notesr.file.viewer;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,8 +24,6 @@ import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerAndroidService;
 
 import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class OpenVideoActivity extends MediaFileViewerActivityBase {
 
@@ -54,7 +54,8 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
             label.setVisibility(View.INVISIBLE);
 
             loadVideo();
-            startForegroundService(new Intent(getApplicationContext(), CacheCleanerAndroidService.class));
+            startForegroundService(new Intent(getApplicationContext(),
+                    CacheCleanerAndroidService.class));
 
             playing = true;
         } else {
@@ -65,32 +66,32 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
     }
 
     private void loadVideo() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this,
+                R.style.AlertDialogTheme);
         builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
 
         AlertDialog progressDialog = builder.create();
-        ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        executor.execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);
-            videoFile = dropToCache(fileInfo);
+            videoFile = dropToCache();
 
             if (!isThumbnailSet()) {
                 setThumbnail(videoFile);
             }
 
-            runOnUiThread(progressDialog::dismiss);
+            Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
+
+            TempFileDao tempFileDao = DatabaseProvider.getInstance(this)
+                    .getTempFileDao();
+
+            TempFile tempFile = new TempFile();
+
+            tempFile.setUri(videoUri);
+            tempFileDao.insert(tempFile);
+
             runOnUiThread(() -> {
-                Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
-
-                TempFileDao tempFileDao = DatabaseProvider.getInstance(this)
-                        .getTempFileDao();
-
-                TempFile tempFile = new TempFile();
-
-                tempFile.setUri(videoUri);
-                tempFileDao.insert(tempFile);
-
+                progressDialog.dismiss();
                 setVideo(videoUri);
                 videoView.start();
             });
