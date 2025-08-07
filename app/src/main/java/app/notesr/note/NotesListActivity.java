@@ -1,5 +1,7 @@
 package app.notesr.note;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,8 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class NotesListActivity extends ActivityBase {
@@ -103,11 +103,9 @@ public class NotesListActivity extends ActivityBase {
 
         AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
         NoteService noteService = new NoteService(db);
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
-        executor.execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             handler.post(progressDialog::show);
 
             List<Note> notes = noteService.getAll();
