@@ -2,6 +2,7 @@ package app.notesr.file.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,15 +20,16 @@ import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.R;
 import app.notesr.db.DatabaseProvider;
-import app.notesr.db.dao.TempFileDao;
 import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerAndroidService;
+import app.notesr.service.file.TempFileService;
 
 import java.io.File;
 
 public class OpenVideoActivity extends MediaFileViewerActivityBase {
 
     private ScaleGestureDetector scaleGestureDetector;
+    private TempFileService tempFileService;
     private VideoView videoView;
     private File videoFile;
     private boolean playing;
@@ -38,6 +40,9 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
         setContentView(R.layout.activity_open_video);
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+
+        Context context = getApplicationContext();
+        tempFileService = new TempFileService(DatabaseProvider.getInstance(context));
 
         videoView = findViewById(R.id.openVideoView);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
@@ -82,13 +87,10 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
 
             Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
 
-            TempFileDao tempFileDao = DatabaseProvider.getInstance(this)
-                    .getTempFileDao();
-
             TempFile tempFile = new TempFile();
-
             tempFile.setUri(videoUri);
-            tempFileDao.insert(tempFile);
+
+            tempFileService.save(tempFile);
 
             runOnUiThread(() -> {
                 progressDialog.dismiss();

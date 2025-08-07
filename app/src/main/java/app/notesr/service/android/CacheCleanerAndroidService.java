@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
@@ -16,9 +17,9 @@ import androidx.core.app.NotificationCompat;
 
 import app.notesr.App;
 import app.notesr.db.DatabaseProvider;
-import app.notesr.db.dao.TempFileDao;
 import app.notesr.file.viewer.FileViewerActivityBase;
 import app.notesr.model.TempFile;
+import app.notesr.service.file.TempFileService;
 import app.notesr.util.Wiper;
 
 import java.io.File;
@@ -34,7 +35,7 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
     private static final int DELAY = 2000;
     private final Map<TempFile, Thread> runningJobs = new LinkedHashMap<>();
     private Thread thread;
-    private TempFileDao tempFileDao;
+    private TempFileService tempFileService;
 
     @Nullable
     @Override
@@ -59,8 +60,8 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        tempFileDao = DatabaseProvider.getInstance(getApplicationContext())
-                .getTempFileDao();
+        Context context = getApplicationContext();
+        tempFileService = new TempFileService(DatabaseProvider.getInstance(context));
 
         thread = new Thread(this);
         thread.start();
@@ -99,17 +100,17 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
     }
 
     private void clearCache() {
-        tempFileDao.getAll().stream()
+        tempFileService.getAll().stream()
                 .filter(tempFile -> !runningJobs.containsKey(tempFile))
                 .forEach(tempFile -> {
-                    Thread thread = new Thread(wipeFile(tempFile));
+                    Thread thread = new Thread(deleteTempFile(tempFile));
 
                     runningJobs.put(tempFile, thread);
                     thread.start();
                 });
     }
 
-    private Runnable wipeFile(TempFile tempFile) {
+    private Runnable deleteTempFile(TempFile tempFile) {
         return () -> {
             File file = new File(Objects.requireNonNull(tempFile.getUri().getPath()));
 
@@ -118,14 +119,14 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
                     boolean removed = Wiper.wipeFile(file);
 
                     if (!removed) {
-                        Log.e(TAG, "File " + file + " not removed");
+                        Log.e(TAG, "Temp file cannot be removed: " + file);
                     }
                 } catch (IOException e) {
                     Log.e(TAG, "IOException while clearing cache", e);
                 }
             }
 
-            tempFileDao.deleteById(tempFile.getId());
+            tempFileService.delete(tempFile.getId());
             runningJobs.remove(tempFile);
         };
     }

@@ -2,6 +2,7 @@ package app.notesr.file.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -18,14 +19,15 @@ import java.io.File;
 
 import app.notesr.R;
 import app.notesr.db.DatabaseProvider;
-import app.notesr.db.dao.TempFileDao;
 import app.notesr.model.TempFile;
 import app.notesr.service.android.CacheCleanerAndroidService;
+import app.notesr.service.file.TempFileService;
 
 public class OpenImageActivity extends MediaFileViewerActivityBase {
     private static final int MAX_IMAGE_SIZE = 4096;
 
     private ScaleGestureDetector scaleGestureDetector;
+    private TempFileService tempFileService;
     private ImageView imageView;
     private TextView errorMessageTextView;
     private File imageFile;
@@ -36,6 +38,10 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
         setContentView(R.layout.activity_open_image);
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+        Context context = getApplicationContext();
+        tempFileService = new TempFileService(DatabaseProvider.getInstance(context));
+
         imageView = findViewById(R.id.assignedImageView);
         errorMessageTextView = findViewById(R.id.errorMessageTextView);
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(imageView));
@@ -67,11 +73,10 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
 
             Uri imageUri = Uri.parse(imageFile.getAbsolutePath());
 
-            TempFileDao tempFileDao = DatabaseProvider.getInstance(this).getTempFileDao();
             TempFile tempImageFile = new TempFile();
-
             tempImageFile.setUri(imageUri);
-            tempFileDao.insert(tempImageFile);
+
+            tempFileService.save(tempImageFile);
 
             runOnUiThread(() -> {
                 progressDialog.dismiss();
