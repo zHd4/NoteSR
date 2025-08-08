@@ -11,8 +11,8 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.model.Note;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
 
         ListView resultsView = findViewById(R.id.notesSearchResultsListView);
 
-        results = (LinkedList<Note>) getIntent().getSerializableExtra("results");
+        results = (ArrayList<Note>) getIntent().getSerializableExtra("results");
 
         ActionBar actionBar = getSupportActionBar();
         String actionBarTitleFormat = getResources().getString(R.string.found_n);

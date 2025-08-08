@@ -46,7 +46,11 @@ public class NoteService {
     }
 
     public List<Note> search(String query) {
-        return db.getNoteDao().search(query.trim());
+        return db.getNoteDao()
+                .search(query.trim())
+                .stream()
+                .map(this::setDecimalId)
+                .collect(Collectors.toList());
     }
 
     public void delete(String id) {

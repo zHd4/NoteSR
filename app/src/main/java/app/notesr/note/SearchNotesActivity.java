@@ -11,7 +11,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
@@ -52,7 +52,7 @@ public class SearchNotesActivity extends ActivityBase {
 
             if (!query.isBlank()) {
                 newSingleThreadExecutor().execute(() -> {
-                    LinkedList<Note> results = search(query);
+                    ArrayList<Note> results = search(query);
 
                     runOnUiThread(() -> {
                         Context context = getApplicationContext();
@@ -66,7 +66,7 @@ public class SearchNotesActivity extends ActivityBase {
         };
     }
 
-    private LinkedList<Note> search(String query) {
-        return new LinkedList<>(noteService.search(query));
+    private ArrayList<Note> search(String query) {
+        return new ArrayList<>(noteService.search(query));
     }
 }
