@@ -46,6 +46,7 @@ public class AuthActivity extends ActivityBase {
             R.id.pinButtonSpecChars2
     };
 
+    private AuthActivityExtension extension;
     private Mode currentMode;
     private int inputIndex = 0;
     private boolean capsLockEnabled = false;
@@ -57,6 +58,10 @@ public class AuthActivity extends ActivityBase {
         setContentView(R.layout.activity_auth);
 
         String mode = getIntent().getStringExtra("mode");
+
+        CryptoManager cryptoManager = CryptoManager.getInstance();
+        extension = new AuthActivityExtension(this, cryptoManager,
+                passwordBuilder);
 
         try {
             currentMode = Mode.valueOf(mode);
@@ -185,16 +190,12 @@ public class AuthActivity extends ActivityBase {
     }
 
     private View.OnClickListener authButtonOnClick() {
-        CryptoManager cryptoManager = CryptoManager.getInstance();
-        AuthActivityExtension helper = new AuthActivityExtension(this, cryptoManager,
-                passwordBuilder);
-
         return view -> {
             switch (currentMode) {
-                case AUTHORIZATION -> helper.authorize();
-                case CREATE_PASSWORD -> helper.createPassword();
-                case KEY_RECOVERY -> helper.recoverKey();
-                case CHANGE_PASSWORD -> helper.changePassword();
+                case AUTHORIZATION -> extension.authorize();
+                case CREATE_PASSWORD -> extension.createPassword();
+                case KEY_RECOVERY -> extension.recoverKey();
+                case CHANGE_PASSWORD -> extension.changePassword();
             }
         };
     }
