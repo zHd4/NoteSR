@@ -55,7 +55,7 @@ public class NotesListActivity extends ActivityBase {
 
         loadNotes();
 
-        notesView.setOnItemClickListener(new OpenNoteOnClick(getApplicationContext(), notesIdsMap));
+        notesView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
         newNoteButton.setOnClickListener((view) ->
                 startActivity(new Intent(getApplicationContext(), OpenNoteActivity.class)));
     }

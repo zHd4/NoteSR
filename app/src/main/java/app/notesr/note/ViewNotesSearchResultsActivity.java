@@ -39,8 +39,7 @@ public class ViewNotesSearchResultsActivity extends ActivityBase {
 
         fillResultsList(resultsView);
 
-        resultsView.setOnItemClickListener(new OpenNoteOnClick(getApplicationContext(),
-                notesIdsMap));
+        resultsView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
     }
 
     @Override

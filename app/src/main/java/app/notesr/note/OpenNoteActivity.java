@@ -131,7 +131,8 @@ public class OpenNoteActivity extends ActivityBase {
             menuItemsMap.put(deleteNoteButton.getItemId(),
                     action -> deleteNoteOnClick());
 
-            setAttachedFilesCountBadge(openFilesListButton);
+            newSingleThreadExecutor().execute(() ->
+                    setAttachedFilesCountBadge(openFilesListButton));
         } else {
             disableMenuItem(openFilesListButton);
             disableMenuItem(deleteNoteButton);
