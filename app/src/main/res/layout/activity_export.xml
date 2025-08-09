@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/activity_background"
-    tools:context=".data.ExportActivity">
+    tools:context=".exporter.activity.ExportActivity">
 
     <TextView
         android:id="@+id/export_info_text"

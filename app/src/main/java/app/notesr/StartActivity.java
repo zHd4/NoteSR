@@ -10,7 +10,7 @@ import android.view.View;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
-import app.notesr.crypto.AuthActivity;
+import app.notesr.security.activity.AuthActivity;
 
 public class StartActivity extends ActivityBase {
 

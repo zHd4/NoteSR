@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import app.notesr.model.DataBlock;
+import app.notesr.file.model.DataBlock;
 
 import java.util.List;
 

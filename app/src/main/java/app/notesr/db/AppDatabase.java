@@ -8,10 +8,10 @@ import app.notesr.db.dao.DataBlockDao;
 import app.notesr.db.dao.FileInfoDao;
 import app.notesr.db.dao.NoteDao;
 import app.notesr.db.dao.TempFileDao;
-import app.notesr.model.DataBlock;
-import app.notesr.model.FileInfo;
-import app.notesr.model.Note;
-import app.notesr.model.TempFile;
+import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileInfo;
+import app.notesr.note.model.Note;
+import app.notesr.cleaner.model.TempFile;
 
 @Database(entities = {Note.class, FileInfo.class, DataBlock.class, TempFile.class},
         version = 1,

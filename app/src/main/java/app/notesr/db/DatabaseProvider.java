@@ -7,7 +7,7 @@ import androidx.room.Room;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SupportFactory;
 
-import app.notesr.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManager;
 
 public class DatabaseProvider {
     private static final String DB_NAME = "notesr.db";

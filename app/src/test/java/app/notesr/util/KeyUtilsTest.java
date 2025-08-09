@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import app.notesr.dto.CryptoSecrets;
+import app.notesr.security.dto.CryptoSecrets;
 
 class KeyUtilsTest {
 

@@ -32,114 +32,114 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".crypto.SetupKeyActivity"
+            android:name=".security.activity.SetupKeyActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".crypto.AuthActivity"
+            android:name=".security.activity.AuthActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".crypto.KeyRecoveryActivity"
+            android:name=".security.activity.KeyRecoveryActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".crypto.ImportKeyActivity"
+            android:name=".security.activity.ImportKeyActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".data.ReEncryptionActivity"
+            android:name=".security.activity.ReEncryptionActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".note.NotesListActivity"
+            android:name=".note.activity.NotesListActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".note.OpenNoteActivity"
+            android:name=".note.activity.OpenNoteActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".note.SearchNotesActivity"
+            android:name=".note.activity.SearchNotesActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".note.ViewNotesSearchResultsActivity"
+            android:name=".note.activity.ViewNotesSearchResultsActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".file.FilesListActivity"
+            android:name=".file.activity.FilesListActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".file.AddFileActivity"
+            android:name=".file.activity.AddFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".file.viewer.OpenImageActivity"
+            android:name=".file.activity.viewer.OpenImageActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".file.viewer.OpenVideoActivity"
+            android:name=".file.activity.viewer.OpenVideoActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".file.viewer.OpenTextFileActivity"
+            android:name=".file.activity.viewer.OpenTextFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".file.viewer.OpenUnknownFileActivity"
+            android:name=".file.activity.viewer.OpenUnknownFileActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".data.ExportActivity"
+            android:name=".exporter.activity.ExportActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".data.ImportActivity"
+            android:name=".importer.activity.ImportActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".data.MigrationActivity"
+            android:name=".migration.activity.MigrationActivity"
             android:exported="false"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".service.android.CacheCleanerAndroidService"
+            android:name=".cleaner.service.CacheCleanerAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.android.ExportAndroidService"
+            android:name=".exporter.service.ExportAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.android.ImportAndroidService"
+            android:name=".importer.service.ImportAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.android.ReEncryptionAndroidService"
+            android:name=".security.service.ReEncryptionAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.android.AppMigrationAndroidService"
+            android:name=".migration.service.AppMigrationAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
     </application>

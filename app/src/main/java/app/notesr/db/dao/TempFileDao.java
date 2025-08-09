@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import app.notesr.model.TempFile;
+import app.notesr.cleaner.model.TempFile;
 
 import java.util.List;
 
