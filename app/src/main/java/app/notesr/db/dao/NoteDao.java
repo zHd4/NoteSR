@@ -16,6 +16,9 @@ import app.notesr.note.model.Note;
 public interface NoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<Note> note);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Note note);
 
     @Update

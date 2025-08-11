@@ -15,6 +15,9 @@ import app.notesr.file.model.FileInfo;
 public interface FileInfoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<FileInfo> fileInfo);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(FileInfo fileInfo);
 
     @Update

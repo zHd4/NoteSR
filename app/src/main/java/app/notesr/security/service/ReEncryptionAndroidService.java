@@ -10,13 +10,17 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import java.io.IOException;
 
 import app.notesr.R;
+import app.notesr.exception.EncryptionFailedException;
 import app.notesr.security.crypto.CryptoManager;
-import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.security.dto.CryptoSecrets;
 
@@ -29,13 +33,6 @@ public class ReEncryptionAndroidService extends Service implements Runnable {
     private static final String CHANNEL_ID = "re_encryption_service_channel";
 
     private SecretsUpdateService secretsUpdateService;
-
-
-    @Override
-    public void onCreate() {
-        Thread thread = new Thread(this);
-        thread.start();
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -55,15 +52,18 @@ public class ReEncryptionAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        CryptoSecrets newSecrets =
-                requireNonNull((CryptoSecrets) intent.getSerializableExtra(EXTRA_NEW_SECRETS));
-
-        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
         CryptoManager cryptoManager = CryptoManager.getInstance();
+        CryptoSecrets newSecrets = (CryptoSecrets) intent.getSerializableExtra(EXTRA_NEW_SECRETS);
+        requireNonNull(newSecrets);
 
-        secretsUpdateService = new SecretsUpdateService(db, cryptoManager, newSecrets);
+        secretsUpdateService = new SecretsUpdateService(
+                getApplicationContext(),
+                DatabaseProvider.DB_NAME,
+                cryptoManager,
+                newSecrets
+        );
+
         Thread thread = new Thread(this);
-
         thread.start();
         startForeground(startId, notification, type);
 
@@ -78,8 +78,20 @@ public class ReEncryptionAndroidService extends Service implements Runnable {
 
     @Override
     public void run() {
-        secretsUpdateService.update();
-        stopForeground(STOP_FOREGROUND_REMOVE);
-        stopSelf();
+        try {
+            secretsUpdateService.update();
+            onComplete();
+        } catch (EncryptionFailedException | IOException e) {
+            Log.e(TAG, "Filed to update database", e);
+            throw new RuntimeException("Filed to update database", e);
+        } finally {
+            stopForeground(STOP_FOREGROUND_REMOVE);
+            stopSelf();
+        }
+    }
+
+    private void onComplete() {
+        Intent broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(EXTRA_COMPLETE, true);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
     }
 }
