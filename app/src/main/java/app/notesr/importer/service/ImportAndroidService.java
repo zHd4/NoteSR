@@ -27,7 +27,7 @@ public class ImportAndroidService extends Service implements Runnable {
 
     private static final String TAG = ImportAndroidService.class.getName();
     public static final String BROADCAST_ACTION = "import_data_broadcast";
-    public static final String STATUS_EXTRA = "status";
+    public static final String EXTRA_STATUS = "status";
 
     public static final Set<ImportStatus> FINISH_STATUSES = Set.of(
             ImportStatus.DONE,
@@ -105,7 +105,7 @@ public class ImportAndroidService extends Service implements Runnable {
 
     private void sendBroadcastData(ImportStatus status) {
         Intent intent = new Intent(BROADCAST_ACTION)
-                .putExtra(STATUS_EXTRA, status);
+                .putExtra(EXTRA_STATUS, status);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }

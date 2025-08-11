@@ -19,7 +19,7 @@ public class ImportBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (ImportAndroidService.BROADCAST_ACTION.equals(intent.getAction())) {
             ImportStatus status =
-                    (ImportStatus) intent.getSerializableExtra(ImportAndroidService.STATUS_EXTRA);
+                    (ImportStatus) intent.getSerializableExtra(ImportAndroidService.EXTRA_STATUS);
 
             if (!ImportAndroidService.FINISH_STATUSES.contains(status)) {
                 onImportRunning.accept(status);
