@@ -38,10 +38,8 @@ public class SecretsUpdateService {
 
         DatabaseProvider.close();
 
-        AppDatabase oldDb = getDatabase(context, DatabaseProvider.DB_NAME,
-                getSupportFactory(oldKey));
-        AppDatabase newDb = getDatabase(context, newDbFile.getName(),
-                getSupportFactory(newKey));
+        AppDatabase oldDb = getDatabase(context, dbName, getSupportFactory(oldKey));
+        AppDatabase newDb = getDatabase(context, newDbFile.getName(), getSupportFactory(newKey));
 
         moveDataInTransaction(oldDb, newDb);
 
