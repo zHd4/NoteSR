@@ -1,7 +1,5 @@
 package app.notesr.exporter.activity;
 
-import static java.util.Objects.requireNonNull;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,16 +22,16 @@ public class ExportBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (ExportAndroidService.BROADCAST_ACTION.equals(intent.getAction())) {
-            if (intent.hasExtra(ExportAndroidService.OUTPUT_PATH_EXTRA)) {
-                String outputPath = intent.getStringExtra(ExportAndroidService.OUTPUT_PATH_EXTRA);
+            if (intent.hasExtra(ExportAndroidService.EXTRA_OUTPUT_PATH)) {
+                String outputPath = intent.getStringExtra(ExportAndroidService.EXTRA_OUTPUT_PATH);
                 onOutputPathReceived.accept(outputPath);
             }
 
             ExportStatus status =
-                    (ExportStatus) intent.getSerializableExtra(ExportAndroidService.STATUS_EXTRA);
+                    (ExportStatus) intent.getSerializableExtra(ExportAndroidService.EXTRA_STATUS);
 
             if (!ExportAndroidService.FINISH_STATUSES.contains(status)) {
-                int progress = intent.getIntExtra(ExportAndroidService.PROGRESS_EXTRA,
+                int progress = intent.getIntExtra(ExportAndroidService.EXTRA_PROGRESS,
                         DEFAULT_PROGRESS);
 
                 if (progress == DEFAULT_PROGRESS) {

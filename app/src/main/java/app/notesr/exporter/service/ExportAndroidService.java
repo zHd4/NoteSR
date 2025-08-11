@@ -30,9 +30,9 @@ import java.util.Set;
 public class ExportAndroidService extends Service implements Runnable {
     private static final String TAG = ExportAndroidService.class.getName();
     public static final String BROADCAST_ACTION = "export_data_broadcast";
-    public static final String STATUS_EXTRA = "status";
-    public static final String PROGRESS_EXTRA = "progress";
-    public static final String OUTPUT_PATH_EXTRA = "output_path";
+    public static final String EXTRA_STATUS = "status";
+    public static final String EXTRA_PROGRESS = "progress";
+    public static final String EXTRA_OUTPUT_PATH = "output_path";
     public static final String CANCEL_EXPORT_SIGNAL = "cancel_export_signal";
     private static final String CHANNEL_ID = "export_service_channel";
     private static final int BROADCAST_DELAY = 100;
@@ -112,8 +112,8 @@ public class ExportAndroidService extends Service implements Runnable {
             progress = exportService.calculateProgress();
 
             Intent broadcast = new Intent(BROADCAST_ACTION)
-                    .putExtra(STATUS_EXTRA, status)
-                    .putExtra(PROGRESS_EXTRA, progress);
+                    .putExtra(EXTRA_STATUS, status)
+                    .putExtra(EXTRA_PROGRESS, progress);
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
             Thread.sleep(BROADCAST_DELAY);
@@ -121,7 +121,7 @@ public class ExportAndroidService extends Service implements Runnable {
     }
 
     private void broadcastOutputPath(String outputPath) {
-        Intent broadcast = new Intent(BROADCAST_ACTION).putExtra(OUTPUT_PATH_EXTRA, outputPath);
+        Intent broadcast = new Intent(BROADCAST_ACTION).putExtra(EXTRA_OUTPUT_PATH, outputPath);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
     }
 
