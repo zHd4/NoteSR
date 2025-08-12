@@ -12,12 +12,16 @@ public class CryptoManagerProvider {
     private static final String PREF_NAME = "crypto_prefs";
     private static volatile CryptoManager instance;
 
-    public static CryptoManager getInstance() {
+    public static CryptoManager getInstance(){
+        return getInstance(App.getContext());
+    }
+
+    public static CryptoManager getInstance(Context context) {
         if (instance == null) {
             synchronized (CryptoManagerProvider.class) {
                 if (instance == null) {
-                    SharedPreferences prefs = App.getContext()
-                            .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+                    SharedPreferences prefs = context.getSharedPreferences(PREF_NAME,
+                            Context.MODE_PRIVATE);
                     instance = new CryptoManager(prefs);
                 }
             }
