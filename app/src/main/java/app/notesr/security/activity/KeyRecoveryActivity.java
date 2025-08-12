@@ -19,6 +19,7 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
 
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class KeyRecoveryActivity extends ActivityBase {
 
             if (!hexKey.isBlank()) {
                 try {
-                    CryptoManager cryptoManager = CryptoManager.getInstance();
+                    CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, null);
 
                     if (cryptoManager.verifyKey(cryptoSecrets.getKey())) {

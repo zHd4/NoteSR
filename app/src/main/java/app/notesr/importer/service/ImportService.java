@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import app.notesr.importer.service.v1.ImportV1Strategy;
 import app.notesr.security.crypto.BackupCryptor;
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.AppDatabase;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.exception.DecryptionFailedException;
@@ -74,7 +75,7 @@ public class ImportService {
     private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws
             DecryptionFailedException {
         try {
-            CryptoManager cryptoManager = CryptoManager.getInstance();
+            CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
             CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
 
             BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream,

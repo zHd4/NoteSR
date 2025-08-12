@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import app.notesr.security.crypto.BackupCryptor;
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.AppDatabase;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.exception.EncryptionFailedException;
@@ -174,7 +175,7 @@ public class ExportService {
         FileInputStream inputStream = new FileInputStream(tempArchive);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-        CryptoManager cryptoManager = CryptoManager.getInstance();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
 
         BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream, cryptoSecrets);

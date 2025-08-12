@@ -14,6 +14,7 @@ import app.notesr.note.activity.NotesListActivity;
 import app.notesr.security.activity.AuthActivity;
 import app.notesr.security.activity.KeyRecoveryActivity;
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.migration.service.AppMigrationAndroidService;
 import app.notesr.exporter.service.ExportAndroidService;
 import app.notesr.importer.service.ImportAndroidService;
@@ -25,7 +26,7 @@ public class MainActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        CryptoManager cryptoManager = CryptoManager.getInstance();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
 
         List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(App.getContext(),
                 cryptoManager);

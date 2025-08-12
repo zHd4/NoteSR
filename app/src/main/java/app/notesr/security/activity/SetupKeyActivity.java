@@ -18,6 +18,7 @@ import android.widget.Toast;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.service.SecretsSetupService;
 import lombok.Getter;
 
@@ -46,7 +47,7 @@ public class SetupKeyActivity extends ActivityBase {
         try {
             password = getIntent().getStringExtra("password");
 
-            CryptoManager cryptoManager = CryptoManager.getInstance();
+            CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
             keySetupService = new SecretsSetupService(cryptoManager, password);
         } catch (NullPointerException e) {
             Log.e(TAG, "Password is null", e);

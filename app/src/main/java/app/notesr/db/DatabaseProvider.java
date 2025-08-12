@@ -8,13 +8,14 @@ import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SupportFactory;
 
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 
 public class DatabaseProvider {
     public static final String DB_NAME = "notesr.db";
     private static volatile AppDatabase instance;
 
     public static AppDatabase getInstance(Context context) {
-        CryptoManager cryptoManager = CryptoManager.getInstance();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         byte[] passphrase = cryptoManager.getSecrets().getKey();
 
         SupportFactory factory = new SupportFactory(passphrase);

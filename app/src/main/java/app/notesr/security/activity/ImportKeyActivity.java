@@ -19,6 +19,7 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.security.service.SecretsSetupService;
 
@@ -62,7 +63,7 @@ public class ImportKeyActivity extends ActivityBase {
                 try {
                     String password = getIntent().getStringExtra("password");
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, password);
-                    CryptoManager cryptoManager = CryptoManager.getInstance();
+                    CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
                     SecretsSetupService keySetupService = new SecretsSetupService(cryptoManager, cryptoSecrets);
 
                     new KeySetupCompletionHandler(this, keySetupService, mode).handle();

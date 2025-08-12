@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
@@ -60,7 +61,7 @@ public class AuthActivity extends ActivityBase {
 
         String mode = getIntent().getStringExtra("mode");
 
-        CryptoManager cryptoManager = CryptoManager.getInstance();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         extension = new AuthActivityExtension(this, cryptoManager,
                 passwordBuilder);
 

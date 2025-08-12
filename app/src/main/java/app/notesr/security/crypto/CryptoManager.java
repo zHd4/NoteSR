@@ -8,15 +8,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import app.notesr.App;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.exception.EncryptionFailedException;
-import app.notesr.util.FilesUtils;
-import app.notesr.util.Wiper;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -25,31 +16,30 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+import app.notesr.App;
+import app.notesr.exception.DecryptionFailedException;
+import app.notesr.exception.EncryptionFailedException;
+import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.util.FilesUtils;
+import app.notesr.util.Wiper;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class CryptoManager {
     public static final int KEY_SIZE = 48;
-    private static final String TAG = CryptoManager.class.getName();
-    private static final String PREF_NAME = "crypto_prefs";
+    private static final String TAG = CryptoManagerProvider.class.getName();
     private static final String KEY_HASH_PREF = "key_hash";
     private static final String BLOCK_MARKER_PREF = "is_blocked";
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
     private static final String KEY_HASH_FILENAME = "key.sha256";
     private static final String BLOCK_MARKER_FILENAME = ".blocked";
 
-    private static CryptoManager instance;
-
     private final SharedPreferences prefs;
 
     private CryptoSecrets secrets;
-
-    public static CryptoManager getInstance() {
-        if (instance == null) {
-            SharedPreferences prefs = App.getContext()
-                    .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-            instance = new CryptoManager(prefs);
-        }
-
-        return instance;
+    
+    Context getAppContext() {
+        return App.getContext();
     }
 
     public boolean configure(String password) {
@@ -69,12 +59,12 @@ public class CryptoManager {
     }
 
     public boolean isKeyExists() {
-        return getEncryptedKeyFile(App.getContext()).exists();
+        return getEncryptedKeyFile(getAppContext()).exists();
     }
 
     public boolean isBlocked() {
         boolean isBlocked = prefs.getBoolean(BLOCK_MARKER_PREF, false);
-        return isBlocked || getBlockMarkerFile(App.getContext()).exists();
+        return isBlocked || getBlockMarkerFile(getAppContext()).exists();
     }
 
     public CryptoSecrets generateSecrets(String password) {
@@ -106,13 +96,13 @@ public class CryptoManager {
     }
 
     public void block() throws IOException {
-        Wiper.wipeFile(getEncryptedKeyFile(App.getContext()));
+        Wiper.wipeFile(getEncryptedKeyFile(getAppContext()));
         prefs.edit().putBoolean(BLOCK_MARKER_PREF, true).apply();
     }
 
     public void unblock() throws IOException {
         prefs.edit().putBoolean(BLOCK_MARKER_PREF, false).apply();
-        File blockMarkerFile = getBlockMarkerFile(App.getContext());
+        File blockMarkerFile = getBlockMarkerFile(getAppContext());
 
         if (blockMarkerFile.exists()) {
             Files.delete(blockMarkerFile.toPath());
@@ -140,7 +130,7 @@ public class CryptoManager {
             byte[] encryptedKeyFileBytes = getKeyCryptor(secrets.getPassword(), AesGcmCryptor.class)
                     .encrypt(secrets.getKey());
 
-            FilesUtils.writeFileBytes(getEncryptedKeyFile(App.getContext()), encryptedKeyFileBytes);
+            FilesUtils.writeFileBytes(getEncryptedKeyFile(getAppContext()), encryptedKeyFileBytes);
             setKeyHash(keyHash);
         } catch (Exception e) {
             throw new EncryptionFailedException(e);
@@ -150,7 +140,7 @@ public class CryptoManager {
     private CryptoSecrets getSecrets(String password, Class<? extends AesCryptor> cryptorClass)
             throws DecryptionFailedException {
         try {
-            File keyFile = getEncryptedKeyFile(App.getContext());
+            File keyFile = getEncryptedKeyFile(getAppContext());
 
             byte[] encryptedKeyFileBytes = FilesUtils.readFileBytes(keyFile);
             byte[] keyFileBytes = getKeyCryptor(password, cryptorClass)
@@ -182,7 +172,7 @@ public class CryptoManager {
             return fromSha256HexString(keyHash);
         }
 
-        File keyHashFile = getKeyHashFile(App.getContext());
+        File keyHashFile = getKeyHashFile(getAppContext());
 
         if (keyHashFile.exists()) {
             return FilesUtils.readFileBytes(keyHashFile);
@@ -194,7 +184,7 @@ public class CryptoManager {
     private void setKeyHash(byte[] keyHash) throws NoSuchAlgorithmException, IOException {
         prefs.edit().putString(KEY_HASH_PREF, toSha256String(keyHash)).apply();
 
-        File keyHashFile = getKeyHashFile(App.getContext());
+        File keyHashFile = getKeyHashFile(getAppContext());
 
         if (keyHashFile.exists()) {
             Wiper.wipeFile(keyHashFile);

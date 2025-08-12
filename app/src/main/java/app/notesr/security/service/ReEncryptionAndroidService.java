@@ -21,6 +21,7 @@ import java.io.IOException;
 import app.notesr.R;
 import app.notesr.exception.EncryptionFailedException;
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.security.dto.CryptoSecrets;
 
@@ -52,7 +53,7 @@ public class ReEncryptionAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        CryptoManager cryptoManager = CryptoManager.getInstance();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         CryptoSecrets newSecrets = (CryptoSecrets) intent.getSerializableExtra(EXTRA_NEW_SECRETS);
         requireNonNull(newSecrets);
 

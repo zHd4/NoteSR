@@ -1,0 +1,27 @@
+package app.notesr.security.crypto;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import app.notesr.App;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class CryptoManagerProvider {
+    private static final String PREF_NAME = "crypto_prefs";
+    private static volatile CryptoManager instance;
+
+    public static CryptoManager getInstance() {
+        if (instance == null) {
+            synchronized (CryptoManagerProvider.class) {
+                if (instance == null) {
+                    SharedPreferences prefs = App.getContext()
+                            .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+                    instance = new CryptoManager(prefs);
+                }
+            }
+        }
+        return instance;
+    }
+}

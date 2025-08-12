@@ -10,6 +10,7 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 
 import app.notesr.security.crypto.CryptoManager;
+import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.security.dto.CryptoSecrets;
@@ -45,7 +46,7 @@ public class NotesIntegrationTest {
     public static void beforeAll() throws Exception {
         context = ApplicationProvider.getApplicationContext();
 
-        CryptoManager cryptoManager = CryptoManager.getInstance();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         CryptoSecrets cryptoSecrets = getTestSecrets();
 
         cryptoManager.setSecrets(cryptoSecrets);
