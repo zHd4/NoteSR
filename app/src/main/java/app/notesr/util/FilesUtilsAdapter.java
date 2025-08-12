@@ -1,0 +1,13 @@
+package app.notesr.util;
+
+import android.content.Context;
+
+import java.io.File;
+import java.io.IOException;
+
+public interface FilesUtilsAdapter {
+    File getInternalFile(Context context, String name);
+    byte[] readFileBytes(File file) throws IOException;
+    void writeFileBytes(File file, byte[] data) throws IOException;
+    void writeFileBytes(File file, byte[] data, boolean append) throws IOException;
+}
