@@ -22,6 +22,7 @@ import app.notesr.db.DatabaseProvider;
 import app.notesr.file.service.FileService;
 import app.notesr.file.model.FileInfo;
 import app.notesr.util.FileExifDataResolver;
+import app.notesr.util.FilesUtils;
 import app.notesr.util.Wiper;
 import app.notesr.util.thumbnail.ImageThumbnailCreator;
 import app.notesr.util.thumbnail.ThumbnailCreator;
@@ -166,7 +167,11 @@ public class AddFileActivity extends ActivityBase {
     }
 
     private FileInfo getFileInfo(Uri uri) {
-        FileExifDataResolver resolver = new FileExifDataResolver(getApplicationContext(), uri);
+        FileExifDataResolver resolver = new FileExifDataResolver(
+                getApplicationContext(),
+                new FilesUtils(),
+                uri
+        );
 
         String filename = resolver.getFileName();
         String type = resolver.getMimeType();

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 public class FileExifDataResolver {
 
     private final Context context;
+    private final FilesUtilsAdapter filesUtils;
     private final Uri uri;
 
     public String getFileName() {
@@ -47,9 +48,9 @@ public class FileExifDataResolver {
         return cursor;
     }
 
-    private static String getMimeType(String filename) {
+    private String getMimeType(String filename) {
         String type = null;
-        String extension = FilesUtils.getFileExtension(filename);
+        String extension = filesUtils.getFileExtension(filename);
 
         if (extension != null) {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);

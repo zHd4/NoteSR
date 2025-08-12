@@ -38,7 +38,9 @@ public class ImageThumbnailCreator implements ThumbnailCreator {
         Bitmap bitmap = BitmapFactory.decodeStream(getInputStream(file), null, options);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        Objects.requireNonNull(bitmap).compress(getImageCompressFormat(file), QUALITY, outputStream);
+        Objects.requireNonNull(bitmap)
+                .compress(getImageCompressFormat(file), QUALITY, outputStream);
+
         return outputStream.toByteArray();
     }
 
@@ -47,7 +49,7 @@ public class ImageThumbnailCreator implements ThumbnailCreator {
     }
 
     private Bitmap.CompressFormat getImageCompressFormat(File file) {
-        String extension = FilesUtils.getFileExtension(file.getName());
+        String extension = new FilesUtils().getFileExtension(file.getName());
 
         if (!COMPRESS_FORMAT_MAP.containsKey(extension)) {
             throw new IllegalArgumentException("Unsupported image format");

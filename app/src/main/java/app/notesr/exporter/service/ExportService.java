@@ -145,7 +145,7 @@ public class ExportService {
             String version = VersionFetcher.fetchVersionName(context, false);
             File targetFile = new File(tempDir, VERSION_FILE_NAME);
 
-            FilesUtils.writeFileBytes(targetFile, version.getBytes());
+            new FilesUtils().writeFileBytes(targetFile, version.getBytes());
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }

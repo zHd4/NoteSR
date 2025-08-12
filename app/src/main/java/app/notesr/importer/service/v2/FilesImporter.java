@@ -84,6 +84,6 @@ class FilesImporter extends BaseFilesImporter {
     }
 
     private byte[] readFile(String id) throws IOException {
-        return FilesUtils.readFileBytes(new File(dataBlocksDir, id));
+        return new FilesUtils().readFileBytes(new File(dataBlocksDir, id));
     }
 }

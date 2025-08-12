@@ -7,18 +7,19 @@ import java.security.NoSuchAlgorithmException;
 
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
-import app.notesr.util.FilesUtils;
+import app.notesr.util.FilesUtilsAdapter;
 import app.notesr.util.HashHelper;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class FileIOHelper {
+    private final FilesUtilsAdapter filesUtils;
     private final FileService fileService;
 
     public void writeToFile(String fileId, File destFile) {
         fileService.read(fileId, chunk -> {
             try {
-                FilesUtils.writeFileBytes(destFile, chunk, true);
+                filesUtils.writeFileBytes(destFile, chunk, true);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to write file", e);
             }
@@ -28,7 +29,7 @@ public class FileIOHelper {
     public File dropToCache(FileInfo fileInfo, File cacheDir) {
         try {
             String name = generateTempName(fileInfo);
-            String ext = FilesUtils.getFileExtension(fileInfo.getName());
+            String ext = filesUtils.getFileExtension(fileInfo.getName());
             File tempFile = File.createTempFile(name, "." + ext, cacheDir);
 
             try (FileOutputStream out = new FileOutputStream(tempFile)) {

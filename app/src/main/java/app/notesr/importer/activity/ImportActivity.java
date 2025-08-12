@@ -26,6 +26,7 @@ import app.notesr.note.activity.NotesListActivity;
 import app.notesr.importer.service.ImportAndroidService;
 import app.notesr.importer.service.ImportStatus;
 import app.notesr.util.FileExifDataResolver;
+import app.notesr.util.FilesUtils;
 
 public class ImportActivity extends ActivityBase {
 
@@ -130,7 +131,7 @@ public class ImportActivity extends ActivityBase {
                     selectedFileUri = data.getData();
 
                     FileExifDataResolver resolver = new FileExifDataResolver(
-                            getApplicationContext(), selectedFileUri);
+                            getApplicationContext(), new FilesUtils(), selectedFileUri);
                     String filename = resolver.getFileName();
 
                     infoTextView.setVisibility(View.INVISIBLE);

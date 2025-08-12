@@ -28,11 +28,12 @@ class FilesDataExporter implements Exporter {
             }
         }
 
+        FilesUtils filesUtils = new FilesUtils();
         List<DataBlock> dataBlocksWithoutData = dataBlockDao.getAllWithoutData();
 
         for (DataBlock blockWithoutData : dataBlocksWithoutData) {
             DataBlock dataBlock = dataBlockDao.get(blockWithoutData.getId());
-            FilesUtils.writeFileBytes(new File(outputDir, dataBlock.getId()), dataBlock.getData());
+            filesUtils.writeFileBytes(new File(outputDir, dataBlock.getId()), dataBlock.getData());
 
             exported++;
             checkCancelled.run();

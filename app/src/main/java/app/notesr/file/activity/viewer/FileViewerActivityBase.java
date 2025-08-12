@@ -22,6 +22,7 @@ import app.notesr.file.helper.FileIOHelper;
 import app.notesr.file.activity.FilesListActivity;
 import app.notesr.file.service.FileService;
 import app.notesr.file.model.FileInfo;
+import app.notesr.util.FilesUtils;
 
 import java.io.File;
 
@@ -37,7 +38,7 @@ public class FileViewerActivityBase extends ActivityBase {
         super.onCreate(savedInstanceState);
 
         fileService = new FileService(DatabaseProvider.getInstance(getApplicationContext()));
-        fileIOHelper = new FileIOHelper(fileService);
+        fileIOHelper = new FileIOHelper(new FilesUtils(), fileService);
         dialogFactory = new DialogFactory(this);
 
         fileInfo = (FileInfo) getIntent().getSerializableExtra("fileInfo");
