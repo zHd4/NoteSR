@@ -22,10 +22,12 @@ public class WiperTest {
     private static final Random RANDOM = new Random();
 
     private static Context context;
+    private static Wiper wiper;
 
     @BeforeClass
     public static void beforeAll() {
         context = ApplicationProvider.getApplicationContext();
+        wiper = new Wiper();
     }
 
     @Test
@@ -36,9 +38,8 @@ public class WiperTest {
         byte[] testData = getRandomFileData();
         Files.write(testFile.toPath(), testData);
 
-        boolean result = Wiper.wipeFile(testFile);
+        wiper.wipeFile(testFile);
 
-        assertTrue("Result of wipeFile must be 'true'", result);
         assertFalse(testFile.getAbsolutePath() + " must be deleted", testFile.exists());
     }
 
@@ -55,9 +56,8 @@ public class WiperTest {
         byte[] testData = getRandomFileData();
         Files.write(testFile.toPath(), testData);
 
-        boolean result = Wiper.wipeDir(testDir);
+        wiper.wipeDir(testDir);
 
-        assertTrue("Result of wipeDir must be 'true'", result);
         assertFalse(testDir.getAbsolutePath() + " must be deleted", testDir.exists());
         assertFalse(testFile.getAbsolutePath() + " must be deleted", testFile.exists());
     }

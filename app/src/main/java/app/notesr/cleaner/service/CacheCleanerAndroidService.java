@@ -115,13 +115,9 @@ public class CacheCleanerAndroidService extends Service implements Runnable {
 
             if (file.exists()) {
                 try {
-                    boolean removed = Wiper.wipeFile(file);
-
-                    if (!removed) {
-                        Log.e(TAG, "Temp file cannot be removed: " + file);
-                    }
+                    new Wiper().wipeFile(file);
                 } catch (IOException e) {
-                    Log.e(TAG, "IOException while clearing cache", e);
+                    Log.e(TAG, "Cannot wipe file", e);
                 }
             }
 

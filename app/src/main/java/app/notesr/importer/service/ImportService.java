@@ -89,9 +89,7 @@ public class ImportService {
 
     private static void wipeFile(File file) {
         try {
-            if (!Wiper.wipeFile(file)) {
-                throw new RuntimeException("Cannot delete file: " + file.getAbsolutePath());
-            }
+            new Wiper().wipeFile(file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

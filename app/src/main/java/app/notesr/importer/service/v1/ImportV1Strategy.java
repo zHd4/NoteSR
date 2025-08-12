@@ -88,13 +88,9 @@ public class ImportV1Strategy implements ImportStrategy {
 
     private void wipeFile(File file) {
         try {
-            boolean success = Wiper.wipeFile(file);
-
-            if (!success) {
-                throw new RuntimeException("Filed to wipe file");
-            }
+            new Wiper().wipeFile(file);
         } catch (IOException e) {
-            Log.e(TAG, "Filed to wipe file", e);
+            Log.e(TAG, "Cannot wipe file", e);
             throw new RuntimeException(e);
         }
     }

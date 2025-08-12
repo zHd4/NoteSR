@@ -5,46 +5,40 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
-public class Wiper {
+public class Wiper implements WiperAdapter {
     private static final String TAG = Wiper.class.getName();
     private static final int LOOPS_COUNT = 6;
 
-    public static boolean wipeDir(File dir) throws IOException {
+    public void wipeDir(File dir) throws IOException {
         if (dir == null || !dir.isDirectory()) {
-            return false;
+            throw new IllegalArgumentException("Directory is null or not a directory");
         }
 
         File[] files = dir.listFiles();
         if (files == null) {
-            return false;
+            throw new IOException("Cannot list directory " + dir.getAbsolutePath());
         }
-
-        boolean success = true;
 
         for (File file : files) {
             if (file.isDirectory()) {
-                boolean subdirCleared = !file.exists() || wipeDir(file);
-                boolean subdirDeleted = !file.exists() || wipeFile(file);
-
-                success &= subdirCleared;
-                success &= subdirDeleted;
+                wipeDir(file);
+                wipeFile(file);
             } else {
-                boolean fileDeleted = !file.exists() || wipeFile(file);
-                success &= fileDeleted;
+                wipeFile(file);
             }
         }
 
-        boolean dirDeleted = !dir.exists() || dir.delete();
-        return success && dirDeleted;
+        Files.delete(dir.toPath());
     }
 
-    public static boolean wipeFile(File file) throws IOException {
+    public void wipeFile(File file) throws IOException {
         for (int i = 0; i < LOOPS_COUNT; i++) {
             wipeFileData(file);
         }
 
-        return file.delete();
+        Files.delete(file.toPath());
     }
 
     private static void wipeFileData(File file) throws IOException {

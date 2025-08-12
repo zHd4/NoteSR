@@ -104,7 +104,7 @@ public class AddFileActivity extends ActivityBase {
             filesMap.forEach((info, file) -> {
                 try {
                     fileService.save(info, file);
-                    Wiper.wipeFile(file);
+                    new Wiper().wipeFile(file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
