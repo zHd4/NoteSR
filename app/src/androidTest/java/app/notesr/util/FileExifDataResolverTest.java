@@ -47,7 +47,7 @@ public class FileExifDataResolverTest {
         }
 
         Uri uri = getImageContentUri(context, testFile, testFileSize);
-        resolver = new FileExifDataResolver(context, uri);
+        resolver = new FileExifDataResolver(context, new FilesUtils(), uri);
     }
 
     @Test
