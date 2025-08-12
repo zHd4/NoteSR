@@ -37,7 +37,7 @@ public class CryptoManager {
     private final SharedPreferences prefs;
 
     private CryptoSecrets secrets;
-    
+
     private Context getAppContext() {
         return App.getContext();
     }
