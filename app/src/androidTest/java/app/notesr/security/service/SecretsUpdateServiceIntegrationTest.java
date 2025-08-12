@@ -69,7 +69,7 @@ public class SecretsUpdateServiceIntegrationTest {
         oldSecrets = new CryptoSecrets(oldKey, FAKER.internet.password());
 
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-        cryptoManager.setSecrets(oldSecrets);
+        cryptoManager.setSecrets(context, oldSecrets);
 
         newSecrets = new CryptoSecrets(newKey, FAKER.internet.password());
         testNote = getTestNote();

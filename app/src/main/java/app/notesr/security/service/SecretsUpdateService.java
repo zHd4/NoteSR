@@ -47,7 +47,7 @@ public class SecretsUpdateService {
         newDb.close();
 
         replaceDatabase(oldDbFile, newDbFile);
-        cryptoManager.setSecrets(newSecrets);
+        cryptoManager.setSecrets(context, newSecrets);
         DatabaseProvider.reinit(context, getSupportFactory(newKey));
     }
 

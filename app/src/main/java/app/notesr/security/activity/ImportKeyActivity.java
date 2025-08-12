@@ -64,7 +64,12 @@ public class ImportKeyActivity extends ActivityBase {
                     String password = getIntent().getStringExtra("password");
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, password);
                     CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
-                    SecretsSetupService keySetupService = new SecretsSetupService(cryptoManager, cryptoSecrets);
+
+                    SecretsSetupService keySetupService = new SecretsSetupService(
+                            getApplicationContext(),
+                            cryptoManager,
+                            cryptoSecrets
+                    );
 
                     new KeySetupCompletionHandler(this, keySetupService, mode).handle();
                 } catch (IllegalArgumentException e) {

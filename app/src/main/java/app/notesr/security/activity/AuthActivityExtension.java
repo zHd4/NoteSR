@@ -40,7 +40,7 @@ public class AuthActivityExtension {
             return;
         }
 
-        if (cryptoManager.configure(password)) {
+        if (cryptoManager.configure(activity.getApplicationContext(), password)) {
             onAuthorizationSuccessful();
         } else {
             onAuthorizationFailed();
@@ -70,7 +70,8 @@ public class AuthActivityExtension {
             try {
                 if (hexKey == null) throw new Exception("Missing hex key");
 
-                cryptoManager.setSecrets(KeyUtils.getSecretsFromHex(hexKey, password));
+                Context context = activity.getApplicationContext();
+                cryptoManager.setSecrets(context, KeyUtils.getSecretsFromHex(hexKey, password));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -87,10 +88,11 @@ public class AuthActivityExtension {
 
         if (password != null) {
             try {
+                Context context = activity.getApplicationContext();
                 CryptoSecrets secrets = cryptoManager.getSecrets();
 
                 secrets.setPassword(password);
-                cryptoManager.setSecrets(secrets);
+                cryptoManager.setSecrets(context, secrets);
 
                 showToastMessage(R.string.updated);
 
@@ -145,7 +147,7 @@ public class AuthActivityExtension {
 
         if (attempts == 0) {
             try {
-                cryptoManager.block();
+                cryptoManager.block(activity.getApplicationContext());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

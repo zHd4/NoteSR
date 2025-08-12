@@ -49,7 +49,7 @@ public class NotesIntegrationTest {
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         CryptoSecrets cryptoSecrets = getTestSecrets();
 
-        cryptoManager.setSecrets(cryptoSecrets);
+        cryptoManager.setSecrets(context, cryptoSecrets);
 
         db = DatabaseProvider.getInstance(context);
         noteService = new NoteService(db);

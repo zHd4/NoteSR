@@ -1,5 +1,7 @@
 package app.notesr.security.service;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 import app.notesr.security.crypto.CryptoManager;
@@ -11,15 +13,17 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class SecretsSetupService {
+    private final Context context;
     private final CryptoManager cryptoManager;
     private final CryptoSecrets cryptoSecrets;
 
-    public SecretsSetupService(CryptoManager cryptoManager, String password) {
+    public SecretsSetupService(Context context, CryptoManager cryptoManager, String password) {
+        this.context = context;
         this.cryptoManager = cryptoManager;
         this.cryptoSecrets = cryptoManager.generateSecrets(password);
     }
 
     public void apply() throws EncryptionFailedException, IOException {
-        cryptoManager.setSecrets(cryptoSecrets);
+        cryptoManager.setSecrets(context, cryptoSecrets);
     }
 }
