@@ -38,7 +38,7 @@ public class CryptoManager {
 
     private CryptoSecrets secrets;
     
-    Context getAppContext() {
+    private Context getAppContext() {
         return App.getContext();
     }
 
