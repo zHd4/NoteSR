@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Entity(
-        tableName = "data_block",
+        tableName = "data_blocks",
         foreignKeys = @ForeignKey(
                 entity = FileInfo.class,
                 parentColumns = "id",
