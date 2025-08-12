@@ -8,7 +8,6 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import app.notesr.file.model.DataBlock;
-import app.notesr.file.model.FileInfo;
 
 import java.util.List;
 
@@ -30,14 +29,17 @@ public interface DataBlockDao {
     @Query("DELETE FROM data_blocks WHERE file_id = :fileId")
     void deleteByFileId(String fileId);
 
-    @Query("SELECT * FROM data_blocks WHERE id = :id LIMIT 1")
-    DataBlock get(String id);
+    @Query("SELECT * FROM data_blocks ORDER BY id")
+    List<DataBlock> getAll();
 
     @Query("SELECT id, file_id, block_order FROM data_blocks ORDER BY id")
     List<DataBlock> getAllWithoutData();
 
     @Query("SELECT id FROM data_blocks WHERE file_id = :fileId ORDER BY block_order")
     List<String> getBlockIdsByFileId(String fileId);
+
+    @Query("SELECT * FROM data_blocks WHERE id = :id LIMIT 1")
+    DataBlock get(String id);
 
     @Query("SELECT COUNT(*) FROM data_blocks")
     Long getRowsCount();
