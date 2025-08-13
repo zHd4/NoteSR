@@ -6,6 +6,7 @@ import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
 import static app.notesr.util.KeyUtils.getSecretsFromHex;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,11 +53,12 @@ public class KeyRecoveryActivity extends ActivityBase {
 
             if (!hexKey.isBlank()) {
                 try {
+                    Context context = getApplicationContext();
                     CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, null);
 
-                    if (cryptoManager.verifyKey(cryptoSecrets.getKey())) {
-                        startActivity(new Intent(getApplicationContext(), AuthActivity.class)
+                    if (cryptoManager.verifyKey(context, cryptoSecrets.getKey())) {
+                        startActivity(new Intent(context, AuthActivity.class)
                                 .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString())
                                 .putExtra("hexKey", hexKey));
 

@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -79,8 +78,9 @@ public class CryptoManager {
         this.secrets = secrets;
     }
 
-    public boolean verifyKey(byte[] key) throws IOException, NoSuchAlgorithmException {
-        byte[] originalHash = getKeyHash();
+    public boolean verifyKey(Context context, byte[] key)
+            throws IOException, NoSuchAlgorithmException {
+        byte[] originalHash = getKeyHash(context);
         if (originalHash != null) {
             byte[] providedHash = toSha256Bytes(key);
             return Arrays.equals(originalHash, providedHash);
@@ -96,8 +96,11 @@ public class CryptoManager {
     public void unblock(Context context) throws IOException {
         prefs.edit().putBoolean(BLOCK_MARKER_PREF, false).apply();
         File blockMarkerFile = filesUtils.getInternalFile(context, BLOCK_MARKER_FILENAME);
+
         if (blockMarkerFile.exists()) {
-            Files.delete(blockMarkerFile.toPath());
+            if (!blockMarkerFile.delete()) {
+                throw new IOException("Failed to delete block marker file");
+            }
         }
     }
 
@@ -146,11 +149,17 @@ public class CryptoManager {
         }
     }
 
-    private byte[] getKeyHash() {
+    private byte[] getKeyHash(Context context) throws IOException {
         String keyHash = prefs.getString(KEY_HASH_PREF, null);
 
         if (keyHash != null) {
             return fromSha256HexString(keyHash);
+        }
+
+        File keyHashFile = filesUtils.getInternalFile(context, KEY_HASH_FILENAME);
+
+        if (keyHashFile.exists()) {
+            return filesUtils.readFileBytes(keyHashFile);
         }
 
         return null;
