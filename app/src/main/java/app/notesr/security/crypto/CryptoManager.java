@@ -135,8 +135,11 @@ public class CryptoManager {
         }
     }
 
-    private CryptoSecrets getSecrets(Context context, String password, Class<? extends AesCryptor> cryptorClass)
+    private CryptoSecrets getSecrets(Context context,
+                                     String password,
+                                     Class<? extends AesCryptor> cryptorClass)
             throws DecryptionFailedException {
+
         try {
             File keyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
             byte[] encryptedKeyFileBytes = filesUtils.readFileBytes(keyFile);
