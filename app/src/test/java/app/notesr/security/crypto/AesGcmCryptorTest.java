@@ -41,14 +41,14 @@ class AesGcmCryptorTest {
     void testEncryptAndDecryptStreams() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        try (CipherOutputStream cos = cryptor.encrypt(out)) {
+        try (CipherOutputStream cos = cryptor.getEncryptionStream(out)) {
             cos.write(DATA);
         }
 
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
-        try (CipherInputStream cis = cryptor.decrypt(in)) {
+        try (CipherInputStream cis = cryptor.getDecryptionStream(in)) {
             cis.transferTo(result);
         }
 
@@ -58,7 +58,7 @@ class AesGcmCryptorTest {
     @Test
     void testEncryptShouldWriteIvToStream() throws Exception {
         OutputStream mockOut = mock(OutputStream.class);
-        cryptor.encrypt(mockOut);
+        cryptor.getEncryptionStream(mockOut);
 
         verify(mockOut, times(1))
                 .write(Mockito.argThat(iv -> iv.length == AesGcmCryptor.IV_SIZE));
@@ -69,6 +69,6 @@ class AesGcmCryptorTest {
         byte[] badData = Arrays.copyOf(DATA, AesGcmCryptor.IV_SIZE - 1);
         ByteArrayInputStream in = new ByteArrayInputStream(badData);
 
-        assertThrows(IOException.class, () -> cryptor.decrypt(in));
+        assertThrows(IOException.class, () -> cryptor.getDecryptionStream(in));
     }
 }

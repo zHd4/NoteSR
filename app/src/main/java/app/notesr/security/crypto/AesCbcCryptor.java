@@ -59,14 +59,14 @@ public class AesCbcCryptor extends AesCryptor {
     }
 
     @Override
-    public CipherOutputStream encrypt(OutputStream out) throws InvalidAlgorithmParameterException,
+    public CipherOutputStream getEncryptionStream(OutputStream out) throws InvalidAlgorithmParameterException,
             NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Cipher cipher = createCipher(key, iv, Cipher.ENCRYPT_MODE);
         return new CipherOutputStream(out, cipher);
     }
 
     @Override
-    public CipherInputStream decrypt(InputStream in) throws InvalidAlgorithmParameterException,
+    public CipherInputStream getDecryptionStream(InputStream in) throws InvalidAlgorithmParameterException,
             NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Cipher cipher = createCipher(key, iv, Cipher.DECRYPT_MODE);
         return new CipherInputStream(in, cipher);

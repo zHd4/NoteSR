@@ -33,7 +33,7 @@ public class BackupCryptor {
         AesGcmCryptor cryptor = new AesGcmCryptor(getKey(cryptoSecrets));
 
         try {
-            CipherOutputStream outputCipherStream = cryptor.encrypt(outputFileStream);
+            CipherOutputStream outputCipherStream = cryptor.getEncryptionStream(outputFileStream);
 
             try (sourceFileStream; outputCipherStream) {
                 byte[] chunk = new byte[CHUNK_SIZE];
@@ -64,7 +64,7 @@ public class BackupCryptor {
     public void decrypt() throws DecryptionFailedException, IOException {
         try {
             AesGcmCryptor cryptor = new AesGcmCryptor(getKey(cryptoSecrets));
-            decrypt(cryptor.decrypt(sourceFileStream));
+            decrypt(cryptor.getDecryptionStream(sourceFileStream));
             return;
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException |
                  NoSuchAlgorithmException | InvalidKeyException e) {
@@ -73,7 +73,7 @@ public class BackupCryptor {
 
         try {
             AesCbcCryptor cryptor = new AesCbcCryptor(getKey(cryptoSecrets), getIv(cryptoSecrets));
-            decrypt(cryptor.decrypt(sourceFileStream));
+            decrypt(cryptor.getDecryptionStream(sourceFileStream));
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException |
                  NoSuchAlgorithmException | InvalidKeyException e) {
             Log.e(TAG, "CBC decryption failed", e);

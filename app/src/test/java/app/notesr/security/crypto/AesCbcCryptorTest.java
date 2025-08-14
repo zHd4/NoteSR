@@ -39,14 +39,14 @@ class AesCbcCryptorTest {
     void testEncryptAndDecryptStreams() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        try (CipherOutputStream cos = cryptor.encrypt(out)) {
+        try (CipherOutputStream cos = cryptor.getEncryptionStream(out)) {
             cos.write(DATA);
         }
 
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
-        try (CipherInputStream cis = cryptor.decrypt(in)) {
+        try (CipherInputStream cis = cryptor.getDecryptionStream(in)) {
             cis.transferTo(result);
         }
 

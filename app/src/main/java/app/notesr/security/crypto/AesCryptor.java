@@ -46,6 +46,6 @@ public abstract class AesCryptor {
 
     public abstract byte[] encrypt(byte[] plainData) throws Exception;
     public abstract byte[] decrypt(byte[] encryptedData) throws Exception;
-    public abstract CipherOutputStream encrypt(OutputStream out) throws Exception;
-    public abstract CipherInputStream decrypt(InputStream in) throws Exception;
+    public abstract CipherOutputStream getEncryptionStream(OutputStream out) throws Exception;
+    public abstract CipherInputStream getDecryptionStream(InputStream in) throws Exception;
 }
