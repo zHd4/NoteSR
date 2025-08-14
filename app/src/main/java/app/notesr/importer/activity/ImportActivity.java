@@ -179,10 +179,12 @@ public class ImportActivity extends ActivityBase {
     }
 
     private void onImportRunning(ImportStatus status) {
-        switch (status) {
-            case DECRYPTING -> statusTextView.setText(R.string.decrypting_data);
-            case IMPORTING -> statusTextView.setText(R.string.importing);
-            case CLEANING_UP -> statusTextView.setText(R.string.wiping_temp_data);
+        if (status != null) {
+            switch (status) {
+                case DECRYPTING -> statusTextView.setText(R.string.decrypting_data);
+                case IMPORTING -> statusTextView.setText(R.string.importing);
+                case CLEANING_UP -> statusTextView.setText(R.string.wiping_temp_data);
+            }
         }
     }
 
