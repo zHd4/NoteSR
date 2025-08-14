@@ -85,8 +85,9 @@ public class AesGcmCryptor extends AesCryptor {
     }
 
     @Override
-    public CipherInputStream getDecryptionStream(InputStream in) throws IOException, NoSuchPaddingException,
-            NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+    public CipherInputStream getDecryptionStream(InputStream in) throws IOException,
+            NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+            InvalidKeyException {
         byte[] iv = new byte[IV_SIZE];
         int read = in.read(iv);
         if (read != IV_SIZE)
