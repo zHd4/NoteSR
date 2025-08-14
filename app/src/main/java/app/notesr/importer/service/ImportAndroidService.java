@@ -36,8 +36,6 @@ public class ImportAndroidService extends Service implements Runnable {
     );
 
     private static final String CHANNEL_ID = "import_service_channel";
-    private static final int BROADCAST_LOOP_DELAY = 100;
-
 
     private ImportService importService;
 
@@ -67,10 +65,11 @@ public class ImportAndroidService extends Service implements Runnable {
         AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
         Uri sourceUri = intent.getData();
         FileInputStream sourceStream = getFileStream(sourceUri);
+        ImportStatusCallback statusCallback = new ImportStatusCallback(this::sendBroadcastData);
 
-        importService = new ImportService(this, db, sourceStream);
+        importService = new ImportService(this, db, sourceStream, statusCallback);
+
         Thread thread = new Thread(this);
-
         thread.start();
         startForeground(startId, notification, type);
 
@@ -79,28 +78,10 @@ public class ImportAndroidService extends Service implements Runnable {
 
     @Override
     public void run() {
-        Thread jobThread = new Thread(() -> importService.doImport());
-        jobThread.start();
-
-        try {
-            broadcastLoop();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Broadcast loop interrupted", e);
-        }
+        importService.doImport();
 
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
-    }
-
-    private void broadcastLoop() throws InterruptedException {
-        ImportStatus status;
-
-        do {
-            status = importService.getStatus();
-
-            sendBroadcastData(status);
-            Thread.sleep(BROADCAST_LOOP_DELAY);
-        } while (status != null && !FINISH_STATUSES.contains(status));
     }
 
     private void sendBroadcastData(ImportStatus status) {

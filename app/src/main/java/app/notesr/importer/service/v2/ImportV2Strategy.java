@@ -15,11 +15,11 @@ import java.util.Map;
 
 import app.notesr.db.AppDatabase;
 import app.notesr.exception.ImportFailedException;
+import app.notesr.importer.service.ImportStatusCallback;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.importer.service.ImportStatus;
 import app.notesr.importer.service.NotesImporter;
 import app.notesr.util.ZipUtils;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -32,10 +32,8 @@ public class ImportV2Strategy implements ImportStrategy {
     private final Context context;
     private final AppDatabase db;
     private final File file;
+    private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
-
-    @Getter
-    private ImportStatus status;
 
     private File tempDir;
 
@@ -45,12 +43,14 @@ public class ImportV2Strategy implements ImportStrategy {
             db.runInTransaction(() -> {
                 tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
-                status = ImportStatus.IMPORTING;
+                statusCallback.updateStatus(ImportStatus.IMPORTING);
                 ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath());
                 importData();
 
-                status = ImportStatus.CLEANING_UP;
+                statusCallback.updateStatus(ImportStatus.CLEANING_UP);
                 wipeTempData(file, tempDir);
+
+                statusCallback.updateStatus(ImportStatus.DONE);
                 return null;
             });
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class ImportV2Strategy implements ImportStrategy {
                 }
             }
 
-            status = ImportStatus.IMPORT_FAILED;
+            statusCallback.updateStatus(ImportStatus.IMPORT_FAILED);
         }
     }
 

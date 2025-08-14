@@ -1,6 +1,7 @@
 package app.notesr.importer.service.v1;
 
 import android.util.Log;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
@@ -8,6 +9,7 @@ import app.notesr.db.AppDatabase;
 
 import app.notesr.exception.ImportFailedException;
 import app.notesr.importer.service.ImportStatus;
+import app.notesr.importer.service.ImportStatusCallback;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.importer.service.NotesImporter;
 import app.notesr.util.Wiper;
@@ -17,7 +19,6 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -26,25 +27,23 @@ public class ImportV1Strategy implements ImportStrategy {
 
     private final AppDatabase db;
     private final File file;
+    private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
-
-    @Getter
-    private ImportStatus status;
 
     @Override
     public void execute() {
         try {
             db.runInTransaction(() -> {
-                status = ImportStatus.IMPORTING;
+                statusCallback.updateStatus(ImportStatus.IMPORTING);
                 importData(file);
 
-                status = ImportStatus.CLEANING_UP;
+                statusCallback.updateStatus(ImportStatus.CLEANING_UP);
                 wipeFile(file);
 
-                status = ImportStatus.DONE;
+                statusCallback.updateStatus(ImportStatus.DONE);
             });
         } catch (ImportFailedException e) {
-            status = ImportStatus.IMPORT_FAILED;
+            statusCallback.updateStatus(ImportStatus.IMPORT_FAILED);
         }
     }
 

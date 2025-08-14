@@ -33,23 +33,24 @@ public class ImportService {
     private final Context context;
     private final AppDatabase db;
     private final FileInputStream sourceStream;
-
-    private ImportStatus status;
-    private ImportStrategy importStrategy;
+    private final ImportStatusCallback statusCallback;
 
     public void doImport() {
-        status = ImportStatus.DECRYPTING;
+        statusCallback.updateStatus(ImportStatus.DECRYPTING);
         File tempDecryptedFile = new File(context.getCacheDir(), randomUUID().toString());
 
         try {
             FileOutputStream outputStream = new FileOutputStream(tempDecryptedFile);
             decrypt(sourceStream, outputStream);
 
+            ImportStrategy importStrategy;
+
             if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
                 importStrategy = new ImportV2Strategy(context, db, tempDecryptedFile,
-                        TIMESTAMP_FORMATTER);
+                        statusCallback, TIMESTAMP_FORMATTER);
             } else {
-                importStrategy = new ImportV1Strategy(db, tempDecryptedFile, TIMESTAMP_FORMATTER);
+                importStrategy = new ImportV1Strategy(db, tempDecryptedFile, statusCallback,
+                        TIMESTAMP_FORMATTER);
             }
 
             importStrategy.execute();
@@ -58,18 +59,10 @@ public class ImportService {
                 wipeFile(tempDecryptedFile);
             }
 
-            status = ImportStatus.DECRYPTION_FAILED;
+            statusCallback.updateStatus(ImportStatus.DECRYPTION_FAILED);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public ImportStatus getStatus() {
-        if (importStrategy != null) {
-            return importStrategy.getStatus();
-        }
-
-        return status;
     }
 
     private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws
