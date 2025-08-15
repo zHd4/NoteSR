@@ -2,10 +2,23 @@ package app.notesr.util;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import app.notesr.security.crypto.AesCryptor;
 import app.notesr.security.dto.CryptoSecrets;
 
 public final class KeyUtils {
     private static final int HEX_LINE_SIZE_LIMIT = 4;
+
+    public static SecretKey getSecretKeyFromSecrets(CryptoSecrets cryptoSecrets) {
+        int keyLength = AesCryptor.KEY_SIZE / 8;
+        byte[] keyBytes = Arrays.copyOfRange(cryptoSecrets.getKey(), 0, keyLength);
+
+        return new SecretKeySpec(keyBytes, AesCryptor.KEY_GENERATOR_ALGORITHM);
+    }
 
     public static String getKeyHexFromSecrets(CryptoSecrets cryptoSecrets) {
         return getHexFromKeyBytes(cryptoSecrets.getKey());
