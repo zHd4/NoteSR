@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import static app.notesr.util.ActivityUtils.copyToClipboard;
 import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
-import static app.notesr.util.KeyUtils.getHexFromKeyBytes;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +19,7 @@ import app.notesr.ActivityBase;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.service.SecretsSetupService;
+import app.notesr.util.KeyUtils;
 import lombok.Getter;
 
 @Getter
@@ -60,7 +60,7 @@ public class SetupKeyActivity extends ActivityBase {
         }
 
         TextView keyView = findViewById(R.id.aesKeyHex);
-        keyView.setText(getHexFromKeyBytes(keySetupService.getCryptoSecrets()));
+        keyView.setText(KeyUtils.getKeyHexFromSecrets(keySetupService.getCryptoSecrets()));
 
         adaptKeyView();
 

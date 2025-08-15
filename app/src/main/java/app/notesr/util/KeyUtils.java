@@ -7,7 +7,7 @@ import app.notesr.security.dto.CryptoSecrets;
 public final class KeyUtils {
     private static final int HEX_LINE_SIZE_LIMIT = 4;
 
-    public static String getHexFromKeyBytes(CryptoSecrets cryptoSecrets) {
+    public static String getKeyHexFromSecrets(CryptoSecrets cryptoSecrets) {
         return getHexFromKeyBytes(cryptoSecrets.getKey());
     }
 

@@ -13,7 +13,7 @@ import app.notesr.security.dto.CryptoSecrets;
 class KeyUtilsTest {
 
     @Test
-    void testGetHexFromKeyBytesFormatsCorrectly() {
+    void testGetKeyHexFromSecretsFormatsCorrectly() {
         byte[] key = new byte[] {
                 0x01, 0x23, 0x45, 0x67,
                 (byte) 0x89, (byte) 0xAB,
@@ -85,7 +85,7 @@ class KeyUtilsTest {
     @Test
     void testGetHexFromCryptoSecretsDelegatesCorrectly() {
         CryptoSecrets secrets = new CryptoSecrets(new byte[] {0x0A, 0x0B}, "password");
-        String hex = KeyUtils.getHexFromKeyBytes(secrets);
+        String hex = KeyUtils.getKeyHexFromSecrets(secrets);
 
         assertEquals("0A 0B", hex);
     }
