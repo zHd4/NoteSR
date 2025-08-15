@@ -8,9 +8,49 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
+import javax.crypto.SecretKey;
+
+import app.notesr.security.crypto.AesCryptor;
 import app.notesr.security.dto.CryptoSecrets;
 
 class KeyUtilsTest {
+
+    @Test
+    void testGetSecretKeyFromSecretsTruncatesOrPadsCorrectly() {
+        int keyLength = AesCryptor.KEY_SIZE / 8;
+        byte[] longKey = new byte[40];
+
+        for (int i = 0; i < longKey.length; i++) {
+            longKey[i] = (byte) i;
+        }
+
+        CryptoSecrets secrets = new CryptoSecrets(longKey, "pass");
+        SecretKey secretKey = KeyUtils.getSecretKeyFromSecrets(secrets);
+
+        assertEquals(AesCryptor.KEY_GENERATOR_ALGORITHM, secretKey.getAlgorithm());
+
+        byte[] expected = Arrays.copyOfRange(longKey, 0, keyLength);
+        assertArrayEquals(expected, secretKey.getEncoded());
+    }
+
+    @Test
+    void testGetSecretKeyFromSecretsPadsWithZerosIfShorter() {
+        int keyLength = AesCryptor.KEY_SIZE / 8;
+
+        byte[] shortKey = new byte[8];
+        Arrays.fill(shortKey, (byte) 0x5A);
+
+        CryptoSecrets secrets = new CryptoSecrets(shortKey, "pass");
+        SecretKey secretKey = KeyUtils.getSecretKeyFromSecrets(secrets);
+
+        byte[] expected = new byte[keyLength];
+        Arrays.fill(expected, 0, shortKey.length, (byte) 0x5A);
+
+        assertEquals(AesCryptor.KEY_GENERATOR_ALGORITHM, secretKey.getAlgorithm());
+        assertArrayEquals(expected, secretKey.getEncoded());
+    }
 
     @Test
     void testGetKeyHexFromSecretsFormatsCorrectly() {
