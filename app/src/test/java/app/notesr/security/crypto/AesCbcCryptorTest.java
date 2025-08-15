@@ -5,15 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.security.SecureRandom;
 
 class AesCbcCryptorTest {
 
+    private static final int CHUNK_SIZE = 100_000;
+    private static final int IV_SIZE = 16;
     private static final String PASSWORD = "testPassword";
     private static final byte[] DATA = "CBC test data".getBytes();
 
@@ -21,35 +20,52 @@ class AesCbcCryptorTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        byte[] iv = new byte[AesCbcCryptor.IV_SIZE];
+        byte[] iv = new byte[IV_SIZE];
         SecureRandom.getInstanceStrong().nextBytes(iv);
 
         cryptor = new AesCbcCryptor(PASSWORD, iv);
     }
 
     @Test
-    void testEncryptAndDecryptBytes() throws Exception {
+    void testEncryptAndDecryptBytesReturnsOriginalData() throws Exception {
         byte[] encrypted = cryptor.encrypt(DATA);
         byte[] decrypted = cryptor.decrypt(encrypted);
 
-        assertArrayEquals(DATA, decrypted);
+        assertArrayEquals(DATA, decrypted, "Decrypted bytes must match original");
     }
 
     @Test
-    void testEncryptAndDecryptStreams() throws Exception {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+    void testEncryptAndDecryptStreamsReturnsOriginalData() throws Exception {
+        ByteArrayInputStream in = new ByteArrayInputStream(DATA);
+        ByteArrayOutputStream encryptedOut = new ByteArrayOutputStream();
 
-        try (CipherOutputStream cos = cryptor.getEncryptionStream(out)) {
-            cos.write(DATA);
-        }
+        cryptor.encrypt(in, encryptedOut);
 
-        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        ByteArrayInputStream encryptedIn = new ByteArrayInputStream(encryptedOut.toByteArray());
+        ByteArrayOutputStream decryptedOut = new ByteArrayOutputStream();
 
-        try (CipherInputStream cis = cryptor.getDecryptionStream(in)) {
-            cis.transferTo(result);
-        }
+        cryptor.decrypt(encryptedIn, decryptedOut);
 
-        assertArrayEquals(DATA, result.toByteArray());
+        assertArrayEquals(DATA, decryptedOut.toByteArray(),
+                "Stream decrypted data must match original");
+    }
+
+    @Test
+    void testEncryptAndDecryptLargeDataHandlesChunks() throws Exception {
+        byte[] largeData = new byte[CHUNK_SIZE * 3 + 12345];
+        new SecureRandom().nextBytes(largeData);
+
+        ByteArrayInputStream in = new ByteArrayInputStream(largeData);
+        ByteArrayOutputStream encryptedOut = new ByteArrayOutputStream();
+
+        cryptor.encrypt(in, encryptedOut);
+
+        ByteArrayInputStream encryptedIn = new ByteArrayInputStream(encryptedOut.toByteArray());
+        ByteArrayOutputStream decryptedOut = new ByteArrayOutputStream();
+
+        cryptor.decrypt(encryptedIn, decryptedOut);
+
+        assertArrayEquals(largeData, decryptedOut.toByteArray(),
+                "Chunked stream decryption must match original");
     }
 }

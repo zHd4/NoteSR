@@ -9,7 +9,6 @@ import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -19,13 +18,10 @@ import app.notesr.R;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Set;
 
 public class ImportAndroidService extends Service implements Runnable {
 
-    private static final String TAG = ImportAndroidService.class.getName();
     public static final String BROADCAST_ACTION = "import_data_broadcast";
     public static final String EXTRA_STATUS = "status";
 
@@ -64,10 +60,15 @@ public class ImportAndroidService extends Service implements Runnable {
 
         AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
         Uri sourceUri = intent.getData();
-        FileInputStream sourceStream = getFileStream(sourceUri);
         ImportStatusCallback statusCallback = new ImportStatusCallback(this::sendBroadcastData);
 
-        importService = new ImportService(this, db, sourceStream, statusCallback);
+        importService = new ImportService(
+                this,
+                db,
+                getContentResolver(),
+                sourceUri,
+                statusCallback
+        );
 
         Thread thread = new Thread(this);
         thread.start();
@@ -89,14 +90,5 @@ public class ImportAndroidService extends Service implements Runnable {
                 .putExtra(EXTRA_STATUS, status);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
-
-    private FileInputStream getFileStream(Uri uri) {
-        try {
-            return (FileInputStream) getContentResolver().openInputStream(uri);
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "FileNotFoundException", e);
-            throw new RuntimeException(e);
-        }
     }
 }

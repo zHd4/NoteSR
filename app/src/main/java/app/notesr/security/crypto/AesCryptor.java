@@ -8,8 +8,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -46,6 +44,6 @@ public abstract class AesCryptor {
 
     public abstract byte[] encrypt(byte[] plainData) throws Exception;
     public abstract byte[] decrypt(byte[] encryptedData) throws Exception;
-    public abstract CipherOutputStream getEncryptionStream(OutputStream out) throws Exception;
-    public abstract CipherInputStream getDecryptionStream(InputStream in) throws Exception;
+    public abstract void encrypt(InputStream in, OutputStream out) throws Exception;
+    public abstract void decrypt(InputStream in, OutputStream out) throws Exception;
 }

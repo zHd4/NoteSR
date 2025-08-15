@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
-import app.notesr.security.crypto.BackupCryptor;
+import app.notesr.security.crypto.BackupEncryptor;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.AppDatabase;
@@ -178,8 +178,8 @@ public class ExportService {
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
 
-        BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream, cryptoSecrets);
-        backupCryptor.encrypt();
+        BackupEncryptor encryptor = new BackupEncryptor(cryptoSecrets, inputStream, outputStream);
+        encryptor.encrypt();
     }
 
     private void wipe() throws IOException {

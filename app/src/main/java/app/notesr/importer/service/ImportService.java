@@ -2,17 +2,17 @@ package app.notesr.importer.service;
 
 import static java.util.UUID.randomUUID;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 import app.notesr.importer.service.v1.ImportV1Strategy;
-import app.notesr.security.crypto.BackupCryptor;
+import app.notesr.security.crypto.BackupDecryptor;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.AppDatabase;
@@ -32,7 +32,8 @@ public class ImportService {
 
     private final Context context;
     private final AppDatabase db;
-    private final FileInputStream sourceStream;
+    private final ContentResolver contentResolver;
+    private final Uri backupUri;
     private final ImportStatusCallback statusCallback;
 
     public void doImport() {
@@ -40,9 +41,7 @@ public class ImportService {
         File tempDecryptedFile = new File(context.getCacheDir(), randomUUID().toString());
 
         try {
-            FileOutputStream outputStream = new FileOutputStream(tempDecryptedFile);
-            decrypt(sourceStream, outputStream);
-
+            decrypt(tempDecryptedFile);
             ImportStrategy importStrategy;
 
             if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
@@ -65,15 +64,20 @@ public class ImportService {
         }
     }
 
-    private void decrypt(FileInputStream inputStream, FileOutputStream outputStream) throws
-            DecryptionFailedException {
+    private void decrypt(File outputFile)
+            throws DecryptionFailedException {
         try {
             CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
             CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
 
-            BackupCryptor backupCryptor = new BackupCryptor(inputStream, outputStream,
-                    cryptoSecrets);
-            backupCryptor.decrypt();
+            BackupDecryptor decryptor = new BackupDecryptor(
+                    contentResolver,
+                    cryptoSecrets,
+                    backupUri,
+                    outputFile
+            );
+
+            decryptor.decrypt();
         } catch (IOException e) {
             Log.e(TAG, "IOException", e);
             throw new DecryptionFailedException();

@@ -10,8 +10,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -21,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AesCbcCryptor extends AesCryptor {
-    public static final int IV_SIZE = 16;
+    private static final int CHUNK_SIZE = 100_000;
     private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
 
     private final SecretKey key;
@@ -59,16 +61,57 @@ public class AesCbcCryptor extends AesCryptor {
     }
 
     @Override
-    public CipherOutputStream getEncryptionStream(OutputStream out) throws InvalidAlgorithmParameterException,
-            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void encrypt(InputStream in, OutputStream out)
+            throws GeneralSecurityException, IOException {
+
         Cipher cipher = createCipher(key, iv, Cipher.ENCRYPT_MODE);
-        return new CipherOutputStream(out, cipher);
+        CipherOutputStream cos = new CipherOutputStream(out, cipher);
+
+        try (in; cos) {
+            byte[] chunk = new byte[CHUNK_SIZE];
+            int bytesRead = in.read(chunk);
+
+            while (bytesRead != -1) {
+                if (bytesRead != CHUNK_SIZE) {
+                    byte[] subChunk = new byte[bytesRead];
+                    System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
+
+                    chunk = subChunk;
+                }
+
+                cos.write(chunk);
+
+                chunk = new byte[CHUNK_SIZE];
+                bytesRead = in.read(chunk);
+            }
+
+            cos.flush();
+        }
     }
 
     @Override
-    public CipherInputStream getDecryptionStream(InputStream in) throws InvalidAlgorithmParameterException,
-            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void decrypt(InputStream in, OutputStream out)
+            throws GeneralSecurityException, IOException {
         Cipher cipher = createCipher(key, iv, Cipher.DECRYPT_MODE);
-        return new CipherInputStream(in, cipher);
+        CipherInputStream cis = new CipherInputStream(in, cipher);
+
+        try (cis; out) {
+            byte[] chunk = new byte[CHUNK_SIZE];
+            int bytesRead = cis.read(chunk);
+
+            while (bytesRead != -1) {
+                if (bytesRead != CHUNK_SIZE) {
+                    byte[] subChunk = new byte[bytesRead];
+                    System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
+
+                    chunk = subChunk;
+                }
+
+                out.write(chunk);
+
+                chunk = new byte[CHUNK_SIZE];
+                bytesRead = cis.read(chunk);
+            }
+        }
     }
 }
