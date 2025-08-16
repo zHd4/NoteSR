@@ -131,8 +131,7 @@ public class OpenNoteActivity extends ActivityBase {
             menuItemsMap.put(deleteNoteButton.getItemId(),
                     action -> deleteNoteOnClick());
 
-            newSingleThreadExecutor().execute(() ->
-                    setAttachedFilesCountBadge(openFilesListButton));
+            setAttachedFilesCountBadge(openFilesListButton);
         } else {
             disableMenuItem(openFilesListButton);
             disableMenuItem(deleteNoteButton);
@@ -142,23 +141,28 @@ public class OpenNoteActivity extends ActivityBase {
     }
 
     private void setAttachedFilesCountBadge(MenuItem openFilesListButton) {
-        long filesCount = fileService.getFilesCount(note.getId());
+        newSingleThreadExecutor().execute(() -> {
+            long filesCount = fileService.getFilesCount(note.getId());
 
-        if (filesCount > 0) {
-            openFilesListButton.setActionView(R.layout.button_open_files_list);
+            runOnUiThread(() -> {
+                if (filesCount > 0) {
+                    openFilesListButton.setActionView(R.layout.button_open_files_list);
 
-            View view = Objects.requireNonNull(openFilesListButton.getActionView());
-            TextView badge = view.findViewById(R.id.attachedFilesCountBadge);
+                    View view = Objects.requireNonNull(openFilesListButton.getActionView());
+                    TextView badge = view.findViewById(R.id.attachedFilesCountBadge);
 
-            String badgeText = filesCount <= MAX_COUNT_IN_BADGE
-                    ? String.valueOf(filesCount)
-                    : MAX_COUNT_IN_BADGE + "+";
+                    String badgeText = filesCount <= MAX_COUNT_IN_BADGE
+                            ? String.valueOf(filesCount)
+                            : MAX_COUNT_IN_BADGE + "+";
 
-            badge.setText(badgeText);
-            badge.setVisibility(View.VISIBLE);
+                    badge.setText(badgeText);
+                    badge.setVisibility(View.VISIBLE);
 
-            view.setOnClickListener(v -> openFilesListOnClick());
-        }
+                    view.setOnClickListener(v -> openFilesListOnClick());
+                }
+            });
+        });
+
     }
 
     @Override
