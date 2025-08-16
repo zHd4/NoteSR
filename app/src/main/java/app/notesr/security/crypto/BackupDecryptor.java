@@ -49,14 +49,14 @@ public class BackupDecryptor {
         }
     }
 
-    private void tryGcmDecryption(InputStream sourceStream, FileOutputStream outputStream)
+    void tryGcmDecryption(InputStream sourceStream, FileOutputStream outputStream)
             throws GeneralSecurityException, IOException {
         SecretKey key = getSecretKeyFromSecrets(cryptoSecrets);
         AesGcmCryptor cryptor = new AesGcmCryptor(key);
         cryptor.decrypt(sourceStream, outputStream);
     }
 
-    private void tryCbcDecryption(InputStream sourceStream, FileOutputStream outputStream)
+    void tryCbcDecryption(InputStream sourceStream, FileOutputStream outputStream)
             throws GeneralSecurityException, IOException {
         SecretKey key = getSecretKeyFromSecrets(cryptoSecrets);
         byte[] iv = getIv(cryptoSecrets);
@@ -65,7 +65,7 @@ public class BackupDecryptor {
         cryptor.decrypt(sourceStream, outputStream);
     }
 
-    private byte[] getIv(CryptoSecrets cryptoSecrets) {
+    byte[] getIv(CryptoSecrets cryptoSecrets) {
         int ivSize = cryptoSecrets.getKey().length - (AesCryptor.KEY_SIZE / 8);
         byte[] iv = new byte[ivSize];
 
