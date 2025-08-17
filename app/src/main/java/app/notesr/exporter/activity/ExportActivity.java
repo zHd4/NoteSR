@@ -76,25 +76,32 @@ public class ExportActivity extends ActivityBase {
     }
 
     private View.OnClickListener startStopButtonOnClick() {
-        return view -> {
+        return view -> newSingleThreadExecutor().execute(() -> {
             if (db.getNoteDao().getRowsCount() == 0) {
-                showToastMessage(this, getString(R.string.no_notes), Toast.LENGTH_SHORT);
+                runOnUiThread(() -> {
+                    String messageText = getString(R.string.no_notes);
+                    showToastMessage(this, messageText, Toast.LENGTH_SHORT);
+                });
+
                 return;
             }
 
-            if (!isExportRunning()) {
-                actionBar.setDisplayHomeAsUpEnabled(false);
-                actionBar.setTitle(getString(R.string.exporting));
+            runOnUiThread(() -> {
+                if (!isExportRunning()) {
+                    actionBar.setDisplayHomeAsUpEnabled(false);
+                    actionBar.setTitle(getString(R.string.exporting));
 
-                disableBackButton(this);
-                startForegroundService(new Intent(this, ExportAndroidService.class));
+                    disableBackButton(this);
+                    startForegroundService(new Intent(this,
+                            ExportAndroidService.class));
 
-                setCancelButton();
-            } else {
-                view.setEnabled(false);
-                cancelExport();
-            }
-        };
+                    setCancelButton();
+                } else {
+                    view.setEnabled(false);
+                    cancelExport();
+                }
+            });
+        });
     }
 
     private void onOutputPathReceived(String outputPath) {
