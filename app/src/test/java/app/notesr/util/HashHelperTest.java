@@ -12,12 +12,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
 
-public class HashHelperTest {
+class HashHelperTest {
     private static final int MAX_DATA_SIZE = 100000;
     private final Random random = new Random();
 
     @Test
-    public void testSha256Bytes() throws NoSuchAlgorithmException {
+    void testSha256Bytes() throws NoSuchAlgorithmException {
         byte[] data = new byte[random.nextInt(MAX_DATA_SIZE)];
         random.nextBytes(data);
 
@@ -28,7 +28,7 @@ public class HashHelperTest {
     }
 
     @Test
-    public void testToSha256StringFromBytes() throws NoSuchAlgorithmException {
+    void testToSha256StringFromBytes() throws NoSuchAlgorithmException {
         byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
         String expected = bytesToHex(MessageDigest.getInstance("SHA-256").digest(data));
@@ -38,7 +38,7 @@ public class HashHelperTest {
     }
 
     @Test
-    public void testToSha256StringFromString() throws NoSuchAlgorithmException {
+    void testToSha256StringFromString() throws NoSuchAlgorithmException {
         String message = "hello world";
 
         byte[] hash = MessageDigest.getInstance("SHA-256")
@@ -51,7 +51,7 @@ public class HashHelperTest {
     }
 
     @Test
-    public void testFromSha256HexString() throws NoSuchAlgorithmException {
+    void testFromSha256HexString() throws NoSuchAlgorithmException {
         String message = "some test input";
 
         byte[] hashBytes = MessageDigest.getInstance("SHA-256")
@@ -65,7 +65,7 @@ public class HashHelperTest {
     }
 
     @Test
-    public void testFromSha256HexStringWithInvalidLengthThrowsException() {
+    void testFromSha256HexStringWithInvalidLengthThrowsException() {
         String invalidHex = "abc";
 
         assertThrows(IllegalArgumentException.class, () ->
@@ -73,14 +73,14 @@ public class HashHelperTest {
     }
 
     @Test
-    public void testFromSha256HexStringWithInvalidCharacterThrowsException() {
+    void testFromSha256HexStringWithInvalidCharacterThrowsException() {
         String invalidHex = "zzzz";
 
         assertThrows(NumberFormatException.class, () -> HashHelper.fromSha256HexString(invalidHex));
     }
 
     @Test
-    public void testGetUUIDHash() {
+    void testGetUUIDHash() {
         UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
         long expected = 3121068470L;
