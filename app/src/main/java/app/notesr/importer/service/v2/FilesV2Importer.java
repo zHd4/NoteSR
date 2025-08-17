@@ -16,16 +16,16 @@ import app.notesr.importer.service.BaseFilesImporter;
 import app.notesr.file.model.DataBlock;
 import app.notesr.util.FilesUtils;
 
-class FilesImporter extends BaseFilesImporter {
+class FilesV2Importer extends BaseFilesImporter {
 
     private final File dataBlocksDir;
 
-    public FilesImporter(JsonParser parser,
-                         FileInfoDao fileInfoDao,
-                         DataBlockDao dataBlockDao,
-                         Map<String, String> adaptedNotesIdMap,
-                         File dataBlocksDir,
-                         DateTimeFormatter timestampFormatter) {
+    public FilesV2Importer(JsonParser parser,
+                           FileInfoDao fileInfoDao,
+                           DataBlockDao dataBlockDao,
+                           Map<String, String> adaptedNotesIdMap,
+                           File dataBlocksDir,
+                           DateTimeFormatter timestampFormatter) {
         super(parser, fileInfoDao, dataBlockDao, adaptedNotesIdMap, timestampFormatter);
         this.dataBlocksDir = dataBlocksDir;
     }

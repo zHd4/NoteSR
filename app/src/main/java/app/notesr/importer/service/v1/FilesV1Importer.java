@@ -14,13 +14,13 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-class FilesImporter extends BaseFilesImporter {
+class FilesV1Importer extends BaseFilesImporter {
 
-    public FilesImporter(JsonParser parser,
-                         FileInfoDao fileInfoDao,
-                         DataBlockDao dataBlockDao,
-                         Map<String, String> adaptedNotesIdMap,
-                         DateTimeFormatter timestampFormatter) {
+    public FilesV1Importer(JsonParser parser,
+                           FileInfoDao fileInfoDao,
+                           DataBlockDao dataBlockDao,
+                           Map<String, String> adaptedNotesIdMap,
+                           DateTimeFormatter timestampFormatter) {
 
         super(parser, fileInfoDao, dataBlockDao, adaptedNotesIdMap, timestampFormatter);
     }

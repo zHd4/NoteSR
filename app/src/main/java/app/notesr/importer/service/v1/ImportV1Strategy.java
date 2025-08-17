@@ -56,7 +56,7 @@ public class ImportV1Strategy implements ImportStrategy {
                 NotesImporter notesImporter = getNotesImporter(jsonParser);
                 notesImporter.importNotes();
 
-                FilesImporter filesImporter =
+                FilesV1Importer filesImporter =
                         getFilesImporter(jsonParser, notesImporter.getAdaptedIdMap());
                 filesImporter.importFiles();
             }
@@ -74,9 +74,9 @@ public class ImportV1Strategy implements ImportStrategy {
         );
     }
 
-    private FilesImporter getFilesImporter(JsonParser parser,
-                                           Map<String, String> adaptedNotesIdMap) {
-        return new FilesImporter(
+    private FilesV1Importer getFilesImporter(JsonParser parser,
+                                             Map<String, String> adaptedNotesIdMap) {
+        return new FilesV1Importer(
                 parser,
                 db.getFileInfoDao(),
                 db.getDataBlockDao(),

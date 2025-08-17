@@ -89,11 +89,11 @@ public class ImportV2Strategy implements ImportStrategy {
         return new NotesImporter(parser, db.getNoteDao(), timestampFormatter);
     }
 
-    private FilesImporter getFilesImporter(
+    private FilesV2Importer getFilesImporter(
             JsonParser parser,
             File dataBlocksDir,
             Map<String, String> adaptedNotesIdMap) {
-        return new FilesImporter(
+        return new FilesV2Importer(
                 parser,
                 db.getFileInfoDao(),
                 db.getDataBlockDao(),
