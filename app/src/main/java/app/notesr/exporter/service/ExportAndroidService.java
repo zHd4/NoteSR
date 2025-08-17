@@ -12,7 +12,7 @@ import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
-import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -26,16 +26,15 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class ExportAndroidService extends Service implements Runnable {
-    private static final String TAG = ExportAndroidService.class.getName();
     public static final String BROADCAST_ACTION = "export_data_broadcast";
     public static final String EXTRA_STATUS = "status";
     public static final String EXTRA_PROGRESS = "progress";
     public static final String EXTRA_OUTPUT_PATH = "output_path";
     public static final String CANCEL_EXPORT_SIGNAL = "cancel_export_signal";
     private static final String CHANNEL_ID = "export_service_channel";
-    private static final int BROADCAST_DELAY = 100;
 
     public static final Set<ExportStatus> FINISH_STATUSES = Set.of(
             ExportStatus.DONE,
@@ -73,8 +72,12 @@ public class ExportAndroidService extends Service implements Runnable {
                 Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
-        exportService = new ExportService(getApplicationContext(),
-                DatabaseProvider.getInstance(this), outputFile);
+        exportService = new ExportService(
+                getApplicationContext(),
+                DatabaseProvider.getInstance(this),
+                outputFile,
+                new ExportStatusHolder(onStatusUpdateCallback())
+        );
 
         Thread thread = new Thread(this);
 
@@ -84,40 +87,26 @@ public class ExportAndroidService extends Service implements Runnable {
         return START_STICKY;
     }
 
-    @Override
-    public void run() {
-        registerCancelSignalReceiver();
-        broadcastOutputPath(outputFile.getPath());
-        exportService.doExport();
-
-        try {
-            broadcastLoop();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Broadcast loop interrupted", e);
-        }
-
-        // Delete output file
-        //outputFile.delete();
-
-        stopForeground(STOP_FOREGROUND_REMOVE);
-        stopSelf();
-    }
-
-    private void broadcastLoop() throws InterruptedException {
-        ExportStatus status;
-        int progress;
-
-        do {
-            status = exportService.getStatus();
-            progress = exportService.calculateProgress();
+    private Consumer<ExportStatus> onStatusUpdateCallback() {
+        return status -> {
+            int progress = exportService.calculateProgress();
 
             Intent broadcast = new Intent(BROADCAST_ACTION)
                     .putExtra(EXTRA_STATUS, status)
                     .putExtra(EXTRA_PROGRESS, progress);
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
-            Thread.sleep(BROADCAST_DELAY);
-        } while (status != null && !FINISH_STATUSES.contains(status));
+        };
+    }
+
+    @Override
+    public void run() {
+        registerCancelSignalReceiver();
+        broadcastOutputPath(outputFile.getPath());
+        exportService.doExport();
+
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
     }
 
     private void broadcastOutputPath(String outputPath) {

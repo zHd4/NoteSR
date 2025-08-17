@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.time.format.DateTimeFormatter;
 
 import app.notesr.util.ZipUtils;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -45,6 +44,7 @@ public class ExportService {
     private final Context context;
     private final AppDatabase db;
     private final File outputFile;
+    private final ExportStatusHolder statusHolder;
 
     private NotesExporter notesExporter;
     private FilesInfoExporter filesInfoExporter;
@@ -53,9 +53,6 @@ public class ExportService {
     private File tempDir;
     private File tempArchive;
     private boolean isCancelled = false;
-
-    @Getter
-    private ExportStatus status;
 
     public void doExport() {
         if (db.getNoteDao().getRowsCount() == 0) {
@@ -78,16 +75,16 @@ public class ExportService {
                 throw new RuntimeException(ex);
             }
 
-            status = ExportStatus.ERROR;
+            statusHolder.setStatus(ExportStatus.ERROR);
 
         } catch (ExportCancelledException e) {
-            status = ExportStatus.CANCELED;
+            statusHolder.setStatus(ExportStatus.CANCELED);
         }
     }
 
     public void cancel() {
         isCancelled = true;
-        status = ExportStatus.CANCELLING;
+        statusHolder.setStatus(ExportStatus.CANCELLING);
     }
 
     private void checkCancelled() {
@@ -107,7 +104,9 @@ public class ExportService {
     }
 
     public int calculateProgress() {
-        if (status == null) {
+        ExportStatus status = statusHolder.getStatus();
+
+        if (status == null || status == ExportStatus.INITIALIZING) {
             return 0;
         } else if (status == ExportStatus.DONE) {
             return 100;
@@ -126,7 +125,7 @@ public class ExportService {
 
     private void init() throws IOException {
         checkCancelled();
-        status = ExportStatus.INITIALIZING;
+        statusHolder.setStatus(ExportStatus.INITIALIZING);
 
         tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
@@ -153,7 +152,7 @@ public class ExportService {
 
     private void export() throws IOException {
         checkCancelled();
-        status = ExportStatus.EXPORTING_DATA;
+        statusHolder.setStatus(ExportStatus.EXPORTING_DATA);
 
         notesExporter.export();
         filesInfoExporter.export();
@@ -162,7 +161,7 @@ public class ExportService {
 
     private void archive() throws IOException {
         checkCancelled();
-        status = ExportStatus.COMPRESSING;
+        statusHolder.setStatus(ExportStatus.COMPRESSING);
 
         tempArchive = new File(context.getCacheDir(), tempDir.getName() + ".zip");
         ZipUtils.zipDirectory(tempDir.getAbsolutePath(), tempArchive.getAbsolutePath());
@@ -170,7 +169,7 @@ public class ExportService {
 
     private void encrypt() throws EncryptionFailedException, IOException {
         checkCancelled();
-        status = ExportStatus.ENCRYPTING_DATA;
+        statusHolder.setStatus(ExportStatus.ENCRYPTING_DATA);
 
         FileInputStream inputStream = new FileInputStream(tempArchive);
         FileOutputStream outputStream = new FileOutputStream(outputFile);
@@ -184,13 +183,13 @@ public class ExportService {
 
     private void wipe() throws IOException {
         checkCancelled();
-        status = ExportStatus.WIPING_TEMP_DATA;
+        statusHolder.setStatus(ExportStatus.WIPING_TEMP_DATA);
 
         TempDataWiper.wipeTempData(tempArchive, tempDir);
     }
 
     void finish() {
-        status = ExportStatus.DONE;
+        statusHolder.setStatus(ExportStatus.DONE);
     }
 
     private JsonGenerator createJsonGenerator(File tempDir, String filename) throws IOException {
