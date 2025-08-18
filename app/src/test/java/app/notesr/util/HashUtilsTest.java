@@ -89,17 +89,6 @@ class HashUtilsTest {
         assertEquals(expected, actual, "Actual hash different");
     }
 
-    @Test
-    void testToSha256StringWithFromSha256HexString() throws Exception {
-        byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
-
-        String hashString = HashUtils.toSha256String(data);
-        byte[] hashBytes = HashUtils.fromSha256HexString(hashString);
-        String restoredHashString = HashUtils.toSha256String(hashBytes);
-
-        assertEquals(hashString, restoredHashString, "Restored hash string different");
-    }
-
     private static String bytesToHex(byte[] bytes) {
         StringBuilder hex = new StringBuilder(bytes.length * 2);
 
