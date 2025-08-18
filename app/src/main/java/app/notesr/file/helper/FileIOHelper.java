@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.util.FilesUtilsAdapter;
-import app.notesr.util.HashHelper;
+import app.notesr.util.HashUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -50,7 +50,7 @@ public class FileIOHelper {
 
     private String generateTempName(FileInfo info) {
         try {
-            return HashHelper.toSha256String(info.getId() + "$" + info.getName());
+            return HashUtils.toSha256String(info.getId() + "$" + info.getName());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

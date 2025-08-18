@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import app.notesr.db.AppDatabase;
 import app.notesr.file.model.DataBlock;
 import app.notesr.file.model.FileInfo;
-import app.notesr.util.HashHelper;
+import app.notesr.util.HashUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
@@ -150,7 +150,7 @@ public class FileService {
 
     private FileInfo setDecimalId(FileInfo fileInfo) {
         UUID uuid = UUID.fromString(fileInfo.getId());
-        long hash = HashHelper.getUUIDHash(uuid);
+        long hash = HashUtils.getUUIDHash(uuid);
 
         fileInfo.setDecimalId(hash);
 

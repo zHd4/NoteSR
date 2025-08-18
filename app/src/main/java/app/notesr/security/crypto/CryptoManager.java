@@ -1,8 +1,8 @@
 package app.notesr.security.crypto;
 
-import static app.notesr.util.HashHelper.fromSha256HexString;
-import static app.notesr.util.HashHelper.toSha256Bytes;
-import static app.notesr.util.HashHelper.toSha256String;
+import static app.notesr.util.HashUtils.fromSha256HexString;
+import static app.notesr.util.HashUtils.toSha256Bytes;
+import static app.notesr.util.HashUtils.toSha256String;
 
 import android.content.Context;
 import android.content.SharedPreferences;

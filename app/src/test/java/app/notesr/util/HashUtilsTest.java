@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
 
-class HashHelperTest {
+class HashUtilsTest {
     private static final int MAX_DATA_SIZE = 100000;
     private final Random random = new Random();
 
@@ -22,7 +22,7 @@ class HashHelperTest {
         random.nextBytes(data);
 
         byte[] expected = MessageDigest.getInstance("SHA-256").digest(data);
-        byte[] actual = HashHelper.toSha256Bytes(data);
+        byte[] actual = HashUtils.toSha256Bytes(data);
 
         assertArrayEquals(expected, actual, "Actual hash different");
     }
@@ -32,7 +32,7 @@ class HashHelperTest {
         byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
         String expected = bytesToHex(MessageDigest.getInstance("SHA-256").digest(data));
-        String actual = HashHelper.toSha256String(data);
+        String actual = HashUtils.toSha256String(data);
 
         assertEquals(expected, actual, "Actual hex string different");
     }
@@ -45,7 +45,7 @@ class HashHelperTest {
                 .digest(message.getBytes(StandardCharsets.UTF_8));
 
         String expected = bytesToHex(hash);
-        String actual = HashHelper.toSha256String(message);
+        String actual = HashUtils.toSha256String(message);
 
         assertEquals(expected, actual, "Actual hex string from string different");
     }
@@ -59,7 +59,7 @@ class HashHelperTest {
 
         String hex = bytesToHex(hashBytes);
 
-        byte[] actual = HashHelper.fromSha256HexString(hex);
+        byte[] actual = HashUtils.fromSha256HexString(hex);
 
         assertArrayEquals(hashBytes, actual, "Restored bytes do not match original hash");
     }
@@ -69,14 +69,14 @@ class HashHelperTest {
         String invalidHex = "abc";
 
         assertThrows(IllegalArgumentException.class, () ->
-                HashHelper.fromSha256HexString(invalidHex));
+                HashUtils.fromSha256HexString(invalidHex));
     }
 
     @Test
     void testFromSha256HexStringWithInvalidCharacterThrowsException() {
         String invalidHex = "zzzz";
 
-        assertThrows(NumberFormatException.class, () -> HashHelper.fromSha256HexString(invalidHex));
+        assertThrows(NumberFormatException.class, () -> HashUtils.fromSha256HexString(invalidHex));
     }
 
     @Test
@@ -84,9 +84,20 @@ class HashHelperTest {
         UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
         long expected = 3121068470L;
-        long actual = HashHelper.getUUIDHash(uuid);
+        long actual = HashUtils.getUUIDHash(uuid);
 
         assertEquals(expected, actual, "Actual hash different");
+    }
+
+    @Test
+    void testToSha256StringWithFromSha256HexString() throws Exception {
+        byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
+
+        String hashString = HashUtils.toSha256String(data);
+        byte[] hashBytes = HashUtils.fromSha256HexString(hashString);
+        String restoredHashString = HashUtils.toSha256String(hashBytes);
+
+        assertEquals(hashString, restoredHashString, "Restored hash string different");
     }
 
     private static String bytesToHex(byte[] bytes) {

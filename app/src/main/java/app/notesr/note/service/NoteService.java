@@ -2,7 +2,7 @@ package app.notesr.note.service;
 
 import app.notesr.db.AppDatabase;
 import app.notesr.note.model.Note;
-import app.notesr.util.HashHelper;
+import app.notesr.util.HashUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -64,7 +64,7 @@ public class NoteService {
 
     private Note setDecimalId(Note note) {
         UUID uuid = UUID.fromString(note.getId());
-        long hash = HashHelper.getUUIDHash(uuid);
+        long hash = HashUtils.getUUIDHash(uuid);
 
         note.setDecimalId(hash);
 

@@ -1,6 +1,6 @@
 package app.notesr.security.crypto;
 
-import static app.notesr.util.HashHelper.toSha256Bytes;
+import static app.notesr.util.HashUtils.toSha256Bytes;
 
 import java.io.InputStream;
 import java.io.OutputStream;

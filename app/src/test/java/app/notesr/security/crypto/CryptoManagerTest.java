@@ -8,8 +8,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static app.notesr.util.HashHelper.toSha256Bytes;
-import static app.notesr.util.HashHelper.toSha256String;
+import static app.notesr.util.HashUtils.toSha256Bytes;
+import static app.notesr.util.HashUtils.toSha256String;
 
 import android.content.SharedPreferences;
 
