@@ -55,14 +55,14 @@ class CryptoManagerTest {
     }
 
     @Test
-    void generateSecretsCreatesKeyOfCorrectSize() {
+    void testGenerateSecretsCreatesKeyOfCorrectSize() {
         CryptoSecrets secrets = cryptoManager.generateSecrets("pass");
         assertEquals(CryptoManager.KEY_SIZE, secrets.getKey().length);
         assertEquals("pass", secrets.getPassword());
     }
 
     @Test
-    void isKeyExistsReturnsTrueWhenFileExists() {
+    void testisKeyExistsReturnsTrueWhenFileExists() {
         File mockFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(mockFile);
         when(mockFile.exists()).thenReturn(true);
@@ -71,7 +71,7 @@ class CryptoManagerTest {
     }
 
     @Test
-    void blockSetsPrefAndWipesFile() throws IOException {
+    void testBlockSetsPrefAndWipesFile() throws IOException {
         when(prefs.edit()).thenReturn(editor);
         when(editor.putBoolean(anyString(), anyBoolean())).thenReturn(editor);
 
@@ -86,7 +86,7 @@ class CryptoManagerTest {
     }
 
     @Test
-    void unblockRemovesMarkerFile() throws IOException {
+    void testUnblockRemovesMarkerFile() throws IOException {
         when(prefs.edit()).thenReturn(editor);
         when(editor.putBoolean(anyString(), anyBoolean())).thenReturn(editor);
 
@@ -103,7 +103,7 @@ class CryptoManagerTest {
     }
 
     @Test
-    void verifyKeyReturnsTrueWhenHashesMatch() throws Exception {
+    void testVerifyKeyReturnsTrueWhenHashesMatch() throws Exception {
         byte[] key = new byte[]{1, 2, 3};
         String hash = toSha256String(key);
         when(prefs.getString("key_hash", null)).thenReturn(hash);
@@ -114,7 +114,7 @@ class CryptoManagerTest {
     }
 
     @Test
-    void verifyKeyReturnsFalseWhenHashesDoNotMatch() throws Exception {
+    void testVerifyKeyReturnsFalseWhenHashesDoNotMatch() throws Exception {
         byte[] key = new byte[]{1, 2, 3};
         byte[] otherKey = new byte[]{4, 5, 6};
         byte[] hash = toSha256Bytes(otherKey);
