@@ -71,6 +71,8 @@ public class AuthActivityExtension {
                 if (hexKey == null) throw new Exception("Missing hex key");
 
                 Context context = activity.getApplicationContext();
+
+                cryptoManager.unblock(context);
                 cryptoManager.setSecrets(context, KeyUtils.getSecretsFromHex(hexKey, password));
             } catch (Exception e) {
                 throw new RuntimeException(e);
