@@ -120,7 +120,6 @@ public class CryptoManager {
     private void saveSecrets(Context context, CryptoSecrets secrets)
             throws EncryptionFailedException {
         try {
-            byte[] keyHash = toSha256Bytes(secrets.getKey());
             byte[] encryptedKeyFileBytes = cryptorFactory
                     .create(secrets.getPassword(), AesGcmCryptor.class)
                     .encrypt(secrets.getKey());
@@ -129,7 +128,8 @@ public class CryptoManager {
                     filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME),
                     encryptedKeyFileBytes
             );
-            setKeyHash(keyHash, context);
+
+            setKeyHash(toSha256String(secrets.getKey()), context);
         } catch (Exception e) {
             throw new EncryptionFailedException(e);
         }
@@ -168,9 +168,8 @@ public class CryptoManager {
         return null;
     }
 
-    private void setKeyHash(byte[] keyHash, Context context) throws
-            NoSuchAlgorithmException, IOException {
-        prefs.edit().putString(KEY_HASH_PREF, toSha256String(keyHash)).apply();
+    private void setKeyHash(String keyHash, Context context) throws IOException {
+        prefs.edit().putString(KEY_HASH_PREF, keyHash).apply();
         File keyHashFile = filesUtils.getInternalFile(context, KEY_HASH_FILENAME);
         if (keyHashFile.exists()) {
             wiper.wipeFile(keyHashFile);

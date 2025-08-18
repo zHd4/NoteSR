@@ -1,13 +1,17 @@
 package app.notesr.security.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static app.notesr.util.HashUtils.fromSha256HexString;
 import static app.notesr.util.HashUtils.toSha256Bytes;
 import static app.notesr.util.HashUtils.toSha256String;
 
@@ -16,12 +20,14 @@ import android.content.SharedPreferences;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.util.FilesUtilsAdapter;
@@ -123,5 +129,48 @@ class CryptoManagerTest {
         boolean result = cryptoManager.verifyKey(null, key);
 
         assertFalse(result);
+    }
+
+    @Test
+    void testSetKeyHashDoubleHashingProblem() throws Exception {
+        AesGcmCryptor mockCryptor = mock(AesGcmCryptor.class);
+
+        when(mockCryptor.encrypt(any(byte[].class))).thenAnswer(invocation -> {
+            byte[] input = invocation.getArgument(0);
+            return Arrays.copyOf(input, input.length);
+        });
+
+        when(cryptorFactory.create(anyString(), eq(AesGcmCryptor.class))).thenReturn(mockCryptor);
+
+        when(prefs.edit()).thenReturn(editor);
+        when(editor.putString(anyString(), anyString())).thenReturn(editor);
+
+        File mockEncryptedFile = mock(File.class);
+        File mockKeyHashFile = mock(File.class);
+
+        when(filesUtils.getInternalFile(null, "key.encrypted"))
+                .thenReturn(mockEncryptedFile);
+        when(filesUtils.getInternalFile(null, "key.sha256"))
+                .thenReturn(mockKeyHashFile);
+
+        when(mockKeyHashFile.exists()).thenReturn(false);
+
+        byte[] key = new byte[]{10, 20, 30};
+        CryptoSecrets secrets = new CryptoSecrets(key, "password");
+
+        cryptoManager.setSecrets(null, secrets);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(editor).putString(eq("key_hash"), captor.capture());
+
+        String storedValue = captor.getValue();
+
+        byte[] storedHash = fromSha256HexString(storedValue);
+
+        byte[] expected = toSha256Bytes(key);
+
+        assertArrayEquals(expected, storedHash,
+                "The saved hash was expected to be SHA-256(key), " +
+                        "but a double hash was stored instead");
     }
 }
