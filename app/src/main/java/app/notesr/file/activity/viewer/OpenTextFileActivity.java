@@ -1,5 +1,7 @@
 package app.notesr.file.activity.viewer;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.EditText;
@@ -18,9 +20,13 @@ public class OpenTextFileActivity extends FileViewerActivityBase {
     }
 
     private void loadText() {
-        EditText field = findViewById(R.id.textFileField);
-        String content = new String(fileService.read(fileInfo.getId()));
+        newSingleThreadExecutor().execute(() -> {
+            String content = new String(fileService.read(fileInfo.getId()));
 
-        field.setText(content);
+            runOnUiThread(() -> {
+                EditText field = findViewById(R.id.textFileField);
+                field.setText(content);
+            });
+        });
     }
 }
