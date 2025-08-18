@@ -23,6 +23,8 @@ public final class App extends Application implements Application.ActivityLifecy
     public void onCreate() {
         super.onCreate();
         context = this;
+
+        registerActivityLifecycleCallbacks(this);
     }
 
     public Activity getCurrentActivity() {
