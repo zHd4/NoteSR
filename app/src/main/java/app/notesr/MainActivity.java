@@ -38,14 +38,12 @@ public class MainActivity extends ActivityBase {
 
     private List<Supplier<Intent>> getIntentSuppliers(App context, CryptoManager cryptoManager) {
         return List.of(
-                () -> !cryptoManager.isKeyExists(getApplicationContext())
-                        ? new Intent(context, StartActivity.class)
-                        : null,
-
                 () -> cryptoManager.isBlocked(getApplicationContext())
                         ? new Intent(context, KeyRecoveryActivity.class)
                         : null,
-
+                () -> !cryptoManager.isKeyExists(getApplicationContext())
+                        ? new Intent(context, StartActivity.class)
+                        : null,
                 () -> context.isServiceRunning(AppMigrationAndroidService.class)
                         ? new Intent(context, MigrationActivity.class)
                         : null,
