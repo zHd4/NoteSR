@@ -5,6 +5,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
@@ -95,12 +96,12 @@ public class AddFileActivity extends ActivityBase {
     }
 
     private void addFiles(Intent data) {
-        AlertDialog progressDialog = createProgressDialog();
-        Map<FileInfo, File> filesMap = cacheFiles(getFilesUri(data));
+        Dialog progressDialog = createProgressDialog();
 
         newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);
 
+            Map<FileInfo, File> filesMap = cacheFiles(getFilesUri(data));
             filesMap.forEach((info, file) -> {
                 try {
                     fileService.save(info, file);
