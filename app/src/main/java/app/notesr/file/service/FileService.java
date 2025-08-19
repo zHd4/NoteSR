@@ -138,6 +138,17 @@ public class FileService {
         return readBytes;
     }
 
+    public void setThumbnail(String fileId, byte[] thumbnail) {
+        FileInfo fileInfo = db.getFileInfoDao().get(fileId);
+
+        if (fileInfo == null) {
+            throw new IllegalArgumentException("File not found");
+        }
+
+        fileInfo.setThumbnail(thumbnail);
+        db.getFileInfoDao().update(fileInfo);
+    }
+
     public void delete(String fileId) {
         FileInfo fileInfo = db.getFileInfoDao().get(fileId);
 
