@@ -37,7 +37,9 @@ public class MediaFileViewerActivityBase extends FileViewerActivityBase {
             FileService fileService = new FileService(db);
 
             fileInfo.setThumbnail(thumbnail);
-            newSingleThreadExecutor().execute(() -> fileService.saveInfo(fileInfo));
+
+            newSingleThreadExecutor().execute(() ->
+                    fileService.setThumbnail(fileInfo.getId(), thumbnail));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
