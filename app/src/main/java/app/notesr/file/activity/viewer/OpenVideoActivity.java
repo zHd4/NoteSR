@@ -33,7 +33,9 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
     private ScaleGestureDetector scaleGestureDetector;
     private TempFileService tempFileService;
     private VideoView videoView;
-    private boolean playing;
+
+    private boolean loading = false;
+    private boolean playing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +55,12 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
-        if (!playing) {
-            TextView label = findViewById(R.id.tapToPlayLabel);
-
+        if (!loading && !playing) {
+            loading = true;
             videoView.setVisibility(View.VISIBLE);
-            label.setVisibility(View.INVISIBLE);
+
+            TextView tapToPlayLabel = findViewById(R.id.tapToPlayLabel);
+            tapToPlayLabel.setVisibility(View.INVISIBLE);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this,
                     R.style.AlertDialogTheme);
@@ -105,6 +108,7 @@ public class OpenVideoActivity extends MediaFileViewerActivityBase {
                         CacheCleanerAndroidService.class));
             }
 
+            loading = false;
             playing = true;
         });
     }
