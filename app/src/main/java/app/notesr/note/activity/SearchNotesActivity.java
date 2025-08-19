@@ -3,6 +3,7 @@ package app.notesr.note.activity;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 
@@ -51,10 +53,19 @@ public class SearchNotesActivity extends ActivityBase {
             String query = queryField.getText().toString();
 
             if (!query.isBlank()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this,
+                        R.style.AlertDialogTheme);
+                builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+
+                Dialog progressDialog = builder.create();
+
                 newSingleThreadExecutor().execute(() -> {
+                    runOnUiThread(progressDialog::show);
                     ArrayList<Note> results = search(query);
 
                     runOnUiThread(() -> {
+                        progressDialog.dismiss();
+
                         Context context = getApplicationContext();
                         Intent intent = new Intent(context, ViewNotesSearchResultsActivity.class)
                                 .putExtra("results", results);
