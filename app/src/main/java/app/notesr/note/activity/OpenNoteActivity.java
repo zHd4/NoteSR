@@ -137,6 +137,10 @@ public class OpenNoteActivity extends ActivityBase {
             disableMenuItem(deleteNoteButton);
         }
 
+        if (isNoteModified) {
+            saveNoteButton.setVisible(true);
+        }
+
         return true;
     }
 
