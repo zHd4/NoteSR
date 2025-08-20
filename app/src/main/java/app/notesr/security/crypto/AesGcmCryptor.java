@@ -26,7 +26,7 @@ public class AesGcmCryptor extends AesCryptor {
     private static final int CHUNK_SIZE = 100_000;
     private static final int IV_SIZE = 12;
     private static final int TAG_LENGTH_BIT = 128;
-    private static final int TAG_LEN = TAG_LENGTH_BIT / 8;
+    private static final int TAG_LENGTH = TAG_LENGTH_BIT / 8;
     private static final String CIPHER_ALGORITHM = "AES/GCM/NoPadding";
 
     private final SecretKey key;
@@ -120,7 +120,7 @@ public class AesGcmCryptor extends AesCryptor {
         cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
 
         byte[] inBuffer = new byte[CHUNK_SIZE];
-        byte[] tail = new byte[TAG_LEN];
+        byte[] tail = new byte[TAG_LENGTH];
 
         int tailSize = 0;
         int readBytes;
@@ -139,7 +139,7 @@ public class AesGcmCryptor extends AesCryptor {
 
             System.arraycopy(inBuffer, 0, combined, tailSize, readBytes);
 
-            int toProcess = Math.max(0, total - TAG_LEN);
+            int toProcess = Math.max(0, total - TAG_LENGTH);
 
             if (toProcess > 0) {
                 byte[] decryptedBlock = cipher.update(combined, 0, toProcess);
@@ -149,17 +149,17 @@ public class AesGcmCryptor extends AesCryptor {
                 }
             }
 
-            int newTailSize = Math.min(TAG_LEN, total);
+            int newTailSize = Math.min(TAG_LENGTH, total);
 
             System.arraycopy(combined, total - newTailSize, tail, 0, newTailSize);
             tailSize = newTailSize;
         }
 
-        if (tailSize < TAG_LEN) {
+        if (tailSize < TAG_LENGTH) {
             throw new IOException("Ciphertext too short: missing GCM tag");
         }
 
-        byte[] finalBlock = cipher.doFinal(tail, 0, TAG_LEN);
+        byte[] finalBlock = cipher.doFinal(tail, 0, TAG_LENGTH);
 
         if (finalBlock != null && finalBlock.length > 0) {
             out.write(finalBlock);
