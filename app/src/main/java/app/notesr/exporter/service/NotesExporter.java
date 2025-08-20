@@ -49,6 +49,9 @@ class NotesExporter implements Exporter {
         jsonGenerator.writeStringField("name", note.getName());
         jsonGenerator.writeStringField("text", note.getText());
 
+        String createdAt = note.getCreatedAt().format(timestampFormatter);
+        jsonGenerator.writeStringField("created_at", createdAt);
+
         String updatedAt = note.getUpdatedAt().format(timestampFormatter);
         jsonGenerator.writeStringField("updated_at", updatedAt);
 

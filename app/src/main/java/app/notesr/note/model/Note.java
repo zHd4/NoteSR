@@ -32,6 +32,10 @@ public final class Note implements Serializable {
     @JsonProperty("text")
     private String text;
 
+    @JsonProperty("created_at")
+    @ColumnInfo(name = "created_at")
+    private LocalDateTime createdAt;
+
     @JsonProperty("updated_at")
     @ColumnInfo(name = "updated_at")
     private LocalDateTime updatedAt;
@@ -64,6 +68,14 @@ public final class Note implements Serializable {
 
     public void setText(@NotNull String text) {
         this.text = text;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {

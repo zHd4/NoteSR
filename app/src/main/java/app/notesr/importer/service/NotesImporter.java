@@ -50,6 +50,10 @@ public class NotesImporter extends BaseImporter {
                 note.setUpdatedAt(LocalDateTime.now());
             }
 
+            if (note.getCreatedAt() == null) {
+                note.setCreatedAt(note.getUpdatedAt());
+            }
+
             noteDao.insert(note);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
@@ -69,6 +73,17 @@ public class NotesImporter extends BaseImporter {
             case "text" -> {
                 if (parser.getValueAsString().equals("text")) return;
                 note.setText(parser.getValueAsString());
+            }
+
+            case "created_at" -> {
+                if (parser.getValueAsString().equals("created_at")) return;
+
+                LocalDateTime createdAt = LocalDateTime.parse(
+                        parser.getValueAsString(),
+                        timestampFormatter
+                );
+
+                note.setCreatedAt(createdAt);
             }
 
             case "updated_at" -> {

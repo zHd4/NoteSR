@@ -19,6 +19,10 @@ public class NoteService {
             note.setId(UUID.randomUUID().toString());
         }
 
+        if (note.getCreatedAt() == null) {
+            note.setCreatedAt(LocalDateTime.now());
+        }
+
         if (note.getUpdatedAt() == null) {
             note.setUpdatedAt(LocalDateTime.now());
         }
