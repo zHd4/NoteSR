@@ -25,6 +25,7 @@ import app.notesr.note.service.NoteService;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -203,6 +204,7 @@ public class OpenNoteActivity extends ActivityBase {
 
             note.setName(name);
             note.setText(text);
+            note.setUpdatedAt(LocalDateTime.now());
 
             newSingleThreadExecutor().execute(() -> {
                 noteService.save(note);
@@ -213,7 +215,8 @@ public class OpenNoteActivity extends ActivityBase {
     }
 
     private void deleteNoteOnClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this,
+                R.style.AlertDialogTheme);
 
         builder.setView(R.layout.dialog_action_cannot_be_undo);
         builder.setTitle(R.string.warning);
