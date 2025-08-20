@@ -11,28 +11,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.notesr.db.dao.DataBlockDao;
-import app.notesr.db.dao.FileInfoDao;
 import app.notesr.file.model.DataBlock;
 import app.notesr.file.model.FileInfo;
+import app.notesr.file.service.FileService;
 
 public abstract class BaseFilesImporter extends BaseImporter {
 
-    protected final FileInfoDao fileInfoDao;
-    protected final DataBlockDao dataBlockDao;
+    protected final FileService fileService;
     protected final Map<String, String> adaptedNotesIdMap;
     protected final Map<String, String> adaptedFilesIdMap = new HashMap<>();
-    protected final Map<String, String> dataBlocksIdMap = new HashMap<>();
+    protected final Map<String, String> adaptedDataBlocksIdMap = new HashMap<>();
 
     public BaseFilesImporter(JsonParser parser,
-                             FileInfoDao fileInfoDao,
-                             DataBlockDao dataBlockDao,
+                             FileService fileService,
                              Map<String, String> adaptedNotesIdMap,
                              DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
 
-        this.fileInfoDao = fileInfoDao;
-        this.dataBlockDao = dataBlockDao;
+        this.fileService = fileService;
         this.adaptedNotesIdMap = adaptedNotesIdMap;
     }
 
@@ -45,7 +41,8 @@ public abstract class BaseFilesImporter extends BaseImporter {
         if (skipTo("files_info")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
-                    fileInfoDao.insert(parseFileInfoObject());
+                    FileInfo fileInfo = parseFileInfoObject();
+                    fileService.importFileInfo(fileInfo);
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }
@@ -131,7 +128,7 @@ public abstract class BaseFilesImporter extends BaseImporter {
         String adaptedId = new IdAdapter(id).getId();
 
         if (!adaptedId.equals(id)) {
-            dataBlocksIdMap.put(adaptedId, id);
+            adaptedDataBlocksIdMap.put(adaptedId, id);
             dataBlock.setId(adaptedId);
         }
     }

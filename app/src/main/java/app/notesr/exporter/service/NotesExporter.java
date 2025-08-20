@@ -2,8 +2,8 @@ package app.notesr.exporter.service;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
-import app.notesr.db.dao.NoteDao;
 import app.notesr.note.model.Note;
+import app.notesr.note.service.NoteService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,8 @@ class NotesExporter implements Exporter {
 
     @Getter
     private final JsonGenerator jsonGenerator;
-    private final NoteDao noteDao;
+
+    private final NoteService noteService;
     private final Runnable checkCancelled;
     private final DateTimeFormatter timestampFormatter;
 
@@ -29,7 +30,7 @@ class NotesExporter implements Exporter {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeArrayFieldStart("notes");
 
-            for (Note note : noteDao.getAll()) {
+            for (Note note : noteService.getAll()) {
                 writeNote(note);
 
                 exported++;
@@ -60,6 +61,6 @@ class NotesExporter implements Exporter {
 
     @Override
     public long getTotal() {
-        return noteDao.getRowsCount();
+        return noteService.getCount();
     }
 }

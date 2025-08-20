@@ -35,6 +35,18 @@ public class FileService {
         return count;
     }
 
+    public List<FileInfo> getAllFilesInfo() {
+        return db.getFileInfoDao()
+                .getAll()
+                .stream()
+                .map(this::setDecimalId)
+                .collect(Collectors.toList());
+    }
+
+    public List<DataBlock> getAllDataBlocksWithoutData() {
+        return db.getDataBlockDao().getAllWithoutData();
+    }
+
     public List<FileInfo> getFilesInfo(String noteId) {
         List<FileInfo> filesInfos = db.getFileInfoDao().getByNoteId(noteId);
 
@@ -45,6 +57,10 @@ public class FileService {
 
     public FileInfo getFileInfo(String fileId) {
         return setDecimalId(db.getFileInfoDao().get(fileId));
+    }
+
+    public DataBlock getDataBlock(String dataBlockId) {
+        return db.getDataBlockDao().get(dataBlockId);
     }
 
     public void save(FileInfo fileInfo, File dataSourceFile) throws IOException {
@@ -157,6 +173,28 @@ public class FileService {
             db.getFileInfoDao().delete(fileInfo);
             db.getNoteDao().setUpdatedAtById(fileInfo.getNoteId(), LocalDateTime.now());
         });
+    }
+
+    public void importFileInfo(FileInfo fileInfo) {
+        db.getFileInfoDao().insert(fileInfo);
+    }
+
+    public void importDataBlock(DataBlock dataBlock) {
+        String fileId = dataBlock.getFileId();
+
+        if (db.getFileInfoDao().get(fileId) == null) {
+            throw new IllegalArgumentException("File not found");
+        }
+
+        db.getDataBlockDao().insert(dataBlock);
+    }
+
+    public long getFilesCount() {
+        return db.getFileInfoDao().getRowsCount();
+    }
+
+    public long getDataBlocksCount() {
+        return db.getDataBlockDao().getRowsCount();
     }
 
     private FileInfo setDecimalId(FileInfo fileInfo) {

@@ -8,10 +8,12 @@ import com.fasterxml.jackson.core.JsonParser;
 import app.notesr.db.AppDatabase;
 
 import app.notesr.exception.ImportFailedException;
+import app.notesr.file.service.FileService;
 import app.notesr.importer.service.ImportStatus;
 import app.notesr.importer.service.ImportStatusCallback;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.importer.service.NotesImporter;
+import app.notesr.note.service.NoteService;
 import app.notesr.util.Wiper;
 
 import java.io.File;
@@ -26,6 +28,8 @@ public class ImportV1Strategy implements ImportStrategy {
     private static final String TAG = ImportV1Strategy.class.getName();
 
     private final AppDatabase db;
+    private final NoteService noteService;
+    private final FileService fileService;
     private final File file;
     private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
@@ -69,7 +73,7 @@ public class ImportV1Strategy implements ImportStrategy {
     private NotesImporter getNotesImporter(JsonParser parser) {
         return new NotesImporter(
                 parser,
-                db.getNoteDao(),
+                noteService,
                 timestampFormatter
         );
     }
@@ -78,8 +82,7 @@ public class ImportV1Strategy implements ImportStrategy {
                                              Map<String, String> adaptedNotesIdMap) {
         return new FilesV1Importer(
                 parser,
-                db.getFileInfoDao(),
-                db.getDataBlockDao(),
+                fileService,
                 adaptedNotesIdMap,
                 timestampFormatter
         );

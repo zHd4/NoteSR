@@ -18,7 +18,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.R;
+import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
+import app.notesr.file.service.FileService;
+import app.notesr.note.service.NoteService;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -72,12 +75,7 @@ public class ExportAndroidService extends Service implements Runnable {
                 Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
-        exportService = new ExportService(
-                getApplicationContext(),
-                DatabaseProvider.getInstance(this),
-                outputFile,
-                new ExportStatusHolder(onStatusUpdateCallback())
-        );
+        exportService = getExportService(outputFile, this::onStatusUpdateCallback);
 
         Thread thread = new Thread(this);
 
@@ -87,16 +85,14 @@ public class ExportAndroidService extends Service implements Runnable {
         return START_STICKY;
     }
 
-    private Consumer<ExportStatus> onStatusUpdateCallback() {
-        return status -> {
-            int progress = exportService.calculateProgress();
+    private void onStatusUpdateCallback(ExportStatus status) {
+        int progress = exportService.calculateProgress();
 
-            Intent broadcast = new Intent(BROADCAST_ACTION)
-                    .putExtra(EXTRA_STATUS, status)
-                    .putExtra(EXTRA_PROGRESS, progress);
+        Intent broadcast = new Intent(BROADCAST_ACTION)
+                .putExtra(EXTRA_STATUS, status)
+                .putExtra(EXTRA_PROGRESS, progress);
 
-            LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
-        };
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
     }
 
     @Override
@@ -121,6 +117,24 @@ public class ExportAndroidService extends Service implements Runnable {
                 exportService.cancel();
             }
         }, new IntentFilter(CANCEL_EXPORT_SIGNAL));
+    }
+
+    private ExportService getExportService(File outputFile, Consumer<ExportStatus> statusCallback) {
+        AppDatabase db = DatabaseProvider.getInstance(this);
+
+        NoteService noteService = new NoteService(db);
+        FileService fileService = new FileService(db);
+
+        ExportStatusHolder statusHolder = new ExportStatusHolder(statusCallback);
+
+        return new ExportService(
+                getApplicationContext(),
+                db,
+                noteService,
+                fileService,
+                outputFile,
+                statusHolder
+        );
     }
 
     private File getOutputFile(String dirPath) {

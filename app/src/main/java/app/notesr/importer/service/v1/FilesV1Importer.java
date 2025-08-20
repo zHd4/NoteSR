@@ -5,9 +5,8 @@ import static java.util.Objects.requireNonNull;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.notesr.db.dao.DataBlockDao;
-import app.notesr.db.dao.FileInfoDao;
 import app.notesr.file.model.DataBlock;
+import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesImporter;
 
 import java.io.IOException;
@@ -17,12 +16,11 @@ import java.util.Map;
 class FilesV1Importer extends BaseFilesImporter {
 
     public FilesV1Importer(JsonParser parser,
-                           FileInfoDao fileInfoDao,
-                           DataBlockDao dataBlockDao,
+                           FileService fileService,
                            Map<String, String> adaptedNotesIdMap,
                            DateTimeFormatter timestampFormatter) {
 
-        super(parser, fileInfoDao, dataBlockDao, adaptedNotesIdMap, timestampFormatter);
+        super(parser, fileService, adaptedNotesIdMap, timestampFormatter);
     }
 
     @Override
@@ -33,7 +31,7 @@ class FilesV1Importer extends BaseFilesImporter {
                     DataBlock dataBlock = parseDataBlockObject();
 
                     dataBlock.setData(dataBlock.getData());
-                    dataBlockDao.insert(dataBlock);
+                    fileService.importDataBlock(dataBlock);
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }

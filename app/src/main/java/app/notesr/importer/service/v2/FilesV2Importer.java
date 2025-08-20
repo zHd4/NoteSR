@@ -10,8 +10,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import app.notesr.db.dao.DataBlockDao;
-import app.notesr.db.dao.FileInfoDao;
+import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesImporter;
 import app.notesr.file.model.DataBlock;
 import app.notesr.util.FilesUtils;
@@ -21,12 +20,11 @@ class FilesV2Importer extends BaseFilesImporter {
     private final File dataBlocksDir;
 
     public FilesV2Importer(JsonParser parser,
-                           FileInfoDao fileInfoDao,
-                           DataBlockDao dataBlockDao,
+                           FileService fileService,
                            Map<String, String> adaptedNotesIdMap,
                            File dataBlocksDir,
                            DateTimeFormatter timestampFormatter) {
-        super(parser, fileInfoDao, dataBlockDao, adaptedNotesIdMap, timestampFormatter);
+        super(parser, fileService, adaptedNotesIdMap, timestampFormatter);
         this.dataBlocksDir = dataBlocksDir;
     }
 
@@ -38,9 +36,9 @@ class FilesV2Importer extends BaseFilesImporter {
                     DataBlock dataBlock = parseDataBlockObject();
                     String id = dataBlock.getId();
 
-                    String dataFileName = dataBlocksIdMap.getOrDefault(id, id);
+                    String dataFileName = adaptedDataBlocksIdMap.getOrDefault(id, id);
                     dataBlock.setData(readFile(dataFileName));
-                    dataBlockDao.insert(dataBlock);
+                    fileService.importDataBlock(dataBlock);
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }

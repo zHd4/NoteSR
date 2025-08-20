@@ -15,10 +15,12 @@ import java.util.Map;
 
 import app.notesr.db.AppDatabase;
 import app.notesr.exception.ImportFailedException;
+import app.notesr.file.service.FileService;
 import app.notesr.importer.service.ImportStatusCallback;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.importer.service.ImportStatus;
 import app.notesr.importer.service.NotesImporter;
+import app.notesr.note.service.NoteService;
 import app.notesr.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +33,8 @@ public class ImportV2Strategy implements ImportStrategy {
 
     private final Context context;
     private final AppDatabase db;
+    private final NoteService noteService;
+    private final FileService fileService;
     private final File file;
     private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
@@ -77,7 +81,8 @@ public class ImportV2Strategy implements ImportStrategy {
         NotesImporter notesImporter = getNotesImporter(notesParser);
         notesImporter.importNotes();
 
-        getFilesImporter(filesInfoParser, dataBlocksDir, notesImporter.getAdaptedIdMap()).importFiles();
+        getFilesImporter(filesInfoParser, dataBlocksDir, notesImporter.getAdaptedIdMap())
+                .importFiles();
     }
 
     private JsonParser getJsonParser(File file) throws IOException {
@@ -86,7 +91,7 @@ public class ImportV2Strategy implements ImportStrategy {
     }
 
     private NotesImporter getNotesImporter(JsonParser parser) {
-        return new NotesImporter(parser, db.getNoteDao(), timestampFormatter);
+        return new NotesImporter(parser, noteService, timestampFormatter);
     }
 
     private FilesV2Importer getFilesImporter(
@@ -95,8 +100,7 @@ public class ImportV2Strategy implements ImportStrategy {
             Map<String, String> adaptedNotesIdMap) {
         return new FilesV2Importer(
                 parser,
-                db.getFileInfoDao(),
-                db.getDataBlockDao(),
+                fileService,
                 adaptedNotesIdMap,
                 dataBlocksDir,
                 timestampFormatter

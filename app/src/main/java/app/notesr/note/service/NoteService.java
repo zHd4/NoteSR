@@ -66,6 +66,22 @@ public class NoteService {
         db.getNoteDao().deleteById(id);
     }
 
+    public void importNote(Note note) {
+        if (note.getUpdatedAt() == null) {
+            note.setUpdatedAt(LocalDateTime.now());
+        }
+
+        if (note.getCreatedAt() == null) {
+            note.setCreatedAt(note.getUpdatedAt());
+        }
+
+        db.getNoteDao().insert(note);
+    }
+
+    public long getCount() {
+        return db.getNoteDao().getRowsCount();
+    }
+
     private Note setDecimalId(Note note) {
         UUID uuid = UUID.fromString(note.getId());
         long hash = HashUtils.getUUIDHash(uuid);

@@ -3,9 +3,9 @@ package app.notesr.importer.service;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.notesr.db.dao.NoteDao;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.note.model.Note;
+import app.notesr.note.service.NoteService;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -19,13 +19,13 @@ public class NotesImporter extends BaseImporter {
     @Getter
     private final Map<String, String> adaptedIdMap = new HashMap<>();
 
-    private final NoteDao noteDao;
+    private final NoteService noteService;
 
     public NotesImporter(JsonParser parser,
-                         NoteDao noteDao,
+                         NoteService noteService,
                          DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
-        this.noteDao = noteDao;
+        this.noteService = noteService;
     }
 
     public void importNotes() throws IOException, ImportFailedException {
@@ -46,15 +46,7 @@ public class NotesImporter extends BaseImporter {
                 }
             }
 
-            if (note.getUpdatedAt() == null) {
-                note.setUpdatedAt(LocalDateTime.now());
-            }
-
-            if (note.getCreatedAt() == null) {
-                note.setCreatedAt(note.getUpdatedAt());
-            }
-
-            noteDao.insert(note);
+            noteService.importNote(note);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 

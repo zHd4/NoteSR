@@ -20,13 +20,16 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
+import app.notesr.file.service.FileService;
 import app.notesr.note.activity.NotesListActivity;
 import app.notesr.exporter.service.ExportAndroidService;
 import app.notesr.exporter.service.ExportStatus;
+import app.notesr.note.service.NoteService;
 
 public class ExportActivity extends ActivityBase {
 
-    private AppDatabase db;
+    private NoteService noteService;
+    private FileService fileService;
     private ActionBar actionBar;
     private Button startStopButton;
 
@@ -35,7 +38,10 @@ public class ExportActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
 
-        db = DatabaseProvider.getInstance(this);
+        AppDatabase db = DatabaseProvider.getInstance(this);
+
+        noteService = new NoteService(db);
+        fileService = new FileService(db);
 
         actionBar = getSupportActionBar();
 
@@ -65,8 +71,8 @@ public class ExportActivity extends ActivityBase {
         TextView filesCountLabel = findViewById(R.id.files_count_label);
 
         newSingleThreadExecutor().execute(() -> {
-            long notesCount = db.getNoteDao().getRowsCount();
-            long filesCount = db.getFileInfoDao().getRowsCount();
+            long notesCount = noteService.getCount();
+            long filesCount = fileService.getFilesCount();
 
             runOnUiThread(() -> {
                 notesCountLabel.setText(String.format(getString(R.string.d_notes), notesCount));
@@ -77,7 +83,7 @@ public class ExportActivity extends ActivityBase {
 
     private View.OnClickListener startStopButtonOnClick() {
         return view -> newSingleThreadExecutor().execute(() -> {
-            if (db.getNoteDao().getRowsCount() == 0) {
+            if (noteService.getCount() == 0) {
                 runOnUiThread(() -> {
                     String messageText = getString(R.string.no_notes);
                     showToastMessage(this, messageText, Toast.LENGTH_SHORT);

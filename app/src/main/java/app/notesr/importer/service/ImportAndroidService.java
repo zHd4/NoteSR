@@ -17,6 +17,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.R;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
+import app.notesr.file.service.FileService;
+import app.notesr.note.service.NoteService;
+import app.notesr.util.Wiper;
 
 import java.util.Set;
 
@@ -58,22 +61,12 @@ public class ImportAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
-        Uri sourceUri = intent.getData();
-        ImportStatusCallback statusCallback = new ImportStatusCallback(this::sendBroadcastData);
-
-        importService = new ImportService(
-                this,
-                db,
-                getContentResolver(),
-                sourceUri,
-                statusCallback
-        );
+        importService = getImportService(intent);
 
         Thread thread = new Thread(this);
         thread.start();
-        startForeground(startId, notification, type);
 
+        startForeground(startId, notification, type);
         return START_STICKY;
     }
 
@@ -90,5 +83,28 @@ public class ImportAndroidService extends Service implements Runnable {
                 .putExtra(EXTRA_STATUS, status);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private ImportService getImportService(Intent intent) {
+        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+
+        NoteService noteService = new NoteService(db);
+        FileService fileService = new FileService(db);
+
+        Uri sourceUri = intent.getData();
+        ImportStatusCallback statusCallback = new ImportStatusCallback(this::sendBroadcastData);
+
+        Wiper wiper = new Wiper();
+
+        return new ImportService(
+                this,
+                db,
+                noteService,
+                fileService,
+                getContentResolver(),
+                sourceUri,
+                statusCallback,
+                wiper
+        );
     }
 }

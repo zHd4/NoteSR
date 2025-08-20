@@ -2,10 +2,9 @@ package app.notesr.exporter.service;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
-import app.notesr.db.dao.DataBlockDao;
-import app.notesr.db.dao.FileInfoDao;
 import app.notesr.file.model.DataBlock;
 import app.notesr.file.model.FileInfo;
+import app.notesr.file.service.FileService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +18,7 @@ class FilesInfoExporter implements Exporter {
 
     @Getter
     private final JsonGenerator jsonGenerator;
-    private final FileInfoDao fileInfoDao;
-    private final DataBlockDao dataBlockDao;
+    private final FileService fileService;
     private final Runnable checkCancelled;
     private final DateTimeFormatter timestampFormatter;
 
@@ -29,12 +27,12 @@ class FilesInfoExporter implements Exporter {
 
 
     @Override
-    public void export() throws IOException{
+    public void export() throws IOException {
         try (jsonGenerator) {
             jsonGenerator.writeStartObject();
 
-            writeFilesInfo(fileInfoDao.getAll());
-            writeDataBlocksInfo(dataBlockDao.getAllWithoutData());
+            writeFilesInfo(fileService.getAllFilesInfo());
+            writeDataBlocksInfo(fileService.getAllDataBlocksWithoutData());
 
             jsonGenerator.writeEndObject();
         }
@@ -101,6 +99,6 @@ class FilesInfoExporter implements Exporter {
 
     @Override
     public long getTotal() {
-        return fileInfoDao.getRowsCount() + dataBlockDao.getRowsCount();
+        return fileService.getFilesCount() + fileService.getDataBlocksCount();
     }
 }

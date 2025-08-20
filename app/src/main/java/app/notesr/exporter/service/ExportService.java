@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
+import app.notesr.file.service.FileService;
+import app.notesr.note.service.NoteService;
 import app.notesr.security.crypto.BackupEncryptor;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
@@ -43,6 +45,8 @@ public class ExportService {
 
     private final Context context;
     private final AppDatabase db;
+    private final NoteService noteService;
+    private final FileService fileService;
     private final File outputFile;
     private final ExportStatusHolder statusHolder;
 
@@ -133,7 +137,7 @@ public class ExportService {
             throw new ExportFailedException("Failed to create temporary directory to export");
         }
 
-        filesDataExporter = createFilesDataExporter();
+        filesDataExporter = createFilesDataExporter(new File(tempDir, DATA_BLOCKS_DIR_NAME));
         notesExporter = createNotesExporter(createJsonGenerator(tempDir, NOTES_JSON_FILE_NAME));
 
         filesInfoExporter = createFilesInfoExporter(
@@ -200,24 +204,24 @@ public class ExportService {
     }
 
     private NotesExporter createNotesExporter(JsonGenerator jsonGenerator) {
-        return new NotesExporter(jsonGenerator,
-                db.getNoteDao(),
+        return new NotesExporter(
+                jsonGenerator,
+                noteService,
                 this::checkCancelled,
                 TIMESTAMP_FORMATTER
         );
     }
 
     private FilesInfoExporter createFilesInfoExporter(JsonGenerator jsonGenerator) {
-        return new FilesInfoExporter(jsonGenerator,
-                db.getFileInfoDao(),
-                db.getDataBlockDao(),
+        return new FilesInfoExporter(
+                jsonGenerator,
+                fileService,
                 this::checkCancelled,
                 TIMESTAMP_FORMATTER
         );
     }
 
-    private FilesDataExporter createFilesDataExporter() {
-        File dir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
-        return new FilesDataExporter(dir, db.getDataBlockDao(), this::checkCancelled);
+    private FilesDataExporter createFilesDataExporter(File dataBlocksDir) {
+        return new FilesDataExporter(dataBlocksDir, fileService, this::checkCancelled);
     }
 }
