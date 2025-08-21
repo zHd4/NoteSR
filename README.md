@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="NoteSR" src=".images/notesr-icon-512x512.png" width="192" height="192">
+  <img alt="NoteSR" src="icon.png" width="192" height="192">
 </p>
 
 <h1 align="center" style="padding: 0;">NoteSR</h1>
