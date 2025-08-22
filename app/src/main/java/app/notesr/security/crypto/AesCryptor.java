@@ -2,8 +2,10 @@ package app.notesr.security.crypto;
 
 import static app.notesr.util.HashUtils.toSha256Bytes;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
@@ -42,8 +44,15 @@ public abstract class AesCryptor {
         return new SecretKeySpec(tmp.getEncoded(), "AES");
     }
 
-    public abstract byte[] encrypt(byte[] plainData) throws Exception;
-    public abstract byte[] decrypt(byte[] encryptedData) throws Exception;
-    public abstract void encrypt(InputStream in, OutputStream out) throws Exception;
-    public abstract void decrypt(InputStream in, OutputStream out) throws Exception;
+    public abstract byte[] encrypt(byte[] plainData)
+            throws GeneralSecurityException, IOException;
+
+    public abstract byte[] decrypt(byte[] encryptedData)
+            throws GeneralSecurityException;
+
+    public abstract void encrypt(InputStream in, OutputStream out)
+            throws GeneralSecurityException, IOException;
+
+    public abstract void decrypt(InputStream in, OutputStream out)
+            throws GeneralSecurityException, IOException;
 }
