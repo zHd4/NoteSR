@@ -64,7 +64,7 @@ public class AppMigrationAndroidService extends Service implements Runnable {
         int lastMigrationVersion = new DataVersionManager(context).getCurrentVersion();
         int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
 
-        appMigrationService.run(lastMigrationVersion, currentDataSchemaVersion);
+        appMigrationService.run(context, lastMigrationVersion, currentDataSchemaVersion);
         Intent broadcastIntent = new Intent(BROADCAST_ACTION)
                 .putExtra(EXTRA_COMPLETE, true);
 

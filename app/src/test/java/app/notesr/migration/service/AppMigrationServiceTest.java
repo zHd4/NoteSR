@@ -22,11 +22,11 @@ class AppMigrationServiceTest {
         when(migration2.getToVersion()).thenReturn(2);
 
         AppMigrationService service = new AppMigrationService(List.of(migration1, migration2));
-        service.run(0, 2);
+        service.run(null,0, 2);
 
         InOrder inOrder = inOrder(migration1, migration2);
 
-        inOrder.verify(migration1).migrate();
-        inOrder.verify(migration2).migrate();
+        inOrder.verify(migration1).migrate(null);
+        inOrder.verify(migration2).migrate(null);
     }
 }
