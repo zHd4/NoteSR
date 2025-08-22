@@ -1,7 +1,5 @@
 package app.notesr.security.crypto;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,18 +28,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.security.dto.CryptoSecrets;
 
 class BackupDecryptorTest {
 
-    private static final int KEY_LENGTH = 48;
-    private static final int IV_LENGTH = 16;
-
     private ContentResolver contentResolver;
-    private CryptoSecrets cryptoSecrets;
     private Uri inputUri;
     private BackupDecryptor decryptor;
 
@@ -51,10 +44,11 @@ class BackupDecryptorTest {
     @BeforeEach
     void setUp() {
         contentResolver = mock(ContentResolver.class);
-        cryptoSecrets = mock(CryptoSecrets.class);
         inputUri = mock(Uri.class);
 
+        CryptoSecrets cryptoSecrets = mock(CryptoSecrets.class);
         File outputFile = tempDir.resolve("decrypted").toFile();
+
         decryptor = spy(new BackupDecryptor(contentResolver, cryptoSecrets, inputUri, outputFile));
     }
 
@@ -112,21 +106,5 @@ class BackupDecryptorTest {
             logMock.verify(() ->
                     Log.e(anyString(), anyString(), any()), atLeast(0));
         }
-    }
-
-    @Test
-    void testGetIvExtractsIvCorrectly() {
-        byte[] key = new byte[KEY_LENGTH];
-
-        for (int i = 0; i < key.length; i++) {
-            key[i] = (byte) i;
-        }
-
-        when(cryptoSecrets.getKey()).thenReturn(key);
-
-        byte[] iv = decryptor.getIv(cryptoSecrets);
-
-        assertEquals(IV_LENGTH, iv.length);
-        assertArrayEquals(Arrays.copyOfRange(key, KEY_LENGTH - IV_LENGTH, KEY_LENGTH), iv);
     }
 }

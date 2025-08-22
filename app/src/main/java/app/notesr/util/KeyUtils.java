@@ -74,6 +74,14 @@ public final class KeyUtils {
         }
     }
 
+    public static byte[] getIvFromSecrets(CryptoSecrets cryptoSecrets) {
+        int ivSize = cryptoSecrets.getKey().length - (AesCryptor.KEY_SIZE / 8);
+        byte[] iv = new byte[ivSize];
+
+        System.arraycopy(cryptoSecrets.getKey(), AesCryptor.KEY_SIZE / 8, iv, 0, ivSize);
+        return iv;
+    }
+
     private static String byteToHex(byte value) {
         char[] hexDigits = new char[2];
 

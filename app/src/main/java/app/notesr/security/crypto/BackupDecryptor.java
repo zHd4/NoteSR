@@ -1,5 +1,6 @@
 package app.notesr.security.crypto;
 
+import static app.notesr.util.KeyUtils.getIvFromSecrets;
 import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.ContentResolver;
@@ -59,17 +60,9 @@ public class BackupDecryptor {
     void tryCbcDecryption(InputStream sourceStream, FileOutputStream outputStream)
             throws GeneralSecurityException, IOException {
         SecretKey key = getSecretKeyFromSecrets(cryptoSecrets);
-        byte[] iv = getIv(cryptoSecrets);
+        byte[] iv = getIvFromSecrets(cryptoSecrets);
 
         AesCbcCryptor cryptor = new AesCbcCryptor(key, iv);
         cryptor.decrypt(sourceStream, outputStream);
-    }
-
-    byte[] getIv(CryptoSecrets cryptoSecrets) {
-        int ivSize = cryptoSecrets.getKey().length - (AesCryptor.KEY_SIZE / 8);
-        byte[] iv = new byte[ivSize];
-
-        System.arraycopy(cryptoSecrets.getKey(), AesCryptor.KEY_SIZE / 8, iv, 0, ivSize);
-        return iv;
     }
 }

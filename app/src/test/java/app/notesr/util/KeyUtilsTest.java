@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 
@@ -139,5 +140,25 @@ class KeyUtilsTest {
 
         assertArrayEquals(new byte[] {0x0C, 0x0D, 0x0E}, secrets.getKey());
         assertEquals(password, secrets.getPassword());
+    }
+
+
+    @Test
+    void testGetIvExtractsIvCorrectly() {
+        int keyLength = 48;
+        int ivLength = 16;
+
+        byte[] key = new byte[keyLength];
+
+        for (int i = 0; i < key.length; i++) {
+            key[i] = (byte) i;
+        }
+
+        CryptoSecrets secrets = new CryptoSecrets(key, "password");
+
+        byte[] iv = KeyUtils.getIvFromSecrets(secrets);
+
+        assertEquals(ivLength, iv.length);
+        assertArrayEquals(Arrays.copyOfRange(key, keyLength - ivLength, keyLength), iv);
     }
 }
