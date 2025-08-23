@@ -33,6 +33,10 @@ public class FilesUtils implements FilesUtilsAdapter {
         return new File(context.getFilesDir(), path);
     }
 
+    public File getDatabaseFile(Context context, String filename) {
+        return new File(context.getDatabasePath(filename).getPath());
+    }
+
     public String getFileExtension(String fileName) {
         int lastIndex = fileName.lastIndexOf('.');
         return (lastIndex != -1) ? fileName.substring(lastIndex + 1) : null;

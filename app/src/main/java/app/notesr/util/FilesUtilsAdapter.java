@@ -7,6 +7,7 @@ import java.io.IOException;
 
 public interface FilesUtilsAdapter {
     File getInternalFile(Context context, String name);
+    File getDatabaseFile(Context context, String path);
     byte[] readFileBytes(File file) throws IOException;
     void writeFileBytes(File file, byte[] data) throws IOException;
     void writeFileBytes(File file, byte[] data, boolean append) throws IOException;
