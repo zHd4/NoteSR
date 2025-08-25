@@ -70,7 +70,9 @@ public class ExportService {
             encrypt();
             wipe();
             finish();
-        } catch (EncryptionFailedException | IOException e) {
+        } catch (ExportCancelledException e) {
+            statusHolder.setStatus(ExportStatus.CANCELED);
+        } catch (Throwable e) {
             Log.e(TAG, "Export failed", e);
 
             try {
@@ -80,9 +82,6 @@ public class ExportService {
             }
 
             statusHolder.setStatus(ExportStatus.ERROR);
-
-        } catch (ExportCancelledException e) {
-            statusHolder.setStatus(ExportStatus.CANCELED);
         }
     }
 
