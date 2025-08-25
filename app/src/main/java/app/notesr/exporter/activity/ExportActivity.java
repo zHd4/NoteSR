@@ -146,7 +146,6 @@ public class ExportActivity extends ActivityBase {
             showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
         } else if (status == ExportStatus.ERROR) {
             showToastMessage(this, getString(R.string.export_failed), Toast.LENGTH_LONG);
-            return;
         }
 
         startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
