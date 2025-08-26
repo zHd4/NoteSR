@@ -75,13 +75,6 @@ public class AesGcmCryptor extends AesCryptor {
     public void encrypt(InputStream in, OutputStream out)
             throws GeneralSecurityException, IOException {
 
-        byte[] iv = new byte[IV_SIZE];
-        SecureRandom.getInstanceStrong().nextBytes(iv);
-        out.write(iv);
-
-        Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
-
         byte[] inBuffer = new byte[CHUNK_SIZE];
         int bytesRead;
 
@@ -90,17 +83,16 @@ public class AesGcmCryptor extends AesCryptor {
                 continue;
             }
 
-            byte[] encryptedBlock = cipher.update(inBuffer, 0, bytesRead);
+            byte[] iv = new byte[IV_SIZE];
 
-            if (encryptedBlock != null && encryptedBlock.length > 0) {
-                out.write(encryptedBlock);
-            }
-        }
+            SecureRandom.getInstanceStrong().nextBytes(iv);
+            out.write(iv);
 
-        byte[] finalBlock = cipher.doFinal();
+            Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+            cipher.init(Cipher.ENCRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
 
-        if (finalBlock != null && finalBlock.length > 0) {
-            out.write(finalBlock);
+            byte[] encryptedBlock = cipher.doFinal(inBuffer, 0, bytesRead);
+            out.write(encryptedBlock);
         }
 
         out.flush();
@@ -110,78 +102,63 @@ public class AesGcmCryptor extends AesCryptor {
     public void decrypt(InputStream in, OutputStream out)
             throws GeneralSecurityException, IOException {
 
-        byte[] iv = readIvBytes(in);
+        byte[] ivBuffer = new byte[IV_SIZE];
+        byte[] inBuffer = new byte[CHUNK_SIZE + TAG_LENGTH];
 
-        if (iv == null) {
-            throw new IOException("Ciphertext too short: missing IV");
-        }
+        while (true) {
+            int ivRead = readFully(in, ivBuffer);
 
-        Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
-
-        byte[] inBuffer = new byte[CHUNK_SIZE];
-        byte[] tail = new byte[TAG_LENGTH];
-
-        int tailSize = 0;
-        int readBytes;
-
-        while ((readBytes = in.read(inBuffer)) != -1) {
-            if (readBytes == 0) {
-                continue;
+            if (ivRead == -1) {
+                break;
             }
 
-            int total = tailSize + readBytes;
-            byte[] combined = new byte[total];
-
-            if (tailSize > 0) {
-                System.arraycopy(tail, 0, combined, 0, tailSize);
+            if (ivRead < IV_SIZE) {
+                throw new IOException("Ciphertext too short: missing IV");
             }
 
-            System.arraycopy(inBuffer, 0, combined, tailSize, readBytes);
-
-            int toProcess = Math.max(0, total - TAG_LENGTH);
-
-            if (toProcess > 0) {
-                byte[] decryptedBlock = cipher.update(combined, 0, toProcess);
-
-                if (decryptedBlock != null && decryptedBlock.length > 0) {
-                    out.write(decryptedBlock);
-                }
+            int bytesRead = readBlock(in, inBuffer);
+            if (bytesRead <= 0) {
+                throw new IOException("Unexpected end of stream");
             }
 
-            int newTailSize = Math.min(TAG_LENGTH, total);
+            Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_BIT, ivBuffer));
 
-            System.arraycopy(combined, total - newTailSize, tail, 0, newTailSize);
-            tailSize = newTailSize;
-        }
-
-        if (tailSize < TAG_LENGTH) {
-            throw new IOException("Ciphertext too short: missing GCM tag");
-        }
-
-        byte[] finalBlock = cipher.doFinal(tail, 0, TAG_LENGTH);
-
-        if (finalBlock != null && finalBlock.length > 0) {
-            out.write(finalBlock);
+            byte[] decryptedBlock = cipher.doFinal(inBuffer, 0, bytesRead);
+            out.write(decryptedBlock);
         }
 
         out.flush();
     }
 
-    private static byte[] readIvBytes(InputStream in) throws IOException {
-        byte[] buffer = new byte[IV_SIZE];
+    private static int readBlock(InputStream in, byte[] buffer) throws IOException {
         int offset = 0;
+        int read;
 
-        while (offset < IV_SIZE) {
-            int bytesRead = in.read(buffer, offset, IV_SIZE - offset);
+        while ((read = in.read(buffer, offset, buffer.length - offset)) > 0) {
+            offset += read;
+            if (offset == buffer.length) {
+                break;
+            }
+        }
+        return offset;
+    }
 
-            if (bytesRead == -1) {
-                return null;
+    private static int readFully(InputStream in, byte[] buffer)
+            throws IOException {
+        final int offset = 0;
+        int totalRead = 0;
+
+        while (totalRead < IV_SIZE) {
+            int read = in.read(buffer, offset + totalRead, IV_SIZE - totalRead);
+
+            if (read == -1) {
+                break;
             }
 
-            offset += bytesRead;
+            totalRead += read;
         }
 
-        return buffer;
+        return totalRead == 0 ? -1 : totalRead;
     }
 }
