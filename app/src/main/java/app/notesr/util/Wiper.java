@@ -57,7 +57,7 @@ public class Wiper implements WiperAdapter {
                         stream.write(empty);
                         bytesWrite += empty.length;
                     } catch (OutOfMemoryError error) {
-                        Log.e(TAG, "OutOfMemoryError", error);
+                        Log.e(TAG, "Failed to allocate memory for wipe", error);
                     }
 
                 } while (bytesWrite < fileSize);
