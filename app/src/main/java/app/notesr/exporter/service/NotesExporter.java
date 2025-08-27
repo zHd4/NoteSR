@@ -4,15 +4,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import app.notesr.note.model.Note;
 import app.notesr.note.service.NoteService;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-class NotesExporter implements Exporter {
+class NotesExporter extends Exporter {
 
     @Getter
     private final JsonGenerator jsonGenerator;
@@ -21,8 +18,19 @@ class NotesExporter implements Exporter {
     private final Runnable checkCancelled;
     private final DateTimeFormatter timestampFormatter;
 
-    @Getter
-    private long exported = 0;
+    NotesExporter(JsonGenerator jsonGenerator,
+                  NoteService noteService,
+                  Runnable checkCancelled,
+                  Runnable notifyProgress,
+                  DateTimeFormatter timestampFormatter) {
+
+        super(notifyProgress);
+
+        this.jsonGenerator = jsonGenerator;
+        this.noteService = noteService;
+        this.checkCancelled = checkCancelled;
+        this.timestampFormatter = timestampFormatter;
+    }
 
     @Override
     public void export() throws IOException {
@@ -33,7 +41,7 @@ class NotesExporter implements Exporter {
             for (Note note : noteService.getAll()) {
                 writeNote(note);
 
-                exported++;
+                increaseProgress();
                 checkCancelled.run();
             }
 

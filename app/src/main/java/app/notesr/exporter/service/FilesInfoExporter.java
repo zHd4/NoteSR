@@ -5,26 +5,34 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import app.notesr.file.model.DataBlock;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-class FilesInfoExporter implements Exporter {
+class FilesInfoExporter extends Exporter {
 
     @Getter
     private final JsonGenerator jsonGenerator;
+
     private final FileService fileService;
     private final Runnable checkCancelled;
     private final DateTimeFormatter timestampFormatter;
 
-    @Getter
-    private long exported = 0;
+    FilesInfoExporter(JsonGenerator jsonGenerator,
+                      FileService fileService,
+                      Runnable checkCancelled,
+                      Runnable notifyProgress,
+                      DateTimeFormatter timestampFormatter) {
 
+        super(notifyProgress);
+
+        this.jsonGenerator = jsonGenerator;
+        this.fileService = fileService;
+        this.checkCancelled = checkCancelled;
+        this.timestampFormatter = timestampFormatter;
+    }
 
     @Override
     public void export() throws IOException {
@@ -44,7 +52,7 @@ class FilesInfoExporter implements Exporter {
         for (FileInfo fileInfo : fileInfos) {
             writeFileInfo(fileInfo);
 
-            exported++;
+            increaseProgress();
             checkCancelled.run();
         }
 
@@ -57,7 +65,7 @@ class FilesInfoExporter implements Exporter {
         for (DataBlock dataBlock : dataBlocks) {
             writeDataBlockInfo(dataBlock);
 
-            exported++;
+            increaseProgress();
             checkCancelled.run();
         }
 

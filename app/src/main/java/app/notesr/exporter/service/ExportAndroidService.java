@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class ExportAndroidService extends Service implements Runnable {
     public static final String BROADCAST_ACTION = "export_data_broadcast";
@@ -75,7 +75,7 @@ public class ExportAndroidService extends Service implements Runnable {
                 Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
-        exportService = getExportService(outputFile, this::onStatusUpdateCallback);
+        exportService = getExportService(outputFile, this::onUpdateCallback);
 
         Thread thread = new Thread(this);
 
@@ -85,9 +85,7 @@ public class ExportAndroidService extends Service implements Runnable {
         return START_STICKY;
     }
 
-    private void onStatusUpdateCallback(ExportStatus status) {
-        int progress = exportService.calculateProgress();
-
+    private void onUpdateCallback(Integer progress, ExportStatus status) {
         Intent broadcast = new Intent(BROADCAST_ACTION)
                 .putExtra(EXTRA_STATUS, status)
                 .putExtra(EXTRA_PROGRESS, progress);
@@ -119,13 +117,16 @@ public class ExportAndroidService extends Service implements Runnable {
         }, new IntentFilter(CANCEL_EXPORT_SIGNAL));
     }
 
-    private ExportService getExportService(File outputFile, Consumer<ExportStatus> statusCallback) {
+    private ExportService getExportService(
+            File outputFile,
+            BiConsumer<Integer, ExportStatus> updateCallback) {
+
         AppDatabase db = DatabaseProvider.getInstance(this);
 
         NoteService noteService = new NoteService(db);
         FileService fileService = new FileService(db);
 
-        ExportStatusHolder statusHolder = new ExportStatusHolder(statusCallback);
+        ExportStatusHolder statusHolder = new ExportStatusHolder(updateCallback);
 
         return new ExportService(
                 getApplicationContext(),

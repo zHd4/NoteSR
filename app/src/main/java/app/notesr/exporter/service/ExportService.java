@@ -106,7 +106,7 @@ public class ExportService {
         }
     }
 
-    public int calculateProgress() {
+    private int calculateProgress() {
         ExportStatus status = statusHolder.getStatus();
 
         if (status == null || status == ExportStatus.INITIALIZING) {
@@ -124,6 +124,10 @@ public class ExportService {
                 + filesDataExporter.getExported();
 
         return Math.round((exported * 99.0f) / total);
+    }
+
+    private void onProgressUpdate() {
+        statusHolder.setProgress(calculateProgress());
     }
 
     private void init() throws IOException {
@@ -207,6 +211,7 @@ public class ExportService {
                 jsonGenerator,
                 noteService,
                 this::checkCancelled,
+                this::onProgressUpdate,
                 TIMESTAMP_FORMATTER
         );
     }
@@ -216,11 +221,17 @@ public class ExportService {
                 jsonGenerator,
                 fileService,
                 this::checkCancelled,
+                this::onProgressUpdate,
                 TIMESTAMP_FORMATTER
         );
     }
 
     private FilesDataExporter createFilesDataExporter(File dataBlocksDir) {
-        return new FilesDataExporter(dataBlocksDir, fileService, this::checkCancelled);
+        return new FilesDataExporter(
+                dataBlocksDir,
+                fileService,
+                this::checkCancelled,
+                this::onProgressUpdate
+        );
     }
 }
