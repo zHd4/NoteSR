@@ -58,12 +58,14 @@ public class NoteService {
     }
 
     public void delete(String id) {
-        db.getFileInfoDao().getByNoteId(id).forEach(fileInfo -> {
-            db.getDataBlockDao().deleteByFileId(fileInfo.getId());
-            db.getFileInfoDao().deleteById(fileInfo.getId());
-        });
+        db.runInTransaction(() -> {
+            db.getFileInfoDao().getByNoteId(id).forEach(fileInfo -> {
+                db.getDataBlockDao().deleteByFileId(fileInfo.getId());
+                db.getFileInfoDao().deleteById(fileInfo.getId());
+            });
 
-        db.getNoteDao().deleteById(id);
+            db.getNoteDao().deleteById(id);
+        });
     }
 
     public void importNote(Note note) {
