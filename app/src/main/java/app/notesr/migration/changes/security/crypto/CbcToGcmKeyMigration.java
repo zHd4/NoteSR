@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CbcToGcmKeyMigration implements AppMigration {
+
     @Getter
     private final int fromVersion;
 
