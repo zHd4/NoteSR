@@ -21,10 +21,14 @@ public class CbcToGcmKeyMigration implements AppMigration {
     @Override
     public void migrate(Context context) {
         try {
-            CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
+            CryptoManager cryptoManager = getCryptoManager();
             cryptoManager.setSecrets(context, cryptoManager.getSecrets());
         } catch (EncryptionFailedException e) {
             throw new AppMigrationException("Failed to migrate key", e);
         }
+    }
+
+    CryptoManager getCryptoManager() {
+        return CryptoManagerProvider.getInstance();
     }
 }
