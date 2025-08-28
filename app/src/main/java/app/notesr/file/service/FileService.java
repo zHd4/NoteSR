@@ -85,7 +85,12 @@ public class FileService {
                 fileInfo.setUpdatedAt(LocalDateTime.now());
             }
 
-            db.getFileInfoDao().insert(fileInfo);
+            if (db.getFileInfoDao().get(fileInfo.getId()) == null) {
+                db.getFileInfoDao().insert(fileInfo);
+            } else {
+                throw new IllegalArgumentException("File already exists");
+            }
+
             db.getNoteDao().setUpdatedAtById(fileInfo.getNoteId(), LocalDateTime.now());
 
             return fileInfo.getId();
