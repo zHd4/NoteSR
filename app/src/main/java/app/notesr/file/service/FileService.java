@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -69,6 +70,16 @@ public class FileService {
             saveData(fileId, dataSourceFile);
             return null;
         });
+    }
+
+    public void save(Map<FileInfo, File> filesMap) {
+        db.runInTransaction(() -> filesMap.forEach((fileInfo, file) -> {
+            try {
+                save(fileInfo, file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
     }
 
     public String saveInfo(FileInfo fileInfo) {

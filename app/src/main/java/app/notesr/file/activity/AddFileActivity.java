@@ -25,6 +25,7 @@ import app.notesr.file.model.FileInfo;
 import app.notesr.util.FileExifDataResolver;
 import app.notesr.util.FilesUtils;
 import app.notesr.util.Wiper;
+import app.notesr.util.WiperAdapter;
 import app.notesr.util.thumbnail.ImageThumbnailCreator;
 import app.notesr.util.thumbnail.ThumbnailCreator;
 import app.notesr.util.thumbnail.VideoThumbnailCreator;
@@ -102,14 +103,13 @@ public class AddFileActivity extends ActivityBase {
             runOnUiThread(progressDialog::show);
 
             Map<FileInfo, File> filesMap = cacheFiles(getFilesUri(data));
-            filesMap.forEach((info, file) -> {
-                try {
-                    fileService.save(info, file);
-                    new Wiper().wipeFile(file);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            fileService.save(filesMap);
+
+            try {
+                clearCachedFiles(filesMap);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             runOnUiThread(() -> {
                 progressDialog.dismiss();
@@ -165,6 +165,14 @@ public class AddFileActivity extends ActivityBase {
         });
 
         return filesMap;
+    }
+
+    private void clearCachedFiles(Map<FileInfo, File> filesMap) throws IOException {
+        WiperAdapter wiper = new Wiper();
+
+        for (File file : filesMap.values()) {
+            wiper.wipeFile(file);
+        }
     }
 
     private FileInfo getFileInfo(Uri uri) {
