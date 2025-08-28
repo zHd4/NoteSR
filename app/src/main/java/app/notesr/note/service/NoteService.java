@@ -27,7 +27,11 @@ public class NoteService {
             note.setUpdatedAt(LocalDateTime.now());
         }
 
-        db.getNoteDao().insert(note);
+        if (db.getNoteDao().get(note.getId()) == null) {
+            db.getNoteDao().insert(note);
+        } else {
+            db.getNoteDao().update(note);
+        }
     }
 
     public List<Note> getAll() {
