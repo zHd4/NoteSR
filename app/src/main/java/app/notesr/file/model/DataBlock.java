@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 )
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataBlock {
+public final class DataBlock {
 
     @PrimaryKey
     private String id;
