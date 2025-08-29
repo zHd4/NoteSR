@@ -6,8 +6,9 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -19,28 +20,31 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public final class Note implements Serializable {
+
     @PrimaryKey
-    @NonNull
     @JsonProperty("id")
     private String id;
 
-    @NotNull
+    @NonNull
     @JsonProperty("name")
     private String name;
 
-    @NotNull
+    @NonNull
     @JsonProperty("text")
     private String text;
 
-    @JsonProperty("created_at")
     @ColumnInfo(name = "created_at")
+    @JsonProperty("created_at")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    @JsonProperty("updated_at")
     @ColumnInfo(name = "updated_at")
+    @JsonProperty("updated_at")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
     @Ignore
+    @JsonIgnore
     private Long decimalId;
 
     @NonNull
@@ -52,21 +56,21 @@ public final class Note implements Serializable {
         this.id = id;
     }
 
-    @NotNull
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NotNull String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
-    @NotNull
+    @NonNull
     public String getText() {
         return text;
     }
 
-    public void setText(@NotNull String text) {
+    public void setText(@NonNull String text) {
         this.text = text;
     }
 
