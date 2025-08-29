@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 )
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileInfo implements Serializable {
+public final class FileInfo implements Serializable {
 
     @PrimaryKey
     private String id;
