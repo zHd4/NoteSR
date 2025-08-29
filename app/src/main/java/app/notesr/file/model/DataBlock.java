@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 public final class DataBlock {
 
     @PrimaryKey
+    @NonNull
     private String id;
 
     @NonNull
@@ -37,11 +38,12 @@ public final class DataBlock {
 
     private byte[] data;
 
+    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
