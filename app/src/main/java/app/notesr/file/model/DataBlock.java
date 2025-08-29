@@ -10,6 +10,7 @@ import androidx.room.PrimaryKey;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+/** @noinspection LombokGetterMayBeUsed, LombokSetterMayBeUsed */
 @Entity(
         tableName = "data_blocks",
         foreignKeys = @ForeignKey(
@@ -24,25 +25,23 @@ import lombok.NoArgsConstructor;
 public class DataBlock {
 
     @PrimaryKey
-    @NonNull
     private String id;
 
-    @ColumnInfo(name = "file_id")
     @NonNull
+    @ColumnInfo(name = "file_id")
     private String fileId;
 
-    @ColumnInfo(name = "block_order")
     @NonNull
+    @ColumnInfo(name = "block_order")
     private Long order;
 
     private byte[] data;
 
-    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(@NonNull String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -64,12 +63,11 @@ public class DataBlock {
         this.order = order;
     }
 
-    @NonNull
     public byte[] getData() {
         return data;
     }
 
-    public void setData(@NonNull byte[] data) {
+    public void setData(byte[] data) {
         this.data = data;
     }
 }
