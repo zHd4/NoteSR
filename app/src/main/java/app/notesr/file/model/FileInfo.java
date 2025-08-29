@@ -8,6 +8,9 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -30,7 +33,6 @@ import lombok.NoArgsConstructor;
 public class FileInfo implements Serializable {
 
     @PrimaryKey
-    @NonNull
     private String id;
 
     @NonNull
@@ -47,23 +49,24 @@ public class FileInfo implements Serializable {
 
     private byte[] thumbnail;
 
-    @NonNull
     @ColumnInfo(name = "created_at")
+    @JsonProperty("created_at")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    @NonNull
     @ColumnInfo(name = "updated_at")
+    @JsonProperty("updated_at")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
     @Ignore
     private Long decimalId;
 
-    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(@NonNull String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -110,21 +113,19 @@ public class FileInfo implements Serializable {
         this.thumbnail = thumbnail;
     }
 
-    @NonNull
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(@NonNull LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    @NonNull
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(@NonNull LocalDateTime updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
