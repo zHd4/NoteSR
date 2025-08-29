@@ -23,15 +23,12 @@ public final class Note implements Serializable {
 
     @PrimaryKey
     @NonNull
-    @JsonProperty("id")
     private String id;
 
     @NonNull
-    @JsonProperty("name")
     private String name;
 
     @NonNull
-    @JsonProperty("text")
     private String text;
 
     @ColumnInfo(name = "created_at")
