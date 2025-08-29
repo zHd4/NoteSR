@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 public final class Note implements Serializable {
 
     @PrimaryKey
+    @NonNull
     @JsonProperty("id")
     private String id;
 
