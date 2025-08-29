@@ -33,6 +33,7 @@ import lombok.NoArgsConstructor;
 public final class FileInfo implements Serializable {
 
     @PrimaryKey
+    @NonNull
     private String id;
 
     @NonNull
@@ -62,11 +63,12 @@ public final class FileInfo implements Serializable {
     @Ignore
     private Long decimalId;
 
+    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
