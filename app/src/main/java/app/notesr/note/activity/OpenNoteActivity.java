@@ -1,5 +1,6 @@
 package app.notesr.note.activity;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -206,10 +207,20 @@ public class OpenNoteActivity extends ActivityBase {
             note.setText(text);
             note.setUpdatedAt(LocalDateTime.now());
 
+            AlertDialog.Builder builder = new AlertDialog.Builder(this,
+                    R.style.AlertDialogTheme);
+            builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+
+            Dialog progressDialog = builder.create();
+
             newSingleThreadExecutor().execute(() -> {
+                runOnUiThread(progressDialog::show);
                 noteService.save(note);
-                runOnUiThread(() -> startActivity(new Intent(getApplicationContext(),
-                        NotesListActivity.class)));
+
+                runOnUiThread(() -> {
+                    progressDialog.dismiss();
+                    startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+                });
             });
         }
     }
