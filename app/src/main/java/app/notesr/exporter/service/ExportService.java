@@ -70,9 +70,7 @@ public class ExportService {
 
             statusHolder.setStatus(ExportStatus.ENCRYPTING_DATA);
             encryptFinalFile(backupEncryptor);
-
-            statusHolder.setStatus(ExportStatus.WIPING_TEMP_DATA);
-            TempDataWiper.wipeTempData(tempArchive);
+            deleteFile(tempArchive);
 
             statusHolder.setStatus(ExportStatus.DONE);
         } catch (ExportCancelledException e) {
@@ -81,7 +79,7 @@ public class ExportService {
             Log.e(TAG, "Export failed", e);
 
             try {
-                TempDataWiper.wipeTempData(tempArchive);
+                deleteFile(tempArchive);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -175,6 +173,14 @@ public class ExportService {
                 throw new ExportCancelledException();
             } catch (IOException e) {
                 throw new ExportCancelledException(e);
+            }
+        }
+    }
+
+    private void deleteFile(File file) throws IOException {
+        if (file.exists()) {
+            if (!file.delete()) {
+                throw new IOException("Failed to delete file: " + file.getAbsolutePath());
             }
         }
     }
