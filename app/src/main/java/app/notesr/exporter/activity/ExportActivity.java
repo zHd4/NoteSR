@@ -132,7 +132,6 @@ public class ExportActivity extends ActivityBase {
         switch (status) {
             case INITIALIZING -> statusView.setText(getString(R.string.initializing));
             case EXPORTING_DATA -> statusView.setText(getString(R.string.exporting_data));
-            case COMPRESSING -> statusView.setText(getString(R.string.compressing));
             case ENCRYPTING_DATA -> statusView.setText(getString(R.string.encrypting_data));
             case WIPING_TEMP_DATA -> statusView.setText(getString(R.string.wiping_temp_data));
             case CANCELLING -> statusView.setText(getString(R.string.cancelling));
