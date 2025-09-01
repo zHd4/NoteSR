@@ -19,8 +19,6 @@ import app.notesr.file.service.FileService;
 import app.notesr.note.model.Note;
 import app.notesr.note.service.NoteService;
 import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.AppDatabase;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.util.TempDataWiper;
@@ -44,6 +42,7 @@ public class ExportService {
     private final FileService fileService;
     private final File outputFile;
     private final ExportStatusHolder statusHolder;
+    private final CryptoSecrets cryptoSecrets;
 
     private File tempArchive;
     private int exportedEntities;
@@ -73,6 +72,7 @@ public class ExportService {
             deleteFile(tempArchive);
 
             statusHolder.setStatus(ExportStatus.DONE);
+            statusHolder.setProgress(calculateProgress());
         } catch (ExportCancelledException e) {
             statusHolder.setStatus(ExportStatus.CANCELED);
         } catch (Throwable e) {
@@ -152,9 +152,6 @@ public class ExportService {
     }
 
     private BackupEncryptor getBackupEncryptor() {
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
-        CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
-
         AesGcmCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
         return new BackupEncryptor(cryptor);
     }

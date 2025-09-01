@@ -22,6 +22,8 @@ import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
+import app.notesr.security.crypto.CryptoManagerProvider;
+import app.notesr.security.dto.CryptoSecrets;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -127,6 +129,7 @@ public class ExportAndroidService extends Service implements Runnable {
         FileService fileService = new FileService(db);
 
         ExportStatusHolder statusHolder = new ExportStatusHolder(updateCallback);
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
 
         return new ExportService(
                 getApplicationContext(),
@@ -134,7 +137,8 @@ public class ExportAndroidService extends Service implements Runnable {
                 noteService,
                 fileService,
                 outputFile,
-                statusHolder
+                statusHolder,
+                secrets
         );
     }
 
