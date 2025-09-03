@@ -15,8 +15,8 @@ public final class BackupZipper implements AutoCloseable {
 
     private final ZipOutputStream zipOutputStream;
 
-    public BackupZipper(File zipOutputFile) throws IOException {
-        this.zipOutputStream = new ZipOutputStream(new FileOutputStream(zipOutputFile));
+    public BackupZipper(File outputZipFile) throws IOException {
+        this.zipOutputStream = new ZipOutputStream(new FileOutputStream(outputZipFile));
         createStructure();
     }
 
