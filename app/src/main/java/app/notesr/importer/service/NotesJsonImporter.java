@@ -14,16 +14,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NotesImporter extends BaseImporter {
+public class NotesJsonImporter extends BaseJsonImporter {
 
     @Getter
     private final Map<String, String> adaptedIdMap = new HashMap<>();
 
     private final NoteService noteService;
 
-    public NotesImporter(JsonParser parser,
-                         NoteService noteService,
-                         DateTimeFormatter timestampFormatter) {
+    public NotesJsonImporter(JsonParser parser,
+                             NoteService noteService,
+                             DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
         this.noteService = noteService;
     }

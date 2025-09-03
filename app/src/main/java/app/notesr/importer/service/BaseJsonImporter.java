@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class BaseImporter {
+public class BaseJsonImporter {
     protected final JsonParser parser;
     protected final DateTimeFormatter timestampFormatter;
 

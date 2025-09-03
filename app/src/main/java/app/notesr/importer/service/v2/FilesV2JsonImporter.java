@@ -11,19 +11,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import app.notesr.file.service.FileService;
-import app.notesr.importer.service.BaseFilesImporter;
+import app.notesr.importer.service.BaseFilesJsonImporter;
 import app.notesr.file.model.DataBlock;
 import app.notesr.util.FilesUtils;
 
-class FilesV2Importer extends BaseFilesImporter {
+class FilesV2JsonImporter extends BaseFilesJsonImporter {
 
     private final File dataBlocksDir;
 
-    public FilesV2Importer(JsonParser parser,
-                           FileService fileService,
-                           Map<String, String> adaptedNotesIdMap,
-                           File dataBlocksDir,
-                           DateTimeFormatter timestampFormatter) {
+    public FilesV2JsonImporter(JsonParser parser,
+                               FileService fileService,
+                               Map<String, String> adaptedNotesIdMap,
+                               File dataBlocksDir,
+                               DateTimeFormatter timestampFormatter) {
         super(parser, fileService, adaptedNotesIdMap, timestampFormatter);
         this.dataBlocksDir = dataBlocksDir;
     }

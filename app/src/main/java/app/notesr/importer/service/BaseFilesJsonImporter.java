@@ -15,17 +15,17 @@ import app.notesr.file.model.DataBlock;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 
-public abstract class BaseFilesImporter extends BaseImporter {
+public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
 
     protected final FileService fileService;
     protected final Map<String, String> adaptedNotesIdMap;
     protected final Map<String, String> adaptedFilesIdMap = new HashMap<>();
     protected final Map<String, String> adaptedDataBlocksIdMap = new HashMap<>();
 
-    public BaseFilesImporter(JsonParser parser,
-                             FileService fileService,
-                             Map<String, String> adaptedNotesIdMap,
-                             DateTimeFormatter timestampFormatter) {
+    public BaseFilesJsonImporter(JsonParser parser,
+                                 FileService fileService,
+                                 Map<String, String> adaptedNotesIdMap,
+                                 DateTimeFormatter timestampFormatter) {
         super(parser, timestampFormatter);
 
         this.fileService = fileService;

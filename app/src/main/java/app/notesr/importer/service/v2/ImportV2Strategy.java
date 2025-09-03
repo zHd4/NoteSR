@@ -19,7 +19,7 @@ import app.notesr.file.service.FileService;
 import app.notesr.importer.service.ImportStatusCallback;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.importer.service.ImportStatus;
-import app.notesr.importer.service.NotesImporter;
+import app.notesr.importer.service.NotesJsonImporter;
 import app.notesr.note.service.NoteService;
 import app.notesr.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +78,7 @@ public class ImportV2Strategy implements ImportStrategy {
         JsonParser notesParser = getJsonParser(notesJsonFile);
         JsonParser filesInfoParser = getJsonParser(fileInfoJsonFile);
 
-        NotesImporter notesImporter = getNotesImporter(notesParser);
+        NotesJsonImporter notesImporter = getNotesImporter(notesParser);
         notesImporter.importNotes();
 
         getFilesImporter(filesInfoParser, dataBlocksDir, notesImporter.getAdaptedIdMap())
@@ -90,15 +90,15 @@ public class ImportV2Strategy implements ImportStrategy {
         return factory.createParser(file);
     }
 
-    private NotesImporter getNotesImporter(JsonParser parser) {
-        return new NotesImporter(parser, noteService, timestampFormatter);
+    private NotesJsonImporter getNotesImporter(JsonParser parser) {
+        return new NotesJsonImporter(parser, noteService, timestampFormatter);
     }
 
-    private FilesV2Importer getFilesImporter(
+    private FilesV2JsonImporter getFilesImporter(
             JsonParser parser,
             File dataBlocksDir,
             Map<String, String> adaptedNotesIdMap) {
-        return new FilesV2Importer(
+        return new FilesV2JsonImporter(
                 parser,
                 fileService,
                 adaptedNotesIdMap,

@@ -7,18 +7,18 @@ import com.fasterxml.jackson.core.JsonToken;
 
 import app.notesr.file.model.DataBlock;
 import app.notesr.file.service.FileService;
-import app.notesr.importer.service.BaseFilesImporter;
+import app.notesr.importer.service.BaseFilesJsonImporter;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-class FilesV1Importer extends BaseFilesImporter {
+class FilesV1JsonImporter extends BaseFilesJsonImporter {
 
-    public FilesV1Importer(JsonParser parser,
-                           FileService fileService,
-                           Map<String, String> adaptedNotesIdMap,
-                           DateTimeFormatter timestampFormatter) {
+    public FilesV1JsonImporter(JsonParser parser,
+                               FileService fileService,
+                               Map<String, String> adaptedNotesIdMap,
+                               DateTimeFormatter timestampFormatter) {
 
         super(parser, fileService, adaptedNotesIdMap, timestampFormatter);
     }

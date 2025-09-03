@@ -12,7 +12,7 @@ import app.notesr.file.service.FileService;
 import app.notesr.importer.service.ImportStatus;
 import app.notesr.importer.service.ImportStatusCallback;
 import app.notesr.importer.service.ImportStrategy;
-import app.notesr.importer.service.NotesImporter;
+import app.notesr.importer.service.NotesJsonImporter;
 import app.notesr.note.service.NoteService;
 import app.notesr.util.Wiper;
 
@@ -57,10 +57,10 @@ public class ImportV1Strategy implements ImportStrategy {
             JsonParser jsonParser = jsonFactory.createParser(file);
 
             try (jsonParser) {
-                NotesImporter notesImporter = getNotesImporter(jsonParser);
+                NotesJsonImporter notesImporter = getNotesImporter(jsonParser);
                 notesImporter.importNotes();
 
-                FilesV1Importer filesImporter =
+                FilesV1JsonImporter filesImporter =
                         getFilesImporter(jsonParser, notesImporter.getAdaptedIdMap());
                 filesImporter.importFiles();
             }
@@ -70,17 +70,17 @@ public class ImportV1Strategy implements ImportStrategy {
         }
     }
 
-    private NotesImporter getNotesImporter(JsonParser parser) {
-        return new NotesImporter(
+    private NotesJsonImporter getNotesImporter(JsonParser parser) {
+        return new NotesJsonImporter(
                 parser,
                 noteService,
                 timestampFormatter
         );
     }
 
-    private FilesV1Importer getFilesImporter(JsonParser parser,
-                                             Map<String, String> adaptedNotesIdMap) {
-        return new FilesV1Importer(
+    private FilesV1JsonImporter getFilesImporter(JsonParser parser,
+                                                 Map<String, String> adaptedNotesIdMap) {
+        return new FilesV1JsonImporter(
                 parser,
                 fileService,
                 adaptedNotesIdMap,
