@@ -57,7 +57,7 @@ public class ImportV2Strategy implements ImportStrategy {
                 statusCallback.updateStatus(ImportStatus.DONE);
                 return null;
             });
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (tempDir != null && tempDir.exists()) {
                 try {
                     wipeTempData(tempDir);
