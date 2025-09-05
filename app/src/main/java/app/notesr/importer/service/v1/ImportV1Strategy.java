@@ -36,19 +36,13 @@ public class ImportV1Strategy implements ImportStrategy {
 
     @Override
     public void execute() {
-        try {
-            db.runInTransaction(() -> {
-                statusCallback.updateStatus(ImportStatus.IMPORTING);
-                importData(file);
+        db.runInTransaction(() -> {
+            statusCallback.updateStatus(ImportStatus.IMPORTING);
+            importData(file);
 
-                statusCallback.updateStatus(ImportStatus.CLEANING_UP);
-                wipeFile(file);
-
-                statusCallback.updateStatus(ImportStatus.DONE);
-            });
-        } catch (ImportFailedException e) {
-            statusCallback.updateStatus(ImportStatus.IMPORT_FAILED);
-        }
+            statusCallback.updateStatus(ImportStatus.CLEANING_UP);
+            wipeFile(file);
+        });
     }
 
     private void importData(File file) throws ImportFailedException {

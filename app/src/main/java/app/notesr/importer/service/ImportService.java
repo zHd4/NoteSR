@@ -50,36 +50,34 @@ public class ImportService {
             ImportStrategy importStrategy;
 
             if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
-                importStrategy = new ImportV2Strategy(
-                        context,
-                        db,
-                        noteService,
-                        fileService,
-                        tempDecryptedFile,
-                        statusCallback,
-                        TIMESTAMP_FORMATTER
-                );
+                importStrategy = getV2Strategy(tempDecryptedFile);
             } else {
-                importStrategy = new ImportV1Strategy(
-                        db,
-                        noteService,
-                        fileService,
-                        tempDecryptedFile,
-                        statusCallback,
-                        TIMESTAMP_FORMATTER
-                );
+                importStrategy = getV1Strategy(tempDecryptedFile);
             }
 
             importStrategy.execute();
-        } catch (DecryptionFailedException e) {
+            statusCallback.updateStatus(ImportStatus.DONE);
+        } catch (Throwable e) {
             if (tempDecryptedFile.exists()) {
                 wipeFile(tempDecryptedFile);
             }
 
-            statusCallback.updateStatus(ImportStatus.DECRYPTION_FAILED);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            ImportStatus fail = e instanceof DecryptionFailedException
+                    ? ImportStatus.DECRYPTION_FAILED
+                    : ImportStatus.IMPORT_FAILED;
+
+            statusCallback.updateStatus(fail);
         }
+    }
+
+    private ImportV1Strategy getV1Strategy(File tempDecryptedFile) {
+        return new ImportV1Strategy(db, noteService, fileService, tempDecryptedFile, statusCallback,
+                TIMESTAMP_FORMATTER);
+    }
+
+    private ImportV2Strategy getV2Strategy(File tempDecryptedFile) {
+        return new ImportV2Strategy(context, db, noteService, fileService, tempDecryptedFile,
+                statusCallback, TIMESTAMP_FORMATTER);
     }
 
     private void decrypt(File outputFile)

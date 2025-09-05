@@ -43,31 +43,17 @@ public class ImportV2Strategy implements ImportStrategy {
 
     @Override
     public void execute() {
-        try {
-            db.runInTransaction(() -> {
-                tempDir = new File(context.getCacheDir(), randomUUID().toString());
+        db.runInTransaction(() -> {
+            tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
-                statusCallback.updateStatus(ImportStatus.IMPORTING);
-                ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath());
-                importData();
+            statusCallback.updateStatus(ImportStatus.IMPORTING);
+            ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath());
+            importData();
 
-                statusCallback.updateStatus(ImportStatus.CLEANING_UP);
-                wipeTempData(file, tempDir);
-
-                statusCallback.updateStatus(ImportStatus.DONE);
-                return null;
-            });
-        } catch (Throwable e) {
-            if (tempDir != null && tempDir.exists()) {
-                try {
-                    wipeTempData(tempDir);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-
-            statusCallback.updateStatus(ImportStatus.IMPORT_FAILED);
-        }
+            statusCallback.updateStatus(ImportStatus.CLEANING_UP);
+            wipeTempData(file, tempDir);
+            return null;
+        });
     }
 
     private void importData() throws ImportFailedException, IOException {
