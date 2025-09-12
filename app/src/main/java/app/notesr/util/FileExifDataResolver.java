@@ -34,7 +34,14 @@ public class FileExifDataResolver {
     }
 
     public String getMimeType() {
-        return getMimeType(getFileName());
+        String type = null;
+        String extension = filesUtils.getFileExtension(getFileName());
+
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+
+        return type;
     }
 
     private Cursor getCursor(Uri uri) {
@@ -46,16 +53,5 @@ public class FileExifDataResolver {
         }
 
         return cursor;
-    }
-
-    private String getMimeType(String filename) {
-        String type = null;
-        String extension = filesUtils.getFileExtension(filename);
-
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-
-        return type;
     }
 }
