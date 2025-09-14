@@ -66,7 +66,7 @@ public class FileService {
 
     public void save(FileInfo fileInfo, File dataSourceFile) throws IOException {
         db.runInTransaction(() -> {
-            String fileId = saveInfo(fileInfo);
+            String fileId = saveFileInfo(fileInfo);
             addFileData(fileId, dataSourceFile);
             return null;
         });
@@ -82,7 +82,7 @@ public class FileService {
         }));
     }
 
-    public String saveInfo(FileInfo fileInfo) {
+    public String saveFileInfo(FileInfo fileInfo) {
         return db.runInTransaction(() -> {
             if (fileInfo.getId() == null) {
                 fileInfo.setId(UUID.randomUUID().toString());

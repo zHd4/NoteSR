@@ -126,7 +126,7 @@ public class NotesIntegrationTest {
         fileInfo.setSize(fileSize);
         fileInfo.setName(fileName);
 
-        fileService.saveInfo(fileInfo);
+        fileService.saveFileInfo(fileInfo);
 
         assertNotNull(fileInfo.getId());
 
