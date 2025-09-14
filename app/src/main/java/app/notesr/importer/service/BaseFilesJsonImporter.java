@@ -42,7 +42,10 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
                     FileInfo fileInfo = parseFileInfoObject();
-                    fileService.importFileInfo(fileInfo);
+
+                    if (fileService.getFileInfo(fileInfo.getId()) == null) {
+                        fileService.importFileInfo(fileInfo);
+                    }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }

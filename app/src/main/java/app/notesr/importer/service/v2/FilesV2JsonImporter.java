@@ -36,9 +36,11 @@ class FilesV2JsonImporter extends BaseFilesJsonImporter {
                     DataBlock dataBlock = parseDataBlockObject();
                     String id = dataBlock.getId();
 
-                    String dataFileName = adaptedDataBlocksIdMap.getOrDefault(id, id);
-                    dataBlock.setData(readFile(dataFileName));
-                    fileService.importDataBlock(dataBlock);
+                    if (fileService.getDataBlock(id) == null) {
+                        String dataFileName = adaptedDataBlocksIdMap.getOrDefault(id, id);
+                        dataBlock.setData(readFile(dataFileName));
+                        fileService.importDataBlock(dataBlock);
+                    }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }
