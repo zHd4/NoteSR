@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class FileService {
-    private static final int CHUNK_SIZE = 500000;
+    private static final int DATA_BLOCK_MAX_SIZE = 500000;
 
     private final AppDatabase db;
 
@@ -110,13 +110,13 @@ public class FileService {
 
     public void addFileData(String fileId, File sourceFile) throws IOException {
         try (FileInputStream stream = new FileInputStream(sourceFile)) {
-            byte[] chunk = new byte[CHUNK_SIZE];
+            byte[] chunk = new byte[DATA_BLOCK_MAX_SIZE];
 
             long order = 0;
             int bytesRead = stream.read(chunk);
 
             while (bytesRead != -1) {
-                if (bytesRead != CHUNK_SIZE) {
+                if (bytesRead != DATA_BLOCK_MAX_SIZE) {
                     byte[] subChunk = new byte[bytesRead];
                     System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
                     chunk = subChunk;
@@ -130,7 +130,7 @@ public class FileService {
 
                 db.getDataBlockDao().insert(dataBlock);
 
-                chunk = new byte[CHUNK_SIZE];
+                chunk = new byte[DATA_BLOCK_MAX_SIZE];
                 bytesRead = stream.read(chunk);
 
                 order++;
