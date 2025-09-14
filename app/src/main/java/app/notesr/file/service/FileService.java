@@ -67,7 +67,7 @@ public class FileService {
     public void save(FileInfo fileInfo, File dataSourceFile) throws IOException {
         db.runInTransaction(() -> {
             String fileId = saveInfo(fileInfo);
-            saveData(fileId, dataSourceFile);
+            addFileData(fileId, dataSourceFile);
             return null;
         });
     }
@@ -99,7 +99,7 @@ public class FileService {
             if (db.getFileInfoDao().get(fileInfo.getId()) == null) {
                 db.getFileInfoDao().insert(fileInfo);
             } else {
-                throw new IllegalArgumentException("File already exists");
+                db.getFileInfoDao().update(fileInfo);
             }
 
             db.getNoteDao().setUpdatedAtById(fileInfo.getNoteId(), LocalDateTime.now());
@@ -108,7 +108,7 @@ public class FileService {
         });
     }
 
-    public void saveData(String fileId, File sourceFile) throws IOException {
+    public void addFileData(String fileId, File sourceFile) throws IOException {
         try (FileInputStream stream = new FileInputStream(sourceFile)) {
             byte[] chunk = new byte[CHUNK_SIZE];
 
@@ -136,6 +136,11 @@ public class FileService {
                 order++;
             }
         }
+    }
+
+    public void updateData(String fileId, File sourceFile) throws IOException {
+        db.runInTransaction(() -> db.getDataBlockDao().deleteByFileId(fileId));
+        addFileData(fileId, sourceFile);
     }
 
     public byte[] read(String fileId) {

@@ -143,7 +143,7 @@ public class NotesIntegrationTest {
         Path tempFilePath = Path.of(context.getCacheDir().getPath(), fileName);
         Files.write(tempFilePath, fileData);
 
-        fileService.saveData(fileInfo.getId(), tempFilePath.toFile());
+        fileService.addFileData(fileInfo.getId(), tempFilePath.toFile());
 
         String dataBlockId = db.getDataBlockDao().getBlockIdsByFileId(fileInfo.getId()).get(0);
         DataBlock dataBlock = db.getDataBlockDao().get(dataBlockId);
