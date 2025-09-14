@@ -138,7 +138,7 @@ public class FileService {
         }
     }
 
-    public void updateData(String fileId, File sourceFile) throws IOException {
+    public void updateFileData(String fileId, File sourceFile) throws IOException {
         db.runInTransaction(() -> db.getDataBlockDao().deleteByFileId(fileId));
         addFileData(fileId, sourceFile);
     }
