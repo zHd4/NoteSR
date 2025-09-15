@@ -36,61 +36,63 @@ public class NotesJsonImporter extends BaseJsonImporter {
         }
 
         do {
-            Note note = new Note();
-
-            while (parser.nextToken() != JsonToken.END_OBJECT) {
-                field = parser.getCurrentName();
-
-                if (field != null) {
-                    parseNote(parser, note, field);
-                }
-            }
-
+            Note note = parseNoteObject();
             noteService.importNote(note);
         } while (parser.nextToken() != JsonToken.END_ARRAY);
     }
 
-    private void parseNote(JsonParser parser, Note note, String field) throws IOException {
-        switch (field) {
-            case "id" -> {
-                if (parser.getValueAsString().equals("id")) return;
-                note.setId(adaptId(parser.getValueAsString()));
+    private Note parseNoteObject() throws IOException {
+        Note note = new Note();
+        String field;
+
+        while (parser.nextToken() != JsonToken.END_OBJECT) {
+            field = parser.getCurrentName();
+
+            if (field != null) {
+                switch (field) {
+                    case "id" -> {
+                        if (parser.getValueAsString().equals("id")) continue;
+                        note.setId(adaptId(parser.getValueAsString()));
+                    }
+
+                    case "name" -> {
+                        if (parser.getValueAsString().equals("name")) continue;
+                        note.setName(parser.getValueAsString());
+                    }
+
+                    case "text" -> {
+                        if (parser.getValueAsString().equals("text")) continue;
+                        note.setText(parser.getValueAsString());
+                    }
+
+                    case "created_at" -> {
+                        if (parser.getValueAsString().equals("created_at")) continue;
+
+                        LocalDateTime createdAt = LocalDateTime.parse(
+                                parser.getValueAsString(),
+                                timestampFormatter
+                        );
+
+                        note.setCreatedAt(createdAt);
+                    }
+
+                    case "updated_at" -> {
+                        if (parser.getValueAsString().equals("updated_at")) continue;
+
+                        LocalDateTime updatedAt = LocalDateTime.parse(
+                                parser.getValueAsString(),
+                                timestampFormatter
+                        );
+
+                        note.setUpdatedAt(updatedAt);
+                    }
+
+                    default -> {}
+                }
             }
-
-            case "name" -> {
-                if (parser.getValueAsString().equals("name")) return;
-                note.setName(parser.getValueAsString());
-            }
-
-            case "text" -> {
-                if (parser.getValueAsString().equals("text")) return;
-                note.setText(parser.getValueAsString());
-            }
-
-            case "created_at" -> {
-                if (parser.getValueAsString().equals("created_at")) return;
-
-                LocalDateTime createdAt = LocalDateTime.parse(
-                        parser.getValueAsString(),
-                        timestampFormatter
-                );
-
-                note.setCreatedAt(createdAt);
-            }
-
-            case "updated_at" -> {
-                if (parser.getValueAsString().equals("updated_at")) return;
-
-                LocalDateTime updatedAt = LocalDateTime.parse(
-                        parser.getValueAsString(),
-                        timestampFormatter
-                );
-
-                note.setUpdatedAt(updatedAt);
-            }
-
-            default -> {}
         }
+
+        return note;
     }
 
     private String adaptId(String id) {
