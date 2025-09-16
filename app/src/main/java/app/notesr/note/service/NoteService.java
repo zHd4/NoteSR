@@ -64,7 +64,7 @@ public class NoteService {
     public void delete(String id) {
         db.runInTransaction(() -> {
             db.getFileInfoDao().getByNoteId(id).forEach(fileInfo -> {
-                db.getDataBlockDao().deleteByFileId(fileInfo.getId());
+                db.getFileBlobInfoDao().deleteByFileId(fileInfo.getId());
                 db.getFileInfoDao().deleteById(fileInfo.getId());
             });
 

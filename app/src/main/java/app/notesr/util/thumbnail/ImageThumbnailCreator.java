@@ -1,21 +1,30 @@
 package app.notesr.util.thumbnail;
 
+import static java.util.Objects.requireNonNull;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
-import java.util.Objects;
 
-import app.notesr.util.FilesUtils;
+import app.notesr.util.FileExifDataResolver;
+import app.notesr.util.FilesUtilsAdapter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class ImageThumbnailCreator implements ThumbnailCreator {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 100;
     public static final int QUALITY = 80;
+
+    private final Context context;
+    private final FilesUtilsAdapter filesUtils;
 
     private static final Map<String, Bitmap.CompressFormat> COMPRESS_FORMAT_MAP = Map.of(
             "jpg", Bitmap.CompressFormat.JPEG,
@@ -25,31 +34,35 @@ public class ImageThumbnailCreator implements ThumbnailCreator {
     );
 
     @Override
-    public byte[] getThumbnail(File file) throws FileNotFoundException {
+    public byte[] getThumbnail(Uri uri) throws IOException {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(getInputStream(file), null, options);
+        BitmapFactory.decodeStream(getInputStream(uri), null, options);
 
         int scaleFactor = Math.min(options.outWidth / WIDTH, options.outHeight / HEIGHT);
 
         options.inJustDecodeBounds = false;
         options.inSampleSize = scaleFactor;
 
-        Bitmap bitmap = BitmapFactory.decodeStream(getInputStream(file), null, options);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Bitmap bitmap = BitmapFactory.decodeStream(getInputStream(uri), null, options);
+        requireNonNull(bitmap, "Bitmap is null");
 
-        Objects.requireNonNull(bitmap)
-                .compress(getImageCompressFormat(file), QUALITY, outputStream);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(getImageCompressFormat(uri), QUALITY, outputStream);
 
         return outputStream.toByteArray();
     }
 
-    private FileInputStream getInputStream(File file) throws FileNotFoundException {
-        return new FileInputStream(file);
+    private InputStream getInputStream(Uri uri) throws FileNotFoundException {
+        return context.getContentResolver().openInputStream(uri);
     }
 
-    private Bitmap.CompressFormat getImageCompressFormat(File file) {
-        String extension = new FilesUtils().getFileExtension(file.getName());
+    private Bitmap.CompressFormat getImageCompressFormat(Uri uri) {
+        FileExifDataResolver fileExifDataResolver = new FileExifDataResolver(context,
+                filesUtils, uri);
+
+        String filename = fileExifDataResolver.getFileName();
+        String extension = filesUtils.getFileExtension(filename);
 
         if (!COMPRESS_FORMAT_MAP.containsKey(extension)) {
             throw new IllegalArgumentException("Unsupported image format");

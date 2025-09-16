@@ -3,6 +3,11 @@ package app.notesr.util.thumbnail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import android.content.Context;
+import android.net.Uri;
+
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Test;
 
 import java.io.File;
@@ -18,9 +23,10 @@ public class VideoThumbnailCreatorTest extends ThumbnailCreatorTestBase {
         File videoFile = getFixture("test_video.mp4");
         File thumbnailFile = File.createTempFile("thumbnail", "");
 
-        VideoThumbnailCreator thumbnailCreator = new VideoThumbnailCreator();
+        Context context = ApplicationProvider.getApplicationContext();
+        VideoThumbnailCreator thumbnailCreator = new VideoThumbnailCreator(context);
 
-        byte[] thumbnailBytes = thumbnailCreator.getThumbnail(videoFile);
+        byte[] thumbnailBytes = thumbnailCreator.getThumbnail(Uri.fromFile(videoFile));
         assertNotNull("Thumbnail creator returned null", thumbnailBytes);
 
         Files.write(Path.of(thumbnailFile.getAbsolutePath()), thumbnailBytes);

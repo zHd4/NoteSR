@@ -12,8 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.EncryptionFailedException;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.note.model.Note;
@@ -64,7 +65,7 @@ public class ExportService {
                 exportVersion(zipper);
                 exportNotes(zipper, backupEncryptor);
                 exportFilesInfos(zipper, backupEncryptor);
-                exportDataBlocks(zipper, backupEncryptor);
+                exportBlobs(zipper, backupEncryptor);
             }
 
             statusHolder.setStatus(ExportStatus.ENCRYPTING_DATA);
@@ -126,18 +127,19 @@ public class ExportService {
         }
     }
 
-    private void exportDataBlocks(BackupZipper zipper, BackupEncryptor encryptor)
-            throws IOException, EncryptionFailedException {
+    private void exportBlobs(BackupZipper zipper, BackupEncryptor encryptor)
+            throws IOException, EncryptionFailedException, DecryptionFailedException {
 
-        for (DataBlock blockWithoutData : fileService.getAllDataBlocksWithoutData()) {
+        for (FileBlobInfo blobInfo : fileService.getAllFilesBlobInfo()) {
             checkCancelled();
 
-            DataBlock dataBlock = fileService.getDataBlock(blockWithoutData.getId());
+            String blobInfoJson = getObjectMapper().writeValueAsString(blobInfo);
+            byte[] blobData = fileService.getBlobData(blobInfo.getId());
 
-            String json = getObjectMapper().writeValueAsString(dataBlock);
-            byte[] encryptedJson = encryptor.encrypt(json);
+            byte[] encryptedBlobInfo = encryptor.encrypt(blobInfoJson);
+            byte[] encryptedBlobData = encryptor.encrypt(blobData);
 
-            zipper.addDataBlock(dataBlock.getId(), encryptedJson);
+            zipper.addBlob(blobInfo.getId(), encryptedBlobInfo, encryptedBlobData);
             increaseProgress();
         }
     }
@@ -198,7 +200,7 @@ public class ExportService {
 
         long notesCount = noteService.getCount();
         long filesCount = fileService.getFilesCount();
-        long dataBlocksCount = fileService.getDataBlocksCount();
+        long dataBlocksCount = fileService.getBlobsCount();
 
         long total = notesCount + filesCount + dataBlocksCount;
 

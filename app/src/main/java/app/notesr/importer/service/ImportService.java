@@ -43,23 +43,23 @@ public class ImportService {
 
     public void doImport() {
         statusCallback.updateStatus(ImportStatus.DECRYPTING);
-        File tempDecryptedFile = new File(context.getCacheDir(), randomUUID().toString());
+        File tempDecryptedBackupFile = new File(context.getCacheDir(), randomUUID().toString());
 
         try {
-            decrypt(tempDecryptedFile);
+            decrypt(tempDecryptedBackupFile);
             ImportStrategy importStrategy;
 
-            if (ZipUtils.isZipArchive(tempDecryptedFile.getAbsolutePath())) {
-                importStrategy = getV2Strategy(tempDecryptedFile);
+            if (ZipUtils.isZipArchive(tempDecryptedBackupFile.getAbsolutePath())) {
+                importStrategy = getV2Strategy(tempDecryptedBackupFile);
             } else {
-                importStrategy = getV1Strategy(tempDecryptedFile);
+                importStrategy = getV1Strategy(tempDecryptedBackupFile);
             }
 
             importStrategy.execute();
             statusCallback.updateStatus(ImportStatus.DONE);
         } catch (Throwable e) {
-            if (tempDecryptedFile.exists()) {
-                wipeFile(tempDecryptedFile);
+            if (tempDecryptedBackupFile.exists()) {
+                wipeFile(tempDecryptedBackupFile);
             }
 
             ImportStatus fail = e instanceof DecryptionFailedException
@@ -71,8 +71,8 @@ public class ImportService {
     }
 
     private ImportV1Strategy getV1Strategy(File tempDecryptedFile) {
-        return new ImportV1Strategy(db, noteService, fileService, tempDecryptedFile, statusCallback,
-                TIMESTAMP_FORMATTER);
+        return new ImportV1Strategy(db, noteService, fileService, tempDecryptedFile,
+                statusCallback, TIMESTAMP_FORMATTER);
     }
 
     private ImportV2Strategy getV2Strategy(File tempDecryptedFile) {

@@ -1,8 +1,9 @@
 package app.notesr.util.thumbnail;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import android.net.Uri;
+
+import java.io.IOException;
 
 public interface ThumbnailCreator {
-    byte[] getThumbnail(File file) throws FileNotFoundException;
+    byte[] getThumbnail(Uri uri) throws IOException;
 }

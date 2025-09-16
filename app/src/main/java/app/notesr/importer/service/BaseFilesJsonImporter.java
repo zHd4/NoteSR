@@ -11,7 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.notesr.file.model.DataBlock;
+import app.notesr.exception.DecryptionFailedException;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 
@@ -32,7 +33,7 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         this.adaptedNotesIdMap = adaptedNotesIdMap;
     }
 
-    public void importFiles() throws IOException {
+    public void importFiles() throws IOException, DecryptionFailedException {
         importFilesInfo();
         importFilesData();
     }
@@ -42,10 +43,7 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
                     FileInfo fileInfo = parseFileInfoObject();
-
-                    if (fileService.getFileInfo(fileInfo.getId()) == null) {
-                        fileService.importFileInfo(fileInfo);
-                    }
+                    fileService.importFileInfo(fileInfo);
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }
@@ -126,7 +124,7 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         return fileInfo;
     }
 
-    protected void adaptId(DataBlock dataBlock) {
+    protected void adaptId(FileBlobInfo dataBlock) {
         String id = dataBlock.getId();
         String adaptedId = new IdAdapter(id).getId();
 
@@ -136,9 +134,7 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         }
     }
 
-    protected abstract void importFilesData() throws IOException;
-
-    protected abstract DataBlock parseDataBlockObject() throws IOException;
+    protected abstract void importFilesData() throws IOException, DecryptionFailedException;
 
     private void adaptId(FileInfo fileInfo) {
         String id = fileInfo.getId();

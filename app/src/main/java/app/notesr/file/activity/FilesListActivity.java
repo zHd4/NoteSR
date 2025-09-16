@@ -3,6 +3,8 @@ package app.notesr.file.activity;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +28,11 @@ import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
 import app.notesr.file.model.FileInfo;
 import app.notesr.note.model.Note;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
+import app.notesr.security.crypto.CryptoManagerProvider;
+import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.util.FilesUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +58,10 @@ public class FilesListActivity extends ActivityBase {
 
         AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
 
-        fileService = new FileService(db);
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+
+        fileService = new FileService(getApplicationContext(), db, cryptor, new FilesUtils());
         isNoteModified = getIntent().getBooleanExtra("modified", false);
 
         NoteService noteService = new NoteService(db);

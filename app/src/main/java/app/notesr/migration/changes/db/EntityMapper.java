@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import app.notesr.exception.DecryptionFailedException;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.note.model.Note;
 import app.notesr.security.crypto.ValueDecryptor;
@@ -95,7 +95,7 @@ public class EntityMapper {
         return fileInfo;
     }
 
-    public DataBlock mapDataBlock(Map<String, Object> dataBlockMap)
+    public FileBlobInfo mapFileBlobInfo(Map<String, Object> dataBlockMap)
             throws DecryptionFailedException {
 
         requireNonNull(dataBlockMap, "Data block cannot be null");
@@ -103,9 +103,8 @@ public class EntityMapper {
         String id = (String) dataBlockMap.get("id");
         String fileId = (String) dataBlockMap.get("fileId");
         Long order = (Long) dataBlockMap.get("order");
-        byte[] encryptedData = (byte[]) dataBlockMap.get("encryptedData");
 
-        DataBlock dataBlock = new DataBlock();
+        FileBlobInfo dataBlock = new FileBlobInfo();
 
         requireNonNull(id, "Data block id cannot be null");
         dataBlock.setId(id);
@@ -116,9 +115,15 @@ public class EntityMapper {
         requireNonNull(order, "Block order cannot be null");
         dataBlock.setOrder(order);
 
-        requireNonNull(encryptedData, "Block data cannot be null");
-        dataBlock.setData(valueDecryptor.decrypt(encryptedData));
-
         return dataBlock;
+    }
+
+    public byte[] getDataOfDataBlock(Map<String, Object> dataBlockMap)
+            throws DecryptionFailedException {
+
+        requireNonNull(dataBlockMap, "Data block cannot be null");
+        byte[] encryptedData = (byte[]) dataBlockMap.get("encryptedData");
+
+        return valueDecryptor.decrypt(encryptedData);
     }
 }

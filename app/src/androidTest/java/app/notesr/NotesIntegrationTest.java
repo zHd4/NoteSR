@@ -5,20 +5,27 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.note.model.Note;
 import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
+import app.notesr.util.FilesUtils;
+import app.notesr.util.FilesUtilsAdapter;
 import io.bloco.faker.Faker;
 
 import org.junit.Before;
@@ -48,12 +55,14 @@ public class NotesIntegrationTest {
 
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         CryptoSecrets cryptoSecrets = getTestSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
+        FilesUtilsAdapter filesUtils = new FilesUtils();
 
         cryptoManager.setSecrets(context, cryptoSecrets);
 
         db = DatabaseProvider.getInstance(context);
         noteService = new NoteService(db);
-        fileService = new FileService(db);
+        fileService = new FileService(context, db, cryptor, filesUtils);
     }
 
     @Before
@@ -143,16 +152,20 @@ public class NotesIntegrationTest {
         Path tempFilePath = Path.of(context.getCacheDir().getPath(), fileName);
         Files.write(tempFilePath, fileData);
 
-        fileService.addFileData(fileInfo.getId(), tempFilePath.toFile());
+        fileService.saveFileData(fileInfo.getId(), Uri.fromFile(tempFilePath.toFile()));
 
-        String dataBlockId = db.getDataBlockDao().getBlockIdsByFileId(fileInfo.getId()).get(0);
-        DataBlock dataBlock = db.getDataBlockDao().get(dataBlockId);
+        String fileBlobId = db.getFileBlobInfoDao().getBlobIdsByFileId(fileInfo.getId()).get(0);
+        FileBlobInfo fileBlobInfo = db.getFileBlobInfoDao().get(fileBlobId);
 
-        assertNotNull(dataBlock);
+        assertNotNull(fileBlobInfo);
 
-        assertEquals(fileInfo.getId(), dataBlock.getFileId());
-        assertEquals(0L, (long) dataBlock.getOrder());
-        assertArrayEquals(fileData, dataBlock.getData());
+        assertEquals(fileInfo.getId(), fileBlobInfo.getFileId());
+        assertEquals(0L, (long) fileBlobInfo.getOrder());
+
+        String cacheDirPath = context.getCacheDir().getPath();
+        byte[] fileBlobData = Files.readAllBytes(Path.of(cacheDirPath, fileBlobId));
+
+        assertArrayEquals(fileData, fileBlobData);
     }
 
     @Test

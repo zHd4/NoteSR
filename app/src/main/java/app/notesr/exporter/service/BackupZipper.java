@@ -9,9 +9,10 @@ import java.util.zip.ZipOutputStream;
 
 public final class BackupZipper implements AutoCloseable {
     private static final String VERSION_FILE_NAME = "version";
-    private static final String NOTES_DIR = "note";
-    private static final String FILES_INFOS_DIR = "finfo";
-    private static final String DATA_BLOCKS_DIR = "dblock";
+    private static final String NOTES_DIR = "notes";
+    private static final String FILES_INFO_DIR = "finfo";
+    private static final String FILES_BLOBS_INFO_DIR = "binfo";
+    private static final String FILES_BLOBS_DATA_DIR = "fblobs";
 
     private final ZipOutputStream zipOutputStream;
 
@@ -22,8 +23,8 @@ public final class BackupZipper implements AutoCloseable {
 
     private void createStructure() throws IOException {
         createDir(NOTES_DIR);
-        createDir(FILES_INFOS_DIR);
-        createDir(DATA_BLOCKS_DIR);
+        createDir(FILES_INFO_DIR);
+        createDir(FILES_BLOBS_INFO_DIR);
     }
 
     public void addVersionFile(String version) throws IOException {
@@ -35,11 +36,12 @@ public final class BackupZipper implements AutoCloseable {
     }
 
     public void addFileInfo(String id, byte[] fileInfoBytes) throws IOException {
-        addFile(FILES_INFOS_DIR, id, fileInfoBytes);
+        addFile(FILES_INFO_DIR, id, fileInfoBytes);
     }
 
-    public void addDataBlock(String id, byte[] dataBlockBytes) throws IOException {
-        addFile(DATA_BLOCKS_DIR, id, dataBlockBytes);
+    public void addBlob(String id, byte[] blobInfoBytes, byte[] blobDataBytes) throws IOException {
+        addFile(FILES_BLOBS_INFO_DIR, id, blobInfoBytes);
+        addFile(FILES_BLOBS_DATA_DIR, id, blobDataBytes);
     }
 
     private void createDir(String dirName) throws IOException {

@@ -12,8 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import app.notesr.App;
-
 public class ThumbnailCreatorTestBase {
     protected static File getFixture(String fileName) throws IOException {
         Context context = ApplicationProvider.getApplicationContext();

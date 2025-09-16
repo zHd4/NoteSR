@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 
 import static java.util.UUID.randomUUID;
 
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+
 import android.content.Context;
 
 import androidx.room.Room;
@@ -21,6 +23,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -28,12 +32,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import app.notesr.db.AppDatabase;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
+import app.notesr.file.service.FileService;
 import app.notesr.note.model.Note;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.util.FilesUtils;
 import io.bloco.faker.Faker;
 
 @RunWith(AndroidJUnit4.class)
@@ -42,18 +50,21 @@ public class SecretsUpdateServiceIntegrationTest {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private static Context context;
+    private static File blobsDir;
 
     private String dbName;
     private CryptoSecrets newSecrets;
     private CryptoSecrets oldSecrets;
     private Note testNote;
     private FileInfo testFileInfo;
-    private DataBlock testDataBlock;
+    private FileBlobInfo testFileBlobInfo;
+    private byte[] testFileData;
     private SecretsUpdateService secretsUpdateService;
 
     @BeforeClass
     public static void beforeClass() {
         context = ApplicationProvider.getApplicationContext();
+        blobsDir = new File(context.getFilesDir(), FileService.BLOBS_DIR_NAME);
     }
 
     @Before
@@ -71,13 +82,17 @@ public class SecretsUpdateServiceIntegrationTest {
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
         cryptoManager.setSecrets(context, oldSecrets);
 
+        FilesUtils filesUtils = new FilesUtils();
+
         newSecrets = new CryptoSecrets(newKey, FAKER.internet.password());
         testNote = getTestNote();
         testFileInfo = getTestFileInfo(testNote);
-        testDataBlock = getTestDataBlock(testFileInfo);
-        secretsUpdateService = new SecretsUpdateService(context, dbName, cryptoManager, newSecrets);
+        testFileBlobInfo = getTestFileBlobInfo(testFileInfo);
+        testFileData = getTestFileData(testFileInfo);
+        secretsUpdateService = new SecretsUpdateService(context, dbName, cryptoManager, newSecrets,
+                filesUtils);
 
-        createTestDb(oldKey, testNote, testFileInfo, testDataBlock);
+        createTestDb(oldKey, testNote, testFileInfo, testFileBlobInfo, testFileData);
     }
 
     @Test
@@ -90,7 +105,7 @@ public class SecretsUpdateServiceIntegrationTest {
 
         List<Note> notes = dbWithNewKey.getNoteDao().getAll();
         List<FileInfo> files = dbWithNewKey.getFileInfoDao().getAll();
-        List<DataBlock> dataBlocks = dbWithNewKey.getDataBlockDao().getAll();
+        List<FileBlobInfo> blobsInfo = dbWithNewKey.getFileBlobInfoDao().getAll();
         dbWithNewKey.close();
 
         assertEquals(1, notes.size());
@@ -113,11 +128,16 @@ public class SecretsUpdateServiceIntegrationTest {
         assertEquals(testFileInfo.getUpdatedAt().truncatedTo(ChronoUnit.SECONDS),
                 files.get(0).getUpdatedAt().truncatedTo(ChronoUnit.SECONDS));
 
-        assertEquals(1, dataBlocks.size());
-        assertEquals(testDataBlock.getId(), dataBlocks.get(0).getId());
-        assertEquals(testDataBlock.getFileId(), dataBlocks.get(0).getFileId());
-        assertEquals(testDataBlock.getOrder(), dataBlocks.get(0).getOrder());
-        assertArrayEquals(testDataBlock.getData(), dataBlocks.get(0).getData());
+        assertEquals(1, blobsInfo.size());
+        assertEquals(testFileBlobInfo.getId(), blobsInfo.get(0).getId());
+        assertEquals(testFileBlobInfo.getFileId(), blobsInfo.get(0).getFileId());
+        assertEquals(testFileBlobInfo.getOrder(), blobsInfo.get(0).getOrder());
+
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
+        File blobFile = new File(blobsDir, testFileBlobInfo.getId());
+
+        byte[] decryptedData = cryptor.decrypt(Files.readAllBytes(blobFile.toPath()));
+        assertArrayEquals(testFileData, decryptedData);
 
         try {
             AppDatabase dbWithOldKey = Room.databaseBuilder(context, AppDatabase.class, dbName)
@@ -136,16 +156,22 @@ public class SecretsUpdateServiceIntegrationTest {
         assertFalse(new File(dbFile.getAbsolutePath() + "-wal").exists());
     }
 
-    private void createTestDb(byte[] key, Note note, FileInfo fileInfo, DataBlock dataBlock) {
+    private void createTestDb(byte[] key,
+                              Note note,
+                              FileInfo fileInfo,
+                              FileBlobInfo fileBlobInfo,
+                              byte[] fileBlobBytes) throws IOException {
         AppDatabase db = Room.databaseBuilder(context, AppDatabase.class, dbName)
                 .openHelperFactory(new SupportFactory(Arrays.copyOf(key, key.length)))
                 .build();
 
         db.getNoteDao().insert(note);
         db.getFileInfoDao().insert(fileInfo);
-        db.getDataBlockDao().insert(dataBlock);
+        db.getFileBlobInfoDao().insert(fileBlobInfo);
 
         db.close();
+
+        Files.write(blobsDir.toPath().resolve(fileBlobInfo.getId()), fileBlobBytes);
     }
 
     private Note getTestNote() {
@@ -172,14 +198,13 @@ public class SecretsUpdateServiceIntegrationTest {
         return fileInfo;
     }
 
-    private DataBlock getTestDataBlock(FileInfo fileInfo) {
+    private FileBlobInfo getTestFileBlobInfo(FileInfo fileInfo) {
+        return new FileBlobInfo(randomUUID().toString(), fileInfo.getId(), 0L);
+    }
+
+    private byte[] getTestFileData(FileInfo fileInfo) {
         byte[] data = new byte[Math.toIntExact(fileInfo.getSize())];
         RANDOM.nextBytes(data);
-
-        return new DataBlock(
-                randomUUID().toString(),
-                fileInfo.getId(),
-                0L,
-                data);
+        return data;
     }
 }

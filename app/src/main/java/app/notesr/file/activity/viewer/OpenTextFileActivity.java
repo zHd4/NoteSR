@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.widget.EditText;
 
+import java.io.IOException;
+
 import app.notesr.R;
+import app.notesr.exception.DecryptionFailedException;
 
 public class OpenTextFileActivity extends FileViewerActivityBase {
 
@@ -21,12 +24,16 @@ public class OpenTextFileActivity extends FileViewerActivityBase {
 
     private void loadText() {
         newSingleThreadExecutor().execute(() -> {
-            String content = new String(fileService.read(fileInfo.getId()));
+            try {
+                String content = new String(fileService.read(fileInfo.getId()));
 
-            runOnUiThread(() -> {
-                EditText field = findViewById(R.id.textFileField);
-                field.setText(content);
-            });
+                runOnUiThread(() -> {
+                    EditText field = findViewById(R.id.textFileField);
+                    field.setText(content);
+                });
+            } catch (IOException | DecryptionFailedException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 }

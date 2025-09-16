@@ -2,6 +2,8 @@ package app.notesr.importer.service.v2;
 
 import static java.util.Objects.requireNonNull;
 
+import android.net.Uri;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
@@ -10,10 +12,10 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import app.notesr.exception.DecryptionFailedException;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
-import app.notesr.file.model.DataBlock;
-import app.notesr.util.FilesUtils;
 
 class FilesV2JsonImporter extends BaseFilesJsonImporter {
 
@@ -29,26 +31,30 @@ class FilesV2JsonImporter extends BaseFilesJsonImporter {
     }
 
     @Override
-    protected void importFilesData() throws IOException {
+    protected void importFilesData() throws IOException, DecryptionFailedException {
         if (skipTo("files_data_blocks")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
-                    DataBlock dataBlock = parseDataBlockObject();
-                    String id = dataBlock.getId();
+                    FileBlobInfo genericBlobInfo = parseDataBlockObject();
+                    String id = genericBlobInfo.getId();
 
-                    if (fileService.getDataBlock(id) == null) {
-                        String dataFileName = adaptedDataBlocksIdMap.getOrDefault(id, id);
-                        dataBlock.setData(readFile(dataFileName));
-                        fileService.importDataBlock(dataBlock);
+                    if (fileService.getFileBlobInfo(id) == null) {
+                        String fileId = genericBlobInfo.getFileId();
+                        String genericBlobFileName = adaptedDataBlocksIdMap.getOrDefault(id, id);
+
+                        requireNonNull(genericBlobFileName,
+                                "Generic blob file name is null");
+
+                        File genericBlobFile = new File(dataBlocksDir, genericBlobFileName);
+                        fileService.saveFileData(fileId, Uri.fromFile(genericBlobFile));
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }
     }
 
-    @Override
-    protected DataBlock parseDataBlockObject() throws IOException {
-        DataBlock dataBlock = new DataBlock();
+    protected FileBlobInfo parseDataBlockObject() throws IOException {
+        FileBlobInfo dataBlock = new FileBlobInfo();
         String field;
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -81,9 +87,5 @@ class FilesV2JsonImporter extends BaseFilesJsonImporter {
         }
 
         return dataBlock;
-    }
-
-    private byte[] readFile(String id) throws IOException {
-        return new FilesUtils().readFileBytes(new File(dataBlocksDir, id));
     }
 }

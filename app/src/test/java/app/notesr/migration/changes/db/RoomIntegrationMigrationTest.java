@@ -3,7 +3,7 @@ package app.notesr.migration.changes.db;
 import android.content.Context;
 import app.notesr.db.AppDatabase;
 import app.notesr.exception.DecryptionFailedException;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.migration.service.AppMigrationException;
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +47,7 @@ class RoomIntegrationMigrationTest {
 
         doReturn(mockDb).when(migration).getAppDatabase(any());
         doReturn(mockNoteService).when(migration).getNoteService(any());
-        doReturn(mockFileService).when(migration).getFileService(any());
+        doReturn(mockFileService).when(migration).getFileService(any(), any(), any());
         doReturn(mockOldDbHelper).when(migration).getOldDbHelper(any());
         doReturn(mockEntityMapper).when(migration).getMapper(any());
         doReturn(mockFilesUtils).when(migration).getFilesUtils();
@@ -96,13 +95,13 @@ class RoomIntegrationMigrationTest {
         fileInfo.setId("1");
         
         Map<String, Object> blockMap = Map.of("id", "block1");
-        DataBlock dataBlock = new DataBlock();
+        FileBlobInfo dataBlock = new FileBlobInfo();
 
         when(mockOldDbHelper.getFilesInfo()).thenReturn(List.of(fileInfoMap));
         when(mockEntityMapper.mapFileInfo(fileInfoMap)).thenReturn(fileInfo);
         when(mockOldDbHelper.getBlocksIdsByFileId("1")).thenReturn(List.of("block1"));
         when(mockOldDbHelper.getDataBlockById("block1")).thenReturn(blockMap);
-        when(mockEntityMapper.mapDataBlock(blockMap)).thenReturn(dataBlock);
+        when(mockEntityMapper.mapFileBlobInfo(blockMap)).thenReturn(dataBlock);
 
         doAnswer(invocation -> {
             ((Runnable) invocation.getArgument(0)).run();
@@ -112,7 +111,7 @@ class RoomIntegrationMigrationTest {
         assertDoesNotThrow(() -> migration.migrate(mockContext));
 
         verify(mockFileService).importFileInfo(fileInfo);
-        verify(mockFileService).importDataBlock(dataBlock);
+        verify(mockFileService).importFileBlobInfo(dataBlock);
     }
 
     @Test

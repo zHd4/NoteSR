@@ -1,5 +1,7 @@
 package app.notesr.exporter.service;
 
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -22,8 +24,11 @@ import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.util.FilesUtils;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -124,12 +129,15 @@ public class ExportAndroidService extends Service implements Runnable {
             BiConsumer<Integer, ExportStatus> updateCallback) {
 
         AppDatabase db = DatabaseProvider.getInstance(this);
-
         NoteService noteService = new NoteService(db);
-        FileService fileService = new FileService(db);
+
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+
+        FileService fileService = new FileService(getApplicationContext(), db, cryptor,
+                new FilesUtils());
 
         ExportStatusHolder statusHolder = new ExportStatusHolder(updateCallback);
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
 
         return new ExportService(
                 getApplicationContext(),

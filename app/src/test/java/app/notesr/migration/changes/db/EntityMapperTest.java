@@ -1,7 +1,7 @@
 package app.notesr.migration.changes.db;
 
 import app.notesr.exception.DecryptionFailedException;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.note.model.Note;
 import app.notesr.security.crypto.ValueDecryptor;
@@ -98,7 +98,7 @@ class EntityMapperTest {
     }
 
     @Test
-    void testMapDataBlockShouldReturnValidDataBlock() throws DecryptionFailedException {
+    void testMapDataBlockShouldReturnValidFileBlobInfo() throws DecryptionFailedException {
         byte[] encryptedData = "encryptedData".getBytes();
         byte[] decryptedData = "decryptedData".getBytes();
 
@@ -110,13 +110,28 @@ class EntityMapperTest {
 
         when(valueDecryptor.decrypt(encryptedData)).thenReturn(decryptedData);
 
-        DataBlock result = entityMapper.mapDataBlock(dataBlockMap);
+        FileBlobInfo result = entityMapper.mapFileBlobInfo(dataBlockMap);
 
         assertNotNull(result);
         assertEquals("123", result.getId());
         assertEquals("456", result.getFileId());
         assertEquals(1L, result.getOrder());
-        assertArrayEquals(decryptedData, result.getData());
+    }
+
+    @Test
+    void testGetDataOfDataBlockShouldReturnDecryptedData() throws DecryptionFailedException {
+        byte[] encryptedData = "encryptedData".getBytes();
+        byte[] decryptedData = "decryptedData".getBytes();
+
+        Map<String, Object> dataBlockMap = new HashMap<>();
+        dataBlockMap.put("encryptedData", encryptedData);
+
+        when(valueDecryptor.decrypt(encryptedData)).thenReturn(decryptedData);
+
+        byte[] result = entityMapper.getDataOfDataBlock(dataBlockMap);
+
+        assertNotNull(result);
+        assertArrayEquals(decryptedData, result);
     }
 
     @Test
@@ -131,6 +146,6 @@ class EntityMapperTest {
 
     @Test
     void testMapDataBlockShouldThrowExceptionWhenDataBlockMapIsNull() {
-        assertThrows(NullPointerException.class, () -> entityMapper.mapDataBlock(null));
+        assertThrows(NullPointerException.class, () -> entityMapper.mapFileBlobInfo(null));
     }
 }

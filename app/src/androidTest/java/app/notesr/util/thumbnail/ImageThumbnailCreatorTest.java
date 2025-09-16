@@ -2,7 +2,11 @@ package app.notesr.util.thumbnail;
 
 import static org.junit.Assert.assertEquals;
 
+import android.content.Context;
+import android.net.Uri;
 import android.util.Size;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+
+import app.notesr.util.FilesUtils;
 
 @RunWith(Parameterized.class)
 public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
@@ -38,8 +44,12 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
         File imageFile = getFixture(fixtureFileName);
         File thumbnailFile = File.createTempFile("thumbnail", "");
 
-        ImageThumbnailCreator thumbnailCreator = new ImageThumbnailCreator();
-        byte[] thumbnailBytes = thumbnailCreator.getThumbnail(imageFile);
+        Context context = ApplicationProvider.getApplicationContext();
+        FilesUtils filesUtils = new FilesUtils();
+
+        ImageThumbnailCreator thumbnailCreator = new ImageThumbnailCreator(context, filesUtils);
+
+        byte[] thumbnailBytes = thumbnailCreator.getThumbnail(Uri.fromFile(imageFile));
 
         Files.write(Path.of(thumbnailFile.getAbsolutePath()), thumbnailBytes);
 

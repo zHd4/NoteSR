@@ -89,19 +89,25 @@ class BackupZipperTest {
     }
 
     @Test
-    void testAddsDataBlock() throws IOException {
-        byte[] dataBlock = "data block".getBytes();
-        String blockId = "block1";
+    void testAddsBlob() throws IOException {
+        String blobId = "blob1";
+
+        byte[] blobInfo = "example blob info".getBytes();
+        byte[] blobData = "example blob data 123".getBytes();
 
         try (BackupZipper backupZipper = new BackupZipper(zipFile)) {
-            backupZipper.addDataBlock(blockId, dataBlock);
+            backupZipper.addBlob(blobId, blobInfo, blobData);
         }
 
         try (ZipFile zip = new ZipFile(zipFile)) {
-            ZipEntry dataBlockEntry = zip.getEntry("dblock/" + blockId);
+            ZipEntry blobInfoEntry = zip.getEntry("binfo/" + blobId);
+            ZipEntry blobDataEntry = zip.getEntry("fblobs/" + blobId);
 
-            assertNotNull(dataBlockEntry);
-            assertEquals(dataBlock.length, dataBlockEntry.getSize());
+            assertNotNull(blobInfoEntry);
+            assertNotNull(blobDataEntry);
+
+            assertEquals(blobInfo.length, blobInfoEntry.getSize());
+            assertEquals(blobData.length, blobDataEntry.getSize());
         }
     }
 

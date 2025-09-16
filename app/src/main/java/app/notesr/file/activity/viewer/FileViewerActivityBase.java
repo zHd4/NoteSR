@@ -2,6 +2,7 @@ package app.notesr.file.activity.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static app.notesr.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,9 +23,14 @@ import app.notesr.file.helper.FileIOHelper;
 import app.notesr.file.activity.FilesListActivity;
 import app.notesr.file.service.FileService;
 import app.notesr.file.model.FileInfo;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
+import app.notesr.security.crypto.CryptoManagerProvider;
+import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.util.FilesUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FileViewerActivityBase extends ActivityBase {
     protected FileInfo fileInfo;
@@ -37,7 +43,16 @@ public class FileViewerActivityBase extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        fileService = new FileService(DatabaseProvider.getInstance(getApplicationContext()));
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+
+        fileService = new FileService(
+                getApplicationContext(),
+                DatabaseProvider.getInstance(getApplicationContext()),
+                cryptor,
+                new FilesUtils()
+        );
+
         fileIOHelper = new FileIOHelper(new FilesUtils(), fileService);
         dialogFactory = new DialogFactory(this);
 
@@ -89,7 +104,7 @@ public class FileViewerActivityBase extends ActivityBase {
     protected void saveFileOnClick() {
         File destFile = new File(saveDir, fileInfo.getName());
 
-        Runnable task = () -> fileIOHelper.writeToFile(fileInfo.getId(), destFile);
+        Runnable task = () -> fileIOHelper.exportFile(fileInfo.getId(), destFile);
         Runnable post = () -> showToastMessage(this,
                 getString(R.string.saved_to, destFile.getAbsolutePath()),
                 Toast.LENGTH_LONG);
@@ -112,7 +127,14 @@ public class FileViewerActivityBase extends ActivityBase {
     }
 
     protected void deleteFileOnClick() {
-        Runnable task = () -> fileService.delete(fileInfo.getId());
+        Runnable task = () -> {
+            try {
+                fileService.delete(fileInfo.getId());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
         Runnable post = this::returnToListActivity;
 
         dialogFactory.showConfirmationDialog(

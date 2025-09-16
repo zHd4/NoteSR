@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 /** @noinspection LombokGetterMayBeUsed, LombokSetterMayBeUsed */
 @Entity(
-        tableName = "data_blocks",
+        tableName = "files_blob_info",
         foreignKeys = @ForeignKey(
                 entity = FileInfo.class,
                 parentColumns = "id",
@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 )
 @NoArgsConstructor
 @AllArgsConstructor
-public final class DataBlock {
+public final class FileBlobInfo {
 
     @PrimaryKey
     @NonNull
@@ -33,10 +33,8 @@ public final class DataBlock {
     private String fileId;
 
     @NonNull
-    @ColumnInfo(name = "block_order")
+    @ColumnInfo(name = "blob_order")
     private Long order;
-
-    private byte[] data;
 
     @NonNull
     public String getId() {
@@ -63,13 +61,5 @@ public final class DataBlock {
 
     public void setOrder(@NonNull Long order) {
         this.order = order;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
     }
 }

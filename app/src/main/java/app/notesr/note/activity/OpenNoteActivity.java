@@ -1,6 +1,7 @@
 package app.notesr.note.activity;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,11 @@ import app.notesr.file.activity.FilesListActivity;
 import app.notesr.file.service.FileService;
 import app.notesr.note.model.Note;
 import app.notesr.note.service.NoteService;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
+import app.notesr.security.crypto.CryptoManagerProvider;
+import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.util.FilesUtils;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
@@ -34,6 +40,7 @@ import java.util.function.Consumer;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
 public class OpenNoteActivity extends ActivityBase {
     private static final long MAX_COUNT_IN_BADGE = 9;
@@ -50,10 +57,14 @@ public class OpenNoteActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_note);
 
-        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+        Context context = getApplicationContext();
+        AppDatabase db = DatabaseProvider.getInstance(context);
+
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         noteService = new NoteService(db);
-        fileService = new FileService(db);
+        fileService = new FileService(context, db, cryptor, new FilesUtils());
 
         String noteId = getIntent().getStringExtra("noteId");
 

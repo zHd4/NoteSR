@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import static java.util.UUID.randomUUID;
 
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+
 import android.content.Context;
 
 import androidx.room.Room;
@@ -13,20 +15,25 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 import app.notesr.db.AppDatabase;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.note.model.Note;
 import app.notesr.note.service.NoteService;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.util.FilesUtils;
+import app.notesr.util.FilesUtilsAdapter;
 
 public class ExportServiceTest {
     private AppDatabase db;
@@ -40,15 +47,18 @@ public class ExportServiceTest {
     public void setUp() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+        CryptoSecrets cryptoSecrets = cryptoManager.generateSecrets("password");
+
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
+        FilesUtilsAdapter filesUtils = new FilesUtils();
+
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
         noteService = new NoteService(db);
-        fileService = new FileService(db);
+        fileService = new FileService(context, db, cryptor, filesUtils);
         outputFile = new File(context.getCacheDir(), randomUUID() + "_test.backup");
         statusHolder = new ExportStatusHolder((progress, status) -> {
         });
-
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-        CryptoSecrets cryptoSecrets = cryptoManager.generateSecrets("password");
 
         exportService = new ExportService(context, db, noteService, fileService, outputFile,
                 statusHolder, cryptoSecrets);
@@ -61,14 +71,15 @@ public class ExportServiceTest {
     }
 
     @Test
-    public void testSuccessfulExport() {
+    public void testSuccessfulExport() throws Exception {
         Note note = createTestNote();
         FileInfo fileInfo = createTestFileInfo(note.getId());
-        DataBlock dataBlock = createTestDataBlock(fileInfo.getId());
+        FileBlobInfo fileBlobInfo = createFileBlobInfo(fileInfo.getId());
 
-        noteService.save(note);
+        noteService.importNote(note);
         fileService.importFileInfo(fileInfo);
-        fileService.importDataBlock(dataBlock);
+        fileService.importFileBlobInfo(fileBlobInfo);
+        fileService.saveFileData(fileInfo.getId(), getTestFileDataInputStream());
 
         exportService.doExport();
 
@@ -124,14 +135,17 @@ public class ExportServiceTest {
         return fileInfo;
     }
 
-    private DataBlock createTestDataBlock(String fileId) {
-        DataBlock dataBlock = new DataBlock();
+    private FileBlobInfo createFileBlobInfo(String fileId) {
+        FileBlobInfo fileBlobInfo = new FileBlobInfo();
 
-        dataBlock.setId(randomUUID().toString());
-        dataBlock.setFileId(fileId);
-        dataBlock.setOrder(0L);
-        dataBlock.setData(new byte[]{1, 2, 3, 4, 5});
+        fileBlobInfo.setId(randomUUID().toString());
+        fileBlobInfo.setFileId(fileId);
+        fileBlobInfo.setOrder(0L);
 
-        return dataBlock;
+        return fileBlobInfo;
+    }
+
+    private ByteArrayInputStream getTestFileDataInputStream() {
+        return new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
     }
 }

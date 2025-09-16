@@ -3,6 +3,7 @@ package app.notesr.exporter.activity;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static app.notesr.util.ActivityUtils.disableBackButton;
 import static app.notesr.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,6 +26,11 @@ import app.notesr.note.activity.NotesListActivity;
 import app.notesr.exporter.service.ExportAndroidService;
 import app.notesr.exporter.service.ExportStatus;
 import app.notesr.note.service.NoteService;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
+import app.notesr.security.crypto.CryptoManagerProvider;
+import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.util.FilesUtils;
 
 public class ExportActivity extends ActivityBase {
 
@@ -39,9 +45,11 @@ public class ExportActivity extends ActivityBase {
         setContentView(R.layout.activity_export);
 
         AppDatabase db = DatabaseProvider.getInstance(this);
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         noteService = new NoteService(db);
-        fileService = new FileService(db);
+        fileService = new FileService(getApplicationContext(), db, cryptor, new FilesUtils());
 
         actionBar = getSupportActionBar();
 

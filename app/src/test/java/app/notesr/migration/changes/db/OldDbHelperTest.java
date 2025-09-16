@@ -108,14 +108,12 @@ class OldDbHelperTest {
         when(mockCursor.moveToFirst()).thenReturn(true);
         when(mockCursor.getString(0)).thenReturn("file1");
         when(mockCursor.getLong(1)).thenReturn(1L);
-        when(mockCursor.getBlob(2)).thenReturn(new byte[]{1, 2, 3});
 
         Map<String, Object> result = oldDbHelper.getDataBlockById("block1");
 
         assertNotNull(result);
         assertEquals("file1", result.get("fileId"));
         assertEquals(1L, result.get("order"));
-        assertArrayEquals(new byte[]{1, 2, 3}, (byte[]) result.get("encryptedData"));
     }
 
     @Test

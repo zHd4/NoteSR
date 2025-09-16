@@ -5,12 +5,15 @@ import static java.util.Objects.requireNonNull;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.notesr.file.model.DataBlock;
+import app.notesr.exception.DecryptionFailedException;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.Map;
 
 class FilesV1JsonImporter extends BaseFilesJsonImporter {
@@ -24,22 +27,33 @@ class FilesV1JsonImporter extends BaseFilesJsonImporter {
     }
 
     @Override
-    protected void importFilesData() throws IOException {
+    protected void importFilesData() throws IOException, DecryptionFailedException {
         if (skipTo("files_data_blocks")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
-                    DataBlock dataBlock = parseDataBlockObject();
+                    AbstractMap.SimpleEntry<FileBlobInfo, byte[]> genericBlob =
+                            parseDataBlockObject();
 
-                    dataBlock.setData(dataBlock.getData());
-                    fileService.importDataBlock(dataBlock);
+                    FileBlobInfo genericBlobInfo = genericBlob.getKey();
+                    byte[] genericBlobBytes = genericBlob.getValue();
+
+                    if (fileService.getFileBlobInfo(genericBlobInfo.getId()) == null) {
+                        ByteArrayInputStream genericBlobStream =
+                                new ByteArrayInputStream(genericBlobBytes);
+
+                        fileService.saveFileData(genericBlobInfo.getFileId(), genericBlobStream);
+                    }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
         }
     }
 
-    @Override
-    protected DataBlock parseDataBlockObject() throws IOException {
-        DataBlock dataBlock = new DataBlock();
+    protected AbstractMap.SimpleEntry<FileBlobInfo, byte[]> parseDataBlockObject()
+            throws IOException {
+
+        FileBlobInfo genericBlobInfo = new FileBlobInfo();
+
+        byte[] genericBlobBytes = null;
         String field;
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -50,26 +64,28 @@ class FilesV1JsonImporter extends BaseFilesJsonImporter {
                     case "id" -> {
                         if (parser.getValueAsString().equals("id")) continue;
 
-                        dataBlock.setId(parser.getValueAsString());
-                        adaptId(dataBlock);
+                        genericBlobInfo.setId(parser.getValueAsString());
+                        adaptId(genericBlobInfo);
                     }
 
                     case "file_id" -> {
                         if (parser.getValueAsString().equals("file_id")) continue;
 
                         String id = parser.getValueAsString();
-                        dataBlock.setFileId(requireNonNull(adaptedFilesIdMap.getOrDefault(id, id)));
+
+                        genericBlobInfo.setFileId(
+                                requireNonNull(adaptedFilesIdMap.getOrDefault(id, id))
+                        );
                     }
 
                     case "order" -> {
                         if (parser.getValueAsString().equals("order")) continue;
-                        dataBlock.setOrder(parser.getValueAsLong());
+                        genericBlobInfo.setOrder(parser.getValueAsLong());
                     }
 
                     case "data" -> {
                         if (!parser.getValueAsString().equals("data")) {
-                            byte[] data = parser.getBinaryValue();
-                            dataBlock.setData(data);
+                            genericBlobBytes = parser.getBinaryValue();
                         }
                     }
 
@@ -78,6 +94,6 @@ class FilesV1JsonImporter extends BaseFilesJsonImporter {
             }
         }
 
-        return dataBlock;
+        return new AbstractMap.SimpleEntry<>(genericBlobInfo, genericBlobBytes);
     }
 }

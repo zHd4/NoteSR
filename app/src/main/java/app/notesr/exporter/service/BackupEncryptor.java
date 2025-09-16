@@ -21,6 +21,14 @@ public class BackupEncryptor {
         }
     }
 
+    public byte[] encrypt(byte[] data) throws EncryptionFailedException, IOException {
+        try {
+            return cryptor.encrypt(data);
+        } catch (GeneralSecurityException e) {
+            throw new EncryptionFailedException(e);
+        }
+    }
+
     public void encrypt(FileInputStream inputStream, FileOutputStream outputStream)
             throws EncryptionFailedException, IOException {
         try {

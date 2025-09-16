@@ -1,20 +1,33 @@
 package app.notesr.file.service;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.UUID.randomUUID;
+
+import android.content.Context;
+import android.net.Uri;
 
 import app.notesr.db.AppDatabase;
-import app.notesr.file.model.DataBlock;
+import app.notesr.exception.DecryptionFailedException;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.util.FileExifDataResolver;
+import app.notesr.util.FilesUtilsAdapter;
 import app.notesr.util.HashUtils;
+import app.notesr.util.thumbnail.ImageThumbnailCreator;
+import app.notesr.util.thumbnail.ThumbnailCreator;
+import app.notesr.util.thumbnail.VideoThumbnailCreator;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -22,9 +35,13 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class FileService {
-    private static final int DATA_BLOCK_MAX_SIZE = 500000;
+    public static final String BLOBS_DIR_NAME = "fblobs";
+    private static final int FILE_BLOB_MAX_SIZE = 50000;
 
+    private final Context context;
     private final AppDatabase db;
+    private final AesCryptor cryptor;
+    private final FilesUtilsAdapter filesUtils;
 
     public long getFilesCount(String noteId) {
         Long count = db.getFileInfoDao().getCountByNoteId(noteId);
@@ -44,10 +61,6 @@ public class FileService {
                 .collect(Collectors.toList());
     }
 
-    public List<DataBlock> getAllDataBlocksWithoutData() {
-        return db.getDataBlockDao().getAllWithoutData();
-    }
-
     public List<FileInfo> getFilesInfo(String noteId) {
         List<FileInfo> filesInfos = db.getFileInfoDao().getByNoteId(noteId);
 
@@ -56,36 +69,51 @@ public class FileService {
                 .collect(Collectors.toList());
     }
 
+    public List<FileBlobInfo> getAllFilesBlobInfo() {
+        return db.getFileBlobInfoDao().getAll();
+    }
+
     public FileInfo getFileInfo(String fileId) {
         return setDecimalId(db.getFileInfoDao().get(fileId));
     }
 
-    public DataBlock getDataBlock(String dataBlockId) {
-        return db.getDataBlockDao().get(dataBlockId);
+    public FileBlobInfo getFileBlobInfo(String blobInfoId) {
+        return db.getFileBlobInfoDao().get(blobInfoId);
     }
 
-    public void save(FileInfo fileInfo, File dataSourceFile) throws IOException {
-        db.runInTransaction(() -> {
-            String fileId = saveFileInfo(fileInfo);
-            addFileData(fileId, dataSourceFile);
-            return null;
-        });
-    }
+    public void save(String noteId, List<Uri> filesUri)
+            throws IOException, DecryptionFailedException {
 
-    public void save(Map<FileInfo, File> filesMap) {
-        db.runInTransaction(() -> filesMap.forEach((fileInfo, file) -> {
-            try {
-                save(fileInfo, file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }));
+        if (noteId == null) {
+            throw new IllegalArgumentException("Note id is null");
+        }
+
+        if (filesUri == null || filesUri.isEmpty()) {
+            throw new IllegalArgumentException("Files doesn't provided");
+        }
+
+        try {
+            db.runInTransaction(() -> filesUri.forEach(uri -> {
+                try {
+                    String fileId = saveFileInfo(getFileInfo(noteId, uri));
+                    saveFileData(fileId, uri);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                } catch (DecryptionFailedException e) {
+                    throw new IllegalStateException(e);
+                }
+            }));
+        } catch (UncheckedIOException e) {
+            throw requireNonNull(e.getCause());
+        } catch (IllegalStateException e) {
+            throw new DecryptionFailedException(e);
+        }
     }
 
     public String saveFileInfo(FileInfo fileInfo) {
         return db.runInTransaction(() -> {
             if (fileInfo.getId() == null) {
-                fileInfo.setId(UUID.randomUUID().toString());
+                fileInfo.setId(randomUUID().toString());
             }
 
             if (fileInfo.getCreatedAt() == null) {
@@ -108,68 +136,83 @@ public class FileService {
         });
     }
 
-    public void addFileData(String fileId, File sourceFile) throws IOException {
-        try (FileInputStream stream = new FileInputStream(sourceFile)) {
-            byte[] chunk = new byte[DATA_BLOCK_MAX_SIZE];
+    public void saveFileData(String fileId, Uri uri)
+            throws IOException, DecryptionFailedException {
 
-            long order = 0;
-            int bytesRead = stream.read(chunk);
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
+        saveFileData(fileId, inputStream);
+    }
 
-            while (bytesRead != -1) {
-                if (bytesRead != DATA_BLOCK_MAX_SIZE) {
-                    byte[] subChunk = new byte[bytesRead];
-                    System.arraycopy(chunk, 0, subChunk, 0, bytesRead);
-                    chunk = subChunk;
+    public void saveFileData(String fileId, InputStream inputStream)
+            throws IOException, DecryptionFailedException {
+
+        File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
+
+        if (!blobsDir.exists()) {
+            Files.createDirectories(blobsDir.toPath());
+        }
+
+        if (db.getFileInfoDao().get(fileId) != null) {
+            List<String> blobsId = db.getFileBlobInfoDao().getBlobIdsByFileId(fileId);
+
+            if (blobsId != null && !blobsId.isEmpty()) {
+                for (String id : blobsId) {
+                    File blobFile = new File(blobsDir, id);
+                    Files.deleteIfExists(blobFile.toPath());
                 }
-
-                DataBlock dataBlock = new DataBlock();
-                dataBlock.setId(UUID.randomUUID().toString());
-                dataBlock.setFileId(fileId);
-                dataBlock.setOrder(order);
-                dataBlock.setData(chunk);
-
-                db.getDataBlockDao().insert(dataBlock);
-
-                chunk = new byte[DATA_BLOCK_MAX_SIZE];
-                bytesRead = stream.read(chunk);
-
-                order++;
             }
+        }
+
+        try {
+            writeFileData(fileId, inputStream, blobsDir);
+        } catch (GeneralSecurityException e) {
+            throw new DecryptionFailedException(e);
         }
     }
 
-    public void updateFileData(String fileId, File sourceFile) throws IOException {
-        db.runInTransaction(() -> db.getDataBlockDao().deleteByFileId(fileId));
-        addFileData(fileId, sourceFile);
-    }
-
-    public byte[] read(String fileId) {
-        Set<String> ids = new LinkedHashSet<>(db.getDataBlockDao().getBlockIdsByFileId(fileId));
+    public byte[] read(String fileId) throws IOException, DecryptionFailedException {
+        Set<String> ids = new LinkedHashSet<>(db.getFileBlobInfoDao().getBlobIdsByFileId(fileId));
+        File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
 
         Long fileSize = requireNonNull(db.getFileInfoDao().get(fileId)).getSize();
         byte[] fileBytes = new byte[Math.toIntExact(fileSize)];
         int readBytes = 0;
 
         for (String id : ids) {
-            DataBlock dataBlock = db.getDataBlockDao().get(id);
-            byte[] data = dataBlock.getData();
+            File blobFile = new File(blobsDir, id);
 
-            System.arraycopy(data, 0, fileBytes, readBytes, data.length);
-            readBytes += data.length;
+            try {
+                byte[] blob = cryptor.decrypt(filesUtils.readFileBytes(blobFile));
+
+                System.arraycopy(blob, 0, fileBytes, readBytes, blob.length);
+                readBytes += blob.length;
+            } catch (GeneralSecurityException e) {
+                throw new DecryptionFailedException(e);
+            }
         }
 
         return fileBytes;
     }
 
-    public long read(String fileId, Consumer<byte[]> actionPerChunk) {
-        Set<String> ids = new LinkedHashSet<>(db.getDataBlockDao().getBlockIdsByFileId(fileId));
+    public long read(String fileId, Consumer<byte[]> actionPerChunk)
+            throws IOException, DecryptionFailedException {
+
+        Set<String> ids = new LinkedHashSet<>(db.getFileBlobInfoDao().getBlobIdsByFileId(fileId));
+        File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
 
         long readBytes = 0;
 
         for (String id : ids) {
-            DataBlock dataBlock = db.getDataBlockDao().get(id);
-            actionPerChunk.accept(dataBlock.getData());
-            readBytes += dataBlock.getData().length;
+            File blobFile = new File(blobsDir, id);
+
+            try {
+                byte[] blob = cryptor.decrypt(filesUtils.readFileBytes(blobFile));
+
+                actionPerChunk.accept(blob);
+                readBytes += blob.length;
+            } catch (GeneralSecurityException e) {
+                throw new DecryptionFailedException(e);
+            }
         }
 
         return readBytes;
@@ -186,36 +229,122 @@ public class FileService {
         db.getFileInfoDao().update(fileInfo);
     }
 
-    public void delete(String fileId) {
+    public void delete(String fileId) throws IOException {
         FileInfo fileInfo = db.getFileInfoDao().get(fileId);
 
-        db.runInTransaction(() -> {
-            db.getDataBlockDao().deleteByFileId(fileId);
-            db.getFileInfoDao().delete(fileInfo);
-            db.getNoteDao().setUpdatedAtById(fileInfo.getNoteId(), LocalDateTime.now());
-        });
+        try {
+            db.runInTransaction(() -> {
+                db.getFileBlobInfoDao().deleteByFileId(fileId);
+                db.getFileInfoDao().delete(fileInfo);
+                db.getNoteDao().setUpdatedAtById(fileInfo.getNoteId(), LocalDateTime.now());
+
+                File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
+                File blobFile = new File(blobsDir, fileId);
+
+                try {
+                    Files.deleteIfExists(blobFile.toPath());
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        } catch (UncheckedIOException e) {
+            throw requireNonNull(e.getCause());
+        }
     }
 
     public void importFileInfo(FileInfo fileInfo) {
         db.getFileInfoDao().insert(fileInfo);
     }
 
-    public void importDataBlock(DataBlock dataBlock) {
-        String fileId = dataBlock.getFileId();
+    public void importFileBlobInfo(FileBlobInfo fileBlobInfo) {
+        String fileId = fileBlobInfo.getFileId();
 
         if (db.getFileInfoDao().get(fileId) == null) {
             throw new IllegalArgumentException("File not found");
         }
 
-        db.getDataBlockDao().insert(dataBlock);
+        db.getFileBlobInfoDao().insert(fileBlobInfo);
     }
 
     public long getFilesCount() {
         return db.getFileInfoDao().getRowsCount();
     }
 
-    public long getDataBlocksCount() {
-        return db.getDataBlockDao().getRowsCount();
+    public long getBlobsCount() {
+        return db.getFileBlobInfoDao().getRowsCount();
+    }
+
+    private void writeFileData(String fileId, InputStream inputStream , File blobsDir)
+            throws IOException, GeneralSecurityException {
+
+        try (inputStream) {
+            requireNonNull(inputStream, "Input stream is null");
+
+            byte[] blob = new byte[FILE_BLOB_MAX_SIZE];
+
+            long order = 0;
+            int bytesRead = inputStream.read(blob);
+
+            while (bytesRead != -1) {
+                if (bytesRead != FILE_BLOB_MAX_SIZE) {
+                    byte[] subBlob = new byte[bytesRead];
+                    System.arraycopy(blob, 0, subBlob, 0, bytesRead);
+                    blob = subBlob;
+                }
+
+                FileBlobInfo blobInfo = new FileBlobInfo();
+
+                blobInfo.setId(randomUUID().toString());
+                blobInfo.setFileId(fileId);
+                blobInfo.setOrder(order);
+
+                db.getFileBlobInfoDao().insert(blobInfo);
+
+                File blobFile = new File(blobsDir, blobInfo.getId());
+                byte[] encryptedBlob = cryptor.encrypt(blob);
+
+                filesUtils.writeFileBytes(blobFile, encryptedBlob);
+
+                blob = new byte[FILE_BLOB_MAX_SIZE];
+                bytesRead = inputStream.read(blob);
+
+                order++;
+            }
+        }
+    }
+
+    private FileInfo getFileInfo(String noteId, Uri uri) {
+        FileExifDataResolver resolver = new FileExifDataResolver(context, filesUtils, uri);
+
+        String filename = resolver.getFileName();
+        String mimeType = resolver.getMimeType();
+
+        long size = resolver.getFileSize();
+
+        FileInfo fileInfo = new FileInfo();
+
+        fileInfo.setNoteId(noteId);
+        fileInfo.setSize(size);
+        fileInfo.setName(filename);
+
+        if (mimeType != null) {
+            fileInfo.setType(mimeType);
+            fileInfo.setThumbnail(getFileThumbnail(uri, mimeType));
+        }
+
+
+        return fileInfo;
+    }
+
+    public byte[] getBlobData(String blobId) throws IOException, DecryptionFailedException {
+        try {
+            File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
+            File blobFile = new File(blobsDir, blobId);
+
+            return cryptor.decrypt(filesUtils.readFileBytes(blobFile));
+        } catch (GeneralSecurityException e) {
+            throw new DecryptionFailedException(e);
+        }
     }
 
     private FileInfo setDecimalId(FileInfo fileInfo) {
@@ -225,5 +354,24 @@ public class FileService {
         fileInfo.setDecimalId(hash);
 
         return fileInfo;
+    }
+
+    private byte[] getFileThumbnail(Uri uri, String mimeType) {
+        try {
+            String type = mimeType.split("/")[0];
+            ThumbnailCreator creator;
+
+            if (type.equals("image")) {
+                creator = new ImageThumbnailCreator(context, filesUtils);
+            } else if (type.equals("video")) {
+                creator = new VideoThumbnailCreator(context);
+            } else {
+                return null;
+            }
+
+            return requireNonNull(creator).getThumbnail(uri);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -5,6 +5,7 @@ import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +16,7 @@ import javax.crypto.SecretKey;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.exception.DecryptionFailedException;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.migration.service.AppMigration;
@@ -23,6 +24,7 @@ import app.notesr.migration.service.AppMigrationException;
 import app.notesr.note.service.NoteService;
 import app.notesr.security.crypto.AesCbcCryptor;
 import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.crypto.ValueDecryptor;
 import app.notesr.security.dto.CryptoSecrets;
@@ -61,15 +63,14 @@ public class RoomIntegrationMigration implements AppMigration {
         try {
             AppDatabase db = getAppDatabase(context);
 
+            filesUtils = getFilesUtils();
             noteService = getNoteService(db);
-            fileService = getFileService(db);
-
+            fileService = getFileService(context, db, filesUtils);
             oldDbHelper = getOldDbHelper(context);
 
             CryptoSecrets cryptoSecrets = getCryptoSecrets();
             entityMapper = getMapper(cryptoSecrets);
 
-            filesUtils = getFilesUtils();
             wiper = getWiper();
 
             db.runInTransaction(() -> {
@@ -77,7 +78,7 @@ public class RoomIntegrationMigration implements AppMigration {
                 migrateFiles();
                 wipeOldDbs(context);
             });
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new AppMigrationException("Unhandled migration exception", e);
         }
     }
@@ -108,16 +109,28 @@ public class RoomIntegrationMigration implements AppMigration {
 
             for (String dataBlockId : oldDbHelper.getBlocksIdsByFileId(fileInfo.getId())) {
                 Map<String, Object> dataBlockMap = oldDbHelper.getDataBlockById(dataBlockId);
-                DataBlock dataBlock;
+
+                FileBlobInfo fileBlobInfo;
 
                 try {
-                    dataBlock = entityMapper.mapDataBlock(dataBlockMap);
+                    fileBlobInfo = entityMapper.mapFileBlobInfo(dataBlockMap);
                 } catch (DecryptionFailedException e) {
                     throw new AppMigrationException("Failed to decrypt data block with id "
                             + dataBlockMap.get("id"), e);
                 }
 
-                fileService.importDataBlock(dataBlock);
+                fileService.importFileBlobInfo(fileBlobInfo);
+
+                try {
+                    byte[] genericBlobBytes = entityMapper.getDataOfDataBlock(dataBlockMap);
+                    ByteArrayInputStream genericBlobStream =
+                            new ByteArrayInputStream(genericBlobBytes);
+
+                    fileService.saveFileData(fileBlobInfo.getFileId(), genericBlobStream);
+                } catch (DecryptionFailedException | IOException e) {
+                    throw new AppMigrationException("Failed to save data block with id "
+                            + fileBlobInfo.getId(), e);
+                }
             }
         }
     }
@@ -146,8 +159,11 @@ public class RoomIntegrationMigration implements AppMigration {
         return new NoteService(db);
     }
 
-    FileService getFileService(AppDatabase db) {
-        return new FileService(db);
+    FileService getFileService(Context context, AppDatabase db, FilesUtilsAdapter filesUtils) {
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+
+        return new FileService(context, db, cryptor, filesUtils);
     }
 
     OldDbHelper getOldDbHelper(Context context) {

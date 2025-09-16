@@ -30,7 +30,7 @@ public class ImportV1Strategy implements ImportStrategy {
     private final AppDatabase db;
     private final NoteService noteService;
     private final FileService fileService;
-    private final File file;
+    private final File tempDecryptedBackupFile;
     private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
 
@@ -38,10 +38,10 @@ public class ImportV1Strategy implements ImportStrategy {
     public void execute() {
         db.runInTransaction(() -> {
             statusCallback.updateStatus(ImportStatus.IMPORTING);
-            importData(file);
+            importData(tempDecryptedBackupFile);
 
             statusCallback.updateStatus(ImportStatus.CLEANING_UP);
-            wipeFile(file);
+            wipeFile(tempDecryptedBackupFile);
         });
     }
 

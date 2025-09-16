@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
+import app.notesr.exception.DecryptionFailedException;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.util.FilesUtilsAdapter;
@@ -16,14 +17,20 @@ public class FileIOHelper {
     private final FilesUtilsAdapter filesUtils;
     private final FileService fileService;
 
-    public void writeToFile(String fileId, File destFile) {
-        fileService.read(fileId, chunk -> {
-            try {
-                filesUtils.writeFileBytes(destFile, chunk, true);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to write file", e);
-            }
-        });
+    public void exportFile(String fileId, File destFile) {
+        try {
+            fileService.read(fileId, chunk -> {
+                try {
+                    filesUtils.writeFileBytes(destFile, chunk, true);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to write file", e);
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read file", e);
+        } catch (DecryptionFailedException e) {
+            throw new RuntimeException("Failed to decrypt file", e);
+        }
     }
 
     public File dropToCache(FileInfo fileInfo, File cacheDir) {
@@ -45,6 +52,8 @@ public class FileIOHelper {
             return tempFile;
         } catch (IOException e) {
             throw new RuntimeException("Failed to cache file", e);
+        } catch (DecryptionFailedException e) {
+            throw new RuntimeException("Failed to decrypt file", e);
         }
     }
 

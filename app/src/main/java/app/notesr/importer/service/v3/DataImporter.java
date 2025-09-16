@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.ImportFailedException;
-import app.notesr.file.model.DataBlock;
+import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.note.model.Note;
@@ -76,9 +76,9 @@ public class DataImporter {
         walk(dataBlocksDirPath, path -> {
             try {
                 String dataBlockJson = decryptor.decryptJsonObject(Files.readAllBytes(path));
-                DataBlock dataBlock = mapper.readValue(dataBlockJson, DataBlock.class);
+                FileBlobInfo dataBlock = mapper.readValue(dataBlockJson, FileBlobInfo.class);
 
-                fileService.importDataBlock(dataBlock);
+                fileService.importFileBlobInfo(dataBlock);
             } catch (IOException | DecryptionFailedException e) {
                 throw new ImportFailedException(e);
             }

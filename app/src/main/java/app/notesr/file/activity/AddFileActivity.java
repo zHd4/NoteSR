@@ -1,8 +1,8 @@
 package app.notesr.file.activity;
 
-import static java.util.Objects.requireNonNull;
-import static java.util.UUID.randomUUID;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
+import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -20,25 +20,17 @@ import androidx.appcompat.app.AlertDialog;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.db.DatabaseProvider;
+import app.notesr.exception.DecryptionFailedException;
 import app.notesr.file.service.FileService;
-import app.notesr.file.model.FileInfo;
-import app.notesr.util.FileExifDataResolver;
+import app.notesr.security.crypto.AesCryptor;
+import app.notesr.security.crypto.AesGcmCryptor;
+import app.notesr.security.crypto.CryptoManagerProvider;
+import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.util.FilesUtils;
-import app.notesr.util.Wiper;
-import app.notesr.util.WiperAdapter;
-import app.notesr.util.thumbnail.ImageThumbnailCreator;
-import app.notesr.util.thumbnail.ThumbnailCreator;
-import app.notesr.util.thumbnail.VideoThumbnailCreator;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AddFileActivity extends ActivityBase {
     private FileService fileService;
@@ -50,7 +42,16 @@ public class AddFileActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_file);
 
-        fileService = new FileService(DatabaseProvider.getInstance(getApplicationContext()));
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+
+        fileService = new FileService(
+                getApplicationContext(),
+                DatabaseProvider.getInstance(getApplicationContext()),
+                cryptor,
+                new FilesUtils()
+        );
+
         noteId = getIntent().getStringExtra("noteId");
 
         if (noteId == null) {
@@ -102,12 +103,9 @@ public class AddFileActivity extends ActivityBase {
         newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);
 
-            Map<FileInfo, File> filesMap = cacheFiles(getFilesUri(data));
-            fileService.save(filesMap);
-
             try {
-                clearCachedFiles(filesMap);
-            } catch (IOException e) {
+                fileService.save(noteId, getFilesUri(data));
+            } catch (IOException | DecryptionFailedException e) {
                 throw new RuntimeException(e);
             }
 
@@ -140,121 +138,10 @@ public class AddFileActivity extends ActivityBase {
         return result;
     }
 
-    private Map<FileInfo, File> cacheFiles(List<Uri> uris) {
-        Map<FileInfo, File> filesMap = new LinkedHashMap<>();
-
-        uris.forEach(uri -> {
-
-            try {
-                FileInfo fileInfo = getFileInfo(uri);
-
-                MimeType mimeType = fileInfo.getType() != null
-                        ? MimeType.fromString(fileInfo.getType())
-                        : null;
-
-                File file = createTempFileFromUri(uri, mimeType);
-
-                if (mimeType != null) {
-                    fileInfo.setThumbnail(getFileThumbnail(file, mimeType));
-                }
-
-                filesMap.put(fileInfo, file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        return filesMap;
-    }
-
-    private void clearCachedFiles(Map<FileInfo, File> filesMap) throws IOException {
-        WiperAdapter wiper = new Wiper();
-
-        for (File file : filesMap.values()) {
-            wiper.wipeFile(file);
-        }
-    }
-
-    private FileInfo getFileInfo(Uri uri) {
-        FileExifDataResolver resolver = new FileExifDataResolver(
-                getApplicationContext(),
-                new FilesUtils(),
-                uri
-        );
-
-        String filename = resolver.getFileName();
-        String type = resolver.getMimeType();
-
-        long size = resolver.getFileSize();
-
-        FileInfo fileInfo = new FileInfo();
-
-        fileInfo.setNoteId(noteId);
-        fileInfo.setSize(size);
-        fileInfo.setName(filename);
-        fileInfo.setType(type);
-
-        return fileInfo;
-    }
-
-    private InputStream getFileStream(Uri uri) {
-        try {
-            return getContentResolver().openInputStream(uri);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private byte[] getFileThumbnail(File file, MimeType mimeType) {
-        try {
-            String type = mimeType.type();
-            ThumbnailCreator creator;
-
-            if (type.equals("image")) {
-                creator = new ImageThumbnailCreator();
-            } else if (type.equals("video")) {
-                creator = new VideoThumbnailCreator();
-            } else {
-                return null;
-            }
-
-            return requireNonNull(creator).getThumbnail(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private File createTempFileFromUri(Uri uri, MimeType mimeType) throws IOException {
-        String extension = mimeType != null ? "." + mimeType.extension() : "";
-        String fileName = randomUUID().toString() + extension;
-
-        File file = new File(getCacheDir(), fileName);
-
-        try (InputStream inputStream = getFileStream(uri);
-             FileOutputStream outputStream = new FileOutputStream(file)) {
-
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-        }
-
-        return file;
-    }
-
     private AlertDialog createProgressDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setView(R.layout.progress_dialog_adding).setCancelable(false);
 
         return builder.create();
-    }
-
-    private record MimeType(String type, String extension) {
-        public static MimeType fromString(String s) {
-            String[] mimeTypeParts = s.split("/");
-            return new MimeType(mimeTypeParts[0], mimeTypeParts[1]);
-        }
     }
 }

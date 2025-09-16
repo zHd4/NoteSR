@@ -1,24 +1,28 @@
 package app.notesr.util.thumbnail;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
-import android.util.Log;
+import android.net.Uri;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class VideoThumbnailCreator implements ThumbnailCreator {
-    private static final String TAG = VideoThumbnailCreator.class.getName();
     private static final Bitmap.CompressFormat THUMBNAIL_FORMAT = Bitmap.CompressFormat.WEBP;
     private static final int TIME_US = 1;
     private static final int QUALITY = 90;
     private static final int WIDTH = 200;
 
+    private final Context context;
+
     @Override
-    public byte[] getThumbnail(File file) {
+    public byte[] getThumbnail(Uri uri) throws IOException {
         try (MediaMetadataRetriever retriever = new MediaMetadataRetriever()) {
-            retriever.setDataSource(file.getAbsolutePath());
+            retriever.setDataSource(context, uri);
             Bitmap original = retriever.getFrameAtTime(TIME_US);
 
             if (original == null) return null;
@@ -42,9 +46,6 @@ public class VideoThumbnailCreator implements ThumbnailCreator {
             retriever.release();
 
             return stream.toByteArray();
-        } catch (IOException e) {
-            Log.e(TAG, "IOException", e);
-            throw new RuntimeException(e);
         }
     }
 }

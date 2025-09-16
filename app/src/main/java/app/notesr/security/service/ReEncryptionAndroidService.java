@@ -19,11 +19,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.io.IOException;
 
 import app.notesr.R;
+import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.EncryptionFailedException;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.util.FilesUtils;
 
 public class ReEncryptionAndroidService extends Service implements Runnable {
 
@@ -57,11 +59,14 @@ public class ReEncryptionAndroidService extends Service implements Runnable {
         CryptoSecrets newSecrets = (CryptoSecrets) intent.getSerializableExtra(EXTRA_NEW_SECRETS);
         requireNonNull(newSecrets);
 
+        FilesUtils filesUtils = new FilesUtils();
+
         secretsUpdateService = new SecretsUpdateService(
                 getApplicationContext(),
                 DatabaseProvider.DB_NAME,
                 cryptoManager,
-                newSecrets
+                newSecrets,
+                filesUtils
         );
 
         Thread thread = new Thread(this);
@@ -82,7 +87,7 @@ public class ReEncryptionAndroidService extends Service implements Runnable {
         try {
             secretsUpdateService.update();
             onComplete();
-        } catch (EncryptionFailedException | IOException e) {
+        } catch (EncryptionFailedException | DecryptionFailedException | IOException e) {
             Log.e(TAG, "Filed to update database", e);
             throw new RuntimeException("Filed to update database", e);
         } finally {
