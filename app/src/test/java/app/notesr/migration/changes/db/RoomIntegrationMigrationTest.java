@@ -102,6 +102,7 @@ class RoomIntegrationMigrationTest {
         when(mockOldDbHelper.getBlocksIdsByFileId("1")).thenReturn(List.of("block1"));
         when(mockOldDbHelper.getDataBlockById("block1")).thenReturn(blockMap);
         when(mockEntityMapper.mapFileBlobInfo(blockMap)).thenReturn(dataBlock);
+        when(mockEntityMapper.getDataOfDataBlock(blockMap)).thenReturn(new byte[] {1, 2, 3});
 
         doAnswer(invocation -> {
             ((Runnable) invocation.getArgument(0)).run();
