@@ -108,8 +108,6 @@ class EntityMapperTest {
         dataBlockMap.put("order", 1L);
         dataBlockMap.put("encryptedData", encryptedData);
 
-        when(valueDecryptor.decrypt(encryptedData)).thenReturn(decryptedData);
-
         FileBlobInfo result = entityMapper.mapFileBlobInfo(dataBlockMap);
 
         assertNotNull(result);
