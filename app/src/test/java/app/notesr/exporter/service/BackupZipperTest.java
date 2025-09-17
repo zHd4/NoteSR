@@ -32,9 +32,10 @@ class BackupZipperTest {
         backupZipper.close();
 
         try (ZipFile zip = new ZipFile(zipFile)) {
-            assertNotNull(zip.getEntry("note/"));
+            assertNotNull(zip.getEntry("notes/"));
             assertNotNull(zip.getEntry("finfo/"));
-            assertNotNull(zip.getEntry("dblock/"));
+            assertNotNull(zip.getEntry("binfo/"));
+            assertNotNull(zip.getEntry("fblobs/"));
         }
     }
 
@@ -64,7 +65,7 @@ class BackupZipperTest {
         }
 
         try (ZipFile zip = new ZipFile(zipFile)) {
-            ZipEntry noteEntry = zip.getEntry("note/" + noteId);
+            ZipEntry noteEntry = zip.getEntry("notes/" + noteId);
 
             assertNotNull(noteEntry);
             assertEquals(noteContent.length, noteEntry.getSize());
