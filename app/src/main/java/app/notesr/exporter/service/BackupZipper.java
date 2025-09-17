@@ -25,6 +25,7 @@ public final class BackupZipper implements AutoCloseable {
         createDir(NOTES_DIR);
         createDir(FILES_INFO_DIR);
         createDir(FILES_BLOBS_INFO_DIR);
+        createDir(FILES_BLOBS_DATA_DIR);
     }
 
     public void addVersionFile(String version) throws IOException {
