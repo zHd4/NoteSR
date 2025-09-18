@@ -74,11 +74,9 @@ public class ExportServiceTest {
     public void testSuccessfulExport() throws Exception {
         Note note = createTestNote();
         FileInfo fileInfo = createTestFileInfo(note.getId());
-        FileBlobInfo fileBlobInfo = createFileBlobInfo(fileInfo.getId());
 
         noteService.importNote(note);
         fileService.importFileInfo(fileInfo);
-        fileService.importFileBlobInfo(fileBlobInfo);
         fileService.saveFileData(fileInfo.getId(), getTestFileDataInputStream());
 
         exportService.doExport();
@@ -133,16 +131,6 @@ public class ExportServiceTest {
         fileInfo.setUpdatedAt(LocalDateTime.now());
 
         return fileInfo;
-    }
-
-    private FileBlobInfo createFileBlobInfo(String fileId) {
-        FileBlobInfo fileBlobInfo = new FileBlobInfo();
-
-        fileBlobInfo.setId(randomUUID().toString());
-        fileBlobInfo.setFileId(fileId);
-        fileBlobInfo.setOrder(0L);
-
-        return fileBlobInfo;
     }
 
     private ByteArrayInputStream getTestFileDataInputStream() {
