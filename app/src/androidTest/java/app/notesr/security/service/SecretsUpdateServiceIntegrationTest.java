@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -99,8 +100,9 @@ public class SecretsUpdateServiceIntegrationTest {
     public void testUpdateMigratesDataAndChangesKey() throws Exception {
         secretsUpdateService.update();
 
+        byte[] newKey = newSecrets.getKey();
         AppDatabase dbWithNewKey = Room.databaseBuilder(context, AppDatabase.class, dbName)
-                .openHelperFactory(new SupportFactory(newSecrets.getKey()))
+                .openHelperFactory(new SupportFactory(Arrays.copyOf(newKey, newKey.length)))
                 .build();
 
         List<Note> notes = dbWithNewKey.getNoteDao().getAll();
@@ -160,7 +162,7 @@ public class SecretsUpdateServiceIntegrationTest {
                               Note note,
                               FileInfo fileInfo,
                               FileBlobInfo fileBlobInfo,
-                              byte[] fileBlobBytes) throws IOException {
+                              byte[] fileBlobBytes) throws IOException, GeneralSecurityException {
         AppDatabase db = Room.databaseBuilder(context, AppDatabase.class, dbName)
                 .openHelperFactory(new SupportFactory(Arrays.copyOf(key, key.length)))
                 .build();
@@ -171,7 +173,12 @@ public class SecretsUpdateServiceIntegrationTest {
 
         db.close();
 
-        Files.write(blobsDir.toPath().resolve(fileBlobInfo.getId()), fileBlobBytes);
+        Files.createDirectories(blobsDir.toPath());
+
+        AesGcmCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(oldSecrets));
+        byte[] encryptedFileBlobBytes = cryptor.encrypt(fileBlobBytes);
+
+        Files.write(blobsDir.toPath().resolve(fileBlobInfo.getId()), encryptedFileBlobBytes);
     }
 
     private Note getTestNote() {
