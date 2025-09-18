@@ -56,9 +56,14 @@ public class SecretsUpdateService {
         AesCryptor oldCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(oldSecrets));
         AesCryptor newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
 
-        moveDataInTransaction(oldDb, newDb);
-        updateBlobsData(newDb, new File(context.getFilesDir(), FileService.BLOBS_DIR_NAME),
-                oldCryptor, newCryptor);
+        newDb.runInTransaction(() -> {
+            copyDbData(oldDb, newDb);
+
+            File blobsDir = new File(context.getFilesDir(), FileService.BLOBS_DIR_NAME);
+            updateBlobsData(newDb, blobsDir, oldCryptor, newCryptor);
+
+            return null;
+        });
 
         oldDb.close();
         newDb.close();
@@ -69,17 +74,15 @@ public class SecretsUpdateService {
         DatabaseProvider.reinit(context, getSupportFactory(newKey));
     }
 
-    private void moveDataInTransaction(AppDatabase oldDb, AppDatabase newDb) {
-        newDb.runInTransaction(() -> {
-            List<Note> allNotes = oldDb.getNoteDao().getAll();
-            newDb.getNoteDao().insertAll(allNotes);
+    private void copyDbData(AppDatabase oldDb, AppDatabase newDb) {
+        List<Note> allNotes = oldDb.getNoteDao().getAll();
+        newDb.getNoteDao().insertAll(allNotes);
 
-            List<FileInfo> allFilesInfo = oldDb.getFileInfoDao().getAll();
-            newDb.getFileInfoDao().insertAll(allFilesInfo);
+        List<FileInfo> allFilesInfo = oldDb.getFileInfoDao().getAll();
+        newDb.getFileInfoDao().insertAll(allFilesInfo);
 
-            List<FileBlobInfo> allFilesBlobInfo = oldDb.getFileBlobInfoDao().getAll();
-            newDb.getFileBlobInfoDao().insertAll(allFilesBlobInfo);
-        });
+        List<FileBlobInfo> allFilesBlobInfo = oldDb.getFileBlobInfoDao().getAll();
+        newDb.getFileBlobInfoDao().insertAll(allFilesBlobInfo);
     }
 
     private void updateBlobsData(AppDatabase db,
