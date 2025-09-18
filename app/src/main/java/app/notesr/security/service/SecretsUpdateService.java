@@ -53,16 +53,15 @@ public class SecretsUpdateService {
         AppDatabase oldDb = getDatabase(context, dbName, getSupportFactory(oldKey));
         AppDatabase newDb = getDatabase(context, newDbFile.getName(), getSupportFactory(newKey));
 
-        moveDataInTransaction(oldDb, newDb);
-
-        oldDb.close();
-        newDb.close();
-
         AesCryptor oldCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(oldSecrets));
         AesCryptor newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
 
+        moveDataInTransaction(oldDb, newDb);
         updateBlobsData(newDb, new File(context.getFilesDir(), FileService.BLOBS_DIR_NAME),
                 oldCryptor, newCryptor);
+
+        oldDb.close();
+        newDb.close();
 
         replaceDatabase(oldDbFile, newDbFile);
 
