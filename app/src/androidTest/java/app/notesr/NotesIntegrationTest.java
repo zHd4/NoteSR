@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.SecureRandom;
@@ -43,6 +44,7 @@ public class NotesIntegrationTest {
     private static final Faker FAKER = new Faker();
 
     private static Context context;
+    private static AesCryptor cryptor;
     private static AppDatabase db;
     private static NoteService noteService;
     private static FileService fileService;
@@ -53,13 +55,13 @@ public class NotesIntegrationTest {
     public static void beforeAll() throws Exception {
         context = ApplicationProvider.getApplicationContext();
 
+        FilesUtilsAdapter filesUtils = new FilesUtils();
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
         CryptoSecrets cryptoSecrets = getTestSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
-        FilesUtilsAdapter filesUtils = new FilesUtils();
 
         cryptoManager.setSecrets(context, cryptoSecrets);
 
+        cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
         db = DatabaseProvider.getInstance(context);
         noteService = new NoteService(db);
         fileService = new FileService(context, db, cryptor, filesUtils);
@@ -162,8 +164,10 @@ public class NotesIntegrationTest {
         assertEquals(fileInfo.getId(), fileBlobInfo.getFileId());
         assertEquals(0L, (long) fileBlobInfo.getOrder());
 
-        String cacheDirPath = context.getCacheDir().getPath();
-        byte[] fileBlobData = Files.readAllBytes(Path.of(cacheDirPath, fileBlobId));
+        File blobsDir = new File(context.getFilesDir(), FileService.BLOBS_DIR_NAME);
+        File blobFile = new File(blobsDir, fileBlobId);
+
+        byte[] fileBlobData = cryptor.decrypt(Files.readAllBytes(blobFile.toPath()));
 
         assertArrayEquals(fileData, fileBlobData);
     }
