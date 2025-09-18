@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,10 +59,10 @@ public class ImageThumbnailCreator implements ThumbnailCreator {
     }
 
     private Bitmap.CompressFormat getImageCompressFormat(Uri uri) {
-        FileExifDataResolver fileExifDataResolver = new FileExifDataResolver(context,
-                filesUtils, uri);
+        String filename = "file".equalsIgnoreCase(uri.getScheme())
+                ? new File(requireNonNull(uri.getPath())).getName()
+                : new FileExifDataResolver(context, filesUtils, uri).getFileName();
 
-        String filename = fileExifDataResolver.getFileName();
         String extension = filesUtils.getFileExtension(filename);
 
         if (!COMPRESS_FORMAT_MAP.containsKey(extension)) {
