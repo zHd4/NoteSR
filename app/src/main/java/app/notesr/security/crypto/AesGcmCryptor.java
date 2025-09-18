@@ -59,8 +59,9 @@ public class AesGcmCryptor extends AesCryptor {
     public byte[] decrypt(byte[] encryptedData) throws NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
-        if (encryptedData.length < IV_SIZE)
+        if (encryptedData.length < IV_SIZE) {
             throw new IllegalArgumentException("Data too short for GCM");
+        }
 
         byte[] iv = Arrays.copyOfRange(encryptedData, 0, IV_SIZE);
         byte[] ciphertext = Arrays.copyOfRange(encryptedData, IV_SIZE, encryptedData.length);
