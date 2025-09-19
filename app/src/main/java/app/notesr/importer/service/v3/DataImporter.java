@@ -21,9 +21,10 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class DataImporter {
-    private static final String NOTES_DIR = "note";
-    private static final String FILES_INFOS_DIR = "finfo";
-    private static final String DATA_BLOCKS_DIR = "dblock";
+    private static final String NOTES_DIR = "notes";
+    private static final String FILES_INFO_DIR = "finfo";
+    private static final String FILES_BLOBS_INFO_DIR = "binfo";
+    private static final String FILES_BLOBS_DATA_DIR = "fblobs";
 
     private final BackupDecryptor decryptor;
     private final NoteService noteService;
@@ -57,7 +58,7 @@ public class DataImporter {
 
     private void importFilesInfo(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
             throws IOException {
-        Path filesInfosDirPath = fs.getPath("/" + FILES_INFOS_DIR);
+        Path filesInfosDirPath = fs.getPath("/" + FILES_INFO_DIR);
         walk(filesInfosDirPath, path -> {
             try {
                 String fileInfoJson = decryptor.decryptJsonObject(Files.readAllBytes(path));
@@ -72,13 +73,19 @@ public class DataImporter {
 
     private void importFilesData(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
             throws IOException {
-        Path dataBlocksDirPath = fs.getPath("/" + DATA_BLOCKS_DIR);
-        walk(dataBlocksDirPath, path -> {
-            try {
-                String dataBlockJson = decryptor.decryptJsonObject(Files.readAllBytes(path));
-                FileBlobInfo dataBlock = mapper.readValue(dataBlockJson, FileBlobInfo.class);
+        Path blobsInfoDirPath = fs.getPath("/" + FILES_BLOBS_INFO_DIR);
+        Path blobsDataDirPath = fs.getPath("/" + FILES_BLOBS_DATA_DIR);
 
-                fileService.importFileBlobInfo(dataBlock);
+        walk(blobsInfoDirPath, path -> {
+            try {
+                String blobInfoJson = decryptor.decryptJsonObject(Files.readAllBytes(path));
+                FileBlobInfo blobInfo = mapper.readValue(blobInfoJson, FileBlobInfo.class);
+
+                Path blobDataPath = blobsDataDirPath.resolve(blobInfo.getId());
+                byte[] blobData = decryptor.decrypt(Files.readAllBytes(blobDataPath));
+
+                fileService.importFileBlobInfo(blobInfo);
+                fileService.importFileBlobData(blobInfo.getId(), blobData);
             } catch (IOException | DecryptionFailedException e) {
                 throw new ImportFailedException(e);
             }
