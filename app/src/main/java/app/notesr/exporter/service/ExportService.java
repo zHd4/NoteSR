@@ -64,8 +64,8 @@ public class ExportService {
 
                 exportVersion(zipper);
                 exportNotes(zipper, backupEncryptor);
-                exportFilesInfos(zipper, backupEncryptor);
-                exportBlobs(zipper, backupEncryptor);
+                exportFilesInfo(zipper, backupEncryptor);
+                exportFilesData(zipper, backupEncryptor);
             }
 
             statusHolder.setStatus(ExportStatus.ENCRYPTING_DATA);
@@ -113,7 +113,7 @@ public class ExportService {
         }
     }
 
-    private void exportFilesInfos(BackupZipper zipper, BackupEncryptor encryptor)
+    private void exportFilesInfo(BackupZipper zipper, BackupEncryptor encryptor)
             throws IOException, EncryptionFailedException {
 
         for (FileInfo fileInfo : fileService.getAllFilesInfo()) {
@@ -127,7 +127,7 @@ public class ExportService {
         }
     }
 
-    private void exportBlobs(BackupZipper zipper, BackupEncryptor encryptor)
+    private void exportFilesData(BackupZipper zipper, BackupEncryptor encryptor)
             throws IOException, EncryptionFailedException, DecryptionFailedException {
 
         for (FileBlobInfo blobInfo : fileService.getAllFilesBlobInfo()) {
