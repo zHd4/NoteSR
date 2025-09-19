@@ -268,6 +268,12 @@ public class FileService {
         db.getFileBlobInfoDao().insert(fileBlobInfo);
     }
 
+    public void importFileBlobData(String blobId, byte[] blobData) throws IOException {
+        File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
+        File blobFile = new File(blobsDir, blobId);
+        filesUtils.writeFileBytes(blobFile, blobData);
+    }
+
     public long getFilesCount() {
         return db.getFileInfoDao().getRowsCount();
     }
