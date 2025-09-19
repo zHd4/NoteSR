@@ -35,8 +35,8 @@ public class DataImporter {
             ObjectMapper objectMapper = getObjectMapper();
 
             importNotes(objectMapper, decryptor, backupZipFileSystem);
-            importFilesInfos(objectMapper, decryptor, backupZipFileSystem);
-            importDataBlocks(objectMapper, decryptor, backupZipFileSystem);
+            importFilesInfo(objectMapper, decryptor, backupZipFileSystem);
+            importFilesData(objectMapper, decryptor, backupZipFileSystem);
         }
     }
 
@@ -55,7 +55,7 @@ public class DataImporter {
         });
     }
 
-    private void importFilesInfos(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
+    private void importFilesInfo(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
             throws IOException {
         Path filesInfosDirPath = fs.getPath("/" + FILES_INFOS_DIR);
         walk(filesInfosDirPath, path -> {
@@ -70,7 +70,7 @@ public class DataImporter {
         });
     }
 
-    private void importDataBlocks(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
+    private void importFilesData(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
             throws IOException {
         Path dataBlocksDirPath = fs.getPath("/" + DATA_BLOCKS_DIR);
         walk(dataBlocksDirPath, path -> {
