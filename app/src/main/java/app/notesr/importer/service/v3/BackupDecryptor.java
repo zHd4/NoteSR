@@ -10,6 +10,14 @@ import lombok.RequiredArgsConstructor;
 public class BackupDecryptor {
     private final AesCryptor cryptor;
 
+    public byte[] decrypt(byte[] encrypted) throws DecryptionFailedException {
+        try {
+            return cryptor.decrypt(encrypted);
+        } catch (GeneralSecurityException e) {
+            throw new DecryptionFailedException(e);
+        }
+    }
+
     public String decryptJsonObject(byte[] encrypted) throws DecryptionFailedException {
         try {
             return new String(cryptor.decrypt(encrypted));
