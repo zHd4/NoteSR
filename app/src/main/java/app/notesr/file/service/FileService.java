@@ -234,18 +234,20 @@ public class FileService {
 
         try {
             db.runInTransaction(() -> {
+                File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
+
+                for (String blobId : db.getFileBlobInfoDao().getBlobIdsByFileId(fileId)) {
+                    File blobFile = new File(blobsDir, blobId);
+                    try {
+                        Files.deleteIfExists(blobFile.toPath());
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+
                 db.getFileBlobInfoDao().deleteByFileId(fileId);
                 db.getFileInfoDao().delete(fileInfo);
                 db.getNoteDao().setUpdatedAtById(fileInfo.getNoteId(), LocalDateTime.now());
-
-                File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
-                File blobFile = new File(blobsDir, fileId);
-
-                try {
-                    Files.deleteIfExists(blobFile.toPath());
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
             });
         } catch (UncheckedIOException e) {
             throw requireNonNull(e.getCause());

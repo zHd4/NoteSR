@@ -32,6 +32,7 @@ import app.notesr.util.FilesUtils;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -267,7 +268,12 @@ public class OpenNoteActivity extends ActivityBase {
 
                 newSingleThreadExecutor().execute(() -> {
                     runOnUiThread(progressDialog::show);
-                    noteService.delete(note.getId());
+
+                    try {
+                        noteService.delete(note.getId(), fileService);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     runOnUiThread(() -> {
                         progressDialog.dismiss();

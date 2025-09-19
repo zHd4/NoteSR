@@ -1,10 +1,16 @@
 package app.notesr.note.service;
 
+import static java.util.Objects.requireNonNull;
+
 import app.notesr.db.AppDatabase;
+import app.notesr.file.model.FileInfo;
+import app.notesr.file.service.FileService;
 import app.notesr.note.model.Note;
 import app.notesr.util.HashUtils;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -61,15 +67,22 @@ public class NoteService {
                 .collect(Collectors.toList());
     }
 
-    public void delete(String id) {
-        db.runInTransaction(() -> {
-            db.getFileInfoDao().getByNoteId(id).forEach(fileInfo -> {
-                db.getFileBlobInfoDao().deleteByFileId(fileInfo.getId());
-                db.getFileInfoDao().deleteById(fileInfo.getId());
-            });
+    public void delete(String id, FileService fileService) throws IOException {
+        try {
+            db.runInTransaction(() -> {
+                for (FileInfo fileInfo : db.getFileInfoDao().getByNoteId(id)) {
+                    try {
+                        fileService.delete(fileInfo.getId());
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
 
-            db.getNoteDao().deleteById(id);
-        });
+                db.getNoteDao().deleteById(id);
+            });
+        } catch (UncheckedIOException e) {
+            throw requireNonNull(e.getCause());
+        }
     }
 
     public void importNote(Note note) {
