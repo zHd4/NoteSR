@@ -100,8 +100,8 @@ public class ImportService {
     }
 
     private ImportV2Strategy getV2Strategy(File tempDecryptedFile) {
-        return new ImportV2Strategy(context, db, noteService, fileService, tempDecryptedFile,
-                tempDir, statusCallback, TIMESTAMP_FORMATTER);
+        return new ImportV2Strategy(db, noteService, fileService, tempDecryptedFile, tempDir,
+                statusCallback, TIMESTAMP_FORMATTER);
     }
 
     private ImportV3Strategy getV3Strategy(File tempDecryptedFile) {

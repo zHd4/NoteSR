@@ -3,8 +3,6 @@ package app.notesr.importer.service.v2;
 import static java.util.UUID.randomUUID;
 import static app.notesr.util.TempDataWiper.wipeTempData;
 
-import android.content.Context;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
@@ -31,7 +29,6 @@ public class ImportV2Strategy implements ImportStrategy {
     private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
     private static final String DATA_BLOCKS_DIR_NAME = "data_blocks";
 
-    private final Context context;
     private final AppDatabase db;
     private final NoteService noteService;
     private final FileService fileService;
