@@ -78,6 +78,8 @@ public class ImportService {
             importStrategy.execute();
             statusCallback.updateStatus(ImportStatus.DONE);
         } catch (Throwable e) {
+            Log.e(TAG, "Import failed with exception", e);
+
             if (tempDecryptedBackupFile.exists()) {
                 wipeFile(tempDecryptedBackupFile);
             }
