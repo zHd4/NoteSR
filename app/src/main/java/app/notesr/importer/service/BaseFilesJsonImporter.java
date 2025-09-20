@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.notesr.exception.DecryptionFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
@@ -33,7 +32,7 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         this.adaptedNotesIdMap = adaptedNotesIdMap;
     }
 
-    public void importFiles() throws IOException, DecryptionFailedException {
+    public void importFiles() throws IOException {
         importFilesInfo();
         importFilesData();
     }
@@ -134,7 +133,7 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         }
     }
 
-    protected abstract void importFilesData() throws IOException, DecryptionFailedException;
+    protected abstract void importFilesData() throws IOException;
 
     private void adaptId(FileInfo fileInfo) {
         String id = fileInfo.getId();
