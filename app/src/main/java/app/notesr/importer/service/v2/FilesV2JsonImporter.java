@@ -2,17 +2,15 @@ package app.notesr.importer.service.v2;
 
 import static java.util.Objects.requireNonNull;
 
-import android.net.Uri;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import app.notesr.exception.DecryptionFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
@@ -31,22 +29,25 @@ class FilesV2JsonImporter extends BaseFilesJsonImporter {
     }
 
     @Override
-    protected void importFilesData() throws IOException, DecryptionFailedException {
+    protected void importFilesData() throws IOException {
         if (skipTo("files_data_blocks")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
-                    FileBlobInfo genericBlobInfo = parseDataBlockObject();
-                    String id = genericBlobInfo.getId();
+                    FileBlobInfo blobInfo = parseDataBlockObject();
+                    String blobId = blobInfo.getId();
 
-                    if (fileService.getFileBlobInfo(id) == null) {
-                        String fileId = genericBlobInfo.getFileId();
-                        String genericBlobFileName = adaptedDataBlocksIdMap.getOrDefault(id, id);
+                    if (fileService.getFileBlobInfo(blobId) == null) {
+                        String tempBlobDataFileName =
+                                adaptedDataBlocksIdMap.getOrDefault(blobId, blobId);
 
-                        requireNonNull(genericBlobFileName,
+                        requireNonNull(tempBlobDataFileName,
                                 "Generic blob file name is null");
 
-                        File genericBlobFile = new File(dataBlocksDir, genericBlobFileName);
-                        fileService.saveFileData(fileId, Uri.fromFile(genericBlobFile));
+                        File tempBlobDataFile = new File(dataBlocksDir, tempBlobDataFileName);
+                        byte[] blobData = Files.readAllBytes(tempBlobDataFile.toPath());
+
+                        fileService.importFileBlobInfo(blobInfo);
+                        fileService.importFileBlobData(blobId, blobData);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
