@@ -9,6 +9,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.ImportFailedException;
@@ -93,8 +94,8 @@ public class DataImporter {
     }
 
     private void walk(Path dirPath, Consumer<Path> forEachFileAction) throws IOException {
-        try (var paths = Files.walk(dirPath)) {
-            paths.filter(Files::isRegularFile).forEach(forEachFileAction);
+        try (Stream<Path> pathStream = Files.walk(dirPath)) {
+            pathStream.filter(Files::isRegularFile).forEach(forEachFileAction);
         }
     }
 
