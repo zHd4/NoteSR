@@ -26,7 +26,7 @@ public class ImportV3Strategy implements ImportStrategy {
     private final AppDatabase db;
     private final NoteService noteService;
     private final FileService fileService;
-    private final File backupZipFile;
+    private final File tempDecryptedBackupFile;
     private final ImportStatusCallback statusCallback;
 
     @Override
@@ -36,7 +36,7 @@ public class ImportV3Strategy implements ImportStrategy {
             importData();
 
             statusCallback.updateStatus(ImportStatus.CLEANING_UP);
-            wipeTempData(backupZipFile);
+            wipeTempData(tempDecryptedBackupFile);
             return null;
         });
     }
@@ -53,7 +53,7 @@ public class ImportV3Strategy implements ImportStrategy {
     }
 
     private DataImporter getDataImporter(BackupDecryptor decryptor) throws IOException {
-        Path backupZipPath = backupZipFile.toPath();
+        Path backupZipPath = tempDecryptedBackupFile.toPath();
         FileSystem backupZipFileSystem = FileSystems.newFileSystem(backupZipPath, null);
         return new DataImporter(decryptor, noteService, fileService, backupZipFileSystem);
     }
