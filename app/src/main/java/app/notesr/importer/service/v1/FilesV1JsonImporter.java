@@ -5,12 +5,10 @@ import static java.util.Objects.requireNonNull;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.notesr.exception.DecryptionFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
@@ -27,21 +25,18 @@ class FilesV1JsonImporter extends BaseFilesJsonImporter {
     }
 
     @Override
-    protected void importFilesData() throws IOException, DecryptionFailedException {
+    protected void importFilesData() throws IOException {
         if (skipTo("files_data_blocks")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
-                    AbstractMap.SimpleEntry<FileBlobInfo, byte[]> genericBlob =
-                            parseDataBlockObject();
+                    AbstractMap.SimpleEntry<FileBlobInfo, byte[]> blob = parseDataBlockObject();
 
-                    FileBlobInfo genericBlobInfo = genericBlob.getKey();
-                    byte[] genericBlobBytes = genericBlob.getValue();
+                    FileBlobInfo blobInfo = blob.getKey();
+                    byte[] blobData = blob.getValue();
 
-                    if (fileService.getFileBlobInfo(genericBlobInfo.getId()) == null) {
-                        ByteArrayInputStream genericBlobStream =
-                                new ByteArrayInputStream(genericBlobBytes);
-
-                        fileService.saveFileData(genericBlobInfo.getFileId(), genericBlobStream);
+                    if (fileService.getFileBlobInfo(blobInfo.getId()) == null) {
+                        fileService.importFileBlobInfo(blobInfo);
+                        fileService.importFileBlobData(blobInfo.getId(), blobData);
                     }
                 } while (parser.nextToken() != JsonToken.END_ARRAY);
             }
