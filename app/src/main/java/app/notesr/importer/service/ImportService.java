@@ -7,12 +7,19 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.v1.ImportV1Strategy;
+import app.notesr.importer.service.v3.ImportV3Strategy;
 import app.notesr.note.service.NoteService;
 import app.notesr.security.crypto.BackupDecryptor;
 import app.notesr.security.crypto.CryptoManager;
@@ -31,11 +38,14 @@ public class ImportService {
     private static final DateTimeFormatter TIMESTAMP_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String TAG = ImportService.class.getName();
+    private static final String VERSION_FILENAME = "version";
+    private static final String MIN_APP_VERSION_FOR_V3_STRATEGY = "5.1.1";
 
     private final Context context;
     private final AppDatabase db;
     private final NoteService noteService;
     private final FileService fileService;
+    private final CryptoSecrets cryptoSecrets;
     private final ContentResolver contentResolver;
     private final Uri backupUri;
     private final ImportStatusCallback statusCallback;
@@ -50,7 +60,14 @@ public class ImportService {
             ImportStrategy importStrategy;
 
             if (ZipUtils.isZipArchive(tempDecryptedBackupFile.getAbsolutePath())) {
-                importStrategy = getV2Strategy(tempDecryptedBackupFile);
+                String appVersionFromBackup = readFileLineFromZip(tempDecryptedBackupFile,
+                        VERSION_FILENAME);
+
+                if (compareVersions(appVersionFromBackup, MIN_APP_VERSION_FOR_V3_STRATEGY) >= 0) {
+                    importStrategy = getV3Strategy(tempDecryptedBackupFile);
+                } else {
+                    importStrategy = getV2Strategy(tempDecryptedBackupFile);
+                }
             } else {
                 importStrategy = getV1Strategy(tempDecryptedBackupFile);
             }
@@ -80,6 +97,11 @@ public class ImportService {
                 statusCallback, TIMESTAMP_FORMATTER);
     }
 
+    private ImportV3Strategy getV3Strategy(File tempDecryptedFile) {
+        return new ImportV3Strategy(cryptoSecrets, db, noteService, fileService, tempDecryptedFile,
+                statusCallback);
+    }
+
     private void decrypt(File outputFile)
             throws DecryptionFailedException {
         try {
@@ -106,5 +128,38 @@ public class ImportService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String readFileLineFromZip(File zipArchive, String fileName) throws IOException {
+        try (ZipFile zipFile = new ZipFile(zipArchive)) {
+            ZipEntry entry = zipFile.getEntry(fileName);
+
+            if (entry == null) {
+                throw new IOException(fileName + " not found in" + zipArchive.getAbsolutePath());
+            }
+
+            try (InputStream is = zipFile.getInputStream(entry);
+                 InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                 BufferedReader reader = new BufferedReader(isr)) {
+                return reader.readLine();
+            }
+        }
+    }
+
+    private int compareVersions(String v1, String v2) {
+        String[] parts1 = v1.split("\\.");
+        String[] parts2 = v2.split("\\.");
+
+        int length = Math.max(parts1.length, parts2.length);
+
+        for (int i = 0; i < length; i++) {
+            int num1 = i < parts1.length ? Integer.parseInt(parts1[i]) : 0;
+            int num2 = i < parts2.length ? Integer.parseInt(parts2[i]) : 0;
+
+            if (num1 != num2) {
+                return Integer.compare(num1, num2);
+            }
+        }
+        return 0;
     }
 }

@@ -112,6 +112,7 @@ public class ImportAndroidService extends Service implements Runnable {
                 db,
                 noteService,
                 fileService,
+                secrets,
                 getContentResolver(),
                 sourceUri,
                 statusCallback,
