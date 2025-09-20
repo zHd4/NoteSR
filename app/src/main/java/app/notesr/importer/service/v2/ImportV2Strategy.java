@@ -35,7 +35,7 @@ public class ImportV2Strategy implements ImportStrategy {
     private final AppDatabase db;
     private final NoteService noteService;
     private final FileService fileService;
-    private final File file;
+    private final File tempDecryptedBackupFile;
     private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
 
@@ -47,11 +47,11 @@ public class ImportV2Strategy implements ImportStrategy {
             tempDir = new File(context.getCacheDir(), randomUUID().toString());
 
             statusCallback.updateStatus(ImportStatus.IMPORTING);
-            ZipUtils.unzip(file.getAbsolutePath(), tempDir.getAbsolutePath());
+            ZipUtils.unzip(tempDecryptedBackupFile.getAbsolutePath(), tempDir.getAbsolutePath());
             importData();
 
             statusCallback.updateStatus(ImportStatus.CLEANING_UP);
-            wipeTempData(file, tempDir);
+            wipeTempData(tempDecryptedBackupFile, tempDir);
             return null;
         });
     }
