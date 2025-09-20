@@ -51,6 +51,8 @@ public class ImportService {
     private final ImportStatusCallback statusCallback;
     private final WiperAdapter wiper;
 
+    private File tempDir;
+
     public void doImport() {
         statusCallback.updateStatus(ImportStatus.DECRYPTING);
         File tempDecryptedBackupFile = new File(context.getCacheDir(), randomUUID().toString());
@@ -66,6 +68,7 @@ public class ImportService {
                 if (compareVersions(appVersionFromBackup, MIN_APP_VERSION_FOR_V3_STRATEGY) >= 0) {
                     importStrategy = getV3Strategy(tempDecryptedBackupFile);
                 } else {
+                    tempDir = new File(context.getCacheDir(), randomUUID().toString());
                     importStrategy = getV2Strategy(tempDecryptedBackupFile);
                 }
             } else {
@@ -77,6 +80,10 @@ public class ImportService {
         } catch (Throwable e) {
             if (tempDecryptedBackupFile.exists()) {
                 wipeFile(tempDecryptedBackupFile);
+            }
+
+            if (tempDir != null && tempDir.exists()) {
+                wipeDir(tempDir);
             }
 
             ImportStatus fail = e instanceof DecryptionFailedException
@@ -94,7 +101,7 @@ public class ImportService {
 
     private ImportV2Strategy getV2Strategy(File tempDecryptedFile) {
         return new ImportV2Strategy(context, db, noteService, fileService, tempDecryptedFile,
-                statusCallback, TIMESTAMP_FORMATTER);
+                tempDir, statusCallback, TIMESTAMP_FORMATTER);
     }
 
     private ImportV3Strategy getV3Strategy(File tempDecryptedFile) {
@@ -125,6 +132,14 @@ public class ImportService {
     private void wipeFile(File file) {
         try {
             wiper.wipeFile(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void wipeDir(File dir) {
+        try {
+            wiper.wipeDir(dir);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

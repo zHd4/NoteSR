@@ -36,30 +36,35 @@ public class ImportV2Strategy implements ImportStrategy {
     private final NoteService noteService;
     private final FileService fileService;
     private final File tempDecryptedBackupFile;
+    private final File tempDir;
     private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
 
-    private File tempDir;
+    private File tempBackupDataDir;
 
     @Override
     public void execute() {
         db.runInTransaction(() -> {
-            tempDir = new File(context.getCacheDir(), randomUUID().toString());
-
+            tempBackupDataDir = new File(tempDir, randomUUID().toString());
             statusCallback.updateStatus(ImportStatus.IMPORTING);
-            ZipUtils.unzip(tempDecryptedBackupFile.getAbsolutePath(), tempDir.getAbsolutePath());
+
+            ZipUtils.unzip(
+                    tempDecryptedBackupFile.getAbsolutePath(),
+                    tempBackupDataDir.getAbsolutePath()
+            );
+
             importData();
 
             statusCallback.updateStatus(ImportStatus.CLEANING_UP);
-            wipeTempData(tempDecryptedBackupFile, tempDir);
+            wipeTempData(tempDecryptedBackupFile, tempBackupDataDir);
             return null;
         });
     }
 
     private void importData() throws ImportFailedException, IOException {
-        File notesJsonFile = new File(tempDir, NOTES_JSON_FILE_NAME);
-        File fileInfoJsonFile = new File(tempDir, FILES_INFO_JSON_FILE_NAME);
-        File dataBlocksDir = new File(tempDir, DATA_BLOCKS_DIR_NAME);
+        File notesJsonFile = new File(tempBackupDataDir, NOTES_JSON_FILE_NAME);
+        File fileInfoJsonFile = new File(tempBackupDataDir, FILES_INFO_JSON_FILE_NAME);
+        File dataBlocksDir = new File(tempBackupDataDir, DATA_BLOCKS_DIR_NAME);
 
         JsonParser notesParser = getJsonParser(notesJsonFile);
         JsonParser filesInfoParser = getJsonParser(fileInfoJsonFile);
