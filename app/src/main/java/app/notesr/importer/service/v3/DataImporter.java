@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Enumeration;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.ImportFailedException;
@@ -22,34 +24,31 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class DataImporter {
-    private static final String NOTES_DIR = "notes";
-    private static final String FILES_INFO_DIR = "finfo";
-    private static final String FILES_BLOBS_INFO_DIR = "binfo";
-    private static final String FILES_BLOBS_DATA_DIR = "fblobs";
+    private static final String NOTES_DIR = "notes/";
+    private static final String FILES_INFO_DIR = "finfo/";
+    private static final String FILES_BLOBS_INFO_DIR = "binfo/";
+    private static final String FILES_BLOBS_DATA_DIR = "fblobs/";
 
     private final BackupDecryptor decryptor;
     private final NoteService noteService;
     private final FileService fileService;
-    private final FileSystem backupZipFileSystem;
+    private final Path backupZipPath;
 
     public void importData() throws IOException {
-        try (backupZipFileSystem) {
-            ObjectMapper objectMapper = getObjectMapper();
+        ObjectMapper objectMapper = getObjectMapper();
 
-            importNotes(objectMapper, decryptor, backupZipFileSystem);
-            importFilesInfo(objectMapper, decryptor, backupZipFileSystem);
-            importFilesData(objectMapper, decryptor, backupZipFileSystem);
+        try (ZipFile zipFile = new ZipFile(backupZipPath.toFile())) {
+            importNotes(objectMapper, decryptor, zipFile);
+            importFilesInfo(objectMapper, decryptor, zipFile);
+            importFilesData(objectMapper, decryptor, zipFile);
         }
     }
 
-    private void importNotes(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
-            throws IOException {
-        Path notesDirPath = fs.getPath("/" + NOTES_DIR);
-        walk(notesDirPath, path -> {
+    private void importNotes(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+        walk(zipFile, NOTES_DIR, entry -> {
             try {
-                String noteJson = decryptor.decryptJsonObject(Files.readAllBytes(path));
+                String noteJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
                 Note note = mapper.readValue(noteJson, Note.class);
-
                 noteService.importNote(note);
             } catch (IOException | DecryptionFailedException e) {
                 throw new ImportFailedException(e);
@@ -57,14 +56,11 @@ public class DataImporter {
         });
     }
 
-    private void importFilesInfo(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
-            throws IOException {
-        Path filesInfosDirPath = fs.getPath("/" + FILES_INFO_DIR);
-        walk(filesInfosDirPath, path -> {
+    private void importFilesInfo(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+        walk(zipFile, FILES_INFO_DIR, entry -> {
             try {
-                String fileInfoJson = decryptor.decryptJsonObject(Files.readAllBytes(path));
+                String fileInfoJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
                 FileInfo fileInfo = mapper.readValue(fileInfoJson, FileInfo.class);
-
                 fileService.importFileInfo(fileInfo);
             } catch (IOException | DecryptionFailedException e) {
                 throw new ImportFailedException(e);
@@ -72,18 +68,20 @@ public class DataImporter {
         });
     }
 
-    private void importFilesData(ObjectMapper mapper, BackupDecryptor decryptor, FileSystem fs)
-            throws IOException {
-        Path blobsInfoDirPath = fs.getPath("/" + FILES_BLOBS_INFO_DIR);
-        Path blobsDataDirPath = fs.getPath("/" + FILES_BLOBS_DATA_DIR);
-
-        walk(blobsInfoDirPath, path -> {
+    private void importFilesData(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+        walk(zipFile, FILES_BLOBS_INFO_DIR, entry -> {
             try {
-                String blobInfoJson = decryptor.decryptJsonObject(Files.readAllBytes(path));
+                String blobInfoJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
                 FileBlobInfo blobInfo = mapper.readValue(blobInfoJson, FileBlobInfo.class);
 
-                Path blobDataPath = blobsDataDirPath.resolve(blobInfo.getId());
-                byte[] blobData = decryptor.decrypt(Files.readAllBytes(blobDataPath));
+                ZipEntry blobDataEntry = zipFile.getEntry(FILES_BLOBS_DATA_DIR + blobInfo.getId());
+                if (blobDataEntry == null) {
+                    throw new ImportFailedException(
+                            new IllegalStateException("Blob data not found for " + blobInfo.getId())
+                    );
+                }
+
+                byte[] blobData = decryptor.decrypt(readAllBytes(zipFile, blobDataEntry));
 
                 fileService.importFileBlobInfo(blobInfo);
                 fileService.importFileBlobData(blobInfo.getId(), blobData);
@@ -93,18 +91,33 @@ public class DataImporter {
         });
     }
 
-    private void walk(Path dirPath, Consumer<Path> forEachFileAction) throws IOException {
-        try (Stream<Path> pathStream = Files.walk(dirPath)) {
-            pathStream.filter(Files::isRegularFile).forEach(forEachFileAction);
+    private void walk(ZipFile zipFile, String dirPrefix, Consumer<ZipEntry> forEachFileAction) {
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            if (!entry.isDirectory() && entry.getName().startsWith(dirPrefix)) {
+                forEachFileAction.accept(entry);
+            }
         }
     }
 
     private ObjectMapper getObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
         return mapper;
+    }
+
+    private byte[] readAllBytes(ZipFile zipFile, ZipEntry entry) throws IOException {
+        try (InputStream is = zipFile.getInputStream(entry);
+             ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+
+            byte[] tmp = new byte[8192];
+            int read;
+            while ((read = is.read(tmp)) != -1) {
+                buffer.write(tmp, 0, read);
+            }
+            return buffer.toByteArray();
+        }
     }
 }

@@ -5,8 +5,6 @@ import static app.notesr.util.TempDataWiper.wipeTempData;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 import app.notesr.db.AppDatabase;
@@ -52,9 +50,8 @@ public class ImportV3Strategy implements ImportStrategy {
         return new BackupDecryptor(cryptor);
     }
 
-    private DataImporter getDataImporter(BackupDecryptor decryptor) throws IOException {
+    private DataImporter getDataImporter(BackupDecryptor decryptor) {
         Path backupZipPath = tempDecryptedBackupFile.toPath();
-        FileSystem backupZipFileSystem = FileSystems.newFileSystem(backupZipPath, null);
-        return new DataImporter(decryptor, noteService, fileService, backupZipFileSystem);
+        return new DataImporter(decryptor, noteService, fileService, backupZipPath);
     }
 }
