@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNull;
 import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -32,9 +31,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -151,10 +150,8 @@ public class NotesIntegrationTest {
         assertNotNull(fileInfo.getCreatedAt());
         assertNotNull(fileInfo.getUpdatedAt());
 
-        Path tempFilePath = Path.of(context.getCacheDir().getPath(), fileName);
-        Files.write(tempFilePath, fileData);
-
-        fileService.saveFileData(fileInfo.getId(), Uri.fromFile(tempFilePath.toFile()));
+        ByteArrayInputStream fileDataStream = new ByteArrayInputStream(fileData);
+        fileService.saveFileData(fileInfo.getId(), fileDataStream);
 
         String fileBlobId = db.getFileBlobInfoDao().getBlobIdsByFileId(fileInfo.getId()).get(0);
         FileBlobInfo fileBlobInfo = db.getFileBlobInfoDao().get(fileBlobId);
@@ -173,16 +170,50 @@ public class NotesIntegrationTest {
     }
 
     @Test
-    public void testDeleteNote() {
+    public void testDeleteNote() throws Exception {
         noteService.save(testNote);
+
+        byte[] fileData = new byte[1024];
+        RANDOM.nextBytes(fileData);
+
+        String fileName = FAKER.lorem.word();
+        long fileSize = fileData.length;
+
+        FileInfo fileInfo = new FileInfo();
+
+        fileInfo.setNoteId(testNote.getId());
+        fileInfo.setSize(fileSize);
+        fileInfo.setName(fileName);
+
+        fileService.saveFileInfo(fileInfo);
+
+        ByteArrayInputStream fileDataStream = new ByteArrayInputStream(fileData);
+        fileService.saveFileData(fileInfo.getId(), fileDataStream);
+
+        String fileBlobId = db.getFileBlobInfoDao().getBlobIdsByFileId(fileInfo.getId()).get(0);
+        FileBlobInfo fileBlobInfo = db.getFileBlobInfoDao().get(fileBlobId);
 
         assertNotNull(testNote.getId());
         assertNotNull(testNote.getUpdatedAt());
+        assertNotNull(fileInfo.getId());
 
-        noteService.delete(testNote.getId());
+        assertEquals(testNote.getId(), fileInfo.getNoteId());
+        assertEquals(fileSize, (long) fileInfo.getSize());
+        assertEquals(fileName, fileInfo.getName());
 
-        Note actual = db.getNoteDao().get(testNote.getId());
-        assertNull(actual);
+        assertNull(fileInfo.getType());
+        assertNull(fileInfo.getThumbnail());
+
+        assertNotNull(fileInfo.getCreatedAt());
+        assertNotNull(fileInfo.getUpdatedAt());
+
+        assertNotNull(fileBlobInfo);
+
+        noteService.delete(testNote.getId(), fileService);
+
+        assertNull(db.getNoteDao().get(testNote.getId()));
+        assertNull(db.getFileInfoDao().get(fileInfo.getId()));
+        assertNull(db.getFileBlobInfoDao().get(fileBlobId));
     }
 
     private static CryptoSecrets getTestSecrets() {
