@@ -268,10 +268,17 @@ public class FileService {
         db.getFileBlobInfoDao().insert(fileBlobInfo);
     }
 
-    public void importFileBlobData(String blobId, byte[] blobData) throws IOException {
+    public void importFileBlobData(String blobId, byte[] blobData)
+            throws IOException, DecryptionFailedException {
         File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
         File blobFile = new File(blobsDir, blobId);
-        filesUtils.writeFileBytes(blobFile, blobData);
+
+        try {
+            byte[] encryptedBlob = cryptor.encrypt(blobData);
+            filesUtils.writeFileBytes(blobFile, encryptedBlob);
+        } catch (GeneralSecurityException e) {
+            throw new DecryptionFailedException(e);
+        }
     }
 
     public long getFilesCount() {

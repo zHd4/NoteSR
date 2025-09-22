@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
+import app.notesr.exception.DecryptionFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
@@ -25,7 +26,7 @@ class FilesV1JsonImporter extends BaseFilesJsonImporter {
     }
 
     @Override
-    protected void importFilesData() throws IOException {
+    protected void importFilesData() throws IOException, DecryptionFailedException {
         if (skipTo("files_data_blocks")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {

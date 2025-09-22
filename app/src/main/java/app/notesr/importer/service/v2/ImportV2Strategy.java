@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import app.notesr.db.AppDatabase;
+import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.ImportStatusCallback;
@@ -58,7 +59,7 @@ public class ImportV2Strategy implements ImportStrategy {
         });
     }
 
-    private void importData() throws ImportFailedException, IOException {
+    private void importData() throws ImportFailedException, DecryptionFailedException, IOException {
         File notesJsonFile = new File(tempBackupDataDir, NOTES_JSON_FILE_NAME);
         File fileInfoJsonFile = new File(tempBackupDataDir, FILES_INFO_JSON_FILE_NAME);
         File dataBlocksDir = new File(tempBackupDataDir, DATA_BLOCKS_DIR_NAME);
