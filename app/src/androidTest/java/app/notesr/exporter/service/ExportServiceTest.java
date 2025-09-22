@@ -1,7 +1,9 @@
 package app.notesr.exporter.service;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static java.util.UUID.randomUUID;
 
 import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
@@ -22,7 +24,6 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 import app.notesr.db.AppDatabase;
-import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.note.model.Note;
@@ -88,7 +89,7 @@ public class ExportServiceTest {
 
     @Test
     public void testCancelledExport() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             noteService.save(createTestNote());
         }
 
