@@ -70,7 +70,7 @@ public class FileService {
                 .collect(Collectors.toList());
     }
 
-    public List<FileBlobInfo> getAllFilesBlobInfo() {
+    public List<FileBlobInfo> getFilesBlobInfo() {
         return db.getFileBlobInfoDao().getAll();
     }
 

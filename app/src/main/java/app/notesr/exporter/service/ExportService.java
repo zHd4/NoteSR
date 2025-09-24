@@ -130,7 +130,7 @@ public class ExportService {
     private void exportFilesData(BackupZipper zipper, BackupEncryptor encryptor)
             throws IOException, EncryptionFailedException, DecryptionFailedException {
 
-        for (FileBlobInfo blobInfo : fileService.getAllFilesBlobInfo()) {
+        for (FileBlobInfo blobInfo : fileService.getFilesBlobInfo()) {
             checkCancelled();
 
             String blobInfoJson = getObjectMapper().writeValueAsString(blobInfo);
