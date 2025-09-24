@@ -272,6 +272,11 @@ public class FileService {
     public void importFileBlobData(String blobId, byte[] blobData)
             throws IOException, EncryptionFailedException {
         File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
+
+        if (!blobsDir.exists()) {
+            Files.createDirectories(blobsDir.toPath());
+        }
+
         File blobFile = new File(blobsDir, blobId);
 
         try {
