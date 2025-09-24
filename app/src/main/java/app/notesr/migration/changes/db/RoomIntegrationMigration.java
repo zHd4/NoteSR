@@ -5,7 +5,6 @@ import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +15,7 @@ import javax.crypto.SecretKey;
 import app.notesr.db.AppDatabase;
 import app.notesr.db.DatabaseProvider;
 import app.notesr.exception.DecryptionFailedException;
+import app.notesr.exception.EncryptionFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;
@@ -111,9 +111,11 @@ public class RoomIntegrationMigration implements AppMigration {
                 Map<String, Object> dataBlockMap = oldDbHelper.getDataBlockById(dataBlockId);
 
                 FileBlobInfo fileBlobInfo;
+                byte[] fileBlobBytes;
 
                 try {
                     fileBlobInfo = entityMapper.mapFileBlobInfo(dataBlockMap);
+                    fileBlobBytes = entityMapper.getDataOfDataBlock(dataBlockMap);
                 } catch (DecryptionFailedException e) {
                     throw new AppMigrationException("Failed to decrypt data block with id "
                             + dataBlockMap.get("id"), e);
@@ -122,14 +124,10 @@ public class RoomIntegrationMigration implements AppMigration {
                 fileService.importFileBlobInfo(fileBlobInfo);
 
                 try {
-                    byte[] genericBlobBytes = entityMapper.getDataOfDataBlock(dataBlockMap);
-                    ByteArrayInputStream genericBlobStream =
-                            new ByteArrayInputStream(genericBlobBytes);
-
-                    fileService.saveFileData(fileBlobInfo.getFileId(), genericBlobStream);
-                } catch (DecryptionFailedException | IOException e) {
+                    fileService.importFileBlobData(fileBlobInfo.getId(), fileBlobBytes);
+                } catch (IOException | EncryptionFailedException e) {
                     throw new AppMigrationException("Failed to save data block with id "
-                            + fileBlobInfo.getId(), e);
+                            + dataBlockMap.get("id"), e);
                 }
             }
         }

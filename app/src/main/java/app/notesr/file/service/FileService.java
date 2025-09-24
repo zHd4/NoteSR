@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import app.notesr.db.AppDatabase;
 import app.notesr.exception.DecryptionFailedException;
+import app.notesr.exception.EncryptionFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.security.crypto.AesCryptor;
@@ -269,7 +270,7 @@ public class FileService {
     }
 
     public void importFileBlobData(String blobId, byte[] blobData)
-            throws IOException, DecryptionFailedException {
+            throws IOException, EncryptionFailedException {
         File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
         File blobFile = new File(blobsDir, blobId);
 
@@ -277,7 +278,7 @@ public class FileService {
             byte[] encryptedBlob = cryptor.encrypt(blobData);
             filesUtils.writeFileBytes(blobFile, encryptedBlob);
         } catch (GeneralSecurityException e) {
-            throw new DecryptionFailedException(e);
+            throw new EncryptionFailedException(e);
         }
     }
 

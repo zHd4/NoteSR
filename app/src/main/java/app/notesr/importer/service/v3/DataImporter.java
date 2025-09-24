@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import app.notesr.exception.DecryptionFailedException;
+import app.notesr.exception.EncryptionFailedException;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
@@ -85,7 +86,7 @@ public class DataImporter {
 
                 fileService.importFileBlobInfo(blobInfo);
                 fileService.importFileBlobData(blobInfo.getId(), blobData);
-            } catch (IOException | DecryptionFailedException e) {
+            } catch (IOException | EncryptionFailedException | DecryptionFailedException e) {
                 throw new ImportFailedException(e);
             }
         });

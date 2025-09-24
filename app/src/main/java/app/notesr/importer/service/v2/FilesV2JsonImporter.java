@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import app.notesr.exception.DecryptionFailedException;
+import app.notesr.exception.EncryptionFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
@@ -30,7 +30,7 @@ class FilesV2JsonImporter extends BaseFilesJsonImporter {
     }
 
     @Override
-    protected void importFilesData() throws IOException, DecryptionFailedException {
+    protected void importFilesData() throws IOException, EncryptionFailedException {
         if (skipTo("files_data_blocks")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
