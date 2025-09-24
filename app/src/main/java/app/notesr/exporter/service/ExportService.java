@@ -116,7 +116,7 @@ public class ExportService {
     private void exportFilesInfo(BackupZipper zipper, BackupEncryptor encryptor)
             throws IOException, EncryptionFailedException {
 
-        for (FileInfo fileInfo : fileService.getAllFilesInfo()) {
+        for (FileInfo fileInfo : fileService.getFilesInfo()) {
             checkCancelled();
 
             String json = getObjectMapper().writeValueAsString(fileInfo);

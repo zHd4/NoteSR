@@ -54,7 +54,7 @@ public class FileService {
         return count;
     }
 
-    public List<FileInfo> getAllFilesInfo() {
+    public List<FileInfo> getFilesInfo() {
         return db.getFileInfoDao()
                 .getAll()
                 .stream()
