@@ -1,4 +1,139 @@
 package app.notesr.importer.service.v3;
 
-public class DataImporterTest {
+import app.notesr.exception.DecryptionFailedException;
+import app.notesr.exception.ImportFailedException;
+import app.notesr.file.model.FileBlobInfo;
+import app.notesr.file.model.FileInfo;
+import app.notesr.file.service.FileService;
+import app.notesr.note.model.Note;
+import app.notesr.note.service.NoteService;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+class DataImporterTest {
+
+    @TempDir
+    private Path tempDir;
+
+    @Mock
+    private BackupDecryptor decryptor;
+    @Mock
+    private NoteService noteService;
+    @Mock
+    private FileService fileService;
+
+    private DataImporter importer;
+    private Path zipPath;
+
+    private AutoCloseable mocks;
+
+    @BeforeEach
+    void setup() {
+        mocks = MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testImportNotesSuccess() throws Exception {
+        String json = "{\"id\":1,\"name\":\"Test\",\"text\":\"Test\"}";
+        zipPath = createZipWithEntry("notes/note1.json", json.getBytes());
+        importer = new DataImporter(decryptor, noteService, fileService, zipPath);
+
+        when(decryptor.decryptJsonObject(any())).thenReturn(json);
+
+        importer.importData();
+
+        verify(noteService).importNote(any(Note.class));
+    }
+
+    @Test
+    void testImportFilesInfoSuccess() throws Exception {
+        String json = "{\"id\":42,\"name\":\"file.txt\"}";
+        zipPath = createZipWithEntry("finfo/file1.json", json.getBytes());
+        importer = new DataImporter(decryptor, noteService, fileService, zipPath);
+
+        when(decryptor.decryptJsonObject(any())).thenReturn(json);
+
+        importer.importData();
+
+        verify(fileService).importFileInfo(any(FileInfo.class));
+    }
+
+    @Test
+    void testImportFilesDataSuccess() throws Exception {
+        String blobInfoJson = "{\"id\":\"blob1\"}";
+        Path zip = tempDir.resolve("test.zip");
+
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zip))) {
+            zos.putNextEntry(new ZipEntry("binfo/blob1.json"));
+            zos.write(blobInfoJson.getBytes());
+            zos.closeEntry();
+
+            zos.putNextEntry(new ZipEntry("fblobs/blob1"));
+            zos.write("BLOB".getBytes());
+            zos.closeEntry();
+        }
+
+        importer = new DataImporter(decryptor, noteService, fileService, zip);
+        when(decryptor.decryptJsonObject(any())).thenReturn(blobInfoJson);
+        when(decryptor.decrypt(any())).thenReturn("BLOB".getBytes());
+
+        importer.importData();
+
+        verify(fileService).importFileBlobInfo(any(FileBlobInfo.class));
+        verify(fileService).importFileBlobData(eq("blob1"), eq("BLOB".getBytes()));
+    }
+
+    @Test
+    void testImportFilesDataMissingBlobThrows() throws Exception {
+        String blobInfoJson = "{\"id\":\"blobX\"}";
+        zipPath = createZipWithEntry("binfo/blobX.json", blobInfoJson.getBytes());
+        importer = new DataImporter(decryptor, noteService, fileService, zipPath);
+
+        when(decryptor.decryptJsonObject(any())).thenReturn(blobInfoJson);
+
+        assertThrows(ImportFailedException.class, importer::importData);
+    }
+
+    @Test
+    void testImportNotesDecryptFailsThrows() throws Exception {
+        String json = "{\"id\":1}";
+        zipPath = createZipWithEntry("notes/note1.json", json.getBytes());
+        importer = new DataImporter(decryptor, noteService, fileService, zipPath);
+
+        when(decryptor.decryptJsonObject(any())).thenThrow(new DecryptionFailedException());
+        assertThrows(ImportFailedException.class, importer::importData);
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        mocks.close();
+    }
+
+    private Path createZipWithEntry(String name, byte[] content) throws IOException {
+        Path zip = tempDir.resolve("test.zip");
+
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zip))) {
+            ZipEntry entry = new ZipEntry(name);
+            zos.putNextEntry(entry);
+            zos.write(content);
+            zos.closeEntry();
+        }
+
+        return zip;
+    }
 }
