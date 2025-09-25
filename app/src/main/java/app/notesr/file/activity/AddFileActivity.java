@@ -104,7 +104,7 @@ public class AddFileActivity extends ActivityBase {
             runOnUiThread(progressDialog::show);
 
             try {
-                fileService.save(noteId, getFilesUri(data));
+                fileService.saveFiles(noteId, getFilesUri(data));
             } catch (IOException | DecryptionFailedException e) {
                 throw new RuntimeException(e);
             }

@@ -82,7 +82,7 @@ public class FileService {
         return db.getFileBlobInfoDao().get(blobInfoId);
     }
 
-    public void save(String noteId, List<Uri> filesUri)
+    public void saveFiles(String noteId, List<Uri> filesUri)
             throws IOException, DecryptionFailedException {
 
         if (noteId == null) {
