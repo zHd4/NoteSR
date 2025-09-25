@@ -50,7 +50,7 @@ public class ImportV3Strategy implements ImportStrategy {
         return new BackupDecryptor(cryptor);
     }
 
-    private DataImporter getDataImporter(BackupDecryptor decryptor) {
+    DataImporter getDataImporter(BackupDecryptor decryptor) {
         Path backupZipPath = tempDecryptedBackupFile.toPath();
         return new DataImporter(decryptor, noteService, fileService, backupZipPath);
     }
