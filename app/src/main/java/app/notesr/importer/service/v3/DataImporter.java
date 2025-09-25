@@ -45,7 +45,7 @@ public class DataImporter {
         }
     }
 
-    void importNotes(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+    private void importNotes(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
         walk(zipFile, NOTES_DIR, entry -> {
             try {
                 String noteJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
@@ -57,7 +57,7 @@ public class DataImporter {
         });
     }
 
-    void importFilesInfo(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+    private void importFilesInfo(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
         walk(zipFile, FILES_INFO_DIR, entry -> {
             try {
                 String fileInfoJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
@@ -69,7 +69,7 @@ public class DataImporter {
         });
     }
 
-    void importFilesData(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+    private void importFilesData(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
         walk(zipFile, FILES_BLOBS_INFO_DIR, entry -> {
             try {
                 String blobInfoJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
@@ -92,7 +92,7 @@ public class DataImporter {
         });
     }
 
-    void walk(ZipFile zipFile, String dirPrefix, Consumer<ZipEntry> forEachFileAction) {
+    private void walk(ZipFile zipFile, String dirPrefix, Consumer<ZipEntry> forEachFileAction) {
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
@@ -102,14 +102,14 @@ public class DataImporter {
         }
     }
 
-    ObjectMapper getObjectMapper() {
+    private ObjectMapper getObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return mapper;
     }
 
-    byte[] readAllBytes(ZipFile zipFile, ZipEntry entry) throws IOException {
+    private byte[] readAllBytes(ZipFile zipFile, ZipEntry entry) throws IOException {
         try (InputStream is = zipFile.getInputStream(entry);
              ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
 
