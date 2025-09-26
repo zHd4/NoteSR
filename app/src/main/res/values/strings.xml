@@ -111,6 +111,6 @@
     <string name="start">Start</string>
     <string name="cannot_import_data">Cannot import data, possible corrupted</string>
     <string name="continue_text">Continue</string>
-    <string name="image_is_too_large_to_open">The image is too large to open</string>
+    <string name="failed_to_load_the_image">Failed to load the image</string>
     <string name="migrating_your_data_please_wait">Migrating your data,\nplease wait…</string>
 </resources>

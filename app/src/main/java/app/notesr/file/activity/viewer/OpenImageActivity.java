@@ -4,18 +4,16 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.widget.ImageView;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
 import java.io.File;
+import java.io.IOException;
 
 import app.notesr.R;
 import app.notesr.db.DatabaseProvider;
@@ -24,11 +22,9 @@ import app.notesr.cleaner.service.CacheCleanerAndroidService;
 import app.notesr.cleaner.service.TempFileService;
 
 public class OpenImageActivity extends MediaFileViewerActivityBase {
-    private static final int MAX_IMAGE_SIZE = 4096;
 
-    private ScaleGestureDetector scaleGestureDetector;
     private TempFileService tempFileService;
-    private ImageView imageView;
+    private CustomImageView imageView;
     private TextView errorMessageTextView;
     private File imageFile;
 
@@ -44,16 +40,9 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
 
         imageView = findViewById(R.id.assignedImageView);
         errorMessageTextView = findViewById(R.id.errorMessageTextView);
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(imageView));
 
         loadImage();
         startForegroundService(new Intent(getApplicationContext(), CacheCleanerAndroidService.class));
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-        scaleGestureDetector.onTouchEvent(motionEvent);
-        return true;
     }
 
     private void loadImage() {
@@ -81,24 +70,13 @@ public class OpenImageActivity extends MediaFileViewerActivityBase {
             runOnUiThread(() -> {
                 progressDialog.dismiss();
 
-                if (!isImageTooLarge(imageFile)) {
-                    imageView.setImageURI(imageUri);
-                } else {
-                    errorMessageTextView.setText(getString(R.string.image_is_too_large_to_open));
+                try {
+                    imageView.setImage(imageFile);
+                } catch (IOException e) {
+                    Log.e("OpenImageActivity", "Error loading image", e);
+                    errorMessageTextView.setText(R.string.failed_to_load_the_image);
                 }
             });
         });
-    }
-
-    private boolean isImageTooLarge(File imageFile) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-
-        BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
-
-        int width = options.outWidth;
-        int height = options.outHeight;
-
-        return width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE;
     }
 }
