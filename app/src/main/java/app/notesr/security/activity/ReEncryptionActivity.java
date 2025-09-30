@@ -36,14 +36,14 @@ public class ReEncryptionActivity extends ActivityBase {
     }
 
     protected void startReEncryptionService() {
-        CryptoSecrets newCryptoKey = (CryptoSecrets) getIntent()
+        CryptoSecrets secrets = (CryptoSecrets) getIntent()
                 .getSerializableExtra(EXTRA_NEW_SECRETS);
 
         if (!App.getContext().isServiceRunning(ReEncryptionAndroidService.class)) {
             Intent serviceIntent = new Intent(getApplicationContext(),
                     ReEncryptionAndroidService.class);
 
-            serviceIntent.putExtra(ReEncryptionAndroidService.EXTRA_NEW_SECRETS, newCryptoKey);
+            serviceIntent.putExtra(ReEncryptionAndroidService.EXTRA_NEW_SECRETS, secrets);
             startForegroundService(serviceIntent);
         }
     }
