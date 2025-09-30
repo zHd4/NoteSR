@@ -13,8 +13,8 @@ public class CryptoSecrets implements Serializable {
     private byte[] key;
     private String password;
 
-    public static CryptoSecrets from(CryptoSecrets cryptoKey) {
-        return new CryptoSecrets(Arrays.copyOf(cryptoKey.key, cryptoKey.key.length),
-                cryptoKey.password);
+    public static CryptoSecrets from(CryptoSecrets secrets) {
+        return new CryptoSecrets(Arrays.copyOf(secrets.key, secrets.key.length),
+                secrets.password);
     }
 }
