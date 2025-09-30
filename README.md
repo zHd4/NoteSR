@@ -17,7 +17,7 @@
 
 ## 📦 Download
 
-**Latest version:** [v5.2.0](https://github.com/zHd4/NoteSR/releases/tag/5.2.0)  
+**Latest version:** [v5.2.1](https://github.com/zHd4/NoteSR/releases/tag/5.2.1)  
 You can download the APK from the [Releases page](https://github.com/zHd4/NoteSR/releases).
 
 ---
