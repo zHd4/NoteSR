@@ -45,7 +45,7 @@ public abstract class AesCryptor {
     }
 
     public abstract byte[] encrypt(byte[] plainData)
-            throws GeneralSecurityException, IOException;
+            throws GeneralSecurityException;
 
     public abstract byte[] decrypt(byte[] encryptedData)
             throws GeneralSecurityException;

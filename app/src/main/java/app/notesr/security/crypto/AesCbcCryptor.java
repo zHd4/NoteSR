@@ -1,11 +1,8 @@
 package app.notesr.security.crypto;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
@@ -36,8 +31,7 @@ public class AesCbcCryptor extends AesCryptor {
     }
 
     private static Cipher createCipher(SecretKey key, byte[] iv, int mode)
-            throws NoSuchPaddingException, NoSuchAlgorithmException,
-            InvalidAlgorithmParameterException, InvalidKeyException {
+            throws GeneralSecurityException {
 
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
         cipher.init(mode, new SecretKeySpec(key.getEncoded(), "AES"),
@@ -47,16 +41,12 @@ public class AesCbcCryptor extends AesCryptor {
     }
 
     @Override
-    public byte[] encrypt(byte[] plainData) throws InvalidAlgorithmParameterException,
-            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
-            IllegalBlockSizeException, BadPaddingException {
+    public byte[] encrypt(byte[] plainData) throws GeneralSecurityException {
         return createCipher(key, iv, Cipher.ENCRYPT_MODE).doFinal(plainData);
     }
 
     @Override
-    public byte[] decrypt(byte[] encryptedData) throws InvalidAlgorithmParameterException,
-            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
-            IllegalBlockSizeException, BadPaddingException {
+    public byte[] decrypt(byte[] encryptedData) throws GeneralSecurityException {
         return createCipher(key, iv, Cipher.DECRYPT_MODE).doFinal(encryptedData);
     }
 

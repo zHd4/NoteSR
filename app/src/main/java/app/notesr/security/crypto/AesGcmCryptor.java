@@ -1,9 +1,6 @@
 package app.notesr.security.crypto;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
@@ -11,9 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -37,9 +33,7 @@ public class AesGcmCryptor extends AesCryptor {
     }
 
     @Override
-    public byte[] encrypt(byte[] plainData) throws NoSuchAlgorithmException, NoSuchPaddingException,
-            InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException,
-            BadPaddingException, IOException {
+    public byte[] encrypt(byte[] plainData) throws GeneralSecurityException {
         byte[] iv = new byte[IV_SIZE];
         SecureRandom.getInstanceStrong().nextBytes(iv);
 
@@ -49,16 +43,18 @@ public class AesGcmCryptor extends AesCryptor {
         byte[] encrypted = cipher.doFinal(plainData);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        out.write(iv);
-        out.write(encrypted);
+        try {
+            out.write(iv);
+            out.write(encrypted);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
 
         return out.toByteArray();
     }
 
     @Override
-    public byte[] decrypt(byte[] encryptedData) throws NoSuchPaddingException,
-            NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException,
-            IllegalBlockSizeException, BadPaddingException {
+    public byte[] decrypt(byte[] encryptedData) throws GeneralSecurityException {
         if (encryptedData.length < IV_SIZE) {
             throw new IllegalArgumentException("Data too short for GCM");
         }
