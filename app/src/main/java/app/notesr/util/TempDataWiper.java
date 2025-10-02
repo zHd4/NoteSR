@@ -9,7 +9,7 @@ public class TempDataWiper {
         Wiper wiper = new Wiper();
 
         for (File object : objects) {
-            if (object != null) {
+            if (object != null && object.exists()) {
                 if (object.isDirectory()) {
                     wiper.wipeDir(object);
                 } else {
