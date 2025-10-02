@@ -26,7 +26,6 @@ import app.notesr.security.crypto.AesGcmCryptor;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.util.FilesUtils;
-import app.notesr.util.Wiper;
 
 import java.util.Set;
 
@@ -105,8 +104,6 @@ public class ImportAndroidService extends Service implements Runnable {
         Uri sourceUri = intent.getData();
         ImportStatusCallback statusCallback = new ImportStatusCallback(this::sendBroadcastData);
 
-        Wiper wiper = new Wiper();
-
         return new ImportService(
                 this,
                 db,
@@ -115,8 +112,7 @@ public class ImportAndroidService extends Service implements Runnable {
                 secrets,
                 getContentResolver(),
                 sourceUri,
-                statusCallback,
-                wiper
+                statusCallback
         );
     }
 }

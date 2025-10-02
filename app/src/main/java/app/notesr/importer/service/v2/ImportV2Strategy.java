@@ -1,7 +1,6 @@
 package app.notesr.importer.service.v2;
 
 import static java.util.UUID.randomUUID;
-import static app.notesr.util.TempDataWiper.wipeTempData;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -16,9 +15,7 @@ import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.EncryptionFailedException;
 import app.notesr.exception.ImportFailedException;
 import app.notesr.file.service.FileService;
-import app.notesr.importer.service.ImportStatusCallback;
 import app.notesr.importer.service.ImportStrategy;
-import app.notesr.importer.service.ImportStatus;
 import app.notesr.importer.service.NotesJsonImporter;
 import app.notesr.note.service.NoteService;
 import app.notesr.util.ZipUtils;
@@ -36,7 +33,6 @@ public class ImportV2Strategy implements ImportStrategy {
     private final FileService fileService;
     private final File tempDecryptedBackupFile;
     private final File tempDir;
-    private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
 
     private File tempBackupDataDir;
@@ -45,7 +41,6 @@ public class ImportV2Strategy implements ImportStrategy {
     public void execute() {
         db.runInTransaction(() -> {
             tempBackupDataDir = new File(tempDir, randomUUID().toString());
-            statusCallback.updateStatus(ImportStatus.IMPORTING);
 
             ZipUtils.unzip(
                     tempDecryptedBackupFile.getAbsolutePath(),
@@ -53,9 +48,6 @@ public class ImportV2Strategy implements ImportStrategy {
             );
 
             importData();
-
-            statusCallback.updateStatus(ImportStatus.CLEANING_UP);
-            wipeTempData(tempDecryptedBackupFile, tempBackupDataDir);
             return null;
         });
     }

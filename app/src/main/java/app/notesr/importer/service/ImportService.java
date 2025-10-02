@@ -28,7 +28,7 @@ import app.notesr.db.AppDatabase;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.importer.service.v2.ImportV2Strategy;
-import app.notesr.util.WiperAdapter;
+import app.notesr.util.TempDataWiper;
 import app.notesr.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -49,7 +49,6 @@ public class ImportService {
     private final ContentResolver contentResolver;
     private final Uri backupUri;
     private final ImportStatusCallback statusCallback;
-    private final WiperAdapter wiper;
 
     private File tempDir;
 
@@ -75,18 +74,17 @@ public class ImportService {
                 importStrategy = getV1Strategy(tempDecryptedBackupFile);
             }
 
+            statusCallback.updateStatus(ImportStatus.IMPORTING);
             importStrategy.execute();
+
+            statusCallback.updateStatus(ImportStatus.CLEANING_UP);
+            wipeTempData(tempDecryptedBackupFile, tempDir);
+
             statusCallback.updateStatus(ImportStatus.DONE);
         } catch (Throwable e) {
             Log.e(TAG, "Import failed with exception", e);
 
-            if (tempDecryptedBackupFile.exists()) {
-                wipeFile(tempDecryptedBackupFile);
-            }
-
-            if (tempDir != null && tempDir.exists()) {
-                wipeDir(tempDir);
-            }
+            wipeTempData(tempDecryptedBackupFile, tempDir);
 
             ImportStatus fail = e instanceof DecryptionFailedException
                     ? ImportStatus.DECRYPTION_FAILED
@@ -98,17 +96,16 @@ public class ImportService {
 
     private ImportV1Strategy getV1Strategy(File tempDecryptedFile) {
         return new ImportV1Strategy(db, noteService, fileService, tempDecryptedFile,
-                statusCallback, TIMESTAMP_FORMATTER);
+                TIMESTAMP_FORMATTER);
     }
 
     private ImportV2Strategy getV2Strategy(File tempDecryptedFile) {
         return new ImportV2Strategy(db, noteService, fileService, tempDecryptedFile, tempDir,
-                statusCallback, TIMESTAMP_FORMATTER);
+                TIMESTAMP_FORMATTER);
     }
 
     private ImportV3Strategy getV3Strategy(File tempDecryptedFile) {
-        return new ImportV3Strategy(cryptoSecrets, db, noteService, fileService, tempDecryptedFile,
-                statusCallback);
+        return new ImportV3Strategy(cryptoSecrets, db, noteService, fileService, tempDecryptedFile);
     }
 
     private void decrypt(File outputFile)
@@ -131,17 +128,9 @@ public class ImportService {
         }
     }
 
-    private void wipeFile(File file) {
+    private void wipeTempData(File... objects) {
         try {
-            wiper.wipeFile(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void wipeDir(File dir) {
-        try {
-            wiper.wipeDir(dir);
+            TempDataWiper.wipeTempData(objects);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

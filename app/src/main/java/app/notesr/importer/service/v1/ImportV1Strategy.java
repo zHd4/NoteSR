@@ -9,15 +9,11 @@ import app.notesr.db.AppDatabase;
 
 import app.notesr.exception.ImportFailedException;
 import app.notesr.file.service.FileService;
-import app.notesr.importer.service.ImportStatus;
-import app.notesr.importer.service.ImportStatusCallback;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.importer.service.NotesJsonImporter;
 import app.notesr.note.service.NoteService;
-import app.notesr.util.Wiper;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -31,37 +27,28 @@ public class ImportV1Strategy implements ImportStrategy {
     private final NoteService noteService;
     private final FileService fileService;
     private final File tempDecryptedBackupFile;
-    private final ImportStatusCallback statusCallback;
     private final DateTimeFormatter timestampFormatter;
 
     @Override
     public void execute() {
         db.runInTransaction(() -> {
-            statusCallback.updateStatus(ImportStatus.IMPORTING);
-            importData(tempDecryptedBackupFile);
+            try {
+                JsonFactory jsonFactory = new JsonFactory();
+                JsonParser jsonParser = jsonFactory.createParser(tempDecryptedBackupFile);
 
-            statusCallback.updateStatus(ImportStatus.CLEANING_UP);
-            wipeFile(tempDecryptedBackupFile);
-        });
-    }
+                try (jsonParser) {
+                    NotesJsonImporter notesImporter = getNotesImporter(jsonParser);
+                    notesImporter.importNotes();
 
-    private void importData(File file) throws ImportFailedException {
-        try {
-            JsonFactory jsonFactory = new JsonFactory();
-            JsonParser jsonParser = jsonFactory.createParser(file);
-
-            try (jsonParser) {
-                NotesJsonImporter notesImporter = getNotesImporter(jsonParser);
-                notesImporter.importNotes();
-
-                FilesV1JsonImporter filesImporter =
-                        getFilesImporter(jsonParser, notesImporter.getAdaptedIdMap());
-                filesImporter.importFiles();
+                    FilesV1JsonImporter filesImporter =
+                            getFilesImporter(jsonParser, notesImporter.getAdaptedIdMap());
+                    filesImporter.importFiles();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Import failed with exception", e);
+                throw new ImportFailedException(e);
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Import failed with exception", e);
-            throw new ImportFailedException(e);
-        }
+        });
     }
 
     private NotesJsonImporter getNotesImporter(JsonParser parser) {
@@ -80,14 +67,5 @@ public class ImportV1Strategy implements ImportStrategy {
                 adaptedNotesIdMap,
                 timestampFormatter
         );
-    }
-
-    private void wipeFile(File file) {
-        try {
-            new Wiper().wipeFile(file);
-        } catch (IOException e) {
-            Log.e(TAG, "Cannot wipe file", e);
-            throw new RuntimeException(e);
-        }
     }
 }
