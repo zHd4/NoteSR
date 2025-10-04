@@ -9,6 +9,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -61,6 +62,7 @@ public final class FileInfo implements Serializable {
     private LocalDateTime updatedAt;
 
     @Ignore
+    @JsonIgnore
     private Long decimalId;
 
     @NonNull
