@@ -7,6 +7,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -30,6 +32,7 @@ public final class FileBlobInfo {
 
     @NonNull
     @ColumnInfo(name = "file_id")
+    @JsonProperty("file_id")
     private String fileId;
 
     @NonNull
