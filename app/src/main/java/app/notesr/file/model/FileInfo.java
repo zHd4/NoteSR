@@ -39,6 +39,7 @@ public final class FileInfo implements Serializable {
 
     @NonNull
     @ColumnInfo(name = "note_id")
+    @JsonProperty("note_id")
     private String noteId;
 
     @NonNull
