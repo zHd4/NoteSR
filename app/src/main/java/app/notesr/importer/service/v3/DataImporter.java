@@ -36,20 +36,21 @@ public class DataImporter {
     private final Path backupZipPath;
 
     public void importData() throws IOException {
-        ObjectMapper objectMapper = getObjectMapper();
-
         try (ZipFile zipFile = new ZipFile(backupZipPath.toFile())) {
-            importNotes(objectMapper, decryptor, zipFile);
-            importFilesInfo(objectMapper, decryptor, zipFile);
-            importFilesData(objectMapper, decryptor, zipFile);
+            importNotes(decryptor, zipFile);
+            importFilesInfo(decryptor, zipFile);
+            importFilesData(decryptor, zipFile);
         }
     }
 
-    private void importNotes(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+    private void importNotes(BackupDecryptor decryptor, ZipFile zipFile) {
         walk(zipFile, NOTES_DIR, entry -> {
             try {
+                ObjectMapper objectMapper = getObjectMapper();
+
                 String noteJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
-                Note note = mapper.readValue(noteJson, Note.class);
+                Note note = objectMapper.readValue(noteJson, Note.class);
+
                 noteService.importNote(note);
             } catch (IOException | DecryptionFailedException e) {
                 throw new ImportFailedException(e);
@@ -57,11 +58,14 @@ public class DataImporter {
         });
     }
 
-    private void importFilesInfo(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+    private void importFilesInfo(BackupDecryptor decryptor, ZipFile zipFile) {
         walk(zipFile, FILES_INFO_DIR, entry -> {
             try {
+                ObjectMapper objectMapper = getObjectMapper();
+
                 String fileInfoJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
-                FileInfo fileInfo = mapper.readValue(fileInfoJson, FileInfo.class);
+                FileInfo fileInfo = objectMapper.readValue(fileInfoJson, FileInfo.class);
+
                 fileService.importFileInfo(fileInfo);
             } catch (IOException | DecryptionFailedException e) {
                 throw new ImportFailedException(e);
@@ -69,13 +73,17 @@ public class DataImporter {
         });
     }
 
-    private void importFilesData(ObjectMapper mapper, BackupDecryptor decryptor, ZipFile zipFile) {
+    private void importFilesData(BackupDecryptor decryptor, ZipFile zipFile) {
         walk(zipFile, FILES_BLOBS_INFO_DIR, entry -> {
             try {
-                String blobInfoJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
-                FileBlobInfo blobInfo = mapper.readValue(blobInfoJson, FileBlobInfo.class);
+                ObjectMapper objectMapper = getObjectMapper();
 
-                ZipEntry blobDataEntry = zipFile.getEntry(FILES_BLOBS_DATA_DIR + blobInfo.getId());
+                String blobInfoJson = decryptor.decryptJsonObject(readAllBytes(zipFile, entry));
+                FileBlobInfo blobInfo = objectMapper.readValue(blobInfoJson, FileBlobInfo.class);
+
+                ZipEntry blobDataEntry = zipFile.getEntry(FILES_BLOBS_DATA_DIR
+                        + blobInfo.getId());
+
                 if (blobDataEntry == null) {
                     throw new ImportFailedException(
                             new IllegalStateException("Blob data not found for " + blobInfo.getId())
