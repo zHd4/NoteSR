@@ -3,7 +3,6 @@ package app.notesr.importer.service;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.notesr.importer.exception.ImportFailedException;
 import app.notesr.note.model.Note;
 import app.notesr.note.service.NoteService;
 import lombok.Getter;

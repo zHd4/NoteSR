@@ -15,7 +15,7 @@ import java.util.zip.ZipFile;
 
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.EncryptionFailedException;
-import app.notesr.importer.exception.ImportFailedException;
+import app.notesr.importer.service.ImportFailedException;
 import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.model.FileInfo;
 import app.notesr.file.service.FileService;

@@ -1,4 +1,4 @@
-package app.notesr.importer.exception;
+package app.notesr.importer.service;
 
 public class ImportFailedException extends RuntimeException {
 
