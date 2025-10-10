@@ -13,7 +13,7 @@ import java.util.Map;
 import app.notesr.db.AppDatabase;
 import app.notesr.exception.DecryptionFailedException;
 import app.notesr.exception.EncryptionFailedException;
-import app.notesr.exception.ImportFailedException;
+import app.notesr.importer.exception.ImportFailedException;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.importer.service.NotesJsonImporter;
