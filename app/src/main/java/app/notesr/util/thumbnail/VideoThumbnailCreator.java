@@ -25,7 +25,9 @@ public final class VideoThumbnailCreator implements ThumbnailCreator {
             retriever.setDataSource(context, uri);
             Bitmap original = retriever.getFrameAtTime(TIME_US);
 
-            if (original == null) return null;
+            if (original == null) {
+                return null;
+            }
 
             int width = original.getWidth();
             int height = original.getHeight();
