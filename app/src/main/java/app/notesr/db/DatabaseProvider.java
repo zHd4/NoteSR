@@ -10,7 +10,7 @@ import net.sqlcipher.database.SupportFactory;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 
-public class DatabaseProvider {
+public final class DatabaseProvider {
     public static final String DB_NAME = "notesr.db";
     private static volatile AppDatabase instance;
 
