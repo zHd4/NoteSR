@@ -36,7 +36,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class RoomIntegrationMigration implements AppMigration {
+public final class RoomIntegrationMigration implements AppMigration {
 
     private static final List<String> FILES_TO_WIPE = List.of(
             "notes_db5",
