@@ -13,7 +13,7 @@ import app.notesr.util.HashUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class FileIOHelper {
+public final class FileIOHelper {
     private final FilesUtilsAdapter filesUtils;
     private final FileService fileService;
 
