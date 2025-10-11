@@ -21,8 +21,10 @@ public final class ZipUtils {
             byte[] signature = new byte[4];
 
             if (fileInputStream.read(signature) == 4) {
-                return (signature[0] == 0x50 && signature[1] == 0x4B &&
-                        signature[2] == 0x03 && signature[3] == 0x04);
+                return (signature[0] == 0x50
+                        && signature[1] == 0x4B
+                        && signature[2] == 0x03
+                        && signature[3] == 0x04);
             }
         }
 
