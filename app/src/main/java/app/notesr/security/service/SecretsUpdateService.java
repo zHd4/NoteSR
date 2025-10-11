@@ -32,7 +32,7 @@ import app.notesr.util.FilesUtilsAdapter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class SecretsUpdateService {
+public final class SecretsUpdateService {
     private final Context context;
     private final String dbName;
     private final CryptoManager cryptoManager;
