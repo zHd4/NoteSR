@@ -43,7 +43,7 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
-public class OpenNoteActivity extends ActivityBase {
+public final class OpenNoteActivity extends ActivityBase {
     private static final long MAX_COUNT_IN_BADGE = 9;
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
 
