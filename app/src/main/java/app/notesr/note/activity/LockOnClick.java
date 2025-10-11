@@ -8,7 +8,7 @@ import app.notesr.security.crypto.CryptoManagerProvider;
 
 import java.util.function.Consumer;
 
-public class LockOnClick implements Consumer<NotesListActivity> {
+public final class LockOnClick implements Consumer<NotesListActivity> {
     @Override
     public void accept(NotesListActivity activity) {
         Intent authActivityIntent = new Intent(activity.getApplicationContext(),
