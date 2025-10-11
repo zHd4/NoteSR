@@ -12,7 +12,7 @@ import app.notesr.exporter.service.ExportStatus;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ExportBroadcastReceiver extends BroadcastReceiver {
+public final class ExportBroadcastReceiver extends BroadcastReceiver {
     private static final int DEFAULT_PROGRESS = -1;
 
     private final Consumer<String> onOutputPathReceived;
