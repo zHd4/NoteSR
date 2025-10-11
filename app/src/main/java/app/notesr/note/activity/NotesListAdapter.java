@@ -41,7 +41,7 @@ public  final class NotesListAdapter extends ElementListAdapter<Note> {
 
             nameView.setText(note.getName());
             textView.setText(note.getText());
-            updatedAtView.setText(note.getUpdatedAt().format(timestampFormatter));
+            updatedAtView.setText(note.getUpdatedAt().format(TIMESTAMP_FORMATTER));
         }
 
         return view;

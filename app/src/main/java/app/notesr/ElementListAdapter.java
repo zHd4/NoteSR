@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ElementListAdapter<T> extends ArrayAdapter<T> {
 
-    protected static final DateTimeFormatter timestampFormatter =
+    protected static final DateTimeFormatter TIMESTAMP_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
     protected final int resourceLayout;
