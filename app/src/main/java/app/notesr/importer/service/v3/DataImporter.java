@@ -30,16 +30,16 @@ public final class DataImporter {
     private static final String FILES_BLOBS_INFO_DIR = "binfo/";
     private static final String FILES_BLOBS_DATA_DIR = "fblobs/";
 
-    private final BackupDecryptor decryptor;
+    private final BackupDecryptor backupDecryptor;
     private final NoteService noteService;
     private final FileService fileService;
     private final Path backupZipPath;
 
     public void importData() throws IOException {
         try (ZipFile zipFile = new ZipFile(backupZipPath.toFile())) {
-            importNotes(decryptor, zipFile);
-            importFilesInfo(decryptor, zipFile);
-            importFilesData(decryptor, zipFile);
+            importNotes(backupDecryptor, zipFile);
+            importFilesInfo(backupDecryptor, zipFile);
+            importFilesData(backupDecryptor, zipFile);
         }
     }
 
