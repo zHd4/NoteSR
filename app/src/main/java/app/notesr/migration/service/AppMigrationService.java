@@ -7,7 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AppMigrationService {
+public final class AppMigrationService {
     private final List<AppMigration> migrations;
 
     public void run(Context context, int oldVersion, int newVersion) throws AppMigrationException {
