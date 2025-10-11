@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public final class FilesUtils implements FilesUtilsAdapter {
-    /** @noinspection ResultOfMethodCallIgnored*/
     public byte[] readFileBytes(File file) throws IOException {
         byte[] data = new byte[(int) file.length()];
 
