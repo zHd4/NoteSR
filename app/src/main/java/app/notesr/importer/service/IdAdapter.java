@@ -5,7 +5,7 @@ import static java.util.UUID.randomUUID;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class IdAdapter {
+public final class IdAdapter {
     private final String id;
 
     public String getId() {
