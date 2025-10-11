@@ -24,11 +24,11 @@ import app.notesr.util.thumbnail.VideoThumbnailCreator;
 
 public class MediaFileViewerActivityBase extends FileViewerActivityBase {
 
-    protected boolean isThumbnailSet() {
+    protected final boolean isThumbnailSet() {
         return fileInfo.getThumbnail() != null;
     }
 
-    protected void setThumbnail(File mediaFile) {
+    protected final void setThumbnail(File mediaFile) {
         String type = fileInfo.getType().split("/")[0];
         ThumbnailCreator creator;
 
