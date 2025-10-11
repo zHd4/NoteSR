@@ -20,7 +20,7 @@ final class FilesV2JsonImporter extends BaseFilesJsonImporter {
 
     private final File dataBlocksDir;
 
-    public FilesV2JsonImporter(JsonParser parser,
+    FilesV2JsonImporter(JsonParser parser,
                                FileService fileService,
                                Map<String, String> adaptedNotesIdMap,
                                File dataBlocksDir,
@@ -83,7 +83,7 @@ final class FilesV2JsonImporter extends BaseFilesJsonImporter {
                         dataBlock.setOrder(parser.getValueAsLong());
                     }
 
-                    default -> {}
+                    default -> throw new IllegalStateException("Unexpected value: " + field);
                 }
             }
         }
