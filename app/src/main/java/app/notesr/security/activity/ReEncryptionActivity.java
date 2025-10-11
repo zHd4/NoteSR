@@ -15,7 +15,7 @@ import app.notesr.note.activity.NotesListActivity;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.security.service.ReEncryptionAndroidService;
 
-public class ReEncryptionActivity extends ActivityBase {
+public final class ReEncryptionActivity extends ActivityBase {
 
     public static final String EXTRA_NEW_SECRETS = "new_secrets";
 
