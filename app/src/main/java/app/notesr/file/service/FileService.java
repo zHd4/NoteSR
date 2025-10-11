@@ -295,7 +295,7 @@ public final class FileService {
         return db.getFileBlobInfoDao().getRowsCount();
     }
 
-    private void writeFileData(String fileId, InputStream inputStream , File blobsDir)
+    private void writeFileData(String fileId, InputStream inputStream, File blobsDir)
             throws IOException, GeneralSecurityException {
 
         try (inputStream) {
