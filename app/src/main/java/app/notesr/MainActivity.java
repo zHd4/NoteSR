@@ -20,7 +20,7 @@ import app.notesr.exporter.service.ExportAndroidService;
 import app.notesr.importer.service.ImportAndroidService;
 import app.notesr.security.service.ReEncryptionAndroidService;
 
-public class MainActivity extends ActivityBase {
+public final class MainActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
