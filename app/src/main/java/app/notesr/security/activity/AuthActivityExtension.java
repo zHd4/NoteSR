@@ -68,7 +68,9 @@ public final class AuthActivityExtension {
             String hexKey = activity.getIntent().getStringExtra("hexKey");
 
             try {
-                if (hexKey == null) throw new Exception("Missing hex key");
+                if (hexKey == null) {
+                    throw new Exception("Missing hex key");
+                }
 
                 Context context = activity.getApplicationContext();
 
