@@ -10,7 +10,8 @@ public final class VersionFetcher {
         PackageManager packageManager = context.getPackageManager();
         PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
 
-        return removeDot ? packageInfo.versionName.replace(".", "") :
-                packageInfo.versionName;
+        return removeDot
+                ? packageInfo.versionName.replace(".", "")
+                : packageInfo.versionName;
     }
 }
