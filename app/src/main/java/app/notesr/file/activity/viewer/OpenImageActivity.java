@@ -35,7 +35,7 @@ import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.util.FilesUtils;
 
-public class OpenImageActivity extends MediaFileViewerActivityBase {
+public final class OpenImageActivity extends MediaFileViewerActivityBase {
 
     private ImageView imageView;
     private TextView errorMessageTextView;
