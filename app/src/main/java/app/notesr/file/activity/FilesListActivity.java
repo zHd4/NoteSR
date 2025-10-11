@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FilesListActivity extends ActivityBase {
+public final class FilesListActivity extends ActivityBase {
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
     private FileService fileService;
