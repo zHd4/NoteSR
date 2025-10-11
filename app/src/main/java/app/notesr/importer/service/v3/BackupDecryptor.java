@@ -7,7 +7,7 @@ import app.notesr.security.crypto.AesCryptor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class BackupDecryptor {
+public final class BackupDecryptor {
     private final AesCryptor cryptor;
 
     public byte[] decrypt(byte[] encrypted) throws DecryptionFailedException {
