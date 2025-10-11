@@ -20,7 +20,7 @@ import app.notesr.security.dto.CryptoSecrets;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class BackupDecryptor {
+public final class BackupDecryptor {
     private static final String TAG = BackupDecryptor.class.getName();
 
     private final ContentResolver contentResolver;
