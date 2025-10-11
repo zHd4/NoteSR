@@ -19,7 +19,7 @@ import app.notesr.util.KeyUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AuthActivityExtension {
+public final class AuthActivityExtension {
     private static final int MAX_ATTEMPTS = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
