@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddFileActivity extends ActivityBase {
+public final class AddFileActivity extends ActivityBase {
     private FileService fileService;
     private String noteId;
     private boolean noteModified = false;
