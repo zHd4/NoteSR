@@ -21,7 +21,7 @@ import app.notesr.db.DatabaseProvider;
 import app.notesr.note.model.Note;
 import app.notesr.note.service.NoteService;
 
-public class SearchNotesActivity extends ActivityBase {
+public final class SearchNotesActivity extends ActivityBase {
 
     private NoteService noteService;
 
