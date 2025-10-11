@@ -143,6 +143,7 @@ public final class ExportActivity extends ActivityBase {
             case ENCRYPTING_DATA -> statusView.setText(getString(R.string.encrypting_data));
             case WIPING_TEMP_DATA -> statusView.setText(getString(R.string.wiping_temp_data));
             case CANCELLING -> statusView.setText(getString(R.string.cancelling));
+            default -> throw new IllegalStateException("Unexpected value: " + status);
         }
 
         statusView.setVisibility(View.VISIBLE);
