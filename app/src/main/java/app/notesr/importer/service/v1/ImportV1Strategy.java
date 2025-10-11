@@ -20,7 +20,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ImportV1Strategy implements ImportStrategy {
+public final class ImportV1Strategy implements ImportStrategy {
     private static final String TAG = ImportV1Strategy.class.getName();
 
     private final AppDatabase db;
