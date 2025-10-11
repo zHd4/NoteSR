@@ -102,10 +102,10 @@ public final class CacheCleanerAndroidService extends Service implements Runnabl
         tempFileService.getAll().stream()
                 .filter(tempFile -> !runningJobs.containsKey(tempFile))
                 .forEach(tempFile -> {
-                    Thread thread = new Thread(deleteTempFile(tempFile));
+                    Thread deleteThread = new Thread(deleteTempFile(tempFile));
 
-                    runningJobs.put(tempFile, thread);
-                    thread.start();
+                    runningJobs.put(tempFile, deleteThread);
+                    deleteThread.start();
                 });
     }
 
