@@ -28,7 +28,7 @@ import app.notesr.cleaner.service.TempFileService;
 
 import java.io.File;
 
-public class OpenVideoActivity extends MediaFileViewerActivityBase {
+public final class OpenVideoActivity extends MediaFileViewerActivityBase {
 
     private ScaleGestureDetector scaleGestureDetector;
     private TempFileService tempFileService;
