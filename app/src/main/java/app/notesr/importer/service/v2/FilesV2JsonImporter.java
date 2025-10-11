@@ -16,7 +16,7 @@ import app.notesr.file.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
 
-class FilesV2JsonImporter extends BaseFilesJsonImporter {
+final class FilesV2JsonImporter extends BaseFilesJsonImporter {
 
     private final File dataBlocksDir;
 
