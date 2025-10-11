@@ -33,7 +33,7 @@ import app.notesr.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ImportService {
+public final class ImportService {
 
     private static final DateTimeFormatter TIMESTAMP_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
