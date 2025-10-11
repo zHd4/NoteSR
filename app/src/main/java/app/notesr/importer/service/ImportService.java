@@ -45,7 +45,7 @@ public final class ImportService {
     private final AppDatabase db;
     private final NoteService noteService;
     private final FileService fileService;
-    private final CryptoSecrets cryptoSecrets;
+    private final CryptoSecrets secrets;
     private final ContentResolver contentResolver;
     private final Uri backupUri;
     private final ImportStatusCallback statusCallback;
@@ -105,7 +105,7 @@ public final class ImportService {
     }
 
     private ImportV3Strategy getV3Strategy(File tempDecryptedFile) {
-        return new ImportV3Strategy(cryptoSecrets, db, noteService, fileService, tempDecryptedFile);
+        return new ImportV3Strategy(secrets, db, noteService, fileService, tempDecryptedFile);
     }
 
     private void decrypt(File outputFile)
