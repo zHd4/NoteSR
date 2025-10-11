@@ -10,7 +10,7 @@ import app.notesr.migration.service.AppMigrationAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class MigrationBroadcastReceiver extends BroadcastReceiver {
+public final class MigrationBroadcastReceiver extends BroadcastReceiver {
     private final Runnable onMigrationComplete;
 
     @Override
