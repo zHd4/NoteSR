@@ -13,7 +13,7 @@ import app.notesr.security.crypto.ValueDecryptor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class EntityMapper {
+public final class EntityMapper {
 
     private final ValueDecryptor valueDecryptor;
 
