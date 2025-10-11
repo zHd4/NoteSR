@@ -22,7 +22,7 @@ import app.notesr.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ImportV2Strategy implements ImportStrategy {
+public final class ImportV2Strategy implements ImportStrategy {
 
     private static final String NOTES_JSON_FILE_NAME = "notes.json";
     private static final String FILES_INFO_JSON_FILE_NAME = "files_info.json";
