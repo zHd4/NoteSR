@@ -12,7 +12,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class CryptoManagerProvider {
+public final class CryptoManagerProvider {
     private static final String PREF_NAME = "crypto_prefs";
     private static volatile CryptoManager instance;
 
