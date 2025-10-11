@@ -6,7 +6,7 @@ import app.notesr.exception.DecryptionFailedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ValueDecryptor {
+public final class ValueDecryptor {
     private final AesCryptor cryptor;
 
     public byte[] decrypt(byte[] encryptedValue) throws DecryptionFailedException {
