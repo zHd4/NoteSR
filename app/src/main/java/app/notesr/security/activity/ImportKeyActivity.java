@@ -74,7 +74,7 @@ public final class ImportKeyActivity extends ActivityBase {
                     new KeySetupCompletionHandler(this, keySetupService, mode).handle();
                 } catch (IllegalArgumentException e) {
                     Log.e(TAG, "Invalid key", e);
-                    showToastMessage(this,getString(R.string.invalid_key),
+                    showToastMessage(this, getString(R.string.invalid_key),
                             Toast.LENGTH_SHORT);
                 }
             }
