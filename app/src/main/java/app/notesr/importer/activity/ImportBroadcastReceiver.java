@@ -11,7 +11,7 @@ import app.notesr.importer.service.ImportStatus;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ImportBroadcastReceiver extends BroadcastReceiver {
+public final class ImportBroadcastReceiver extends BroadcastReceiver {
     private final Consumer<ImportStatus> onImportRunning;
     private final Consumer<ImportStatus> onImportComplete;
 
