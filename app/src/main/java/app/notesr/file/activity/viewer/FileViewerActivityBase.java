@@ -101,7 +101,7 @@ public class FileViewerActivityBase extends ActivityBase {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void saveFileOnClick() {
+    protected final void saveFileOnClick() {
         File destFile = new File(saveDir, fileInfo.getName());
 
         Runnable task = () -> fileIOHelper.exportFile(fileInfo.getId(), destFile);
@@ -126,7 +126,7 @@ public class FileViewerActivityBase extends ActivityBase {
         );
     }
 
-    protected void deleteFileOnClick() {
+    protected final void deleteFileOnClick() {
         Runnable task = () -> {
             try {
                 fileService.delete(fileInfo.getId());
@@ -145,7 +145,7 @@ public class FileViewerActivityBase extends ActivityBase {
         );
     }
 
-    protected void runWithProgressDialog(Runnable backgroundTask, @Nullable Runnable afterUi) {
+    protected final void runWithProgressDialog(Runnable backgroundTask, @Nullable Runnable afterUi) {
         AlertDialog dialog = dialogFactory.buildThemedDialog(R.layout.progress_dialog_deleting);
         dialog.setCancelable(false);
         dialog.show();
@@ -164,7 +164,7 @@ public class FileViewerActivityBase extends ActivityBase {
         });
     }
 
-    protected void returnToListActivity() {
+    protected final void returnToListActivity() {
         Intent intent = new Intent(getApplicationContext(), FilesListActivity.class)
                 .putExtra("noteId", fileInfo.getNoteId())
                 .putExtra("modified", true)
@@ -173,7 +173,7 @@ public class FileViewerActivityBase extends ActivityBase {
         startActivity(intent);
     }
 
-    protected File dropToCache() {
+    protected final File dropToCache() {
         return fileIOHelper.dropToCache(fileInfo, getCacheDir());
     }
 }
