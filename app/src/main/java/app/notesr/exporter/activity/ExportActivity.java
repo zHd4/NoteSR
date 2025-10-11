@@ -32,7 +32,7 @@ import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.util.FilesUtils;
 
-public class ExportActivity extends ActivityBase {
+public final class ExportActivity extends ActivityBase {
 
     private NoteService noteService;
     private FileService fileService;
