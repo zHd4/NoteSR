@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
-public class ZoomableImageTouchListener implements View.OnTouchListener {
+public final class ZoomableImageTouchListener implements View.OnTouchListener {
 
     private static final float MAX_SCALE = 5f;
 
