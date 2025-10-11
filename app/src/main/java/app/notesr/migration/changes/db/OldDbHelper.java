@@ -23,7 +23,7 @@ public class OldDbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    public List<Map<String, Object>> getAllNotes() {
+    public final List<Map<String, Object>> getAllNotes() {
         List<Map<String, Object>> notes = new ArrayList<>();
 
         Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM notes", new String[0]);
@@ -54,7 +54,7 @@ public class OldDbHelper extends SQLiteOpenHelper {
         return notes;
     }
 
-    public List<Map<String, Object>> getFilesInfo() {
+    public final List<Map<String, Object>> getFilesInfo() {
         List<Map<String, Object>> filesInfo = new ArrayList<>();
 
         Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM files_info",
@@ -97,7 +97,7 @@ public class OldDbHelper extends SQLiteOpenHelper {
         return filesInfo;
     }
 
-    public List<String> getBlocksIdsByFileId(String fileId) {
+    public final List<String> getBlocksIdsByFileId(String fileId) {
         List<String> dataBlocksIds = new ArrayList<>();
 
         Cursor cursor = getReadableDatabase().rawQuery(
@@ -116,7 +116,7 @@ public class OldDbHelper extends SQLiteOpenHelper {
         return dataBlocksIds;
     }
 
-    public Map<String, Object> getDataBlockById(String id) {
+    public final Map<String, Object> getDataBlockById(String id) {
         Cursor cursor = getReadableDatabase().rawQuery(
                 "SELECT file_id, block_order, data FROM data_blocks WHERE id = ?",
                 new String[] {id}
