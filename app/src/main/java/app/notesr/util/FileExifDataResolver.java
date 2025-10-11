@@ -9,7 +9,7 @@ import android.webkit.MimeTypeMap;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class FileExifDataResolver {
+public final class FileExifDataResolver {
 
     private final Context context;
     private final FilesUtilsAdapter filesUtils;
