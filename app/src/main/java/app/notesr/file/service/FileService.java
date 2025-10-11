@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class FileService {
+public final class FileService {
     public static final String BLOBS_DIR_NAME = "fblobs";
     private static final int FILE_BLOB_MAX_SIZE = 500000;
 
