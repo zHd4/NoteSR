@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class NotesListActivity extends ActivityBase {
+public final class NotesListActivity extends ActivityBase {
     private final Map<Integer, Consumer<NotesListActivity>> menuItemsMap = new HashMap<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 
