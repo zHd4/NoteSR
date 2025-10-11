@@ -14,7 +14,7 @@ import app.notesr.note.activity.NotesListActivity;
 import app.notesr.migration.service.AppMigrationAndroidService;
 import app.notesr.migration.service.DataVersionManager;
 
-public class MigrationActivity extends ActivityBase {
+public final class MigrationActivity extends ActivityBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
