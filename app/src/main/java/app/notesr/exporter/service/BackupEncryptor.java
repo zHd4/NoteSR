@@ -10,7 +10,7 @@ import app.notesr.security.crypto.AesCryptor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class BackupEncryptor {
+public final class BackupEncryptor {
     private final AesCryptor cryptor;
 
     public byte[] encrypt(String json) throws EncryptionFailedException, IOException {
