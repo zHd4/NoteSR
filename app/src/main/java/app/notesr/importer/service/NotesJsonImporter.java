@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NotesJsonImporter extends BaseJsonImporter {
+public final class NotesJsonImporter extends BaseJsonImporter {
 
     @Getter
     private final Map<String, String> adaptedIdMap = new HashMap<>();
