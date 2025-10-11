@@ -7,7 +7,7 @@ import app.notesr.db.AppDatabase;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class TempFileService {
+public final class TempFileService {
     private final AppDatabase db;
 
     public void save(TempFile file) {
