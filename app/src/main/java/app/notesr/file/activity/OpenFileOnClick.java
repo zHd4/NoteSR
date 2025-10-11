@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class OpenFileOnClick implements AdapterView.OnItemClickListener {
+public final class OpenFileOnClick implements AdapterView.OnItemClickListener {
     private static final Map<String, Class<? extends FileViewerActivityBase>> FILES_VIEWERS =
             Map.of(
                     "text", OpenTextFileActivity.class,
