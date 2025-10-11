@@ -21,6 +21,7 @@ public final class KeySetupCompletionHandler {
         switch (mode) {
             case FIRST_RUN -> proceedFirstRun();
             case REGENERATION -> proceedRegeneration();
+            default -> throw new RuntimeException("Unknown mode: " + mode);
         }
     }
 
