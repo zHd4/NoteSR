@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ViewNotesSearchResultsActivity extends ActivityBase {
+public final class ViewNotesSearchResultsActivity extends ActivityBase {
     private List<Note> results;
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 
