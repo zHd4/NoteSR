@@ -24,7 +24,7 @@ import app.notesr.note.service.NoteService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DataImporter {
+public final class DataImporter {
     private static final String NOTES_DIR = "notes/";
     private static final String FILES_INFO_DIR = "finfo/";
     private static final String FILES_BLOBS_INFO_DIR = "binfo/";
