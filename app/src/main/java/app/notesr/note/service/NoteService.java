@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class NoteService {
+public final class NoteService {
     private final AppDatabase db;
 
     public void save(Note note) {
