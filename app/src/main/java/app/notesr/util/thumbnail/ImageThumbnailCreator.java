@@ -19,7 +19,7 @@ import app.notesr.util.FilesUtilsAdapter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ImageThumbnailCreator implements ThumbnailCreator {
+public final class ImageThumbnailCreator implements ThumbnailCreator {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 100;
     public static final int QUALITY = 80;
