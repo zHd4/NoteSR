@@ -65,11 +65,13 @@ public final class KeyRecoveryActivity extends ActivityBase {
                         finish();
                     } else {
                         Log.e(TAG, "Wrong key: " + hexKey);
-                        showToastMessage(this,getString(R.string.wrong_key), Toast.LENGTH_SHORT);
+                        showToastMessage(this,
+                                getString(R.string.wrong_key),
+                                Toast.LENGTH_SHORT);
                     }
                 } catch (IllegalArgumentException e) {
                     Log.e(TAG, "Invalid key", e);
-                    showToastMessage(this,getString(R.string.invalid_key),
+                    showToastMessage(this, getString(R.string.invalid_key),
                             Toast.LENGTH_SHORT);
                 } catch (IOException | NoSuchAlgorithmException e) {
                     Log.e(TAG, e.toString());
