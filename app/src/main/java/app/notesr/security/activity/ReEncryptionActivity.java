@@ -35,7 +35,7 @@ public class ReEncryptionActivity extends ActivityBase {
         startReEncryptionService();
     }
 
-    protected void startReEncryptionService() {
+    private void startReEncryptionService() {
         CryptoSecrets secrets = (CryptoSecrets) getIntent()
                 .getSerializableExtra(EXTRA_NEW_SECRETS);
 
