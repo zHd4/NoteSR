@@ -27,7 +27,7 @@ import app.notesr.db.DatabaseProvider;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.util.FilesUtils;
 
-public class ReEncryptionAndroidService extends Service implements Runnable {
+public final class ReEncryptionAndroidService extends Service implements Runnable {
 
     private static final String TAG = ReEncryptionAndroidService.class.getName();
     public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
