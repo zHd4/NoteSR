@@ -184,6 +184,7 @@ public final class ImportActivity extends ActivityBase {
                 case DECRYPTING -> statusTextView.setText(R.string.decrypting_data);
                 case IMPORTING -> statusTextView.setText(R.string.importing);
                 case CLEANING_UP -> statusTextView.setText(R.string.wiping_temp_data);
+                default -> throw new IllegalStateException("Unexpected value: " + status);
             }
         }
     }
@@ -205,6 +206,7 @@ public final class ImportActivity extends ActivityBase {
                 startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
                 finish();
             }
+            default -> throw new IllegalStateException("Unexpected value: " + status);
         }
 
         actionBar.setDisplayHomeAsUpEnabled(true);
