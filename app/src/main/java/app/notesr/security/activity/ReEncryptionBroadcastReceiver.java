@@ -8,7 +8,7 @@ import app.notesr.security.service.ReEncryptionAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ReEncryptionBroadcastReceiver extends BroadcastReceiver {
+public final class ReEncryptionBroadcastReceiver extends BroadcastReceiver {
     private final Runnable onReEncryptionComplete;
 
     @Override
