@@ -16,7 +16,7 @@ public final class CryptoManagerProvider {
     private static final String PREF_NAME = "crypto_prefs";
     private static volatile CryptoManager instance;
 
-    public static CryptoManager getInstance(){
+    public static CryptoManager getInstance() {
         return getInstance(App.getContext());
     }
 
