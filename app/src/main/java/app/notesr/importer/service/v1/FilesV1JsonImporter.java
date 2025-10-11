@@ -44,7 +44,7 @@ class FilesV1JsonImporter extends BaseFilesJsonImporter {
         }
     }
 
-    protected AbstractMap.SimpleEntry<FileBlobInfo, byte[]> parseDataBlockObject()
+    private AbstractMap.SimpleEntry<FileBlobInfo, byte[]> parseDataBlockObject()
             throws IOException {
 
         FileBlobInfo genericBlobInfo = new FileBlobInfo();
@@ -61,7 +61,7 @@ class FilesV1JsonImporter extends BaseFilesJsonImporter {
                         if (parser.getValueAsString().equals("id")) continue;
 
                         genericBlobInfo.setId(parser.getValueAsString());
-                        adaptId(genericBlobInfo);
+                        adaptFileBlobInfoId(genericBlobInfo);
                     }
 
                     case "file_id" -> {

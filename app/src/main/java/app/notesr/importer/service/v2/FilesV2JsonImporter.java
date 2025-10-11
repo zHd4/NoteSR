@@ -55,7 +55,7 @@ class FilesV2JsonImporter extends BaseFilesJsonImporter {
         }
     }
 
-    protected FileBlobInfo parseDataBlockObject() throws IOException {
+    private FileBlobInfo parseDataBlockObject() throws IOException {
         FileBlobInfo dataBlock = new FileBlobInfo();
         String field;
 
@@ -68,7 +68,7 @@ class FilesV2JsonImporter extends BaseFilesJsonImporter {
                         if (parser.getValueAsString().equals("id")) continue;
 
                         dataBlock.setId(parser.getValueAsString());
-                        adaptId(dataBlock);
+                        adaptFileBlobInfoId(dataBlock);
                     }
 
                     case "file_id" -> {

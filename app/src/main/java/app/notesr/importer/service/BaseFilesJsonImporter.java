@@ -34,13 +34,13 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         this.adaptedNotesIdMap = adaptedNotesIdMap;
     }
 
-    public void importFiles()
+    public final void importFiles()
             throws IOException, EncryptionFailedException, DecryptionFailedException {
         importFilesInfo();
         importFilesData();
     }
 
-    protected void importFilesInfo() throws IOException {
+    protected final void importFilesInfo() throws IOException {
         if (skipTo("files_info")) {
             if (parser.nextToken() == JsonToken.START_ARRAY) {
                 do {
@@ -51,7 +51,7 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         }
     }
 
-    protected FileInfo parseFileInfoObject() throws IOException {
+    protected final FileInfo parseFileInfoObject() throws IOException {
         FileInfo fileInfo = new FileInfo();
         String field;
 
@@ -64,7 +64,7 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
                         if (parser.getValueAsString().equals("id")) continue;
 
                         fileInfo.setId(parser.getValueAsString());
-                        adaptId(fileInfo);
+                        adaptFileInfoId(fileInfo);
                     }
 
                     case "note_id" -> {
@@ -126,7 +126,17 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         return fileInfo;
     }
 
-    protected void adaptId(FileBlobInfo dataBlock) {
+    private void adaptFileInfoId(FileInfo fileInfo) {
+        String id = fileInfo.getId();
+        String adaptedId = new IdAdapter(id).getId();
+
+        if (!adaptedId.equals(id)) {
+            adaptedFilesIdMap.put(id, adaptedId);
+            fileInfo.setId(adaptedId);
+        }
+    }
+
+    protected final void adaptFileBlobInfoId(FileBlobInfo dataBlock) {
         String id = dataBlock.getId();
         String adaptedId = new IdAdapter(id).getId();
 
@@ -136,15 +146,6 @@ public abstract class BaseFilesJsonImporter extends BaseJsonImporter {
         }
     }
 
-    protected abstract void importFilesData() throws IOException, DecryptionFailedException, EncryptionFailedException;
-
-    private void adaptId(FileInfo fileInfo) {
-        String id = fileInfo.getId();
-        String adaptedId = new IdAdapter(id).getId();
-
-        if (!adaptedId.equals(id)) {
-            adaptedFilesIdMap.put(id, adaptedId);
-            fileInfo.setId(adaptedId);
-        }
-    }
+    protected abstract void importFilesData()
+            throws IOException, DecryptionFailedException, EncryptionFailedException;
 }
