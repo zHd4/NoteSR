@@ -12,7 +12,7 @@ public class BaseJsonImporter {
     protected final JsonParser parser;
     protected final DateTimeFormatter timestampFormatter;
 
-    protected boolean skipTo(String targetField) throws IOException {
+    protected final boolean skipTo(String targetField) throws IOException {
         String currentField = parser.getCurrentName();
 
         while (currentField == null || !currentField.equals(targetField)) {
