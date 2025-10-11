@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-public class VersionFetcher {
+public final class VersionFetcher {
     public static String fetchVersionName(Context context, boolean removeDot) throws
             PackageManager.NameNotFoundException {
         PackageManager packageManager = context.getPackageManager();
