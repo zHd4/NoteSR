@@ -16,36 +16,38 @@ import app.notesr.ActivityBase;
 import app.notesr.security.crypto.CryptoManager;
 import app.notesr.security.crypto.CryptoManagerProvider;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.Arrays;
 
-public class AuthActivity extends ActivityBase {
+public final class AuthActivity extends ActivityBase {
 
     private static final String TAG = AuthActivity.class.getName();
 
     @AllArgsConstructor
+    @Getter
     public enum Mode {
         AUTHORIZATION("authorization"),
         CREATE_PASSWORD("create_password"),
         CHANGE_PASSWORD("change_password"),
         KEY_RECOVERY("key_recovery");
 
-        public final String mode;
+        private final String mode;
     }
 
     private static final Integer[] PIN_BUTTONS_ID = {
-            R.id.pinButton1,
-            R.id.pinButton2,
-            R.id.pinButton3,
-            R.id.pinButton4,
-            R.id.pinButton5,
-            R.id.pinButton6,
-            R.id.pinButton7,
-            R.id.pinButton8,
-            R.id.pinButton9,
-            R.id.pinButton0,
-            R.id.pinButtonSpecChars1,
-            R.id.pinButtonSpecChars2
+        R.id.pinButton1,
+        R.id.pinButton2,
+        R.id.pinButton3,
+        R.id.pinButton4,
+        R.id.pinButton5,
+        R.id.pinButton6,
+        R.id.pinButton7,
+        R.id.pinButton8,
+        R.id.pinButton9,
+        R.id.pinButton0,
+        R.id.pinButtonSpecChars1,
+        R.id.pinButtonSpecChars2
     };
 
     private AuthActivityExtension extension;
@@ -109,7 +111,7 @@ public class AuthActivity extends ActivityBase {
 
     private View.OnClickListener changeInputIndexButtonOnClick() {
         return view -> {
-            Button self = ((Button)view);
+            Button self = ((Button) view);
 
             switch (inputIndex) {
                 case 0 -> {
@@ -128,13 +130,14 @@ public class AuthActivity extends ActivityBase {
                     self.setText("1");
                     inputIndex = 0;
                 }
+                default -> throw new IllegalStateException("Unexpected value: " + inputIndex);
             }
         };
     }
 
     private View.OnClickListener pinButtonOnClick() {
         return view -> {
-            Button self = ((Button)view);
+            Button self = ((Button) view);
             TextView censoredPasswordView = findViewById(R.id.censoredPasswordTextView);
 
             char currentChar = self.getText()
@@ -153,8 +156,8 @@ public class AuthActivity extends ActivityBase {
 
             int screenWidth = getDisplayMetrics().widthPixels;
 
-            if (passwordViewLength == 0 ||
-                    screenWidth - passwordViewWidth > passwordViewWidth / passwordViewLength) {
+            if (passwordViewLength == 0
+                    || screenWidth - passwordViewWidth > passwordViewWidth / passwordViewLength) {
                 String censoredPassword = censoredPasswordView.getText() + "•";
                 censoredPasswordView.setText(censoredPassword);
             }
@@ -163,12 +166,12 @@ public class AuthActivity extends ActivityBase {
 
     private View.OnClickListener capsButtonOnClick() {
         return view -> {
-            Button self = ((Button)view);
+            Button self = ((Button) view);
             capsLockEnabled = !capsLockEnabled;
 
-            int colorId = capsLockEnabled ?
-                    R.color.caps_button_pressed :
-                    R.color.caps_button_unpressed;
+            int colorId = capsLockEnabled
+                    ? R.color.caps_button_pressed
+                    : R.color.caps_button_unpressed;
 
             self.setTextColor(ContextCompat.getColor(getApplicationContext(), colorId));
         };
@@ -198,6 +201,7 @@ public class AuthActivity extends ActivityBase {
                 case CREATE_PASSWORD -> extension.createPassword();
                 case KEY_RECOVERY -> extension.recoverKey();
                 case CHANGE_PASSWORD -> extension.changePassword();
+                default -> throw new IllegalStateException("Unexpected value: " + currentMode);
             }
         };
     }
