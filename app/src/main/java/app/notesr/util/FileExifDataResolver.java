@@ -13,10 +13,10 @@ public final class FileExifDataResolver {
 
     private final Context context;
     private final FilesUtilsAdapter filesUtils;
-    private final Uri uri;
+    private final Uri fileUri;
 
     public String getFileName() {
-        try (Cursor cursor = getCursor(uri)) {
+        try (Cursor cursor = getCursor(fileUri)) {
             int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
 
             cursor.moveToFirst();
@@ -25,7 +25,7 @@ public final class FileExifDataResolver {
     }
 
     public long getFileSize() {
-        try (Cursor cursor = getCursor(uri)) {
+        try (Cursor cursor = getCursor(fileUri)) {
             int index = cursor.getColumnIndex(OpenableColumns.SIZE);
 
             cursor.moveToFirst();
