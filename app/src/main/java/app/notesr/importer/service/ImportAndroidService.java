@@ -29,7 +29,7 @@ import app.notesr.util.FilesUtils;
 
 import java.util.Set;
 
-public class ImportAndroidService extends Service implements Runnable {
+public final class ImportAndroidService extends Service implements Runnable {
 
     public static final String BROADCAST_ACTION = "import_data_broadcast";
     public static final String EXTRA_STATUS = "status";
