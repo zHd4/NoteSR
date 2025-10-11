@@ -11,7 +11,7 @@ import java.io.IOException;
 import app.notesr.R;
 import app.notesr.exception.DecryptionFailedException;
 
-public class OpenTextFileActivity extends FileViewerActivityBase {
+public final class OpenTextFileActivity extends FileViewerActivityBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
