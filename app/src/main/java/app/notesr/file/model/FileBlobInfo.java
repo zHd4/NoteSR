@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-/** @noinspection LombokGetterMayBeUsed, LombokSetterMayBeUsed */
 @Entity(
         tableName = "files_blob_info",
         foreignKeys = @ForeignKey(
