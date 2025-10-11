@@ -23,7 +23,7 @@ import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.security.dto.CryptoSecrets;
 import app.notesr.security.service.SecretsSetupService;
 
-public class ImportKeyActivity extends ActivityBase {
+public final class ImportKeyActivity extends ActivityBase {
 
     private static final String TAG = ImportKeyActivity.class.getName();
 
