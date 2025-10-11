@@ -10,7 +10,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class OpenNoteOnClick implements AdapterView.OnItemClickListener {
+public final class OpenNoteOnClick implements AdapterView.OnItemClickListener {
     private final Context context;
     private final Map<Long, String> notesIdsMap;
 
