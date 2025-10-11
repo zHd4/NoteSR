@@ -13,7 +13,7 @@ import app.notesr.security.activity.SetupKeyActivity;
 
 import java.util.function.Consumer;
 
-public class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
+public final class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
     @Override
     public void accept(NotesListActivity activity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AlertDialogTheme);
