@@ -8,7 +8,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class CryptoSecrets implements Serializable {
+public final class CryptoSecrets implements Serializable {
 
     private byte[] key;
     private String password;
