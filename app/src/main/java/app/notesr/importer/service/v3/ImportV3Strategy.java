@@ -14,7 +14,7 @@ import app.notesr.security.dto.CryptoSecrets;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ImportV3Strategy implements ImportStrategy {
+public final class ImportV3Strategy implements ImportStrategy {
 
     private final CryptoSecrets cryptoSecrets;
     private final AppDatabase db;
