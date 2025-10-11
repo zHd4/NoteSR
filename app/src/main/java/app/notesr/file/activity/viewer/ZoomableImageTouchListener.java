@@ -88,7 +88,7 @@ public final class ZoomableImageTouchListener implements View.OnTouchListener {
         minScale = scale;
     }
 
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+    private final class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             float scaleFactor = detector.getScaleFactor();
@@ -112,7 +112,7 @@ public final class ZoomableImageTouchListener implements View.OnTouchListener {
         }
     }
 
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2,
                                 float distanceX, float distanceY) {
@@ -136,17 +136,24 @@ public final class ZoomableImageTouchListener implements View.OnTouchListener {
         float drawableWidth = imageView.getDrawable().getIntrinsicWidth() * scaleX;
         float drawableHeight = imageView.getDrawable().getIntrinsicHeight() * scaleY;
 
-        float maxTransX = 0;
-        float maxTransY = 0;
+        float maxTransX = 0f;
+        float maxTransY = 0f;
+
         float minTransX = viewWidth - drawableWidth;
         float minTransY = viewHeight - drawableHeight;
 
         if (drawableWidth < viewWidth) {
-            minTransX = maxTransX = (viewWidth - drawableWidth) / 2f;
+            float offsetX = (viewWidth - drawableWidth) / 2f;
+
+            minTransX = offsetX;
+            maxTransX = offsetX;
         }
 
         if (drawableHeight < viewHeight) {
-            minTransY = maxTransY = (viewHeight - drawableHeight) / 2f;
+            float offsetY = (viewHeight - drawableHeight) / 2f;
+
+            minTransY = offsetY;
+            maxTransY = offsetY;
         }
 
         float clampedX = Math.min(Math.max(transX, minTransX), maxTransX);
