@@ -17,7 +17,7 @@ import java.util.Map;
 
 final class FilesV1JsonImporter extends BaseFilesJsonImporter {
 
-    public FilesV1JsonImporter(JsonParser parser,
+    FilesV1JsonImporter(JsonParser parser,
                                FileService fileService,
                                Map<String, String> adaptedNotesIdMap,
                                DateTimeFormatter timestampFormatter) {
@@ -85,7 +85,7 @@ final class FilesV1JsonImporter extends BaseFilesJsonImporter {
                         }
                     }
 
-                    default -> {}
+                    default -> throw new IllegalStateException("Unexpected value: " + field);
                 }
             }
         }
