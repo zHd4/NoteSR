@@ -152,6 +152,7 @@ public final class OpenImageActivity extends MediaFileViewerActivityBase {
             case ExifInterface.ORIENTATION_FLIP_VERTICAL:
                 matrix.postScale(1, -1);
                 break;
+            default: // No rotation
         }
 
         if (!matrix.isIdentity()) {
