@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity(tableName = "temp_files")
 @NoArgsConstructor
 @AllArgsConstructor
-public class TempFile {
+public final class TempFile {
 
     @PrimaryKey(autoGenerate = true)
     private Long id;
