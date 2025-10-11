@@ -21,7 +21,7 @@ import app.notesr.util.WiperAdapter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class CryptoManager {
+public final class CryptoManager {
 
     public static final int KEY_SIZE = 48;
     private static final String KEY_HASH_PREF = "key_hash";
