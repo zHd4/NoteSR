@@ -23,7 +23,7 @@ import app.notesr.util.KeyUtils;
 import lombok.Getter;
 
 @Getter
-public class SetupKeyActivity extends ActivityBase {
+public final class SetupKeyActivity extends ActivityBase {
 
     private static final String TAG = SetupKeyActivity.class.getName();
     private static final int LOW_SCREEN_HEIGHT = 800;
