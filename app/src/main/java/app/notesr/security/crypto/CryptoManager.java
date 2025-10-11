@@ -72,10 +72,10 @@ public final class CryptoManager {
         return CryptoSecrets.from(secrets);
     }
 
-    public void setSecrets(Context context, CryptoSecrets secrets)
+    public void setSecrets(Context context, CryptoSecrets cryptoSecrets)
             throws EncryptionFailedException {
-        saveSecrets(context, secrets);
-        this.secrets = secrets;
+        saveSecrets(context, cryptoSecrets);
+        this.secrets = cryptoSecrets;
     }
 
     public boolean verifyKey(Context context, byte[] key)
@@ -117,19 +117,19 @@ public final class CryptoManager {
         }
     }
 
-    private void saveSecrets(Context context, CryptoSecrets secrets)
+    private void saveSecrets(Context context, CryptoSecrets cryptoSecrets)
             throws EncryptionFailedException {
         try {
             byte[] encryptedKeyFileBytes = cryptorFactory
-                    .create(secrets.getPassword(), AesGcmCryptor.class)
-                    .encrypt(secrets.getKey());
+                    .create(cryptoSecrets.getPassword(), AesGcmCryptor.class)
+                    .encrypt(cryptoSecrets.getKey());
 
             filesUtils.writeFileBytes(
                     filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME),
                     encryptedKeyFileBytes
             );
 
-            setKeyHash(toSha256String(secrets.getKey()), context);
+            setKeyHash(toSha256String(cryptoSecrets.getKey()), context);
         } catch (Exception e) {
             throw new EncryptionFailedException(e);
         }
