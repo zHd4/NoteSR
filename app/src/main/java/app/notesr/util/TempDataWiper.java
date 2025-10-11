@@ -3,7 +3,7 @@ package app.notesr.util;
 import java.io.File;
 import java.io.IOException;
 
-public class TempDataWiper {
+public final class TempDataWiper {
 
     public static void wipeTempData(File... objects) throws IOException {
         Wiper wiper = new Wiper();
