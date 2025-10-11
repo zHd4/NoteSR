@@ -12,8 +12,10 @@ public final class AesCryptorFactory implements CryptorFactory {
         try {
             return cryptorClass.getConstructor(String.class, byte[].class)
                     .newInstance(password, salt);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
-                 NoSuchMethodException e) {
+        } catch (IllegalAccessException
+                 | InstantiationException
+                 | InvocationTargetException
+                 | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
