@@ -3,7 +3,7 @@ package app.notesr.file.activity.viewer;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
-public class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+public final class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
     private float scaleFactor = 1.0f;
 
