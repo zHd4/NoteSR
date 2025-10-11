@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class StartupIntentResolver {
+public final class StartupIntentResolver {
     private final List<Supplier<Intent>> intentSuppliers;
     private final Intent defaultIntent;
 
