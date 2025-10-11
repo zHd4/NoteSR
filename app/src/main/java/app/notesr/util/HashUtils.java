@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
-public class HashUtils {
+public final class HashUtils {
     public static byte[] toSha256Bytes(byte[] raw) throws NoSuchAlgorithmException {
         return getSha256Instance().digest(raw);
     }
