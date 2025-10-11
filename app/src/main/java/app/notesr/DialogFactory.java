@@ -9,7 +9,7 @@ import androidx.appcompat.app.AlertDialog;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DialogFactory {
+public final class DialogFactory {
     private final Activity activity;
 
     public AlertDialog buildThemedDialog(@LayoutRes int layoutRes) {
