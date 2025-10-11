@@ -11,7 +11,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class VideoThumbnailCreator implements ThumbnailCreator {
+public final class VideoThumbnailCreator implements ThumbnailCreator {
     private static final Bitmap.CompressFormat THUMBNAIL_FORMAT = Bitmap.CompressFormat.WEBP;
     private static final int TIME_US = 1;
     private static final int QUALITY = 90;
