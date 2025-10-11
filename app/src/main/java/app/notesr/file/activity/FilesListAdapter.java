@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class FilesListAdapter extends ElementListAdapter<FileInfo> {
+public final class FilesListAdapter extends ElementListAdapter<FileInfo> {
     private static final Map<String, Integer> FILES_TYPES_ICONS = Map.of(
             "text", R.drawable.text_file,
             "image", R.drawable.image_file,
