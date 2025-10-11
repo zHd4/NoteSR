@@ -28,7 +28,7 @@ import app.notesr.importer.service.ImportStatus;
 import app.notesr.util.FileExifDataResolver;
 import app.notesr.util.FilesUtils;
 
-public class ImportActivity extends ActivityBase {
+public final class ImportActivity extends ActivityBase {
 
     private static final String TAG = ImportActivity.class.getName();
 
