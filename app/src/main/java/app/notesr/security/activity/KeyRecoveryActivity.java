@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
-public class KeyRecoveryActivity extends ActivityBase {
+public final class KeyRecoveryActivity extends ActivityBase {
     private static final String TAG = KeyRecoveryActivity.class.toString();
 
     @Override
