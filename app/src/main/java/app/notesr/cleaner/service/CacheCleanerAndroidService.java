@@ -27,7 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class CacheCleanerAndroidService extends Service implements Runnable {
+public final class CacheCleanerAndroidService extends Service implements Runnable {
 
     private static final String TAG = CacheCleanerAndroidService.class.getName();
     private static final String CHANNEL_ID = "cache_cleaner_service_channel";
