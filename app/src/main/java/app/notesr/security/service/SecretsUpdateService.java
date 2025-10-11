@@ -50,8 +50,8 @@ public final class SecretsUpdateService {
 
         DatabaseProvider.close();
 
-        AppDatabase oldDb = getDatabase(context, dbName, getSupportFactory(oldKey));
-        AppDatabase newDb = getDatabase(context, newDbFile.getName(), getSupportFactory(newKey));
+        AppDatabase oldDb = getDatabase(dbName, getSupportFactory(oldKey));
+        AppDatabase newDb = getDatabase(newDbFile.getName(), getSupportFactory(newKey));
 
         AesCryptor oldCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(oldSecrets));
         AesCryptor newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
@@ -132,7 +132,7 @@ public final class SecretsUpdateService {
         return new SupportFactory(Arrays.copyOf(key, key.length));
     }
 
-    private AppDatabase getDatabase(Context context, String name, SupportFactory factory) {
+    private AppDatabase getDatabase(String name, SupportFactory factory) {
         return Room.databaseBuilder(context, AppDatabase.class, name)
                 .openHelperFactory(factory)
                 .build();
