@@ -38,7 +38,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public class ExportAndroidService extends Service implements Runnable {
+public final class ExportAndroidService extends Service implements Runnable {
     public static final String BROADCAST_ACTION = "export_data_broadcast";
     public static final String EXTRA_STATUS = "status";
     public static final String EXTRA_PROGRESS = "progress";
