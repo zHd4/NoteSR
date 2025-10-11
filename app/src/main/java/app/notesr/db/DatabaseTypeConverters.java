@@ -7,7 +7,7 @@ import androidx.room.TypeConverter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class DatabaseTypeConverters {
+public final class DatabaseTypeConverters {
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
