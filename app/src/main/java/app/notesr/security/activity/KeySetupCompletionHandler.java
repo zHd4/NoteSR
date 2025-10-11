@@ -12,7 +12,7 @@ import app.notesr.migration.service.DataVersionManager;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class KeySetupCompletionHandler {
+public final class KeySetupCompletionHandler {
     private final Activity activity;
     private final SecretsSetupService keySetupService;
     private final KeySetupMode mode;
