@@ -3,7 +3,7 @@ package app.notesr.security.crypto;
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 
-public class AesCryptorFactory implements CryptorFactory {
+public final class AesCryptorFactory implements CryptorFactory {
     @Override
     public AesCryptor create(String password, Class<? extends AesCryptor> cryptorClass)
             throws NoSuchAlgorithmException {
