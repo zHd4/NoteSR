@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
 import java.util.Map;
 
-class FilesV1JsonImporter extends BaseFilesJsonImporter {
+final class FilesV1JsonImporter extends BaseFilesJsonImporter {
 
     public FilesV1JsonImporter(JsonParser parser,
                                FileService fileService,
