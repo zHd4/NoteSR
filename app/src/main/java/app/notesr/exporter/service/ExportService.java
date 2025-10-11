@@ -34,7 +34,7 @@ import java.nio.file.Files;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ExportService {
+public final class ExportService {
     private static final String TAG = ExportService.class.getName();
 
     private final Context context;
