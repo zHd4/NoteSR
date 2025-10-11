@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class Wiper implements WiperAdapter {
+public final class Wiper implements WiperAdapter {
     private static final String TAG = Wiper.class.getName();
     private static final int LOOPS_COUNT = 6;
 
