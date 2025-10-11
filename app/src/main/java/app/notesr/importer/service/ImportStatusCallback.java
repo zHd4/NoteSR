@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ImportStatusCallback {
+public final class ImportStatusCallback {
     private final Consumer<ImportStatus> onStatusUpdate;
 
     public void updateStatus(ImportStatus status) {
