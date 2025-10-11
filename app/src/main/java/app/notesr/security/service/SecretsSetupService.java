@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class SecretsSetupService {
+public final class SecretsSetupService {
     private final Context context;
     private final CryptoManager cryptoManager;
     private final CryptoSecrets cryptoSecrets;
