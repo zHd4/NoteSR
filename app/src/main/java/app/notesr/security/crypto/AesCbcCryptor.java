@@ -17,7 +17,7 @@ import java.security.spec.InvalidKeySpecException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AesCbcCryptor extends AesCryptor {
+public final class AesCbcCryptor extends AesCryptor {
     private static final int CHUNK_SIZE = 100_000;
     private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
 
