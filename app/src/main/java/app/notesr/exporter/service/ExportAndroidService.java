@@ -125,7 +125,7 @@ public final class ExportAndroidService extends Service implements Runnable {
     }
 
     private ExportService getExportService(
-            File outputFile,
+            File backupOutputFile,
             BiConsumer<Integer, ExportStatus> updateCallback) {
 
         AppDatabase db = DatabaseProvider.getInstance(this);
@@ -144,7 +144,7 @@ public final class ExportAndroidService extends Service implements Runnable {
                 db,
                 noteService,
                 fileService,
-                outputFile,
+                backupOutputFile,
                 statusHolder,
                 secrets
         );
