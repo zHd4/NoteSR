@@ -1,11 +1,11 @@
 package app.notesr.importer.service.v3;
 
-import app.notesr.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.importer.service.ImportFailedException;
-import app.notesr.file.model.FileBlobInfo;
-import app.notesr.file.model.FileInfo;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
 import app.notesr.file.service.FileService;
-import app.notesr.note.model.Note;
+import app.notesr.data.model.Note;
 import app.notesr.note.service.NoteService;
 
 import org.junit.jupiter.api.AfterEach;

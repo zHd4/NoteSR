@@ -1,17 +1,17 @@
 package app.notesr.migration.changes.db;
 
 import android.content.Context;
-import app.notesr.db.AppDatabase;
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.file.model.FileBlobInfo;
-import app.notesr.file.model.FileInfo;
+import app.notesr.data.AppDatabase;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.migration.service.AppMigrationException;
-import app.notesr.note.model.Note;
+import app.notesr.data.model.Note;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtilsAdapter;
-import app.notesr.util.WiperAdapter;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtilsAdapter;
+import app.notesr.core.util.WiperAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +52,7 @@ class RoomIntegrationMigrationTest {
         doReturn(mockEntityMapper).when(migration).getMapper(any());
         doReturn(mockFilesUtils).when(migration).getFilesUtils();
         doReturn(mockWiper).when(migration).getWiper();
-        doReturn(mockCryptoSecrets).when(migration).getCryptoSecrets();
+        doReturn(mockCryptoSecrets).when(migration).getCryptoSecrets(mockContext);
     }
 
     @Test

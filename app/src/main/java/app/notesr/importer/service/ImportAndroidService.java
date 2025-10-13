@@ -1,11 +1,14 @@
 package app.notesr.importer.service;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
+
+import app.notesr.core.util.FilesUtils;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.net.Uri;
@@ -17,15 +20,14 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.R;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
 
 import java.util.Set;
 
@@ -92,13 +94,14 @@ public final class ImportAndroidService extends Service implements Runnable {
     }
 
     private ImportService getImportService(Intent intent) {
-        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+        Context context = getApplicationContext();
+        AppDatabase db = DatabaseProvider.getInstance(context);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         NoteService noteService = new NoteService(db);
-        FileService fileService = new FileService(getApplicationContext(), db, cryptor,
+        FileService fileService = new FileService(context, db, cryptor,
                 new FilesUtils());
 
         Uri sourceUri = intent.getData();

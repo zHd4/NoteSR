@@ -21,8 +21,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.App;
 import app.notesr.R;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.cleaner.model.TempFile;
+import app.notesr.data.DatabaseProvider;
+import app.notesr.data.model.TempFile;
 import app.notesr.cleaner.service.CacheCleanerAndroidService;
 import app.notesr.cleaner.service.TempFileService;
 

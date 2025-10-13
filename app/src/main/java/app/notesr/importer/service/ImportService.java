@@ -21,15 +21,15 @@ import app.notesr.file.service.FileService;
 import app.notesr.importer.service.v1.ImportV1Strategy;
 import app.notesr.importer.service.v3.ImportV3Strategy;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.BackupDecryptor;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.db.AppDatabase;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.exception.DecryptionFailedException;
+import app.notesr.core.security.crypto.BackupDecryptor;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.data.AppDatabase;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.importer.service.v2.ImportV2Strategy;
-import app.notesr.util.TempDataWiper;
-import app.notesr.util.ZipUtils;
+import app.notesr.core.util.TempDataWiper;
+import app.notesr.core.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -111,7 +111,7 @@ public final class ImportService {
     private void decrypt(File outputFile)
             throws DecryptionFailedException {
         try {
-            CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
+            CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
             CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
 
             BackupDecryptor decryptor = new BackupDecryptor(

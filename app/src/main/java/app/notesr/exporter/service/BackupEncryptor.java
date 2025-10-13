@@ -5,8 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import app.notesr.exception.EncryptionFailedException;
-import app.notesr.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.exception.EncryptionFailedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

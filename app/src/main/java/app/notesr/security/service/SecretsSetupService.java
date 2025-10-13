@@ -4,9 +4,9 @@ import android.content.Context;
 
 import java.io.IOException;
 
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.exception.EncryptionFailedException;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.security.exception.EncryptionFailedException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

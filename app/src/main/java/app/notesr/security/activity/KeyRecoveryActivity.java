@@ -2,9 +2,9 @@ package app.notesr.security.activity;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
-import static app.notesr.util.ActivityUtils.showToastMessage;
-import static app.notesr.util.KeyUtils.getSecretsFromHex;
+import static app.notesr.core.util.ActivityUtils.disableBackButton;
+import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +19,9 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -54,7 +54,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
             if (!hexKey.isBlank()) {
                 try {
                     Context context = getApplicationContext();
-                    CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
+                    CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, null);
 
                     if (cryptoManager.verifyKey(context, cryptoSecrets.getKey())) {

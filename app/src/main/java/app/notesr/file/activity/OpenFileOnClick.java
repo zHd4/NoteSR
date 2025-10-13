@@ -11,7 +11,7 @@ import app.notesr.file.activity.viewer.OpenImageActivity;
 import app.notesr.file.activity.viewer.OpenTextFileActivity;
 import app.notesr.file.activity.viewer.OpenUnknownFileActivity;
 import app.notesr.file.activity.viewer.OpenVideoActivity;
-import app.notesr.file.model.FileInfo;
+import app.notesr.data.model.FileInfo;
 import app.notesr.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 

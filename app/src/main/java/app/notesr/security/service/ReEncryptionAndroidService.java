@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
@@ -19,13 +20,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.io.IOException;
 
 import app.notesr.R;
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.exception.EncryptionFailedException;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.data.DatabaseProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
 
 public final class ReEncryptionAndroidService extends Service implements Runnable {
 
@@ -55,14 +56,15 @@ public final class ReEncryptionAndroidService extends Service implements Runnabl
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
+        Context context = getApplicationContext();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
         CryptoSecrets newSecrets = (CryptoSecrets) intent.getSerializableExtra(EXTRA_NEW_SECRETS);
         requireNonNull(newSecrets);
 
         FilesUtils filesUtils = new FilesUtils();
 
         secretsUpdateService = new SecretsUpdateService(
-                getApplicationContext(),
+                context,
                 DatabaseProvider.DB_NAME,
                 cryptoManager,
                 newSecrets,

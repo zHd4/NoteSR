@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static java.util.UUID.randomUUID;
 
-import static app.notesr.test.util.TestUtils.getFixturePath;
-import static app.notesr.test.util.TestUtils.getTempPath;
+import static app.notesr.core.util.TestUtils.getFixturePath;
+import static app.notesr.core.util.TestUtils.getTempPath;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class ZipUtilsTest {
         ZipUtils.zipDirectory(DIR_PATH, TEMP_ZIP_PATH);
         File zipFile = new File(TEMP_ZIP_PATH);
 
-        Assertions.assertTrue(zipFile.exists(), "Zip file not found");
+        assertTrue(zipFile.exists(), "Zip file not found");
     }
 
     @Test
@@ -39,8 +39,8 @@ class ZipUtilsTest {
         ZipUtils.unzip(ZIP_PATH, TEMP_EXTRACTED_DIR_PATH);
         File dir = new File(TEMP_EXTRACTED_DIR_PATH);
 
-        Assertions.assertTrue(dir.exists(), "Extract directory not found");
-        Assertions.assertTrue(isDirsIdentical(DIR_PATH, TEMP_EXTRACTED_DIR_PATH), "Dirs not identical");
+        assertTrue(dir.exists(), "Extract directory not found");
+        assertTrue(isDirsIdentical(DIR_PATH, TEMP_EXTRACTED_DIR_PATH), "Dirs not identical");
     }
 
     @Test
@@ -51,12 +51,12 @@ class ZipUtilsTest {
         RANDOM.nextBytes(nonZipFileData);
         Files.write(Path.of(nonZipFile.getAbsolutePath()), nonZipFileData);
 
-        Assertions.assertFalse(ZipUtils.isZipArchive(nonZipFile.getAbsolutePath()));
-        Assertions.assertFalse(ZipUtils.isZipArchive(DIR_PATH));
-        Assertions.assertTrue(ZipUtils.isZipArchive(ZIP_PATH));
+        assertFalse(ZipUtils.isZipArchive(nonZipFile.getAbsolutePath()));
+        assertFalse(ZipUtils.isZipArchive(DIR_PATH));
+        assertTrue(ZipUtils.isZipArchive(ZIP_PATH));
 
         boolean nonZipFileDeleted = nonZipFile.delete();
-        Assertions.assertTrue(nonZipFileDeleted);
+        assertTrue(nonZipFileDeleted);
     }
 
     @AfterAll

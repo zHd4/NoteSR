@@ -5,11 +5,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.file.model.FileInfo;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.util.FilesUtilsAdapter;
+import app.notesr.core.util.HashUtils;
+import app.notesr.data.model.FileInfo;
 import app.notesr.file.service.FileService;
-import app.notesr.util.FilesUtilsAdapter;
-import app.notesr.util.HashUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

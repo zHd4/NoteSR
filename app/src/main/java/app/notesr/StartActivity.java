@@ -1,6 +1,6 @@
 package app.notesr;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.core.util.ActivityUtils.disableBackButton;
 
 import android.content.Intent;
 import android.os.Bundle;

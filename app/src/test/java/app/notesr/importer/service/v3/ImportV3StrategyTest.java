@@ -23,10 +23,10 @@ import java.security.SecureRandom;
 import java.util.concurrent.Callable;
 
 
-import app.notesr.db.AppDatabase;
+import app.notesr.data.AppDatabase;
 import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.core.security.dto.CryptoSecrets;
 
 @ExtendWith(MockitoExtension.class)
 class ImportV3StrategyTest {

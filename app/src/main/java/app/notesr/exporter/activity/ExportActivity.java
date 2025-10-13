@@ -1,10 +1,12 @@
 package app.notesr.exporter.activity;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static app.notesr.util.ActivityUtils.disableBackButton;
-import static app.notesr.util.ActivityUtils.showToastMessage;
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
 
+import static app.notesr.core.util.ActivityUtils.disableBackButton;
+import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -19,18 +21,18 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.file.service.FileService;
-import app.notesr.note.activity.NotesListActivity;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.exporter.service.ExportAndroidService;
 import app.notesr.exporter.service.ExportStatus;
+import app.notesr.file.service.FileService;
+import app.notesr.note.activity.NotesListActivity;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
 
 public final class ExportActivity extends ActivityBase {
 
@@ -44,12 +46,13 @@ public final class ExportActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
 
+        Context context = getApplicationContext();
         AppDatabase db = DatabaseProvider.getInstance(this);
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         noteService = new NoteService(db);
-        fileService = new FileService(getApplicationContext(), db, cryptor, new FilesUtils());
+        fileService = new FileService(context, db, cryptor, new FilesUtils());
 
         actionBar = getSupportActionBar();
 

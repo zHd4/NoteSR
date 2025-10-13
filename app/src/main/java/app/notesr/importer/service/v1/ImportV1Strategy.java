@@ -5,7 +5,7 @@ import android.util.Log;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
-import app.notesr.db.AppDatabase;
+import app.notesr.data.AppDatabase;
 
 import app.notesr.importer.service.ImportFailedException;
 import app.notesr.file.service.FileService;

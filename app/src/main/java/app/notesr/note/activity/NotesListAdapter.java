@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 
 import app.notesr.ElementListAdapter;
 import app.notesr.R;
-import app.notesr.note.model.Note;
+import app.notesr.data.model.Note;
 
 import java.util.List;
 import java.util.Objects;

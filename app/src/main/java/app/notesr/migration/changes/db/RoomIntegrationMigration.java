@@ -1,7 +1,7 @@
 package app.notesr.migration.changes.db;
 
-import static app.notesr.util.KeyUtils.getIvFromSecrets;
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getIvFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
 
@@ -12,26 +12,26 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.exception.EncryptionFailedException;
-import app.notesr.file.model.FileBlobInfo;
-import app.notesr.file.model.FileInfo;
+import app.notesr.core.security.crypto.AesCbcCryptor;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.crypto.ValueDecryptor;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.core.util.FilesUtils;
+import app.notesr.core.util.FilesUtilsAdapter;
+import app.notesr.core.util.Wiper;
+import app.notesr.core.util.WiperAdapter;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.migration.service.AppMigration;
 import app.notesr.migration.service.AppMigrationException;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.AesCbcCryptor;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.crypto.ValueDecryptor;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
-import app.notesr.util.FilesUtilsAdapter;
-import app.notesr.util.Wiper;
-import app.notesr.util.WiperAdapter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -68,7 +68,7 @@ public final class RoomIntegrationMigration implements AppMigration {
             fileService = getFileService(context, db, filesUtils);
             oldDbHelper = getOldDbHelper(context);
 
-            CryptoSecrets cryptoSecrets = getCryptoSecrets();
+            CryptoSecrets cryptoSecrets = getCryptoSecrets(context);
             entityMapper = getMapper(cryptoSecrets);
 
             wiper = getWiper();
@@ -145,8 +145,8 @@ public final class RoomIntegrationMigration implements AppMigration {
         });
     }
 
-    CryptoSecrets getCryptoSecrets() {
-        return CryptoManagerProvider.getInstance().getSecrets();
+    CryptoSecrets getCryptoSecrets(Context context) {
+        return CryptoManagerProvider.getInstance(context).getSecrets();
     }
 
     AppDatabase getAppDatabase(Context context) {
@@ -158,7 +158,7 @@ public final class RoomIntegrationMigration implements AppMigration {
     }
 
     FileService getFileService(Context context, AppDatabase db, FilesUtilsAdapter filesUtils) {
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         return new FileService(context, db, cryptor, filesUtils);

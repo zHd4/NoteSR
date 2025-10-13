@@ -2,7 +2,9 @@ package app.notesr.file.activity.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
+
+import app.notesr.core.util.FilesUtils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,15 +27,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import app.notesr.R;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.exception.DecryptionFailedException;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
+import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.file.service.FileService;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
 
 public final class OpenImageActivity extends MediaFileViewerActivityBase {
 
@@ -186,7 +187,7 @@ public final class OpenImageActivity extends MediaFileViewerActivityBase {
         Context context = getApplicationContext();
 
         AppDatabase db = DatabaseProvider.getInstance(this);
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
         FilesUtils filesUtils = new FilesUtils();
 

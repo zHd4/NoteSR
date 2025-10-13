@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.security.crypto.AesCryptor;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.security.crypto.AesCryptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

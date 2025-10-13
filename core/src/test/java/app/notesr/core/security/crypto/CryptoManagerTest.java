@@ -11,9 +11,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static app.notesr.test.util.HashUtils.fromSha256HexString;
-import static app.notesr.test.util.HashUtils.toSha256Bytes;
-import static app.notesr.test.util.HashUtils.toSha256String;
+
+import static app.notesr.core.util.HashUtils.fromSha256HexString;
+import static app.notesr.core.util.HashUtils.toSha256Bytes;
+import static app.notesr.core.util.HashUtils.toSha256String;
 
 import android.content.SharedPreferences;
 
@@ -30,8 +31,8 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.test.util.FilesUtilsAdapter;
-import app.notesr.test.util.WiperAdapter;
+import app.notesr.core.util.FilesUtilsAdapter;
+import app.notesr.core.util.WiperAdapter;
 
 @ExtendWith(MockitoExtension.class)
 class CryptoManagerTest {

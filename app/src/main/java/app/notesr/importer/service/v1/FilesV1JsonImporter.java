@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.notesr.exception.EncryptionFailedException;
-import app.notesr.file.model.FileBlobInfo;
+import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.data.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
 

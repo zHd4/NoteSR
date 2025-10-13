@@ -2,7 +2,7 @@ package app.notesr.exporter.service;
 
 import static java.util.UUID.randomUUID;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -12,25 +12,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.exception.EncryptionFailedException;
-import app.notesr.file.model.FileBlobInfo;
-import app.notesr.file.model.FileInfo;
-import app.notesr.file.service.FileService;
-import app.notesr.note.model.Note;
-import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.db.AppDatabase;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.TempDataWiper;
-import app.notesr.util.VersionFetcher;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.core.util.TempDataWiper;
+import app.notesr.core.util.VersionFetcher;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
+import app.notesr.data.model.Note;
+
+import app.notesr.file.service.FileService;
+import app.notesr.note.service.NoteService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

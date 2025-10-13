@@ -5,26 +5,27 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
+
+import app.notesr.core.util.FilesUtils;
 
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.file.model.FileBlobInfo;
-import app.notesr.file.model.FileInfo;
-import app.notesr.note.model.Note;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
+import app.notesr.data.model.Note;
 import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
-import app.notesr.util.FilesUtils;
-import app.notesr.util.FilesUtilsAdapter;
+import app.notesr.core.util.FilesUtilsAdapter;
 import io.bloco.faker.Faker;
 
 import org.junit.Before;
@@ -55,7 +56,7 @@ public class NotesIntegrationTest {
         context = ApplicationProvider.getApplicationContext();
 
         FilesUtilsAdapter filesUtils = new FilesUtils();
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
         CryptoSecrets cryptoSecrets = getTestSecrets();
 
         cryptoManager.setSecrets(context, cryptoSecrets);

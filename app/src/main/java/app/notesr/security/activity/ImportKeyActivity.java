@@ -4,9 +4,10 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 import static java.util.Objects.requireNonNull;
 
-import static app.notesr.util.ActivityUtils.showToastMessage;
-import static app.notesr.util.KeyUtils.getSecretsFromHex;
+import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,9 +19,9 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.security.service.SecretsSetupService;
 
 public final class ImportKeyActivity extends ActivityBase {
@@ -61,9 +62,10 @@ public final class ImportKeyActivity extends ActivityBase {
 
             if (!hexKey.isBlank()) {
                 try {
+                    Context context = getApplicationContext();
                     String password = getIntent().getStringExtra("password");
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, password);
-                    CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
+                    CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
 
                     SecretsSetupService keySetupService = new SecretsSetupService(
                             getApplicationContext(),

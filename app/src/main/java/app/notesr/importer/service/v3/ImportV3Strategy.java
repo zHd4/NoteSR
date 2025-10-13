@@ -1,16 +1,16 @@
 package app.notesr.importer.service.v3;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import java.io.File;
 import java.nio.file.Path;
 
-import app.notesr.db.AppDatabase;
+import app.notesr.data.AppDatabase;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.dto.CryptoSecrets;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

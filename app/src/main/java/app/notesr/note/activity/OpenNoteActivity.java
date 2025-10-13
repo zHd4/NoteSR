@@ -18,17 +18,17 @@ import androidx.core.widget.TextViewKt;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.file.activity.FilesListActivity;
 import app.notesr.file.service.FileService;
-import app.notesr.note.model.Note;
+import app.notesr.data.model.Note;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 public final class OpenNoteActivity extends ActivityBase {
     private static final long MAX_COUNT_IN_BADGE = 9;
@@ -61,7 +61,7 @@ public final class OpenNoteActivity extends ActivityBase {
         Context context = getApplicationContext();
         AppDatabase db = DatabaseProvider.getInstance(context);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         noteService = new NoteService(db);

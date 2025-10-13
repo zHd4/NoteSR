@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static java.util.UUID.randomUUID;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
 
@@ -23,18 +23,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
-import app.notesr.db.AppDatabase;
-import app.notesr.file.model.FileInfo;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
+import app.notesr.core.util.FilesUtilsAdapter;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.model.FileInfo;
+import app.notesr.data.model.Note;
 import app.notesr.file.service.FileService;
-import app.notesr.note.model.Note;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
-import app.notesr.util.FilesUtilsAdapter;
 
 public class ExportServiceTest {
     private AppDatabase db;

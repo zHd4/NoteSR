@@ -3,8 +3,9 @@ package app.notesr.file.activity;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,18 +22,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.note.activity.OpenNoteActivity;
 import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
-import app.notesr.file.model.FileInfo;
-import app.notesr.note.model.Note;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
+import app.notesr.data.model.FileInfo;
+import app.notesr.data.model.Note;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,12 +57,13 @@ public final class FilesListActivity extends ActivityBase {
             throw new RuntimeException("Note id didn't provided");
         }
 
-        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
+        Context context = getApplicationContext();
+        AppDatabase db = DatabaseProvider.getInstance(context);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
-        fileService = new FileService(getApplicationContext(), db, cryptor, new FilesUtils());
+        fileService = new FileService(context, db, cryptor, new FilesUtils());
         isNoteModified = getIntent().getBooleanExtra("modified", false);
 
         NoteService noteService = new NoteService(db);

@@ -1,6 +1,6 @@
 package app.notesr.exporter.service;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -20,15 +20,15 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.R;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.file.service.FileService;
 import app.notesr.note.service.NoteService;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -128,19 +128,19 @@ public final class ExportAndroidService extends Service implements Runnable {
             File backupOutputFile,
             BiConsumer<Integer, ExportStatus> updateCallback) {
 
+        Context context = getApplicationContext();
+
         AppDatabase db = DatabaseProvider.getInstance(this);
         NoteService noteService = new NoteService(db);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
-        FileService fileService = new FileService(getApplicationContext(), db, cryptor,
-                new FilesUtils());
-
+        FileService fileService = new FileService(context, db, cryptor, new FilesUtils());
         ExportStatusHolder statusHolder = new ExportStatusHolder(updateCallback);
 
         return new ExportService(
-                getApplicationContext(),
+                context,
                 db,
                 noteService,
                 fileService,

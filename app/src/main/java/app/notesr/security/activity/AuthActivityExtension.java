@@ -9,13 +9,13 @@ import java.io.IOException;
 
 import app.notesr.BuildConfig;
 import app.notesr.R;
-import app.notesr.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.migration.activity.MigrationActivity;
-import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.note.activity.NotesListActivity;
 import app.notesr.migration.service.DataVersionManager;
-import app.notesr.util.ActivityUtils;
-import app.notesr.util.KeyUtils;
+import app.notesr.core.util.ActivityUtils;
+import app.notesr.core.util.KeyUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

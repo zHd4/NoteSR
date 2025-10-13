@@ -1,10 +1,10 @@
 package app.notesr.migration.changes.db;
 
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.file.model.FileBlobInfo;
-import app.notesr.file.model.FileInfo;
-import app.notesr.note.model.Note;
-import app.notesr.security.crypto.ValueDecryptor;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
+import app.notesr.data.model.Note;
+import app.notesr.core.security.crypto.ValueDecryptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

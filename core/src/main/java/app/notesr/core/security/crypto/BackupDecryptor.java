@@ -1,7 +1,7 @@
 package app.notesr.core.security.crypto;
 
-import static app.notesr.util.KeyUtils.getIvFromSecrets;
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getIvFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.ContentResolver;
 import android.net.Uri;
@@ -15,8 +15,8 @@ import java.security.GeneralSecurityException;
 
 import javax.crypto.SecretKey;
 
-import app.notesr.exception.DecryptionFailedException;
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.security.exception.DecryptionFailedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

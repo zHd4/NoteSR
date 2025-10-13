@@ -2,7 +2,9 @@ package app.notesr.file.activity.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
+
+import app.notesr.core.util.FilesUtils;
 
 import android.content.Context;
 import android.net.Uri;
@@ -10,17 +12,16 @@ import android.net.Uri;
 import java.io.File;
 import java.io.IOException;
 
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.file.service.FileService;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
-import app.notesr.util.thumbnail.ImageThumbnailCreator;
-import app.notesr.util.thumbnail.ThumbnailCreator;
-import app.notesr.util.thumbnail.VideoThumbnailCreator;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.thumbnail.ImageThumbnailCreator;
+import app.notesr.core.util.thumbnail.ThumbnailCreator;
+import app.notesr.core.util.thumbnail.VideoThumbnailCreator;
 
 public class MediaFileViewerActivityBase extends FileViewerActivityBase {
 
@@ -46,7 +47,7 @@ public class MediaFileViewerActivityBase extends FileViewerActivityBase {
             Context context = getApplicationContext();
             AppDatabase db = DatabaseProvider.getInstance(context);
 
-            CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+            CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
             AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
             FileService fileService = new FileService(context, db, cryptor, new FilesUtils());

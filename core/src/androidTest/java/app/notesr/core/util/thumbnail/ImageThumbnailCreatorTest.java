@@ -18,9 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
-
-import app.notesr.core.util.ImageThumbnailCreator;
-import app.notesr.util.FilesUtils;
+import app.notesr.core.util.FilesUtils;
 
 @RunWith(Parameterized.class)
 public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
@@ -48,7 +46,7 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
         Context context = ApplicationProvider.getApplicationContext();
         FilesUtils filesUtils = new FilesUtils();
 
-        app.notesr.core.util.ImageThumbnailCreator thumbnailCreator = new app.notesr.core.util.ImageThumbnailCreator(context, filesUtils);
+        ImageThumbnailCreator thumbnailCreator = new ImageThumbnailCreator(context, filesUtils);
 
         byte[] thumbnailBytes = thumbnailCreator.getThumbnail(Uri.fromFile(imageFile));
 
@@ -58,7 +56,7 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
         Size thumbnailSize = getImageSize(thumbnailFile);
 
         int scaleFactor = Math.min(
-                imageSize.getWidth() / app.notesr.core.util.ImageThumbnailCreator.WIDTH,
+                imageSize.getWidth() / ImageThumbnailCreator.WIDTH,
                 imageSize.getHeight() / ImageThumbnailCreator.HEIGHT
         );
 

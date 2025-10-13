@@ -7,7 +7,7 @@ import static org.junit.Assert.fail;
 
 import static java.util.UUID.randomUUID;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
 
@@ -32,17 +32,17 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
-import app.notesr.db.AppDatabase;
-import app.notesr.file.model.FileBlobInfo;
-import app.notesr.file.model.FileInfo;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
+import app.notesr.data.model.Note;
 import app.notesr.file.service.FileService;
-import app.notesr.note.model.Note;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
 import io.bloco.faker.Faker;
 
 @RunWith(AndroidJUnit4.class)

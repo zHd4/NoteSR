@@ -5,9 +5,8 @@ import android.content.SharedPreferences;
 
 import java.security.SecureRandom;
 
-import app.notesr.App;
-import app.notesr.util.FilesUtils;
-import app.notesr.util.Wiper;
+import app.notesr.core.util.FilesUtils;
+import app.notesr.core.util.Wiper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -15,10 +14,6 @@ import lombok.RequiredArgsConstructor;
 public final class CryptoManagerProvider {
     private static final String PREF_NAME = "crypto_prefs";
     private static volatile CryptoManager instance;
-
-    public static CryptoManager getInstance() {
-        return getInstance(App.getContext());
-    }
 
     public static CryptoManager getInstance(Context context) {
         if (instance == null) {

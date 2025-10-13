@@ -1,6 +1,6 @@
 package app.notesr.security.activity;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.core.util.ActivityUtils.disableBackButton;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -13,8 +13,8 @@ import androidx.core.content.ContextCompat;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -63,7 +63,7 @@ public final class AuthActivity extends ActivityBase {
 
         String mode = getIntent().getStringExtra("mode");
 
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
         extension = new AuthActivityExtension(this, cryptoManager,
                 passwordBuilder);
 

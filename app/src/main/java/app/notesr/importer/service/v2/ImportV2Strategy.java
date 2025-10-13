@@ -10,15 +10,15 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import app.notesr.db.AppDatabase;
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.exception.EncryptionFailedException;
+import app.notesr.data.AppDatabase;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.importer.service.ImportFailedException;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.ImportStrategy;
 import app.notesr.importer.service.NotesJsonImporter;
 import app.notesr.note.service.NoteService;
-import app.notesr.util.ZipUtils;
+import app.notesr.core.util.ZipUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

@@ -6,18 +6,18 @@ import android.os.Bundle;
 import java.util.List;
 import java.util.function.Supplier;
 
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.exporter.activity.ExportActivity;
 import app.notesr.importer.activity.ImportActivity;
 import app.notesr.migration.activity.MigrationActivity;
-import app.notesr.security.activity.ReEncryptionActivity;
-import app.notesr.note.activity.NotesListActivity;
-import app.notesr.security.activity.AuthActivity;
-import app.notesr.security.activity.KeyRecoveryActivity;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
 import app.notesr.migration.service.AppMigrationAndroidService;
 import app.notesr.exporter.service.ExportAndroidService;
 import app.notesr.importer.service.ImportAndroidService;
+import app.notesr.note.activity.NotesListActivity;
+import app.notesr.security.activity.AuthActivity;
+import app.notesr.security.activity.KeyRecoveryActivity;
+import app.notesr.security.activity.ReEncryptionActivity;
 import app.notesr.security.service.ReEncryptionAndroidService;
 
 public final class MainActivity extends ActivityBase {
@@ -26,8 +26,7 @@ public final class MainActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
-
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
         List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(App.getContext(),
                 cryptoManager);
         Intent defaultIntent = new Intent(getApplicationContext(), NotesListActivity.class);

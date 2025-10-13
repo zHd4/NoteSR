@@ -11,10 +11,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.exception.EncryptionFailedException;
-import app.notesr.file.model.FileBlobInfo;
-import app.notesr.file.model.FileInfo;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
 import app.notesr.file.service.FileService;
 
 public abstract class BaseFilesJsonImporter extends BaseJsonImporter {

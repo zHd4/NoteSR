@@ -12,9 +12,8 @@ import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 
-import app.notesr.core.security.AesCryptor;
-import app.notesr.core.security.CryptoSecrets;
-import app.notesr.security.util.KeyUtils;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.dto.CryptoSecrets;
 
 class KeyUtilsTest {
 

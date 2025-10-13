@@ -16,10 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import app.notesr.App;
-import app.notesr.cleaner.model.TempFile;
-import app.notesr.db.DatabaseProvider;
+import app.notesr.data.model.TempFile;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.file.activity.viewer.FileViewerActivityBase;
-import app.notesr.util.Wiper;
+import app.notesr.core.util.Wiper;
 
 import java.io.File;
 import java.io.IOException;

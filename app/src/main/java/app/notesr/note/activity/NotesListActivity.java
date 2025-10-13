@@ -21,9 +21,9 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.exporter.activity.ExportActivity;
 import app.notesr.importer.activity.ImportActivity;
-import app.notesr.db.AppDatabase;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.note.model.Note;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.DatabaseProvider;
+import app.notesr.data.model.Note;
 import app.notesr.note.service.NoteService;
 
 import java.util.HashMap;

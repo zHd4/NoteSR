@@ -24,7 +24,7 @@ class HashUtilsTest {
         byte[] expected = MessageDigest.getInstance("SHA-256").digest(data);
         byte[] actual = HashUtils.toSha256Bytes(data);
 
-        Assertions.assertArrayEquals(expected, actual, "Actual hash different");
+        assertArrayEquals(expected, actual, "Actual hash different");
     }
 
     @Test
@@ -34,7 +34,7 @@ class HashUtilsTest {
         String expected = bytesToHex(MessageDigest.getInstance("SHA-256").digest(data));
         String actual = HashUtils.toSha256String(data);
 
-        Assertions.assertEquals(expected, actual, "Actual hex string different");
+        assertEquals(expected, actual, "Actual hex string different");
     }
 
     @Test
@@ -47,7 +47,7 @@ class HashUtilsTest {
         String expected = bytesToHex(hash);
         String actual = HashUtils.toSha256String(message);
 
-        Assertions.assertEquals(expected, actual, "Actual hex string from string different");
+        assertEquals(expected, actual, "Actual hex string from string different");
     }
 
     @Test
@@ -61,14 +61,14 @@ class HashUtilsTest {
 
         byte[] actual = HashUtils.fromSha256HexString(hex);
 
-        Assertions.assertArrayEquals(hashBytes, actual, "Restored bytes do not match original hash");
+        assertArrayEquals(hashBytes, actual, "Restored bytes do not match original hash");
     }
 
     @Test
     void testFromSha256HexStringWithInvalidLengthThrowsException() {
         String invalidHex = "abc";
 
-        Assertions.assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(IllegalArgumentException.class, () ->
                 HashUtils.fromSha256HexString(invalidHex));
     }
 
@@ -76,7 +76,7 @@ class HashUtilsTest {
     void testFromSha256HexStringWithInvalidCharacterThrowsException() {
         String invalidHex = "zzzz";
 
-        Assertions.assertThrows(NumberFormatException.class, () -> HashUtils.fromSha256HexString(invalidHex));
+        assertThrows(NumberFormatException.class, () -> HashUtils.fromSha256HexString(invalidHex));
     }
 
     @Test
@@ -86,7 +86,7 @@ class HashUtilsTest {
         long expected = 3121068470L;
         long actual = HashUtils.getUUIDHash(uuid);
 
-        Assertions.assertEquals(expected, actual, "Actual hash different");
+        assertEquals(expected, actual, "Actual hash different");
     }
 
     private static String bytesToHex(byte[] bytes) {

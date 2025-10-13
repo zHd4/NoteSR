@@ -2,11 +2,12 @@ package app.notesr.file.activity;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,14 +20,14 @@ import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.exception.DecryptionFailedException;
+import app.notesr.data.DatabaseProvider;
+import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.file.service.FileService;
-import app.notesr.security.crypto.AesCryptor;
-import app.notesr.security.crypto.AesGcmCryptor;
-import app.notesr.security.crypto.CryptoManagerProvider;
-import app.notesr.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtils;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +43,8 @@ public final class AddFileActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_file);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance().getSecrets();
+        Context context = getApplicationContext();
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         fileService = new FileService(

@@ -1,6 +1,6 @@
 package app.notesr.security.activity;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.core.util.ActivityUtils.disableBackButton;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -12,7 +12,7 @@ import app.notesr.App;
 import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.note.activity.NotesListActivity;
-import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.security.service.ReEncryptionAndroidService;
 
 public final class ReEncryptionActivity extends ActivityBase {

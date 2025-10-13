@@ -2,11 +2,11 @@ package app.notesr.note.service;
 
 import static java.util.Objects.requireNonNull;
 
-import app.notesr.db.AppDatabase;
-import app.notesr.file.model.FileInfo;
+import app.notesr.core.util.HashUtils;
+import app.notesr.data.AppDatabase;
+import app.notesr.data.model.FileInfo;
+import app.notesr.data.model.Note;
 import app.notesr.file.service.FileService;
-import app.notesr.note.model.Note;
-import app.notesr.util.HashUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;

@@ -1,8 +1,8 @@
 package app.notesr.core.security.crypto;
 
-import static app.notesr.util.HashUtils.fromSha256HexString;
-import static app.notesr.util.HashUtils.toSha256Bytes;
-import static app.notesr.util.HashUtils.toSha256String;
+import static app.notesr.core.util.HashUtils.fromSha256HexString;
+import static app.notesr.core.util.HashUtils.toSha256Bytes;
+import static app.notesr.core.util.HashUtils.toSha256String;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,11 +13,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.exception.EncryptionFailedException;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.util.FilesUtilsAdapter;
-import app.notesr.util.WiperAdapter;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.core.util.FilesUtilsAdapter;
+import app.notesr.core.util.WiperAdapter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

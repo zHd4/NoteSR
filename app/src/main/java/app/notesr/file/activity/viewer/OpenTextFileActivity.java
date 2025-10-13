@@ -9,7 +9,7 @@ import android.widget.EditText;
 import java.io.IOException;
 
 import app.notesr.R;
-import app.notesr.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.DecryptionFailedException;
 
 public final class OpenTextFileActivity extends FileViewerActivityBase {
 

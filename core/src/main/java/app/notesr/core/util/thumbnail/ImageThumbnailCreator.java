@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import app.notesr.core.util.FileExifDataResolver;
+import app.notesr.core.util.FilesUtilsAdapter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

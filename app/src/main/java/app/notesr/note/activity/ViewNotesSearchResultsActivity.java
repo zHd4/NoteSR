@@ -9,7 +9,7 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.note.model.Note;
+import app.notesr.data.model.Note;
 
 import java.util.ArrayList;
 import java.util.HashMap;

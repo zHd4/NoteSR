@@ -17,8 +17,8 @@ import java.util.ArrayList;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.db.DatabaseProvider;
-import app.notesr.note.model.Note;
+import app.notesr.data.DatabaseProvider;
+import app.notesr.data.model.Note;
 import app.notesr.note.service.NoteService;
 
 public final class SearchNotesActivity extends ActivityBase {

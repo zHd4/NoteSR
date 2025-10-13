@@ -2,7 +2,7 @@ package app.notesr.core.security.crypto;
 
 import java.security.GeneralSecurityException;
 
-import app.notesr.exception.DecryptionFailedException;
+import app.notesr.core.security.exception.DecryptionFailedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

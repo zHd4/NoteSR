@@ -1,6 +1,6 @@
 package app.notesr.importer.activity;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.core.util.ActivityUtils.disableBackButton;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -25,8 +25,8 @@ import app.notesr.ActivityBase;
 import app.notesr.note.activity.NotesListActivity;
 import app.notesr.importer.service.ImportAndroidService;
 import app.notesr.importer.service.ImportStatus;
-import app.notesr.util.FileExifDataResolver;
-import app.notesr.util.FilesUtils;
+import app.notesr.core.util.FileExifDataResolver;
+import app.notesr.core.util.FilesUtils;
 
 public final class ImportActivity extends ActivityBase {
 

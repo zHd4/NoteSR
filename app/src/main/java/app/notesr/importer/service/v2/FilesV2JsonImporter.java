@@ -11,8 +11,8 @@ import java.nio.file.Files;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import app.notesr.exception.EncryptionFailedException;
-import app.notesr.file.model.FileBlobInfo;
+import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.data.model.FileBlobInfo;
 import app.notesr.file.service.FileService;
 import app.notesr.importer.service.BaseFilesJsonImporter;
 

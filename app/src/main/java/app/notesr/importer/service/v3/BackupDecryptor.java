@@ -2,8 +2,8 @@ package app.notesr.importer.service.v3;
 
 import java.security.GeneralSecurityException;
 
-import app.notesr.exception.DecryptionFailedException;
-import app.notesr.security.crypto.AesCryptor;
+import app.notesr.core.security.exception.DecryptionFailedException;
+import app.notesr.core.security.crypto.AesCryptor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

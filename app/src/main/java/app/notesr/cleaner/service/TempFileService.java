@@ -2,8 +2,8 @@ package app.notesr.cleaner.service;
 
 import java.util.List;
 
-import app.notesr.cleaner.model.TempFile;
-import app.notesr.db.AppDatabase;
+import app.notesr.data.model.TempFile;
+import app.notesr.data.AppDatabase;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

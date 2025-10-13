@@ -2,10 +2,11 @@ package app.notesr.security.activity;
 
 import static java.util.Objects.requireNonNull;
 
-import static app.notesr.util.ActivityUtils.copyToClipboard;
-import static app.notesr.util.ActivityUtils.disableBackButton;
-import static app.notesr.util.ActivityUtils.showToastMessage;
+import static app.notesr.core.util.ActivityUtils.copyToClipboard;
+import static app.notesr.core.util.ActivityUtils.disableBackButton;
+import static app.notesr.core.util.ActivityUtils.showToastMessage;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,10 +17,10 @@ import android.widget.Toast;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.security.service.SecretsSetupService;
-import app.notesr.util.KeyUtils;
+import app.notesr.core.util.KeyUtils;
 import lombok.Getter;
 
 @Getter
@@ -47,7 +48,8 @@ public final class SetupKeyActivity extends ActivityBase {
         try {
             password = getIntent().getStringExtra("password");
 
-            CryptoManager cryptoManager = CryptoManagerProvider.getInstance();
+            Context context = getApplicationContext();
+            CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
 
             keySetupService = new SecretsSetupService(
                     getApplicationContext(),

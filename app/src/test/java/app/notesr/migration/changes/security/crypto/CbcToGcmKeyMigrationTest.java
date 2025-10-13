@@ -1,10 +1,10 @@
 package app.notesr.migration.changes.security.crypto;
 
 import android.content.Context;
-import app.notesr.exception.EncryptionFailedException;
+import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.migration.service.AppMigrationException;
-import app.notesr.security.crypto.CryptoManager;
-import app.notesr.security.dto.CryptoSecrets;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.dto.CryptoSecrets;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class CbcToGcmKeyMigrationTest {
     void setUp() {
         migration = new CbcToGcmKeyMigration(1, 2) {
             @Override
-            CryptoManager getCryptoManager() {
+            CryptoManager getCryptoManager(Context context) {
                 return cryptoManager;
             }
         };
