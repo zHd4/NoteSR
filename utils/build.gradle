@@ -26,6 +26,7 @@ android {
 }
 
 dependencies {
+    implementation project(':test-utils')
     implementation 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
     implementation 'androidx.appcompat:appcompat:1.7.1'
