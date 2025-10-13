@@ -3,8 +3,9 @@ package app.notesr.util;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static java.util.UUID.randomUUID;
-import static app.notesr.TestUtils.getFixturePath;
-import static app.notesr.TestUtils.getTempPath;
+
+import static app.notesr.test.util.TestUtils.getFixturePath;
+import static app.notesr.test.util.TestUtils.getTempPath;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
