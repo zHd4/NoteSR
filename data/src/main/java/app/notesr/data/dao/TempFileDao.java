@@ -9,7 +9,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import app.notesr.model.TempFile;
+import app.notesr.data.model.TempFile;
 
 @Dao
 public interface TempFileDao {

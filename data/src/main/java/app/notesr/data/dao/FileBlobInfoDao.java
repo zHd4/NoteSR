@@ -9,7 +9,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import app.notesr.model.FileBlobInfo;
+import app.notesr.data.model.FileBlobInfo;
 
 @Dao
 public interface FileBlobInfoDao {

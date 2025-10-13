@@ -16,3 +16,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "NoteSR"
 include ':app'
+include ':core'
+include ':data'
+include ':model'

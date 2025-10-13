@@ -10,7 +10,7 @@ import androidx.room.Update;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import app.notesr.model.Note;
+import app.notesr.data.model.Note;
 
 @Dao
 public interface NoteDao {

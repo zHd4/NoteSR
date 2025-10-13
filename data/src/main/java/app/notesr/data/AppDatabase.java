@@ -8,10 +8,10 @@ import app.notesr.data.dao.FileBlobInfoDao;
 import app.notesr.data.dao.FileInfoDao;
 import app.notesr.data.dao.NoteDao;
 import app.notesr.data.dao.TempFileDao;
-import app.notesr.model.FileBlobInfo;
-import app.notesr.model.FileInfo;
-import app.notesr.model.Note;
-import app.notesr.model.TempFile;
+import app.notesr.data.model.FileBlobInfo;
+import app.notesr.data.model.FileInfo;
+import app.notesr.data.model.Note;
+import app.notesr.data.model.TempFile;
 
 @Database(entities = {Note.class, FileInfo.class, FileBlobInfo.class, TempFile.class},
         version = 1,
