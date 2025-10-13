@@ -98,9 +98,8 @@ class EntityMapperTest {
     }
 
     @Test
-    void testMapDataBlockShouldReturnValidFileBlobInfo() throws DecryptionFailedException {
+    void testMapFileBlobInfoShouldReturnValidFileBlobInfo() throws DecryptionFailedException {
         byte[] encryptedData = "encryptedData".getBytes();
-        byte[] decryptedData = "decryptedData".getBytes();
 
         Map<String, Object> dataBlockMap = new HashMap<>();
         dataBlockMap.put("id", "123");
