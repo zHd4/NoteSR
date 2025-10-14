@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import app.notesr.core.util.VideoThumbnailCreator;
-
 public class VideoThumbnailCreatorTest extends ThumbnailCreatorTestBase {
     private static final int EXPECTED_WIDTH = 200;
 
@@ -26,7 +24,7 @@ public class VideoThumbnailCreatorTest extends ThumbnailCreatorTestBase {
         File thumbnailFile = File.createTempFile("thumbnail", "");
 
         Context context = ApplicationProvider.getApplicationContext();
-        app.notesr.core.util.VideoThumbnailCreator thumbnailCreator = new VideoThumbnailCreator(context);
+        VideoThumbnailCreator thumbnailCreator = new VideoThumbnailCreator(context);
 
         byte[] thumbnailBytes = thumbnailCreator.getThumbnail(Uri.fromFile(videoFile));
         assertNotNull("Thumbnail creator returned null", thumbnailBytes);
