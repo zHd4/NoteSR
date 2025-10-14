@@ -1,5 +1,8 @@
 plugins {
     id 'com.android.library'
+    id 'checkstyle'
+    id 'jacoco'
+    id 'de.mannodermaus.android-junit5'
 }
 
 android {
@@ -24,6 +27,64 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+checkstyle {
+    toolVersion = "10.12.5"
+}
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+tasks.register('checkstyle', Checkstyle) {
+    group = "verification"
+    description = "Runs Checkstyle for Java source files"
+
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+
+    source 'src/main/java'
+    include '**/*.java'
+
+    classpath = files()
+}
+
+tasks.named("check") {
+    dependsOn("checkstyle")
+}
+
+tasks.withType(Test).configureEach {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
+tasks.register('jacocoTestReport', JacocoReport) {
+    dependsOn['testDebugUnitTest']
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+    }
+
+    def fileFilter = [
+            '**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+            '**/*$ViewInjector*.*', '**/*$ViewBinder*.*', '**/*$Lambda$*.*', '**/*Companion*.*',
+            '**/*Module*.*', '**/*Dagger*.*', '**/*Hilt*.*', '**/*MembersInjector*.*',
+            '**/*_Factory*.*', '**/*_Provide*.*', '**/*Extensions*.*'
+    ]
+
+    def javaClasses = fileTree(dir:
+            layout.buildDirectory.dir('intermediates/javac/debug/classes').get().asFile,
+            excludes: fileFilter)
+
+    def kotlinClasses = fileTree(dir:
+            layout.buildDirectory.dir('tmp/kotlin-classes/debug').get().asFile,
+            excludes: fileFilter)
+
+    sourceDirectories.setFrom(files(["src/main/java"]))
+    classDirectories.setFrom(files([javaClasses, kotlinClasses]))
+    executionData.setFrom(fileTree(dir: layout.buildDirectory.get().asFile,
+            includes: ["**/*.exec", "**/*.ec"]))
 }
 
 dependencies {
