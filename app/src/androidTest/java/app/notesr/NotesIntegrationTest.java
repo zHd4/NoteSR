@@ -23,8 +23,8 @@ import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.data.model.FileBlobInfo;
 import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
-import app.notesr.file.service.FileService;
-import app.notesr.note.service.NoteService;
+import app.notesr.service.file.FileService;
+import app.notesr.service.note.NoteService;
 import app.notesr.core.util.FilesUtilsAdapter;
 import io.bloco.faker.Faker;
 

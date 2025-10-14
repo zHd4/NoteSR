@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="exporting">Exporting…</string>
+    <string name="importing">Importing…</string>
+    <string name="re_encrypting_data">Re-encrypting data…</string>
+    <string name="updating">Updating…</string>
+</resources>

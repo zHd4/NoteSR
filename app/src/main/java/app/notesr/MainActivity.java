@@ -8,17 +8,17 @@ import java.util.function.Supplier;
 
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.exporter.activity.ExportActivity;
-import app.notesr.importer.activity.ImportActivity;
-import app.notesr.migration.activity.MigrationActivity;
-import app.notesr.migration.service.AppMigrationAndroidService;
-import app.notesr.exporter.service.ExportAndroidService;
-import app.notesr.importer.service.ImportAndroidService;
-import app.notesr.note.activity.NotesListActivity;
-import app.notesr.security.activity.AuthActivity;
-import app.notesr.security.activity.KeyRecoveryActivity;
-import app.notesr.security.activity.ReEncryptionActivity;
-import app.notesr.security.service.ReEncryptionAndroidService;
+import app.notesr.activity.exporter.ExportActivity;
+import app.notesr.activity.importer.ImportActivity;
+import app.notesr.activity.migration.MigrationActivity;
+import app.notesr.service.migration.AppMigrationAndroidService;
+import app.notesr.service.exporter.ExportAndroidService;
+import app.notesr.service.importer.ImportAndroidService;
+import app.notesr.activity.note.NotesListActivity;
+import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.KeyRecoveryActivity;
+import app.notesr.activity.security.ReEncryptionActivity;
+import app.notesr.service.security.ReEncryptionAndroidService;
 
 public final class MainActivity extends ActivityBase {
     @Override

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/activity_background"
-    tools:context=".security.activity.ReEncryptionActivity">
+    tools:context=".activity.security.ReEncryptionActivity">
 
     <TextView
         android:id="@+id/reEncryptionNameLabel"
