@@ -36,6 +36,9 @@ public final class MigrationActivity extends ActivityBase {
             Intent serviceIntent = new Intent(getApplicationContext(),
                     AppMigrationAndroidService.class);
 
+            serviceIntent.putExtra(AppMigrationAndroidService.EXTRA_CURRENT_DATA_SCHEMA_VERSION,
+                    BuildConfig.DATA_SCHEMA_VERSION);
+
             startForegroundService(serviceIntent);
         }
     }

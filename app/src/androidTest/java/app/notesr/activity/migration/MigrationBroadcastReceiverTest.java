@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import app.notesr.BuildConfig;
 import app.notesr.service.migration.AppMigrationAndroidService;
 
 public class MigrationBroadcastReceiverTest {
@@ -21,6 +22,9 @@ public class MigrationBroadcastReceiverTest {
         MigrationBroadcastReceiver receiver = new MigrationBroadcastReceiver(callback);
 
         Intent intent = new Intent(AppMigrationAndroidService.BROADCAST_ACTION);
+
+        intent.putExtra(AppMigrationAndroidService.EXTRA_CURRENT_DATA_SCHEMA_VERSION,
+                BuildConfig.DATA_SCHEMA_VERSION);
         intent.putExtra(AppMigrationAndroidService.EXTRA_COMPLETE, true);
 
         receiver.onReceive(null, intent);
@@ -36,6 +40,9 @@ public class MigrationBroadcastReceiverTest {
         MigrationBroadcastReceiver receiver = new MigrationBroadcastReceiver(callback);
 
         Intent intent = new Intent(AppMigrationAndroidService.BROADCAST_ACTION);
+
+        intent.putExtra(AppMigrationAndroidService.EXTRA_CURRENT_DATA_SCHEMA_VERSION,
+                BuildConfig.DATA_SCHEMA_VERSION);
         intent.putExtra(AppMigrationAndroidService.EXTRA_COMPLETE, false);
 
         receiver.onReceive(null, intent);

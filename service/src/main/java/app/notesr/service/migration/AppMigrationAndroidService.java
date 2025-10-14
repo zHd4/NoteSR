@@ -18,9 +18,11 @@ import app.notesr.service.R;
 
 public class AppMigrationAndroidService extends Service implements Runnable {
     public static final String BROADCAST_ACTION = "app_migration_service_broadcast";
+    public static final String EXTRA_CURRENT_DATA_SCHEMA_VERSION = "current_data_schema_version";
     public static final String EXTRA_COMPLETE = "migration_complete";
     private static final String CHANNEL_ID = "app_migration_service_channel";
 
+    private int currentDataSchemaVersion;
     private AppMigrationService appMigrationService;
 
     @Nullable
@@ -47,6 +49,13 @@ public class AppMigrationAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
+        currentDataSchemaVersion = intent.getIntExtra(EXTRA_CURRENT_DATA_SCHEMA_VERSION,
+                -1);
+
+        if (currentDataSchemaVersion == -1) {
+            throw new IllegalArgumentException("Current data schema version not provided");
+        }
+
         appMigrationService = new AppMigrationService(AppMigrationRegistry.getAllMigrations());
         Thread thread = new Thread(this);
 
@@ -61,7 +70,6 @@ public class AppMigrationAndroidService extends Service implements Runnable {
         Context context = getApplicationContext();
 
         int lastMigrationVersion = new DataVersionManager(context).getCurrentVersion();
-        int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
 
         appMigrationService.run(context, lastMigrationVersion, currentDataSchemaVersion);
         Intent broadcastIntent = new Intent(BROADCAST_ACTION)
