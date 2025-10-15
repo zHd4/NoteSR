@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class BackupDecryptor {
-    private static final String TAG = BackupDecryptor.class.getName();
+    private static final String TAG = BackupDecryptor.class.getCanonicalName();
 
     private final ContentResolver contentResolver;
     private final CryptoSecrets cryptoSecrets;

@@ -26,7 +26,7 @@ import app.notesr.service.security.SecretsSetupService;
 
 public final class ImportKeyActivity extends ActivityBase {
 
-    private static final String TAG = ImportKeyActivity.class.getName();
+    private static final String TAG = ImportKeyActivity.class.getCanonicalName();
 
     private KeySetupMode mode;
     private EditText keyField;

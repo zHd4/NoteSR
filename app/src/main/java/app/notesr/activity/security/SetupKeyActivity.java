@@ -26,7 +26,7 @@ import lombok.Getter;
 @Getter
 public final class SetupKeyActivity extends ActivityBase {
 
-    private static final String TAG = SetupKeyActivity.class.getName();
+    private static final String TAG = SetupKeyActivity.class.getCanonicalName();
     private static final int LOW_SCREEN_HEIGHT = 800;
     private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
 

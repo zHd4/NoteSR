@@ -30,7 +30,7 @@ import app.notesr.core.util.FilesUtils;
 
 public final class ImportActivity extends ActivityBase {
 
-    private static final String TAG = ImportActivity.class.getName();
+    private static final String TAG = ImportActivity.class.getCanonicalName();
 
     private Uri selectedFileUri;
     private ActivityResultLauncher<Intent> fileChooserLauncher;

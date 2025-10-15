@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class ImportV1Strategy implements ImportStrategy {
-    private static final String TAG = ImportV1Strategy.class.getName();
+    private static final String TAG = ImportV1Strategy.class.getCanonicalName();
 
     private final AppDatabase db;
     private final NoteService noteService;

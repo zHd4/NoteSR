@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public final class Wiper implements WiperAdapter {
-    private static final String TAG = Wiper.class.getName();
+    private static final String TAG = Wiper.class.getCanonicalName();
     private static final int LOOPS_COUNT = 6;
 
     public void wipeDir(File dir) throws IOException {

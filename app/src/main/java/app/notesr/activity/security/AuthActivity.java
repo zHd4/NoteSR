@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 public final class AuthActivity extends ActivityBase {
 
-    private static final String TAG = AuthActivity.class.getName();
+    private static final String TAG = AuthActivity.class.getCanonicalName();
 
     @AllArgsConstructor
     @Getter

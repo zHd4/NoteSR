@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class ExportService {
-    private static final String TAG = ExportService.class.getName();
+    private static final String TAG = ExportService.class.getCanonicalName();
 
     private final Context context;
     private final AppDatabase db;

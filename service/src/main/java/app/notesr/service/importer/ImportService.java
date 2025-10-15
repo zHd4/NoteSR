@@ -37,7 +37,7 @@ public final class ImportService {
 
     private static final DateTimeFormatter TIMESTAMP_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final String TAG = ImportService.class.getName();
+    private static final String TAG = ImportService.class.getCanonicalName();
     private static final String VERSION_FILENAME = "version";
     private static final String MIN_APP_VERSION_FOR_V3_STRATEGY = "5.1.1";
 
