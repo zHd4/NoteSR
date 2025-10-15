@@ -105,6 +105,7 @@ public final class CryptoManager {
     }
 
     public void destroySecrets() {
+        secrets.destroy();
         secrets = null;
     }
 
