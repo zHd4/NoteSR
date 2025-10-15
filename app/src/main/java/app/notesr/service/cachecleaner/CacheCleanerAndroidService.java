@@ -16,25 +16,18 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import app.notesr.App;
-import app.notesr.data.model.TempFile;
+import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.activity.file.viewer.FileViewerActivityBase;
-import app.notesr.core.util.Wiper;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
 
 public final class CacheCleanerAndroidService extends Service implements Runnable {
 
-    private static final String TAG = CacheCleanerAndroidService.class.getName();
+    private static final String TAG = CacheCleanerAndroidService.class.getCanonicalName();
     private static final String CHANNEL_ID = "cache_cleaner_service_channel";
     private static final int DELAY = 2000;
-    private final Map<TempFile, Thread> runningJobs = new LinkedHashMap<>();
+
     private Thread thread;
-    private TempFileService tempFileService;
+    private CacheCleanerService cacheCleanerService;
 
     @Nullable
     @Override
@@ -60,11 +53,13 @@ public final class CacheCleanerAndroidService extends Service implements Runnabl
         }
 
         Context context = getApplicationContext();
-        tempFileService = new TempFileService(DatabaseProvider.getInstance(context));
+        AppDatabase db = DatabaseProvider.getInstance(context);
+        TempFileService tempFileService = new TempFileService(db);
 
+        cacheCleanerService = new CacheCleanerService(tempFileService);
         thread = new Thread(this);
-        thread.start();
 
+        thread.start();
         startForeground(startId, notification, type);
 
         return START_STICKY;
@@ -77,9 +72,9 @@ public final class CacheCleanerAndroidService extends Service implements Runnabl
                 Activity currentActivity = App.getContext().getCurrentActivity();
 
                 if (!(currentActivity instanceof FileViewerActivityBase)) {
-                    clearCache();
+                    cacheCleanerService.cleanupTempFilesAsync();
 
-                    if (runningJobs.isEmpty()) {
+                    if (!cacheCleanerService.hasRunningJobs()) {
                         thread.interrupt();
 
                         stopForeground(STOP_FOREGROUND_REMOVE);
@@ -96,33 +91,5 @@ public final class CacheCleanerAndroidService extends Service implements Runnabl
         } catch (InterruptedException e) {
             Log.e(TAG, "Thread interrupted", e);
         }
-    }
-
-    private void clearCache() {
-        tempFileService.getAll().stream()
-                .filter(tempFile -> !runningJobs.containsKey(tempFile))
-                .forEach(tempFile -> {
-                    Thread deleteThread = new Thread(deleteTempFile(tempFile));
-
-                    runningJobs.put(tempFile, deleteThread);
-                    deleteThread.start();
-                });
-    }
-
-    private Runnable deleteTempFile(TempFile tempFile) {
-        return () -> {
-            File file = new File(Objects.requireNonNull(tempFile.getUri().getPath()));
-
-            if (file.exists()) {
-                try {
-                    new Wiper().wipeFile(file);
-                } catch (IOException e) {
-                    Log.e(TAG, "Cannot wipe file", e);
-                }
-            }
-
-            tempFileService.delete(tempFile.getId());
-            runningJobs.remove(tempFile);
-        };
     }
 }
