@@ -53,8 +53,6 @@ public final class SetupKeyActivity extends ActivityBase {
             password = bytesToChars(SecretCache.take("password"), StandardCharsets.UTF_8);
         } catch (CharacterCodingException e) {
             throw new RuntimeException(e);
-        } finally {
-            SecretCache.clear();
         }
 
         Context context = getApplicationContext();
