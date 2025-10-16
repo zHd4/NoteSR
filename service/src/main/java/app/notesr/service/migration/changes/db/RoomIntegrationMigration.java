@@ -78,6 +78,8 @@ public final class RoomIntegrationMigration implements AppMigration {
                 migrateFiles();
                 wipeOldDbs(context);
             });
+
+            cryptoSecrets.destroy();
         } catch (Throwable e) {
             throw new AppMigrationException("Unhandled migration exception", e);
         }
