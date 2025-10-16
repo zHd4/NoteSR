@@ -5,7 +5,7 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import static app.notesr.core.util.ActivityUtils.disableBackButton;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.charsToBytes;
-import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
+import static app.notesr.core.util.KeyUtils.getKeyBytesFromHex;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,12 +24,12 @@ import app.notesr.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.security.dto.CryptoSecrets;
 
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Objects;
 
 public final class KeyRecoveryActivity extends ActivityBase {
@@ -55,19 +55,23 @@ public final class KeyRecoveryActivity extends ActivityBase {
     private View.OnClickListener applyButtonOnClick(EditText hexKeyField) {
         return view -> {
             Editable hexKeyEditable = hexKeyField.getText();
+            int hexKeyLength = hexKeyEditable.length();
 
-            char[] hexKey = new char[hexKeyEditable.length()];
-            hexKeyEditable.getChars(0, hexKeyEditable.length(), hexKey, 0);
+            if (hexKeyLength > 0) {
+                char[] hexKey = new char[hexKeyLength];
+                hexKeyEditable.getChars(0, hexKeyLength, hexKey, 0);
 
-
-            if (hexKey.length > 0) {
                 try {
+                    byte[] keyBytes = getKeyBytesFromHex(Arrays.copyOf(hexKey, hexKey.length));
+
                     Context context = getApplicationContext();
                     CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-                    CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, null);
 
-                    if (cryptoManager.verifyKey(context, cryptoSecrets.getKey())) {
+                    if (cryptoManager.verifyKey(context, keyBytes)) {
                         SecretCache.put("hexKey", charsToBytes(hexKey, StandardCharsets.UTF_8));
+
+                        // The hex key has already been wiped by charsToBytes
+                        wipeSecretData(keyBytes, hexKeyField);
 
                         startActivity(new Intent(context, AuthActivity.class)
                                 .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString()));
@@ -91,5 +95,11 @@ public final class KeyRecoveryActivity extends ActivityBase {
                 }
             }
         };
+    }
+
+    private void wipeSecretData(byte[] keyBytes, EditText keyField) {
+        Arrays.fill(keyBytes, (byte) 0);
+        keyField.getText().replace(0, keyField.getText().length(), "");
+        keyField.setText("");
     }
 }
