@@ -1,4 +1,4 @@
-package app.notesr.activity.note;
+package app.notesr.activity.security;
 
 import static app.notesr.core.util.CharUtils.charsToBytes;
 
@@ -13,8 +13,6 @@ import app.notesr.R;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.activity.security.KeySetupMode;
-import app.notesr.activity.security.SetupKeyActivity;
 
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
