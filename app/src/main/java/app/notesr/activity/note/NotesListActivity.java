@@ -21,6 +21,7 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
+import app.notesr.activity.security.ChangePasswordOnClick;
 import app.notesr.activity.security.LockOnClick;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;

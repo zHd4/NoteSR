@@ -1,9 +1,8 @@
-package app.notesr.activity.note;
+package app.notesr.activity.security;
 
 import android.content.Intent;
 
 import app.notesr.ActivityBase;
-import app.notesr.activity.security.AuthActivity;
 
 import java.util.function.Consumer;
 
