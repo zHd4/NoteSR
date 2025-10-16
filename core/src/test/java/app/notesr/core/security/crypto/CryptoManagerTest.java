@@ -63,9 +63,9 @@ class CryptoManagerTest {
 
     @Test
     void testGenerateSecretsCreatesKeyOfCorrectSize() {
-        CryptoSecrets secrets = cryptoManager.generateSecrets("pass");
+        CryptoSecrets secrets = cryptoManager.generateSecrets("pass".toCharArray());
         assertEquals(CryptoManager.KEY_SIZE, secrets.getKey().length);
-        assertEquals("pass", secrets.getPassword());
+        assertArrayEquals("pass".toCharArray(), secrets.getPassword());
     }
 
     @Test
@@ -141,7 +141,7 @@ class CryptoManagerTest {
             return Arrays.copyOf(input, input.length);
         });
 
-        when(cryptorFactory.create(anyString(), eq(AesGcmCryptor.class))).thenReturn(mockCryptor);
+        when(cryptorFactory.create(any(char[].class), eq(AesGcmCryptor.class))).thenReturn(mockCryptor);
 
         when(prefs.edit()).thenReturn(editor);
         when(editor.putString(anyString(), anyString())).thenReturn(editor);
@@ -157,7 +157,7 @@ class CryptoManagerTest {
         when(mockKeyHashFile.exists()).thenReturn(false);
 
         byte[] key = new byte[]{10, 20, 30};
-        CryptoSecrets secrets = new CryptoSecrets(key, "password");
+        CryptoSecrets secrets = new CryptoSecrets(key, "password".toCharArray());
 
         cryptoManager.setSecrets(null, secrets);
 

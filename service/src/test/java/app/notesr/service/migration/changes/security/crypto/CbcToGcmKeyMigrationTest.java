@@ -38,7 +38,7 @@ class CbcToGcmKeyMigrationTest {
 
     @Test
     void testMigrateSuccess() throws EncryptionFailedException {
-        CryptoSecrets secrets = new CryptoSecrets(new byte[]{1, 2, 3}, "123");
+        CryptoSecrets secrets = new CryptoSecrets(new byte[]{1, 2, 3}, "123".toCharArray());
 
         when(cryptoManager.getSecrets()).thenReturn(secrets);
         doNothing().when(cryptoManager).setSecrets(context, secrets);

@@ -29,15 +29,18 @@ public abstract class AesCryptor {
         return generator.generateKey();
     }
 
-    public static byte[] generatePasswordBasedSalt(String password)
+    public static byte[] generatePasswordBasedSalt(char[] password)
             throws NoSuchAlgorithmException {
-        byte[] passwordHash = toSha256Bytes(password.getBytes());
+        byte[] passwordBytes = new String(password).getBytes();
+        byte[] passwordHash = toSha256Bytes(passwordBytes);
+
+        Arrays.fill(passwordBytes, (byte) 0);
         return Arrays.copyOfRange(passwordHash, 0, 16);
     }
 
-    protected static SecretKey generatePasswordBasedKey(String password, byte[] salt)
+    protected static SecretKey generatePasswordBasedKey(char[] password, byte[] salt)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
-        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, DEFAULT_ITERATION_COUNT,
+        PBEKeySpec spec = new PBEKeySpec(password, salt, DEFAULT_ITERATION_COUNT,
                 KEY_SIZE);
 
         SecretKey tmp = SecretKeyFactory.getInstance(PBE_ALGORITHM).generateSecret(spec);

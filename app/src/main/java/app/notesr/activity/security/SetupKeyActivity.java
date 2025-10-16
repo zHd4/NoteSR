@@ -5,18 +5,23 @@ import static java.util.Objects.requireNonNull;
 import static app.notesr.core.util.ActivityUtils.copyToClipboard;
 import static app.notesr.core.util.ActivityUtils.disableBackButton;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.core.util.CharUtils.bytesToChars;
+import static app.notesr.core.util.CharUtils.charsToBytes;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
+
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.service.security.SecretsSetupService;
@@ -26,12 +31,11 @@ import lombok.Getter;
 @Getter
 public final class SetupKeyActivity extends ActivityBase {
 
-    private static final String TAG = SetupKeyActivity.class.getCanonicalName();
     private static final int LOW_SCREEN_HEIGHT = 800;
     private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
 
     private KeySetupMode mode;
-    private String password;
+    private char[] password;
     private SecretsSetupService keySetupService;
 
     @Override
@@ -46,20 +50,21 @@ public final class SetupKeyActivity extends ActivityBase {
         }
 
         try {
-            password = getIntent().getStringExtra("password");
-
-            Context context = getApplicationContext();
-            CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-
-            keySetupService = new SecretsSetupService(
-                    getApplicationContext(),
-                    cryptoManager,
-                    password
-            );
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Password is null", e);
+            password = bytesToChars(SecretCache.take("password"), StandardCharsets.UTF_8);
+        } catch (CharacterCodingException e) {
             throw new RuntimeException(e);
+        } finally {
+            SecretCache.clear();
         }
+
+        Context context = getApplicationContext();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+
+        keySetupService = new SecretsSetupService(
+                getApplicationContext(),
+                cryptoManager,
+                password
+        );
 
         TextView keyView = findViewById(R.id.aesKeyHex);
         keyView.setText(KeyUtils.getKeyHexFromSecrets(keySetupService.getCryptoSecrets()));
@@ -95,8 +100,13 @@ public final class SetupKeyActivity extends ActivityBase {
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
             Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class)
-                    .putExtra("mode", mode.toString())
-                    .putExtra("password", password);
+                    .putExtra("mode", mode.toString());
+
+            try {
+                SecretCache.put("password", charsToBytes(password, StandardCharsets.UTF_8));
+            } catch (CharacterCodingException e) {
+                throw new RuntimeException(e);
+            }
 
             startActivity(intent);
         };

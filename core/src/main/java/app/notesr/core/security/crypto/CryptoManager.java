@@ -38,7 +38,7 @@ public final class CryptoManager {
 
     private CryptoSecrets secrets;
 
-    public boolean configure(Context context, String password) {
+    public boolean configure(Context context, char[] password) {
         try {
             this.secrets = tryGetSecretsWithFallback(context, password);
             return true;
@@ -62,7 +62,7 @@ public final class CryptoManager {
         return isBlocked || filesUtils.getInternalFile(context, BLOCK_MARKER_FILENAME).exists();
     }
 
-    public CryptoSecrets generateSecrets(String password) {
+    public CryptoSecrets generateSecrets(char[] password) {
         byte[] key = new byte[KEY_SIZE];
         secureRandom.nextBytes(key);
         return new CryptoSecrets(Arrays.copyOf(key, key.length), password);
@@ -109,7 +109,7 @@ public final class CryptoManager {
         secrets = null;
     }
 
-    private CryptoSecrets tryGetSecretsWithFallback(Context context, String password)
+    private CryptoSecrets tryGetSecretsWithFallback(Context context, char[] password)
             throws IOException, DecryptionFailedException {
         try {
             return getSecrets(context, password, AesGcmCryptor.class);
@@ -137,7 +137,7 @@ public final class CryptoManager {
     }
 
     private CryptoSecrets getSecrets(Context context,
-                                     String password,
+                                     char[] password,
                                      Class<? extends AesCryptor> cryptorClass)
             throws DecryptionFailedException {
 

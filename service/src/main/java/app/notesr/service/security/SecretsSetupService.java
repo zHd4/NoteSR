@@ -15,7 +15,7 @@ public final class SecretsSetupService {
     private final CryptoManager cryptoManager;
     private final CryptoSecrets cryptoSecrets;
 
-    public SecretsSetupService(Context context, CryptoManager cryptoManager, String password) {
+    public SecretsSetupService(Context context, CryptoManager cryptoManager, char[] password) {
         this.context = context;
         this.cryptoManager = cryptoManager;
         this.cryptoSecrets = cryptoManager.generateSecrets(password);

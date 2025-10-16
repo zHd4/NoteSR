@@ -11,10 +11,11 @@ import lombok.Data;
 public final class CryptoSecrets implements Serializable {
 
     private byte[] key;
-    private String password;
+    private char[] password;
 
     public void destroy() {
         Arrays.fill(key, (byte) 0);
+        Arrays.fill(password, '\0');
     }
 
     public static CryptoSecrets from(CryptoSecrets secrets) {

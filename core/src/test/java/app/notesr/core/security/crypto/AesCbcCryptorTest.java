@@ -23,7 +23,7 @@ class AesCbcCryptorTest {
         byte[] iv = new byte[IV_SIZE];
         SecureRandom.getInstanceStrong().nextBytes(iv);
 
-        cryptor = new AesCbcCryptor(PASSWORD, iv);
+        cryptor = new AesCbcCryptor(PASSWORD.toCharArray(), iv);
     }
 
     @Test

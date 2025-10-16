@@ -4,11 +4,13 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 import static app.notesr.core.util.ActivityUtils.disableBackButton;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.core.util.CharUtils.charsToBytes;
 import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,11 +21,14 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
@@ -49,22 +54,27 @@ public final class KeyRecoveryActivity extends ActivityBase {
 
     private View.OnClickListener applyButtonOnClick(EditText hexKeyField) {
         return view -> {
-            String hexKey = hexKeyField.getText().toString();
+            Editable hexKeyEditable = hexKeyField.getText();
 
-            if (!hexKey.isBlank()) {
+            char[] hexKey = new char[hexKeyEditable.length()];
+            hexKeyEditable.getChars(0, hexKeyEditable.length(), hexKey, 0);
+
+
+            if (hexKey.length > 0) {
                 try {
                     Context context = getApplicationContext();
                     CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, null);
 
                     if (cryptoManager.verifyKey(context, cryptoSecrets.getKey())) {
+                        SecretCache.put("hexKey", charsToBytes(hexKey, StandardCharsets.UTF_8));
+
                         startActivity(new Intent(context, AuthActivity.class)
-                                .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString())
-                                .putExtra("hexKey", hexKey));
+                                .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString()));
 
                         finish();
                     } else {
-                        Log.e(TAG, "Wrong key: " + hexKey);
+                        Log.d(TAG, "Wrong key: " + hexKey);
                         showToastMessage(this,
                                 getString(R.string.wrong_key),
                                 Toast.LENGTH_SHORT);
@@ -73,6 +83,8 @@ public final class KeyRecoveryActivity extends ActivityBase {
                     Log.e(TAG, "Invalid key", e);
                     showToastMessage(this, getString(R.string.invalid_key),
                             Toast.LENGTH_SHORT);
+                } catch (CharacterCodingException e) {
+                    throw new RuntimeException(e);
                 } catch (IOException | NoSuchAlgorithmException e) {
                     Log.e(TAG, e.toString());
                     throw new RuntimeException(e);

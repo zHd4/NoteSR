@@ -27,7 +27,7 @@ public final class AesGcmCryptor extends AesCryptor {
 
     private final SecretKey key;
 
-    public AesGcmCryptor(String password, byte[] salt) throws NoSuchAlgorithmException,
+    public AesGcmCryptor(char[] password, byte[] salt) throws NoSuchAlgorithmException,
             InvalidKeySpecException {
         this.key = generatePasswordBasedKey(password, salt);
     }

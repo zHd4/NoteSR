@@ -18,7 +18,7 @@ public class AesCryptorBaseTest {
 
     @Test
     public void testGeneratePasswordSaltShouldBe16Bytes() throws Exception {
-        byte[] salt = AesCryptor.generatePasswordBasedSalt("password");
+        byte[] salt = AesCryptor.generatePasswordBasedSalt("password".toCharArray());
         assertEquals(16, salt.length);
     }
 }

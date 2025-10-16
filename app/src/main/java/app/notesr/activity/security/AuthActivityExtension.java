@@ -1,18 +1,26 @@
 package app.notesr.activity.security;
 
+import static app.notesr.core.util.CharUtils.bytesToChars;
+import static app.notesr.core.util.CharUtils.charsToBytes;
+
 import android.content.Context;
 import android.content.Intent;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import app.notesr.BuildConfig;
 import app.notesr.R;
+import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.activity.note.NotesListActivity;
+import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.core.util.ActivityUtils;
 import app.notesr.core.util.KeyUtils;
@@ -26,15 +34,15 @@ public final class AuthActivityExtension {
 
     private final AuthActivity activity;
     private final CryptoManager cryptoManager;
-    private final StringBuilder passwordBuilder;
+    private final SecureStringBuilder passwordBuilder;
 
     private int attempts = MAX_ATTEMPTS;
-    private String createdPassword;
+    private char[] createdPassword;
 
     public void authorize() {
-        String password = passwordBuilder.toString();
+        char[] password = passwordBuilder.toCharArray();
 
-        if (password.isEmpty()) {
+        if (password.length == 0) {
             String enterCodeMessage = activity.getString(R.string.enter_the_code);
             showToastMessage(enterCodeMessage);
             return;
@@ -48,26 +56,32 @@ public final class AuthActivityExtension {
     }
 
     public void createPassword() {
-        String password = proceedPasswordSetting();
+        char[] password = proceedPasswordSetting();
 
         if (password != null) {
             Intent setupKeyActivityIntent = new Intent(activity.getApplicationContext(),
                     SetupKeyActivity.class);
 
             setupKeyActivityIntent.putExtra("mode", KeySetupMode.FIRST_RUN.toString());
-            setupKeyActivityIntent.putExtra("password", password);
+
+            try {
+                SecretCache.put("password", charsToBytes(password, StandardCharsets.UTF_8));
+            } catch (CharacterCodingException e) {
+                throw new RuntimeException(e);
+            }
 
             activity.startActivity(getNextIntent(setupKeyActivityIntent, false));
         }
     }
 
     public void recoverKey() {
-        String password = proceedPasswordSetting();
+        char[] password = proceedPasswordSetting();
 
         if (password != null) {
-            String hexKey = activity.getIntent().getStringExtra("hexKey");
-
             try {
+                char[] hexKey = bytesToChars(SecretCache.take("hexKey"),
+                        StandardCharsets.UTF_8);
+
                 if (hexKey == null) {
                     throw new Exception("Missing hex key");
                 }
@@ -78,6 +92,8 @@ public final class AuthActivityExtension {
                 cryptoManager.setSecrets(context, KeyUtils.getSecretsFromHex(hexKey, password));
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            } finally {
+                SecretCache.clear();
             }
 
             Intent defaultIntent = new Intent(activity.getApplicationContext(),
@@ -88,7 +104,7 @@ public final class AuthActivityExtension {
     }
 
     public void changePassword() {
-        String password = proceedPasswordSetting();
+        char[] password = proceedPasswordSetting();
 
         if (password != null) {
             try {
@@ -110,8 +126,8 @@ public final class AuthActivityExtension {
         }
     }
 
-    private String proceedPasswordSetting() {
-        String password = passwordBuilder.toString();
+    private char[] proceedPasswordSetting() {
+        char[] password = passwordBuilder.toCharArray();
         TextView topLabel = activity.findViewById(R.id.authTopLabel);
 
         if (createdPassword == null) {
@@ -124,7 +140,7 @@ public final class AuthActivityExtension {
                         MIN_PASSWORD_LENGTH));
             }
         } else {
-            if (password.equals(createdPassword)) {
+            if (Arrays.equals(password, createdPassword)) {
                 return password;
             } else {
                 showToastMessage(R.string.code_not_match);
@@ -193,7 +209,7 @@ public final class AuthActivityExtension {
         TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
 
         censoredPasswordView.setText("");
-        passwordBuilder.setLength(0);
+        passwordBuilder.wipe();
     }
 
     private void showToastMessage(int stringResId) {

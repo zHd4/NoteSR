@@ -5,10 +5,12 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import static java.util.Objects.requireNonNull;
 
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.core.util.CharUtils.bytesToChars;
 import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,8 +19,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
+
 import app.notesr.R;
 import app.notesr.ActivityBase;
+import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
@@ -58,12 +64,18 @@ public final class ImportKeyActivity extends ActivityBase {
 
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
-            String hexKey = keyField.getText().toString();
+            Editable hexKeyEditable = keyField.getText();
 
-            if (!hexKey.isBlank()) {
+            char[] hexKey = new char[hexKeyEditable.length()];
+            hexKeyEditable.getChars(0, hexKeyEditable.length(), hexKey, 0);
+
+            if (hexKey.length > 0) {
                 try {
                     Context context = getApplicationContext();
-                    String password = getIntent().getStringExtra("password");
+
+                    char[] password = bytesToChars(SecretCache.take("password"),
+                            StandardCharsets.UTF_8);
+
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, password);
                     CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
 
@@ -78,6 +90,8 @@ public final class ImportKeyActivity extends ActivityBase {
                     Log.e(TAG, "Invalid key", e);
                     showToastMessage(this, getString(R.string.invalid_key),
                             Toast.LENGTH_SHORT);
+                } catch (CharacterCodingException e) {
+                    throw new RuntimeException(e);
                 }
             }
         };

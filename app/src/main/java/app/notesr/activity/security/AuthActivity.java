@@ -15,6 +15,7 @@ import app.notesr.R;
 import app.notesr.ActivityBase;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.util.SecureStringBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -54,7 +55,7 @@ public final class AuthActivity extends ActivityBase {
     private Mode currentMode;
     private int inputIndex = 0;
     private boolean capsLockEnabled = false;
-    private final StringBuilder passwordBuilder = new StringBuilder();
+    private final SecureStringBuilder passwordBuilder = new SecureStringBuilder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

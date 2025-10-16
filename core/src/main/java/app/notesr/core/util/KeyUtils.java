@@ -24,7 +24,7 @@ public final class KeyUtils {
         return getHexFromKeyBytes(cryptoSecrets.getKey());
     }
 
-    public static CryptoSecrets getSecretsFromHex(String hex, String password) {
+    public static CryptoSecrets getSecretsFromHex(char[] hex, char[] password) {
         return new CryptoSecrets(getKeyBytesFromHex(hex), password);
     }
 
@@ -57,19 +57,18 @@ public final class KeyUtils {
         return result.toString().toUpperCase();
     }
 
-    public static byte[] getKeyBytesFromHex(String hex) {
+    public static byte[] getKeyBytesFromHex(char[] hexChars) {
+        requireNonNull(hexChars, "hexChars must not be null");
+
         try {
-            requireNonNull(hex, "hex must not be null");
+            int tokenCount = countHexTokens(hexChars);
+            byte[] key = new byte[tokenCount];
 
-            String[] hexArray = hex.toLowerCase().trim().split("\\s+");
-            byte[] key = new byte[hexArray.length];
+            parseHexTokens(hexChars, key);
 
-            for (int i = 0; i < hexArray.length; i++) {
-                key[i] = (byte) Integer.parseInt(hexArray[i], 16);
-            }
-
+            Arrays.fill(hexChars, '\0');
             return key;
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Invalid hex key", e);
         }
     }
@@ -89,5 +88,76 @@ public final class KeyUtils {
         hexDigits[1] = Character.forDigit((value & 0xF), 16);
 
         return String.valueOf(hexDigits);
+    }
+
+    private static int countHexTokens(char[] chars) {
+        int count = 0;
+        boolean inToken = false;
+
+        for (char c : chars) {
+            if (Character.isWhitespace(c)) {
+                if (inToken) {
+                    count++;
+                    inToken = false;
+                }
+            } else {
+                inToken = true;
+            }
+        }
+
+        if (inToken) {
+            count++;
+        }
+
+        return count;
+    }
+
+    private static void parseHexTokens(char[] chars, byte[] output) {
+        int keyIndex = 0;
+        int nibbleCount = 0;
+        int value = 0;
+
+        boolean hasDigit = false;
+
+        for (char c : chars) {
+            if (Character.isWhitespace(c)) {
+                if (hasDigit) {
+                    output[keyIndex++] = (byte) value;
+                    nibbleCount = 0;
+                    value = 0;
+                    hasDigit = false;
+                }
+
+                continue;
+            }
+
+            int digit = hexDigitToInt(c);
+
+            if (digit < 0) {
+                throw new IllegalArgumentException("Invalid hex character: " + c);
+            }
+
+            value = (value << 4) | digit;
+            nibbleCount++;
+            hasDigit = true;
+
+            if (nibbleCount == 2) {
+                output[keyIndex++] = (byte) value;
+                nibbleCount = 0;
+                value = 0;
+                hasDigit = false;
+            }
+        }
+
+        if (hasDigit) {
+            output[keyIndex] = (byte) value;
+        }
+    }
+
+    private static int hexDigitToInt(char c) {
+        if (c >= '0' && c <= '9') return c - '0';
+        if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+        if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+        return -1;
     }
 }

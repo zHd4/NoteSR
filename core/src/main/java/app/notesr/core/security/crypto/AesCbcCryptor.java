@@ -24,7 +24,7 @@ public final class AesCbcCryptor extends AesCryptor {
     private final SecretKey key;
     private final byte[] iv;
 
-    public AesCbcCryptor(String password, byte[] iv)
+    public AesCbcCryptor(char[] password, byte[] iv)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         this.iv = iv;
         this.key = generatePasswordBasedKey(password, iv);
