@@ -1,9 +1,9 @@
-package app.notesr.activity.note;
+package app.notesr.activity.security;
 
 import android.content.Context;
 import android.content.Intent;
 
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.note.NotesListActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
