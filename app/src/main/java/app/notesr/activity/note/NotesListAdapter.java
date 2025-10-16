@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import app.notesr.ElementListAdapter;
+import app.notesr.activity.ElementListAdapter;
 import app.notesr.R;
 import app.notesr.data.model.Note;
 

@@ -8,9 +8,9 @@ import android.os.Bundle;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.App;
+import app.notesr.activity.App;
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.ReEncryptionAndroidService;

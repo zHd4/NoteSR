@@ -8,7 +8,7 @@ import android.content.Intent;
 
 import androidx.appcompat.app.AlertDialog;
 
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.R;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;

@@ -1,4 +1,4 @@
-package app.notesr;
+package app.notesr.activity;
 
 import android.app.Activity;
 import android.app.ActivityManager;

@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import java.util.ArrayList;
 
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;

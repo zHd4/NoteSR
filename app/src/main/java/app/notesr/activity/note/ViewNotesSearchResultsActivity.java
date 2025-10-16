@@ -8,7 +8,7 @@ import android.widget.ListView;
 import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.data.model.Note;
 
 import java.util.ArrayList;

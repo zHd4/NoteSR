@@ -1,4 +1,4 @@
-package app.notesr;
+package app.notesr.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import java.util.List;
 import java.util.function.Supplier;
 
+import app.notesr.R;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.activity.exporter.ExportActivity;

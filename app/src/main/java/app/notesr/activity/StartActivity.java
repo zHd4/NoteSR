@@ -1,4 +1,4 @@
-package app.notesr;
+package app.notesr.activity;
 
 import static app.notesr.core.util.ActivityUtils.disableBackButton;
 
@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import app.notesr.R;
 import app.notesr.activity.security.AuthActivity;
 
 public final class StartActivity extends ActivityBase {

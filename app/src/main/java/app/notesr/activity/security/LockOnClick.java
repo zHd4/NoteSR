@@ -3,7 +3,7 @@ package app.notesr.activity.security;
 import android.content.Context;
 import android.content.Intent;
 
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;

@@ -1,4 +1,4 @@
-package app.notesr;
+package app.notesr.activity;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,4 +1,4 @@
-package app.notesr;
+package app.notesr.activity;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AlertDialog;
 
+import app.notesr.R;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

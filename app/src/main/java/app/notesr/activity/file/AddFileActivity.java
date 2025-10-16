@@ -19,7 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.service.file.FileService;

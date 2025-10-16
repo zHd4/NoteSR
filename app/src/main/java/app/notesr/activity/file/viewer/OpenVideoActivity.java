@@ -19,7 +19,7 @@ import android.widget.VideoView;
 
 import androidx.appcompat.app.AlertDialog;
 
-import app.notesr.App;
+import app.notesr.activity.App;
 import app.notesr.R;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.TempFile;

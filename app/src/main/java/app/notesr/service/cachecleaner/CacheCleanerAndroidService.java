@@ -15,7 +15,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import app.notesr.App;
+import app.notesr.activity.App;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.activity.file.viewer.FileViewerActivityBase;

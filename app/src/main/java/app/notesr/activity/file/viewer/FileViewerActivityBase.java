@@ -17,9 +17,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 
-import app.notesr.DialogFactory;
+import app.notesr.activity.DialogFactory;
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.file.helper.FileIOHelper;
 import app.notesr.activity.file.FilesListActivity;
 import app.notesr.core.security.crypto.AesCryptor;

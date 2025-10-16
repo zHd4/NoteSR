@@ -18,9 +18,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.App;
+import app.notesr.activity.App;
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;

@@ -6,10 +6,10 @@ import android.os.Bundle;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.App;
+import app.notesr.activity.App;
 import app.notesr.BuildConfig;
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.service.migration.AppMigrationAndroidService;
 import app.notesr.service.migration.DataVersionManager;

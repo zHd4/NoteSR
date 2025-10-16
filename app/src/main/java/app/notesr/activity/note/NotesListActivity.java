@@ -18,7 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
 import app.notesr.activity.security.ChangePasswordOnClick;

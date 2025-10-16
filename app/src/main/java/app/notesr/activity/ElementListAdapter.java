@@ -1,4 +1,4 @@
-package app.notesr;
+package app.notesr.activity;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;

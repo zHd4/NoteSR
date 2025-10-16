@@ -21,7 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import app.notesr.R;
-import app.notesr.ActivityBase;
+import app.notesr.activity.ActivityBase;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.activity.note.OpenNoteActivity;
