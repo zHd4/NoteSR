@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import app.notesr.activity.security.AuthActivity;
+import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 
@@ -19,6 +20,8 @@ public final class LockOnClick implements Consumer<NotesListActivity> {
 
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
         cryptoManager.destroySecrets();
+
+        SecretCache.clear();
 
         activity.startActivity(authActivityIntent);
         activity.finish();
