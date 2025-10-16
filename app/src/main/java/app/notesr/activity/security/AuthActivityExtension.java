@@ -92,8 +92,6 @@ public final class AuthActivityExtension {
                 cryptoManager.setSecrets(context, KeyUtils.getSecretsFromHex(hexKey, password));
             } catch (Exception e) {
                 throw new RuntimeException(e);
-            } finally {
-                SecretCache.clear();
             }
 
             Intent defaultIntent = new Intent(activity.getApplicationContext(),
