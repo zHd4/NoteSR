@@ -75,6 +75,8 @@ public final class CryptoManager {
     public void setSecrets(Context context, CryptoSecrets cryptoSecrets)
             throws EncryptionFailedException {
         saveSecrets(context, cryptoSecrets);
+
+        this.secrets.destroy();
         this.secrets = cryptoSecrets;
     }
 
@@ -89,6 +91,7 @@ public final class CryptoManager {
     }
 
     public void block(Context context) throws IOException {
+        this.secrets.destroy();
         wiper.wipeFile(filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME));
         prefs.edit().putBoolean(BLOCK_MARKER_PREF, true).apply();
     }
