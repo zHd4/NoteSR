@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class NotesListActivity extends ActivityBase {
-    private final Map<Integer, Consumer<NotesListActivity>> menuItemsMap = new HashMap<>();
+    private final Map<Integer, Consumer<ActivityBase>> menuItemsMap = new HashMap<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
 
     @Override

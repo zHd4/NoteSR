@@ -8,6 +8,7 @@ import android.content.Intent;
 
 import androidx.appcompat.app.AlertDialog;
 
+import app.notesr.ActivityBase;
 import app.notesr.R;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
@@ -19,9 +20,9 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-public final class GenerateNewKeyOnClick implements Consumer<NotesListActivity> {
+public final class GenerateNewKeyOnClick implements Consumer<ActivityBase> {
     @Override
-    public void accept(NotesListActivity activity) {
+    public void accept(ActivityBase activity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AlertDialogTheme);
 
         builder.setView(R.layout.dialog_re_encryption_warning);
@@ -33,7 +34,7 @@ public final class GenerateNewKeyOnClick implements Consumer<NotesListActivity> 
         builder.create().show();
     }
 
-    private DialogInterface.OnClickListener regenerateKeyDialogOnClick(NotesListActivity activity) {
+    private DialogInterface.OnClickListener regenerateKeyDialogOnClick(ActivityBase activity) {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
                 Context context = activity.getApplicationContext();
