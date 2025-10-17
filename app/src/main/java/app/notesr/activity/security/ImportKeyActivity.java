@@ -68,6 +68,8 @@ public final class ImportKeyActivity extends ActivityBase {
 
             char[] hexKey = new char[hexKeyEditable.length()];
             hexKeyEditable.getChars(0, hexKeyEditable.length(), hexKey, 0);
+            hexKeyEditable.replace(0, hexKeyEditable.length(), "");
+            keyField.setText("");
 
             if (hexKey.length > 0) {
                 try {
