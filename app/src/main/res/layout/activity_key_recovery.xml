@@ -24,6 +24,8 @@
         android:textColorHighlight="@color/select_text"
         android:textColorHint="#8F8F8F"
         android:textColorLink="@color/text_color"
+        android:saveEnabled="false"
+        android:autofillHints=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
