@@ -28,9 +28,9 @@ import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.service.R;
 
-public final class ReEncryptionAndroidService extends Service implements Runnable {
+public final class SecretsUpdateAndroidService extends Service implements Runnable {
 
-    private static final String TAG = ReEncryptionAndroidService.class.getCanonicalName();
+    private static final String TAG = SecretsUpdateAndroidService.class.getCanonicalName();
     public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
     public static final String EXTRA_COMPLETE = "re_encryption_complete";
     public static final String EXTRA_NEW_SECRETS = "new_secrets";

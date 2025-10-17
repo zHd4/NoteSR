@@ -135,7 +135,7 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.security.ReEncryptionAndroidService"
+            android:name=".service.security.SecretsUpdateAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service

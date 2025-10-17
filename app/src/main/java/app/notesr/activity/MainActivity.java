@@ -19,7 +19,7 @@ import app.notesr.activity.note.NotesListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.activity.security.ReEncryptionActivity;
-import app.notesr.service.security.ReEncryptionAndroidService;
+import app.notesr.service.security.SecretsUpdateAndroidService;
 
 public final class MainActivity extends ActivityBase {
     @Override
@@ -56,7 +56,7 @@ public final class MainActivity extends ActivityBase {
                         ? new Intent(context, ImportActivity.class)
                         : null,
 
-                () -> context.isServiceRunning(ReEncryptionAndroidService.class)
+                () -> context.isServiceRunning(SecretsUpdateAndroidService.class)
                         ? new Intent(context, ReEncryptionActivity.class)
                         : null,
 

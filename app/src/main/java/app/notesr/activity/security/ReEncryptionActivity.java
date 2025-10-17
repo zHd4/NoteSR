@@ -13,7 +13,7 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.service.security.ReEncryptionAndroidService;
+import app.notesr.service.security.SecretsUpdateAndroidService;
 
 public final class ReEncryptionActivity extends ActivityBase {
 
@@ -30,7 +30,7 @@ public final class ReEncryptionActivity extends ActivityBase {
                 new ReEncryptionBroadcastReceiver(this::onReEncryptionComplete);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(ReEncryptionAndroidService.BROADCAST_ACTION));
+                new IntentFilter(SecretsUpdateAndroidService.BROADCAST_ACTION));
 
         startReEncryptionService();
     }
@@ -39,11 +39,11 @@ public final class ReEncryptionActivity extends ActivityBase {
         CryptoSecrets secrets = (CryptoSecrets) getIntent()
                 .getSerializableExtra(EXTRA_NEW_SECRETS);
 
-        if (!App.getContext().isServiceRunning(ReEncryptionAndroidService.class)) {
+        if (!App.getContext().isServiceRunning(SecretsUpdateAndroidService.class)) {
             Intent serviceIntent = new Intent(getApplicationContext(),
-                    ReEncryptionAndroidService.class);
+                    SecretsUpdateAndroidService.class);
 
-            serviceIntent.putExtra(ReEncryptionAndroidService.EXTRA_NEW_SECRETS, secrets);
+            serviceIntent.putExtra(SecretsUpdateAndroidService.EXTRA_NEW_SECRETS, secrets);
             startForegroundService(serviceIntent);
         }
     }
