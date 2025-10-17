@@ -79,7 +79,7 @@ public final class AuthActivityExtension {
 
         if (password != null) {
             try {
-                char[] hexKey = bytesToChars(SecretCache.take("hexKey"),
+                char[] hexKey = bytesToChars(SecretCache.take("hex-key"),
                         StandardCharsets.UTF_8);
 
                 if (hexKey == null) {

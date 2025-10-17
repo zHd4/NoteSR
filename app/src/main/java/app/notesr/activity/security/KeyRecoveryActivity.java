@@ -68,7 +68,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
                     CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
 
                     if (cryptoManager.verifyKey(context, keyBytes)) {
-                        SecretCache.put("hexKey", charsToBytes(hexKey, StandardCharsets.UTF_8));
+                        SecretCache.put("hex-key", charsToBytes(hexKey, StandardCharsets.UTF_8));
 
                         // The hex key has already been wiped by charsToBytes
                         wipeSecretData(keyBytes, hexKeyField);
