@@ -11,6 +11,7 @@ import static app.notesr.core.util.CharUtils.charsToBytes;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -111,7 +112,30 @@ public final class SetupKeyActivity extends ActivityBase {
     }
 
     private View.OnClickListener nextButtonOnClick() {
-        return view ->
-                new KeySetupCompletionHandler(this, keySetupService, mode).handle();
+        return view -> {
+            wipeKeyView();
+            new KeySetupCompletionHandler(this, keySetupService, mode).handle();
+        };
+    }
+
+    private void wipeKeyView() {
+        TextView keyView = findViewById(R.id.aesKeyHex);
+        CharSequence seq = keyView.getText();
+
+        if (seq != null && seq.length() > 0) {
+            try {
+                if (seq instanceof Editable e) {
+                    int len = e.length();
+
+                    for (int i = 0; i < len; i++) {
+                        e.replace(i, i + 1, "\u0000");
+                    }
+
+                    e.clear();
+                }
+            } finally {
+                keyView.setText("");
+            }
+        }
     }
 }
