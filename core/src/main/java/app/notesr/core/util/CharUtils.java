@@ -8,7 +8,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.util.Arrays;
 
-public class CharUtils {
+public final class CharUtils {
     public static byte[] charsToBytes(char[] chars, Charset charset)
             throws CharacterCodingException {
 
