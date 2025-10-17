@@ -78,7 +78,6 @@ public final class KeyRecoveryActivity extends ActivityBase {
 
                         finish();
                     } else {
-                        Log.d(TAG, "Wrong key: " + hexKey);
                         showToastMessage(this,
                                 getString(R.string.wrong_key),
                                 Toast.LENGTH_SHORT);
