@@ -2,6 +2,8 @@ package app.notesr.service.security;
 
 import static java.util.Objects.requireNonNull;
 
+import static app.notesr.core.util.CharUtils.bytesToChars;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -18,7 +20,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
 
+import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.core.security.crypto.CryptoManager;
@@ -33,7 +38,6 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
     private static final String TAG = SecretsUpdateAndroidService.class.getCanonicalName();
     public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
     public static final String EXTRA_COMPLETE = "re_encryption_complete";
-    public static final String EXTRA_NEW_SECRETS = "new_secrets";
     private static final String CHANNEL_ID = "re_encryption_service_channel";
 
     private SecretsUpdateService secretsUpdateService;
@@ -56,20 +60,8 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        Context context = getApplicationContext();
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-        CryptoSecrets newSecrets = (CryptoSecrets) intent.getSerializableExtra(EXTRA_NEW_SECRETS);
-        requireNonNull(newSecrets);
-
-        FilesUtils filesUtils = new FilesUtils();
-
-        secretsUpdateService = new SecretsUpdateService(
-                context,
-                DatabaseProvider.DB_NAME,
-                cryptoManager,
-                newSecrets,
-                filesUtils
-        );
+        CryptoSecrets newSecrets = getNewSecrets();
+        secretsUpdateService = getSecretsUpdateService(newSecrets);
 
         Thread thread = new Thread(this);
         thread.start();
@@ -101,5 +93,34 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
     private void onComplete() {
         Intent broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(EXTRA_COMPLETE, true);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
+    }
+
+    private CryptoSecrets getNewSecrets() {
+        try {
+            byte[] newKey = SecretCache.take("new-key");
+            char[] newPassword = bytesToChars(SecretCache.take("password"),
+                    StandardCharsets.UTF_8);
+
+            requireNonNull(newKey);
+            requireNonNull(newPassword);
+
+            return new CryptoSecrets(newKey, newPassword);
+        } catch (CharacterCodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private SecretsUpdateService getSecretsUpdateService(CryptoSecrets newSecrets) {
+        Context context = getApplicationContext();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+        FilesUtils filesUtils = new FilesUtils();
+
+        return new SecretsUpdateService(
+                context,
+                DatabaseProvider.DB_NAME,
+                cryptoManager,
+                newSecrets,
+                filesUtils
+        );
     }
 }

@@ -1,12 +1,20 @@
 package app.notesr.activity.security;
 
+import static app.notesr.core.util.CharUtils.charsToBytes;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 import app.notesr.BuildConfig;
 import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.activity.note.NotesListActivity;
+import app.notesr.core.security.SecretCache;
+import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.SecretsSetupService;
 import app.notesr.service.migration.DataVersionManager;
 import lombok.RequiredArgsConstructor;
@@ -51,12 +59,23 @@ public final class KeySetupCompletionHandler {
     }
 
     private void proceedRegeneration() {
+        CryptoSecrets secrets = secretsSetupService.getCryptoSecrets();
+
+        try {
+            byte[] keyBytes = Arrays.copyOf(secrets.getKey(), secrets.getKey().length);
+            char[] password = Arrays.copyOf(secrets.getPassword(), secrets.getPassword().length);
+            byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
+
+            SecretCache.put("new-key", keyBytes);
+            SecretCache.put("password", passwordBytes);
+        } catch (CharacterCodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        secrets.destroy();
+
         Context context = activity.getApplicationContext();
-
-        Intent intent = new Intent(context, ReEncryptionActivity.class);
-        intent.putExtra(ReEncryptionActivity.EXTRA_NEW_SECRETS, secretsSetupService.getCryptoSecrets());
-
-        activity.startActivity(intent);
+        activity.startActivity(new Intent(context, ReEncryptionActivity.class));
         activity.finish();
     }
 }
