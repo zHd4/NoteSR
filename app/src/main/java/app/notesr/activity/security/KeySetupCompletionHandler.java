@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class KeySetupCompletionHandler {
     private final Activity activity;
-    private final SecretsSetupService keySetupService;
+    private final SecretsSetupService secretsSetupService;
     private final KeySetupMode mode;
 
     public void handle() {
@@ -27,7 +27,7 @@ public final class KeySetupCompletionHandler {
 
     private void proceedFirstRun() {
         try {
-            keySetupService.apply();
+            secretsSetupService.apply();
 
             Context context = activity.getApplicationContext();
             Intent nextIntent = new Intent(context, NotesListActivity.class);
@@ -54,7 +54,7 @@ public final class KeySetupCompletionHandler {
         Context context = activity.getApplicationContext();
 
         Intent intent = new Intent(context, ReEncryptionActivity.class);
-        intent.putExtra(ReEncryptionActivity.EXTRA_NEW_SECRETS, keySetupService.getCryptoSecrets());
+        intent.putExtra(ReEncryptionActivity.EXTRA_NEW_SECRETS, secretsSetupService.getCryptoSecrets());
 
         activity.startActivity(intent);
         activity.finish();
