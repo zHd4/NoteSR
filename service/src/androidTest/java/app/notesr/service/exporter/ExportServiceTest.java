@@ -37,6 +37,9 @@ import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 
 public class ExportServiceTest {
+
+    private static final String TEST_APP_VERSION = "1.0.0";
+
     private AppDatabase db;
     private NoteService noteService;
     private FileService fileService;
@@ -49,7 +52,7 @@ public class ExportServiceTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-        CryptoSecrets cryptoSecrets = cryptoManager.generateSecrets("password");
+        CryptoSecrets cryptoSecrets = cryptoManager.generateSecrets("password".toCharArray());
 
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
         FilesUtilsAdapter filesUtils = new FilesUtils();
@@ -61,8 +64,8 @@ public class ExportServiceTest {
         statusHolder = new ExportStatusHolder((progress, status) -> {
         });
 
-        exportService = new ExportService(context, db, noteService, fileService, outputFile,
-                statusHolder, cryptoSecrets);
+        exportService = new ExportService(cryptoSecrets, outputFile, TEST_APP_VERSION,
+                context, db, noteService, fileService, statusHolder);
     }
 
     @After

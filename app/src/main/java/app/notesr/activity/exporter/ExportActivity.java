@@ -9,6 +9,7 @@ import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
+import app.notesr.core.util.VersionFetcher;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.exporter.ExportAndroidService;
@@ -33,6 +35,7 @@ import app.notesr.service.exporter.ExportStatus;
 import app.notesr.service.file.FileService;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.service.note.NoteService;
+import app.notesr.util.VersionFetcherImpl;
 
 public final class ExportActivity extends ActivityBase {
 
@@ -109,8 +112,8 @@ public final class ExportActivity extends ActivityBase {
                     actionBar.setTitle(getString(R.string.exporting));
 
                     disableBackButton(this);
-                    startForegroundService(new Intent(this,
-                            ExportAndroidService.class));
+
+                    startService();
 
                     setCancelButton();
                 } else {
@@ -119,6 +122,20 @@ public final class ExportActivity extends ActivityBase {
                 }
             });
         });
+    }
+
+    private void startService() {
+        VersionFetcher versionFetcher = new VersionFetcherImpl();
+        Intent serviceIntent = new Intent(this,
+                ExportAndroidService.class);
+        try {
+            String appVersion = versionFetcher.fetchVersionName(this, true);
+            serviceIntent.putExtra("app_version", appVersion);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        startForegroundService(serviceIntent);
     }
 
     private void onOutputPathReceived(String outputPath) {

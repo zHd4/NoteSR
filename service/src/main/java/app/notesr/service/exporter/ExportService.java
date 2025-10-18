@@ -5,7 +5,6 @@ import static java.util.UUID.randomUUID;
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +22,6 @@ import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.core.util.TempDataWiper;
-import app.notesr.core.util.VersionFetcher;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.model.FileBlobInfo;
 import app.notesr.data.model.FileInfo;
@@ -35,15 +33,19 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class ExportService {
+
     private static final String TAG = ExportService.class.getCanonicalName();
+
+    private final CryptoSecrets cryptoSecrets;
+    private final File outputFile;
+    private final String appVersion;
 
     private final Context context;
     private final AppDatabase db;
     private final NoteService noteService;
     private final FileService fileService;
-    private final File outputFile;
+
     private final ExportStatusHolder statusHolder;
-    private final CryptoSecrets cryptoSecrets;
 
     private File tempArchive;
     private int exportedEntities;
@@ -93,10 +95,8 @@ public final class ExportService {
         statusHolder.setStatus(ExportStatus.CANCELLING);
     }
 
-    private void exportVersion(BackupZipper zipper)
-            throws PackageManager.NameNotFoundException, IOException {
-
-        zipper.addVersionFile(VersionFetcher.fetchVersionName(context, false));
+    private void exportVersion(BackupZipper zipper) throws IOException {
+        zipper.addVersionFile(appVersion);
     }
 
     private void exportNotes(BackupZipper zipper, BackupEncryptor encryptor)

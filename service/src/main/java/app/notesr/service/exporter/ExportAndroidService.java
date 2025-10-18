@@ -1,5 +1,6 @@
 package app.notesr.service.exporter;
 
+import static java.util.Objects.requireNonNull;
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.app.Notification;
@@ -78,11 +79,14 @@ public final class ExportAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
+        String appVersion = intent.getStringExtra("app_version");
+        requireNonNull(appVersion, "App version not provided");
+
         File outputDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
-        exportService = getExportService(outputFile, this::onUpdateCallback);
+        exportService = getExportService(outputFile, this::onUpdateCallback, appVersion);
 
         Thread thread = new Thread(this);
 
@@ -126,7 +130,8 @@ public final class ExportAndroidService extends Service implements Runnable {
 
     private ExportService getExportService(
             File backupOutputFile,
-            BiConsumer<Integer, ExportStatus> updateCallback) {
+            BiConsumer<Integer, ExportStatus> updateCallback,
+            String appVersion) {
 
         Context context = getApplicationContext();
 
@@ -140,13 +145,14 @@ public final class ExportAndroidService extends Service implements Runnable {
         ExportStatusHolder statusHolder = new ExportStatusHolder(updateCallback);
 
         return new ExportService(
+                secrets,
+                backupOutputFile,
+                appVersion,
                 context,
                 db,
                 noteService,
                 fileService,
-                backupOutputFile,
-                statusHolder,
-                secrets
+                statusHolder
         );
     }
 
