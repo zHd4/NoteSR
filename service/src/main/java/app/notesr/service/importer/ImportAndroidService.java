@@ -21,7 +21,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
-import app.notesr.service.R;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.core.security.crypto.AesCryptor;
@@ -43,6 +42,7 @@ public final class ImportAndroidService extends Service implements Runnable {
     );
 
     private static final String CHANNEL_ID = "import_service_channel";
+    private static final String CHANNEL_NAME = "Import Service Channel";
 
     private ImportService importService;
 
@@ -54,8 +54,7 @@ public final class ImportAndroidService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String channelName = getResources().getString(R.string.importing);
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).build();
