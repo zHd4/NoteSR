@@ -129,7 +129,7 @@ public final class ExportActivity extends ActivityBase {
         Intent serviceIntent = new Intent(this,
                 ExportAndroidService.class);
         try {
-            String appVersion = versionFetcher.fetchVersionName(this, true);
+            String appVersion = versionFetcher.fetchVersionName(this, false);
             serviceIntent.putExtra("app_version", appVersion);
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
