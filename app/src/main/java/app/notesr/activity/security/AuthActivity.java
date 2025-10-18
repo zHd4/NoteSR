@@ -24,6 +24,7 @@ import java.util.Arrays;
 public final class AuthActivity extends ActivityBase {
 
     private static final String TAG = AuthActivity.class.getCanonicalName();
+    public static final String HEX_KEY = "hex_key";
 
     @AllArgsConstructor
     @Getter

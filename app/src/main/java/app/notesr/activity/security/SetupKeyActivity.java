@@ -32,6 +32,8 @@ import lombok.Getter;
 @Getter
 public final class SetupKeyActivity extends ActivityBase {
 
+    public static final String PASSWORD = "password";
+    public static final String EXTRA_MODE = "mode";
     private static final int LOW_SCREEN_HEIGHT = 800;
     private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
 
@@ -44,14 +46,14 @@ public final class SetupKeyActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_key);
 
-        mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
+        mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
 
         if (mode == KeySetupMode.REGENERATION) {
             disableBackButton(this);
         }
 
         try {
-            password = bytesToChars(SecretCache.take("password"), StandardCharsets.UTF_8);
+            password = bytesToChars(SecretCache.take(PASSWORD), StandardCharsets.UTF_8);
         } catch (CharacterCodingException e) {
             throw new RuntimeException(e);
         }
@@ -99,10 +101,11 @@ public final class SetupKeyActivity extends ActivityBase {
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
             Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class)
-                    .putExtra("mode", mode.toString());
+                    .putExtra(ImportKeyActivity.EXTRA_MODE, mode.toString());
 
             try {
-                SecretCache.put("password", charsToBytes(password, StandardCharsets.UTF_8));
+                byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
+                SecretCache.put(ImportKeyActivity.PASSWORD, passwordBytes);
             } catch (CharacterCodingException e) {
                 throw new RuntimeException(e);
             }

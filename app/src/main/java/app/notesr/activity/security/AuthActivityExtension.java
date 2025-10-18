@@ -1,5 +1,6 @@
 package app.notesr.activity.security;
 
+import static app.notesr.activity.security.AuthActivity.HEX_KEY;
 import static app.notesr.core.util.CharUtils.bytesToChars;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 
@@ -62,10 +63,12 @@ public final class AuthActivityExtension {
             Intent setupKeyActivityIntent = new Intent(activity.getApplicationContext(),
                     SetupKeyActivity.class);
 
-            setupKeyActivityIntent.putExtra("mode", KeySetupMode.FIRST_RUN.toString());
+            setupKeyActivityIntent.putExtra(SetupKeyActivity.EXTRA_MODE,
+                    KeySetupMode.FIRST_RUN.toString());
 
             try {
-                SecretCache.put("password", charsToBytes(password, StandardCharsets.UTF_8));
+                byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
+                SecretCache.put(SetupKeyActivity.PASSWORD, passwordBytes);
             } catch (CharacterCodingException e) {
                 throw new RuntimeException(e);
             }
@@ -79,7 +82,7 @@ public final class AuthActivityExtension {
 
         if (password != null) {
             try {
-                char[] hexKey = bytesToChars(SecretCache.take("hex-key"),
+                char[] hexKey = bytesToChars(SecretCache.take(HEX_KEY),
                         StandardCharsets.UTF_8);
 
                 if (hexKey == null) {

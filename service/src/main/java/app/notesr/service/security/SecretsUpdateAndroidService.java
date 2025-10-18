@@ -36,6 +36,8 @@ import app.notesr.service.R;
 public final class SecretsUpdateAndroidService extends Service implements Runnable {
 
     private static final String TAG = SecretsUpdateAndroidService.class.getCanonicalName();
+    public static final String NEW_KEY = "new_key";
+    public static final String PASSWORD = "password";
     public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
     public static final String EXTRA_COMPLETE = "re_encryption_complete";
     private static final String CHANNEL_ID = "re_encryption_service_channel";
@@ -97,8 +99,8 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
 
     private CryptoSecrets getNewSecrets() {
         try {
-            byte[] newKey = SecretCache.take("new-key");
-            char[] newPassword = bytesToChars(SecretCache.take("password"),
+            byte[] newKey = SecretCache.take(NEW_KEY);
+            char[] newPassword = bytesToChars(SecretCache.take(PASSWORD),
                     StandardCharsets.UTF_8);
 
             requireNonNull(newKey);

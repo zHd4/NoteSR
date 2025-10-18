@@ -17,6 +17,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.SecretsSetupService;
 import app.notesr.service.migration.DataVersionManager;
+import app.notesr.service.security.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -66,8 +67,8 @@ public final class KeySetupCompletionHandler {
             char[] password = Arrays.copyOf(secrets.getPassword(), secrets.getPassword().length);
             byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
 
-            SecretCache.put("new-key", keyBytes);
-            SecretCache.put("password", passwordBytes);
+            SecretCache.put(SecretsUpdateAndroidService.NEW_KEY, keyBytes);
+            SecretCache.put(SecretsUpdateAndroidService.PASSWORD, passwordBytes);
         } catch (CharacterCodingException e) {
             throw new RuntimeException(e);
         }

@@ -41,10 +41,11 @@ public final class GenerateNewKeyOnClick implements Consumer<ActivityBase> {
                 CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
                 char[] password = cryptoManager.getSecrets().getPassword();
 
-                intent.putExtra("mode", KeySetupMode.REGENERATION.toString());
+                intent.putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.REGENERATION.toString());
 
                 try {
-                    SecretCache.put("password", charsToBytes(password, StandardCharsets.UTF_8));
+                    byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
+                    SecretCache.put(SetupKeyActivity.PASSWORD, passwordBytes);
                 } catch (CharacterCodingException e) {
                     throw new RuntimeException(e);
                 }

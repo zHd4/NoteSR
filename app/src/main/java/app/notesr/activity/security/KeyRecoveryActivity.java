@@ -62,26 +62,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
                 hexKeyEditable.getChars(0, hexKeyLength, hexKey, 0);
 
                 try {
-                    byte[] keyBytes = getKeyBytesFromHex(Arrays.copyOf(hexKey, hexKey.length));
-
-                    Context context = getApplicationContext();
-                    CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-
-                    if (cryptoManager.verifyKey(context, keyBytes)) {
-                        SecretCache.put("hex-key", charsToBytes(hexKey, StandardCharsets.UTF_8));
-
-                        // The hex key has already been wiped by charsToBytes
-                        wipeSecretData(keyBytes, hexKeyField);
-
-                        startActivity(new Intent(context, AuthActivity.class)
-                                .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString()));
-
-                        finish();
-                    } else {
-                        showToastMessage(this,
-                                getString(R.string.wrong_key),
-                                Toast.LENGTH_SHORT);
-                    }
+                    apply(hexKeyField, hexKey);
                 } catch (IllegalArgumentException e) {
                     Log.e(TAG, "Invalid key", e);
                     showToastMessage(this, getString(R.string.invalid_key),
@@ -94,6 +75,31 @@ public final class KeyRecoveryActivity extends ActivityBase {
                 }
             }
         };
+    }
+
+    private void apply(EditText hexKeyField, char[] hexKey)
+            throws IOException, NoSuchAlgorithmException {
+
+        byte[] keyBytes = getKeyBytesFromHex(Arrays.copyOf(hexKey, hexKey.length));
+
+        Context context = getApplicationContext();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+
+        if (cryptoManager.verifyKey(context, keyBytes)) {
+            SecretCache.put(AuthActivity.HEX_KEY, charsToBytes(hexKey, StandardCharsets.UTF_8));
+
+            // The hex key has already been wiped by charsToBytes
+            wipeSecretData(keyBytes, hexKeyField);
+
+            startActivity(new Intent(context, AuthActivity.class)
+                    .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString()));
+
+            finish();
+        } else {
+            showToastMessage(this,
+                    getString(R.string.wrong_key),
+                    Toast.LENGTH_SHORT);
+        }
     }
 
     private void wipeSecretData(byte[] keyBytes, EditText keyField) {

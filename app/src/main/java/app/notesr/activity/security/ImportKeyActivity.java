@@ -32,6 +32,8 @@ import app.notesr.service.security.SecretsSetupService;
 
 public final class ImportKeyActivity extends ActivityBase {
 
+    public static final String PASSWORD = "password";
+    public static final String EXTRA_MODE = "mode";
     private static final String TAG = ImportKeyActivity.class.getCanonicalName();
 
     private KeySetupMode mode;
@@ -47,7 +49,7 @@ public final class ImportKeyActivity extends ActivityBase {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(getResources().getString(R.string.import_key));
 
-        mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra("mode")));
+        mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
 
         keyField = findViewById(R.id.importKeyField);
         keyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -75,7 +77,7 @@ public final class ImportKeyActivity extends ActivityBase {
                 try {
                     Context context = getApplicationContext();
 
-                    char[] password = bytesToChars(SecretCache.take("password"),
+                    char[] password = bytesToChars(SecretCache.take(PASSWORD),
                             StandardCharsets.UTF_8);
 
                     CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, password);
