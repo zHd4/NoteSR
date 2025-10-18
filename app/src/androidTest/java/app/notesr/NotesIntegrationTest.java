@@ -222,6 +222,6 @@ public class NotesIntegrationTest {
         RANDOM.nextBytes(key);
 
         String password = FAKER.internet.password();
-        return new CryptoSecrets(key, password);
+        return new CryptoSecrets(key, password.toCharArray());
     }
 }
