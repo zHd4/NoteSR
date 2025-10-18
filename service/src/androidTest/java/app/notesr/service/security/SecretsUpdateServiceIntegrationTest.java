@@ -78,14 +78,14 @@ public class SecretsUpdateServiceIntegrationTest {
         RANDOM.nextBytes(oldKey);
         RANDOM.nextBytes(newKey);
 
-        oldSecrets = new CryptoSecrets(oldKey, FAKER.internet.password());
+        oldSecrets = new CryptoSecrets(oldKey, FAKER.internet.password().toCharArray());
 
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
         cryptoManager.setSecrets(context, oldSecrets);
 
         FilesUtils filesUtils = new FilesUtils();
 
-        newSecrets = new CryptoSecrets(newKey, FAKER.internet.password());
+        newSecrets = new CryptoSecrets(newKey, FAKER.internet.password().toCharArray());
         testNote = getTestNote();
         testFileInfo = getTestFileInfo(testNote);
         testFileBlobInfo = getTestFileBlobInfo(testFileInfo);
