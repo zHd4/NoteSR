@@ -31,7 +31,6 @@ import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
-import app.notesr.service.R;
 
 public final class SecretsUpdateAndroidService extends Service implements Runnable {
 
@@ -41,13 +40,14 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
     public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
     public static final String EXTRA_COMPLETE = "re_encryption_complete";
     private static final String CHANNEL_ID = "re_encryption_service_channel";
+    private static final String CHANNEL_NAME = "Re-encryption Service Channel";
+
 
     private SecretsUpdateService secretsUpdateService;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String channelName = getResources().getString(R.string.re_encrypting_data);
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
