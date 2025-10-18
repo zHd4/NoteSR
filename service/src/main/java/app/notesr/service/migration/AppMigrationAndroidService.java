@@ -14,13 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.service.R;
-
 public class AppMigrationAndroidService extends Service implements Runnable {
     public static final String BROADCAST_ACTION = "app_migration_service_broadcast";
     public static final String EXTRA_CURRENT_DATA_SCHEMA_VERSION = "current_data_schema_version";
     public static final String EXTRA_COMPLETE = "migration_complete";
     private static final String CHANNEL_ID = "app_migration_service_channel";
+    private static final String CHANNEL_NAME = "App Migration Service Channel";
 
     private int currentDataSchemaVersion;
     private AppMigrationService appMigrationService;
@@ -33,8 +32,7 @@ public class AppMigrationAndroidService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String channelName = getResources().getString(R.string.updating);
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
