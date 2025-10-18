@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.service.R;
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
@@ -47,6 +46,7 @@ public final class ExportAndroidService extends Service implements Runnable {
     public static final String EXTRA_OUTPUT_PATH = "output_path";
     public static final String CANCEL_EXPORT_SIGNAL = "cancel_export_signal";
     private static final String CHANNEL_ID = "export_service_channel";
+    private static final String CHANNEL_NAME = "Export Service Channel";
 
     public static final Set<ExportStatus> FINISH_STATUSES = Set.of(
             ExportStatus.DONE,
@@ -65,8 +65,7 @@ public final class ExportAndroidService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String channelName = getResources().getString(R.string.exporting);
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName,
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
