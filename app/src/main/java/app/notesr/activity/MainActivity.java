@@ -12,6 +12,7 @@ import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
 import app.notesr.activity.migration.MigrationActivity;
+import app.notesr.service.lifecycle.AppCloseAndroidService;
 import app.notesr.service.migration.AppMigrationAndroidService;
 import app.notesr.service.exporter.ExportAndroidService;
 import app.notesr.service.importer.ImportAndroidService;
@@ -32,6 +33,7 @@ public final class MainActivity extends ActivityBase {
                 cryptoManager);
         Intent defaultIntent = new Intent(getApplicationContext(), NotesListActivity.class);
 
+        startAppCloseService();
         startActivity(new StartupIntentResolver(intentSuppliers, defaultIntent).resolve());
         finish();
     }
@@ -71,5 +73,14 @@ public final class MainActivity extends ActivityBase {
                     return null;
                 }
         );
+    }
+
+    private void startAppCloseService() {
+        if (!App.getContext().isServiceRunning(AppCloseAndroidService.class)) {
+            Intent serviceIntent = new Intent(getApplicationContext(),
+                    AppCloseAndroidService.class);
+
+            startForegroundService(serviceIntent);
+        }
     }
 }

@@ -142,6 +142,11 @@
             android:name=".service.migration.AppMigrationAndroidService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+        <service
+            android:name=".service.lifecycle.AppCloseAndroidService"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>
