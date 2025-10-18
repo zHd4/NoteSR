@@ -41,6 +41,7 @@ import java.util.function.BiConsumer;
 
 public final class ExportAndroidService extends Service implements Runnable {
     public static final String BROADCAST_ACTION = "export_data_broadcast";
+    public static final String EXTRA_APP_VERSION = "app_version";
     public static final String EXTRA_STATUS = "status";
     public static final String EXTRA_PROGRESS = "progress";
     public static final String EXTRA_OUTPUT_PATH = "output_path";
@@ -79,7 +80,7 @@ public final class ExportAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        String appVersion = intent.getStringExtra("app_version");
+        String appVersion = intent.getStringExtra(EXTRA_APP_VERSION);
         requireNonNull(appVersion, "App version not provided");
 
         File outputDir = Environment.getExternalStoragePublicDirectory(
