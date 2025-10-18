@@ -26,8 +26,8 @@ public class AesGcmCryptorOOMTest {
 
     @Before
     public void setUp() throws Exception {
-        byte[] salt = AesGcmCryptor.generatePasswordBasedSalt(PASSWORD);
-        cryptor = new AesGcmCryptor(PASSWORD, salt);
+        byte[] salt = AesGcmCryptor.generatePasswordBasedSalt(PASSWORD.toCharArray());
+        cryptor = new AesGcmCryptor(PASSWORD.toCharArray(), salt);
     }
 
     @Test
