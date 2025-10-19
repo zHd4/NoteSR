@@ -17,7 +17,10 @@ public final class KeyUtils {
         int keyLength = AesCryptor.KEY_SIZE / 8;
         byte[] keyBytes = Arrays.copyOfRange(cryptoSecrets.getKey(), 0, keyLength);
 
-        return new SecretKeySpec(keyBytes, AesCryptor.KEY_GENERATOR_ALGORITHM);
+        SecretKey secretKey = new SecretKeySpec(keyBytes, AesCryptor.KEY_GENERATOR_ALGORITHM);
+        Arrays.fill(keyBytes, (byte) 0);
+
+        return secretKey;
     }
 
     public static String getKeyHexFromSecrets(CryptoSecrets cryptoSecrets) {
