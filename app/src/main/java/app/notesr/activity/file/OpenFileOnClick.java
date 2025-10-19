@@ -19,12 +19,11 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public final class OpenFileOnClick implements AdapterView.OnItemClickListener {
-    private static final Map<String, Class<? extends FileViewerActivityBase>> FILES_VIEWERS =
+    private static final Map<String, Class<? extends FileViewerActivityBase>> FILE_VIEWERS =
             Map.of(
                     "text", OpenTextFileActivity.class,
                     "image", OpenImageActivity.class,
                     "video", OpenVideoActivity.class
-//                    "audio", null
             );
 
     private final FilesListActivity activity;
@@ -42,7 +41,7 @@ public final class OpenFileOnClick implements AdapterView.OnItemClickListener {
                 String type = getFileType(fileInfo);
 
                 Class<? extends FileViewerActivityBase> viewer = type != null
-                        ? FILES_VIEWERS.get(type)
+                        ? FILE_VIEWERS.get(type)
                         : OpenUnknownFileActivity.class;
 
                 openViewer(viewer, fileInfo);
@@ -61,7 +60,7 @@ public final class OpenFileOnClick implements AdapterView.OnItemClickListener {
         if (fileInfo.getType() != null) {
             String type = fileInfo.getType().split("/")[0];
 
-            if (FILES_VIEWERS.containsKey(type)) {
+            if (FILE_VIEWERS.containsKey(type)) {
                 return type;
             }
         }
