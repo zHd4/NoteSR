@@ -53,8 +53,8 @@ public class AppCloseAndroidService extends Service {
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
         cryptoManager.destroySecrets();
 
-        super.onTaskRemoved(rootIntent);
         stopForeground(true);
         stopSelf();
+        super.onTaskRemoved(rootIntent);
     }
 }
