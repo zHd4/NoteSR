@@ -74,7 +74,7 @@ public final class OpenImageActivity extends MediaFileViewerActivityBase {
             try {
                 if (!isFileSizeAllowed(fileInfo.getSize())) {
                     runOnUiThread(() ->
-                            errorMessageTextView.setText(R.string.failed_to_load_the_image));
+                            errorMessageTextView.setText(R.string.failed_to_load_the_file));
                     return;
                 }
 
@@ -88,7 +88,7 @@ public final class OpenImageActivity extends MediaFileViewerActivityBase {
             } catch (DecryptionFailedException | IOException | OutOfMemoryError e) {
                 Log.e(TAG, "Error loading image", e);
                 runOnUiThread(() ->
-                        errorMessageTextView.setText(R.string.failed_to_load_the_image));
+                        errorMessageTextView.setText(R.string.failed_to_load_the_file));
             } finally {
                 runOnUiThread(progressDialog::dismiss);
             }
