@@ -5,6 +5,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -25,10 +26,18 @@ public final class OpenTextFileActivity extends FileViewerActivityBase {
     private void loadText() {
         newSingleThreadExecutor().execute(() -> {
             try {
+                TextView errorMessageTextView = findViewById(R.id.error_message_text_view);
+
+                if (!isFileSizeAllowed(fileInfo.getSize())) {
+                    runOnUiThread(() ->
+                            errorMessageTextView.setText(R.string.failed_to_load_the_file));
+                    return;
+                }
+
                 String content = new String(fileService.read(fileInfo.getId()));
 
                 runOnUiThread(() -> {
-                    EditText field = findViewById(R.id.textFileField);
+                    EditText field = findViewById(R.id.file_content_edit_text_view);
                     field.setText(content);
                 });
             } catch (IOException | DecryptionFailedException e) {

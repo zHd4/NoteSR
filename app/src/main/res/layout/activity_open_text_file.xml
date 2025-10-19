@@ -8,7 +8,7 @@
     tools:context=".activity.file.viewer.OpenTextFileActivity">
 
     <EditText
-        android:id="@+id/textFileField"
+        android:id="@+id/file_content_edit_text_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:backgroundTint="@color/activity_background"
@@ -32,5 +32,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/error_message_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#8F8F8F"
+        android:textSize="15sp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
