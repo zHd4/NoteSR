@@ -38,6 +38,8 @@ import app.notesr.core.security.dto.CryptoSecrets;
 
 public final class OpenImageActivity extends MediaFileViewerActivityBase {
 
+    private static final String TAG = OpenImageActivity.class.getCanonicalName();
+
     private ImageView imageView;
     private TextView errorMessageTextView;
     private FileService fileService;
@@ -84,7 +86,7 @@ public final class OpenImageActivity extends MediaFileViewerActivityBase {
                 runOnUiThread(() -> imageView.setImageBitmap(finalBitmap));
 
             } catch (DecryptionFailedException | IOException | OutOfMemoryError e) {
-                Log.e("OpenImageActivity", "Error loading image", e);
+                Log.e(TAG, "Error loading image", e);
                 runOnUiThread(() ->
                         errorMessageTextView.setText(R.string.failed_to_load_the_image));
             } finally {
@@ -100,7 +102,7 @@ public final class OpenImageActivity extends MediaFileViewerActivityBase {
         long maxAllowedSize = freeMemory / 4;
 
         if (fileSize > maxAllowedSize) {
-            Log.w("OpenImageActivity", "File too large: " + fileSize
+            Log.w(TAG, "File too large: " + fileSize
                     + " bytes, limit: " + maxAllowedSize);
 
             return false;
