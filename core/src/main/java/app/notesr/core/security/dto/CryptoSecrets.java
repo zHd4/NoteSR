@@ -19,6 +19,6 @@ public final class CryptoSecrets {
 
     public static CryptoSecrets from(CryptoSecrets secrets) {
         return new CryptoSecrets(Arrays.copyOf(secrets.key, secrets.key.length),
-                secrets.password);
+                Arrays.copyOf(secrets.password, secrets.password.length));
     }
 }
