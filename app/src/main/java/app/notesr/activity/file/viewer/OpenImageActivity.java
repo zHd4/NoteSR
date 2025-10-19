@@ -51,8 +51,8 @@ public final class OpenImageActivity extends MediaFileViewerActivityBase {
         setContentView(R.layout.activity_open_image);
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        imageView = findViewById(R.id.imageView);
-        errorMessageTextView = findViewById(R.id.errorMessageTextView);
+        imageView = findViewById(R.id.image_view);
+        errorMessageTextView = findViewById(R.id.error_message_text_view);
         fileService = getFileService();
 
         imageView.setScaleType(ImageView.ScaleType.MATRIX);
