@@ -95,22 +95,6 @@ public final class OpenImageActivity extends MediaFileViewerActivityBase {
         });
     }
 
-    private boolean isFileSizeAllowed(long fileSize) {
-        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        long freeMemory = Runtime.getRuntime().maxMemory() - usedMemory;
-
-        long maxAllowedSize = freeMemory / 4;
-
-        if (fileSize > maxAllowedSize) {
-            Log.w(TAG, "File too large: " + fileSize
-                    + " bytes, limit: " + maxAllowedSize);
-
-            return false;
-        }
-
-        return true;
-    }
-
     private Bitmap decodeAndScaleBitmap(byte[] imageBytes) {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);

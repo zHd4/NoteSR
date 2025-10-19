@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -178,5 +179,21 @@ public class FileViewerActivityBase extends ActivityBase {
 
     protected final File dropToCache() {
         return fileIOHelper.dropToCache(fileInfo, getCacheDir());
+    }
+
+    protected boolean isFileSizeAllowed(long fileSize) {
+        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long freeMemory = Runtime.getRuntime().maxMemory() - usedMemory;
+
+        long maxAllowedSize = freeMemory / 4;
+
+        if (fileSize > maxAllowedSize) {
+            Log.w("OpenImageActivity", "File too large: " + fileSize
+                    + " bytes, limit: " + maxAllowedSize);
+
+            return false;
+        }
+
+        return true;
     }
 }
