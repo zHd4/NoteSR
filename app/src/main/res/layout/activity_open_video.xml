@@ -7,24 +7,10 @@
     android:background="@android:color/black"
     tools:context=".activity.file.viewer.OpenVideoActivity">
 
-    <TextView
-        android:id="@+id/tapToPlayLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tap_the_screen_to_play"
-        android:textColor="#8F8F8F"
-        android:textSize="15sp"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <VideoView
-        android:id="@+id/openVideoView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

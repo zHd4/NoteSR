@@ -2,40 +2,42 @@ package app.notesr.activity.file.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import android.app.Dialog;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
+
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.DisplayMetrics;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.MediaController;
-import android.widget.TextView;
-import android.widget.VideoView;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.OptIn;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.ui.PlayerView;
 
-import app.notesr.activity.App;
 import app.notesr.R;
+import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.FilesUtils;
+import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
-import app.notesr.data.model.TempFile;
-import app.notesr.service.cachecleaner.CacheCleanerAndroidService;
-import app.notesr.service.cachecleaner.TempFileService;
+import app.notesr.service.file.FileService;
 
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class OpenVideoActivity extends MediaFileViewerActivityBase {
 
-    private ScaleGestureDetector scaleGestureDetector;
-    private TempFileService tempFileService;
-    private VideoView videoView;
+    private static final int CACHE_VIDEO_BLOCKS = 4;
 
-    private boolean loading = false;
-    private boolean playing = false;
+    private FileService fileService;
+    private PlayerView videoView;
+    private ExoPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,93 +47,53 @@ public final class OpenVideoActivity extends MediaFileViewerActivityBase {
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 
         Context context = getApplicationContext();
-        tempFileService = new TempFileService(DatabaseProvider.getInstance(context));
+        AppDatabase db = DatabaseProvider.getInstance(context);
 
-        videoView = findViewById(R.id.openVideoView);
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener(videoView));
+        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
-        videoView.setOnClickListener(null);
+        fileService = new FileService(context, db, cryptor, new FilesUtils());
+        videoView = findViewById(R.id.video_view);
+
+        configurePlayer(cryptor);
+        player.play();
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void configurePlayer(AesCryptor cryptor) {
+        player = new ExoPlayer.Builder(getApplicationContext()).build();
+        videoView.setPlayer(player);
+
+        MediaItem mediaItem = new MediaItem.Builder()
+                .setUri(Uri.EMPTY)
+                .build();
+
+        player.setMediaItem(mediaItem);
+
+        File blocksDir = new File(getFilesDir(), FileService.BLOBS_DIR_NAME);
+
+        newSingleThreadExecutor().execute(() -> {
+            List<File> blockFiles = fileService.getFileBlobInfoIds(fileInfo.getId()).stream()
+                    .map(blockId -> new File(blocksDir, blockId))
+                    .collect(Collectors.toList());
+
+            DataSource.Factory dataSourceFactory = new EncryptedMediaDataSourceFactory(cryptor,
+                    blockFiles, CACHE_VIDEO_BLOCKS);
+
+            ProgressiveMediaSource mediaSource =
+                    new ProgressiveMediaSource.Factory(dataSourceFactory)
+                            .createMediaSource(mediaItem);
+
+            runOnUiThread(() -> {
+                player.setMediaSource(mediaSource);
+                player.prepare();
+            });
+        });
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-        if (!loading && !playing) {
-            loading = true;
-            videoView.setVisibility(View.VISIBLE);
-
-            TextView tapToPlayLabel = findViewById(R.id.tapToPlayLabel);
-            tapToPlayLabel.setVisibility(View.INVISIBLE);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                    R.style.AlertDialogTheme);
-            builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
-
-            AlertDialog progressDialog = builder.create();
-
-            newSingleThreadExecutor().execute(() -> {
-                loadVideo(progressDialog);
-                startPlayingVideo();
-            });
-
-        } else {
-            scaleGestureDetector.onTouchEvent(motionEvent);
-        }
-
-        return true;
-    }
-
-    private void loadVideo(Dialog progressDialog) {
-        runOnUiThread(progressDialog::show);
-        File videoFile = dropToCache();
-
-        if (!isThumbnailSet()) {
-            setThumbnail(videoFile);
-        }
-
-        Uri videoUri = Uri.parse(videoFile.getAbsolutePath());
-
-        TempFile tempFile = new TempFile();
-        tempFile.setUri(videoUri);
-
-        tempFileService.save(tempFile);
-
-        runOnUiThread(progressDialog::dismiss);
-        setVideo(videoUri);
-    }
-
-    private void startPlayingVideo() {
-        runOnUiThread(() -> {
-            videoView.start();
-
-            if (!App.getContext().isServiceRunning(CacheCleanerAndroidService.class)) {
-                startForegroundService(new Intent(getApplicationContext(),
-                        CacheCleanerAndroidService.class));
-            }
-
-            loading = false;
-            playing = true;
-        });
-    }
-
-    private void setVideo(Uri uri) {
-        runOnUiThread(() -> {
-            videoView.setVideoURI(uri);
-
-            MediaController mediaController = new MediaController(this);
-
-            mediaController.setAnchorView(videoView);
-            mediaController.setMediaPlayer(videoView);
-
-            DisplayMetrics metrics = new DisplayMetrics();
-            ViewGroup.LayoutParams params = videoView.getLayoutParams();
-
-            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-            params.width = metrics.widthPixels;
-            params.height = metrics.heightPixels;
-
-            videoView.setMediaController(mediaController);
-            videoView.setLayoutParams(params);
-        });
+    protected void onStop() {
+        super.onStop();
+        player.stop();
     }
 }
