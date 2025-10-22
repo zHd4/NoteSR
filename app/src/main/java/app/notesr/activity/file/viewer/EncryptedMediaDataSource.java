@@ -10,6 +10,7 @@ import androidx.media3.datasource.DataSpec;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.TransferListener;
 
+import android.util.Log;
 import android.util.LruCache;
 
 import java.io.ByteArrayOutputStream;
@@ -23,6 +24,8 @@ import app.notesr.core.security.crypto.AesCryptor;
 
 @UnstableApi
 public final class EncryptedMediaDataSource implements DataSource {
+
+    private static final String TAG = EncryptedMediaDataSource.class.getCanonicalName();
 
     private static final int IV_LEN = 12;
     private static final int TAG_LEN = 16;
@@ -130,14 +133,14 @@ public final class EncryptedMediaDataSource implements DataSource {
 
             byte[] plainBlock = getDecryptedBlock(blockIndex);
 
-            int canCopy = Math.min(toRead - totalRead, plainBlock.length - offsetInBlock);
-            System.arraycopy(plainBlock, offsetInBlock, buffer, offset + totalRead, canCopy);
+            int copyLength = Math.min(toRead - totalRead, plainBlock.length - offsetInBlock);
+            System.arraycopy(plainBlock, offsetInBlock, buffer, offset + totalRead, copyLength);
 
-            totalRead += canCopy;
-            openPosition += canCopy;
+            totalRead += copyLength;
+            openPosition += copyLength;
 
             if (openRemaining != C.LENGTH_UNSET) {
-                openRemaining -= canCopy;
+                openRemaining -= copyLength;
             }
         }
 
@@ -160,14 +163,16 @@ public final class EncryptedMediaDataSource implements DataSource {
 
     @Override
     public void addTransferListener(@NonNull TransferListener transferListener) {
+        Log.d(TAG, "addTransferListener called");
     }
 
     private static final class BlockPosition {
-        final int blockIndex;
-        final int offsetInBlock;
+        private final int blockIndex;
+        private final int offsetInBlock;
 
         BlockPosition(int index, int offset) {
-            blockIndex = index; offsetInBlock = offset;
+            blockIndex = index;
+            offsetInBlock = offset;
         }
     }
 
@@ -176,7 +181,8 @@ public final class EncryptedMediaDataSource implements DataSource {
             throw new IOException("Position out of range: " + absolutePosition);
         }
 
-        int lowIndex = 0, highIndex = prefixSums.length - 1;
+        int lowIndex = 0;
+        int highIndex = prefixSums.length - 1;
 
         while (lowIndex < highIndex) {
             int middleIndex = (lowIndex + highIndex) >>> 1;
