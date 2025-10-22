@@ -20,9 +20,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class AesGcmCryptor extends AesCryptor {
     private static final int CHUNK_SIZE = 100_000;
-    private static final int IV_SIZE = 12;
+    public static final int IV_SIZE = 12;
     private static final int TAG_LENGTH_BIT = 128;
-    private static final int TAG_LENGTH = TAG_LENGTH_BIT / 8;
+    public static final int TAG_LENGTH = TAG_LENGTH_BIT / 8;
     private static final String CIPHER_ALGORITHM = "AES/GCM/NoPadding";
 
     private final SecretKey key;
