@@ -16,7 +16,7 @@ import java.util.List;
 import app.notesr.core.security.crypto.AesCryptor;
 
 @UnstableApi
-public final class EncryptedMediaDataSourceFactory implements DataSource.Factory {
+final class EncryptedMediaDataSourceFactory implements DataSource.Factory {
 
     private final AesCryptor cryptor;
     private final List<File> blockFiles;
