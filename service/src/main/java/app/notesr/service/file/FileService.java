@@ -74,6 +74,10 @@ public final class FileService {
         return db.getFileBlobInfoDao().getAll();
     }
 
+    public List<String> getFileBlobInfoIds(String fileId) {
+        return db.getFileBlobInfoDao().getBlobIdsByFileId(fileId);
+    }
+
     public FileInfo getFileInfo(String fileId) {
         return setDecimalId(db.getFileInfoDao().get(fileId));
     }
