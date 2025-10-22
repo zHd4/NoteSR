@@ -17,6 +17,7 @@ import app.notesr.core.security.crypto.AesCryptor;
 
 @UnstableApi
 public final class EncryptedMediaDataSourceFactory implements DataSource.Factory {
+
     private final AesCryptor cryptor;
     private final List<File> blockFiles;
     private final int cacheBlocks;
@@ -40,6 +41,7 @@ public final class EncryptedMediaDataSourceFactory implements DataSource.Factory
             return new DataSource() {
                 @Override
                 public void addTransferListener(@NonNull TransferListener transferListener) {
+                    throw new UnsupportedOperationException();
                 }
 
                 @Override
@@ -47,12 +49,22 @@ public final class EncryptedMediaDataSourceFactory implements DataSource.Factory
                     throw new IOException("Failed to create EncryptedMediaDataSource", e);
                 }
 
-                @Override public int read(@NonNull byte[] buffer, int offset, int readLength)
-                        throws IOException { throw new IOException("Not opened"); }
+                @Override
+                public int read(@NonNull byte[] buffer, int offset, int readLength)
+                        throws IOException {
+
+                    throw new IOException("Not opened");
+                }
 
                 @Nullable
-                @Override public Uri getUri() { return null; }
-                @Override public void close() {}
+                @Override public Uri getUri() {
+                    return null;
+                }
+
+                @Override
+                public void close() {
+                    throw new UnsupportedOperationException();
+                }
             };
         }
     }
