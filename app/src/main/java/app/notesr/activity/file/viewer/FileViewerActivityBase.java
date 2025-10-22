@@ -177,10 +177,6 @@ public class FileViewerActivityBase extends ActivityBase {
         startActivity(intent);
     }
 
-    protected final File dropToCache() {
-        return fileIOHelper.dropToCache(fileInfo, getCacheDir());
-    }
-
     protected boolean isFileSizeAllowed(long fileSize) {
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         long freeMemory = Runtime.getRuntime().maxMemory() - usedMemory;
