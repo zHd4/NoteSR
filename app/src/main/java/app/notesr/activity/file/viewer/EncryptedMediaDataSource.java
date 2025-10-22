@@ -23,7 +23,7 @@ import java.util.List;
 import app.notesr.core.security.crypto.AesCryptor;
 
 @UnstableApi
-public final class EncryptedMediaDataSource implements DataSource {
+final class EncryptedMediaDataSource implements DataSource {
 
     private static final String TAG = EncryptedMediaDataSource.class.getCanonicalName();
 
