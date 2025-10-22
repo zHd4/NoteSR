@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 public final class OpenVideoActivity extends MediaFileViewerActivityBase {
 
     private static final int CACHE_VIDEO_BLOCKS = 4;
+    private static final int BLOCK_METADATA_LENGTH = AesGcmCryptor.IV_SIZE
+            + AesGcmCryptor.TAG_LENGTH;
 
     private FileService fileService;
     private PlayerView videoView;
@@ -78,7 +80,7 @@ public final class OpenVideoActivity extends MediaFileViewerActivityBase {
                     .collect(Collectors.toList());
 
             DataSource.Factory dataSourceFactory = new EncryptedMediaDataSourceFactory(cryptor,
-                    blockFiles, CACHE_VIDEO_BLOCKS);
+                    blockFiles, BLOCK_METADATA_LENGTH, CACHE_VIDEO_BLOCKS);
 
             ProgressiveMediaSource mediaSource =
                     new ProgressiveMediaSource.Factory(dataSourceFactory)

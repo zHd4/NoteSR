@@ -20,15 +20,18 @@ public final class EncryptedMediaDataSourceFactory implements DataSource.Factory
 
     private final AesCryptor cryptor;
     private final List<File> blockFiles;
+    private final int blockMetadataLength;
     private final int cacheBlocks;
 
     public EncryptedMediaDataSourceFactory(
             AesCryptor cryptor,
             List<File> blockFiles,
+            int blockMetadataLength,
             int cacheBlocks) {
 
         this.cryptor = cryptor;
         this.blockFiles = blockFiles;
+        this.blockMetadataLength = blockMetadataLength;
         this.cacheBlocks = Math.max(1, cacheBlocks);
     }
 
@@ -36,7 +39,9 @@ public final class EncryptedMediaDataSourceFactory implements DataSource.Factory
     @Override
     public DataSource createDataSource() {
         try {
-            return new EncryptedMediaDataSource(cryptor, blockFiles, cacheBlocks);
+            return new EncryptedMediaDataSource(cryptor, blockFiles, blockMetadataLength,
+                    cacheBlocks);
+
         } catch (IOException e) {
             return new DataSource() {
                 @Override

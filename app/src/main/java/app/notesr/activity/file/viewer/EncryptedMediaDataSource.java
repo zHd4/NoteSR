@@ -27,9 +27,6 @@ public final class EncryptedMediaDataSource implements DataSource {
 
     private static final String TAG = EncryptedMediaDataSource.class.getCanonicalName();
 
-    private static final int IV_LEN = 12;
-    private static final int TAG_LEN = 16;
-
     private final AesCryptor cryptor;
     private final List<File> blockFiles;
     private final long[] prefixSums;
@@ -41,8 +38,11 @@ public final class EncryptedMediaDataSource implements DataSource {
     private long openPosition = 0;
     private long openRemaining = C.LENGTH_UNSET;
 
-    public EncryptedMediaDataSource(AesCryptor cryptor, List<File> blockFiles, int cacheBlocks)
-            throws IOException {
+    public EncryptedMediaDataSource(
+            AesCryptor cryptor,
+            List<File> blockFiles,
+            int blockMetadataLength,
+            int cacheBlocks) throws IOException {
 
         if (cryptor == null) {
             throw new IllegalArgumentException("AesCryptor is null");
@@ -64,11 +64,11 @@ public final class EncryptedMediaDataSource implements DataSource {
             File blockFile = blockFiles.get(i);
             long blockFileLength = blockFile.length();
 
-            if (blockFileLength < IV_LEN + TAG_LEN) {
+            if (blockFileLength < blockMetadataLength) {
                 throw new IOException("Invalid block file (too small): " + blockFile.getName());
             }
 
-            long plainLength = (blockFileLength - IV_LEN) - TAG_LEN;
+            long plainLength = blockFileLength - blockMetadataLength;
 
             accumulatedSize += plainLength;
             prefixSums[i] = accumulatedSize;
