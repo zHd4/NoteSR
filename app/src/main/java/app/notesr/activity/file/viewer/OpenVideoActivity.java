@@ -58,7 +58,6 @@ public final class OpenVideoActivity extends MediaFileViewerActivityBase {
         videoView = findViewById(R.id.video_view);
 
         configurePlayer(cryptor);
-        player.play();
     }
 
     @OptIn(markerClass = UnstableApi.class)
