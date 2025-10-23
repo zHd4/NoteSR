@@ -136,10 +136,10 @@ public final class CryptoManager {
                     .create(cryptoSecrets.getPassword(), AesGcmCryptor.class)
                     .encrypt(cryptoSecrets.getKey());
 
-            filesUtils.writeFileBytes(
-                    filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME),
-                    encryptedKeyFileBytes
-            );
+            File encryptedKeyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
+
+            wiper.wipeFile(encryptedKeyFile);
+            filesUtils.writeFileBytes(encryptedKeyFile, encryptedKeyFileBytes);
 
             setKeyHash(toSha256String(cryptoSecrets.getKey()), context);
         } catch (Exception e) {
