@@ -25,6 +25,7 @@ public final class AuthActivity extends ActivityBase {
 
     private static final String TAG = AuthActivity.class.getCanonicalName();
     public static final String HEX_KEY = "hex_key";
+    public static final String EXTRA_MODE = "mode";
 
     @AllArgsConstructor
     @Getter
@@ -63,7 +64,7 @@ public final class AuthActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        String mode = getIntent().getStringExtra("mode");
+        String mode = getIntent().getStringExtra(EXTRA_MODE);
 
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
         extension = new AuthActivityExtension(this, cryptoManager,

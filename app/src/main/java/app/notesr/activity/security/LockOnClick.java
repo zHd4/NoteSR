@@ -14,9 +14,8 @@ public final class LockOnClick implements Consumer<ActivityBase> {
     @Override
     public void accept(ActivityBase activity) {
         Context context = activity.getApplicationContext();
-        Intent authActivityIntent = new Intent(context, AuthActivity.class);
-
-        authActivityIntent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
+        Intent authActivityIntent = new Intent(context, AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHORIZATION.toString());
 
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
         cryptoManager.destroySecrets();

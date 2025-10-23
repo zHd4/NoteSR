@@ -92,7 +92,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
             wipeSecretData(keyBytes, hexKeyField);
 
             startActivity(new Intent(context, AuthActivity.class)
-                    .putExtra("mode", AuthActivity.Mode.KEY_RECOVERY.toString()));
+                    .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.KEY_RECOVERY.toString()));
 
             finish();
         } else {
