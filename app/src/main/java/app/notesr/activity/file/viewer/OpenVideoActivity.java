@@ -8,6 +8,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.WindowManager;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.MediaItem;
@@ -44,6 +45,7 @@ public final class OpenVideoActivity extends MediaFileViewerActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_open_video);
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
