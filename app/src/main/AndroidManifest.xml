@@ -55,7 +55,7 @@
             android:name=".activity.security.ReEncryptionActivity"
             android:exported="false"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.note.NotesListActivity"
             android:exported="false"
