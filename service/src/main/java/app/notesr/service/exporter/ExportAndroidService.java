@@ -65,11 +65,11 @@ public final class ExportAndroidService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
+        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
+        notificationManager.createNotificationChannel(notificationChannel);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).build();
 
