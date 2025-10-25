@@ -38,7 +38,7 @@ final class EncryptedMediaDataSource implements DataSource {
     private long openPosition = 0;
     private long openRemaining = C.LENGTH_UNSET;
 
-    public EncryptedMediaDataSource(
+    EncryptedMediaDataSource(
             AesCryptor cryptor,
             List<File> blockFiles,
             LruCacheAdapter lruCache,
