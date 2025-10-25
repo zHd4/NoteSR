@@ -80,7 +80,7 @@ public final class CryptoManager {
             secrets.destroy();
         }
 
-        secrets = cryptoSecrets;
+        secrets = CryptoSecrets.from(cryptoSecrets);
     }
 
     public boolean verifyKey(Context context, byte[] key)
