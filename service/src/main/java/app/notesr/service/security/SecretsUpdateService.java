@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class SecretsUpdateService {
+
     private final Context context;
     private final String dbName;
     private final CryptoManager cryptoManager;
@@ -72,6 +73,12 @@ public final class SecretsUpdateService {
 
         cryptoManager.setSecrets(context, newSecrets);
         DatabaseProvider.reinit(context, getSupportFactory(newKey));
+
+        oldSecrets.destroy();
+        newSecrets.destroy();
+
+        Arrays.fill(oldKey, (byte) 0);
+        Arrays.fill(newKey, (byte) 0);
     }
 
     private void copyDbData(AppDatabase oldDb, AppDatabase newDb) {
