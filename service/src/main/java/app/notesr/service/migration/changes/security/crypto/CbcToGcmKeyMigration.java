@@ -2,6 +2,7 @@ package app.notesr.service.migration.changes.security.crypto;
 
 import android.content.Context;
 
+import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.service.migration.AppMigration;
 import app.notesr.service.migration.AppMigrationException;
@@ -23,7 +24,10 @@ public class CbcToGcmKeyMigration implements AppMigration {
     public void migrate(Context context) {
         try {
             CryptoManager cryptoManager = getCryptoManager(context);
-            cryptoManager.setSecrets(context, cryptoManager.getSecrets());
+            CryptoSecrets secrets = cryptoManager.getSecrets();
+
+            cryptoManager.setSecrets(context, secrets);
+            secrets.destroy();
         } catch (EncryptionFailedException e) {
             throw new AppMigrationException("Failed to migrate key", e);
         }
