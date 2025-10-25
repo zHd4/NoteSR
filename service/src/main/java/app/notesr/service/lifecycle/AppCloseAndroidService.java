@@ -56,5 +56,6 @@ public class AppCloseAndroidService extends Service {
         stopForeground(true);
         stopSelf();
         super.onTaskRemoved(rootIntent);
+        System.exit(0);
     }
 }
