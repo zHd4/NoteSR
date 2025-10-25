@@ -24,7 +24,7 @@ final class EncryptedMediaDataSourceFactory implements DataSource.Factory {
     private final int blockMetadataLength;
     private final int cacheBlocks;
 
-    public EncryptedMediaDataSourceFactory(
+    EncryptedMediaDataSourceFactory(
             AesCryptor cryptor,
             List<File> blockFiles,
             int blockMetadataLength,
