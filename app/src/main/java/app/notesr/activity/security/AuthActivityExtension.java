@@ -90,9 +90,12 @@ public final class AuthActivityExtension {
                 }
 
                 Context context = activity.getApplicationContext();
+                CryptoSecrets secrets = KeyUtils.getSecretsFromHex(hexKey, password);
 
                 cryptoManager.unblock(context);
-                cryptoManager.setSecrets(context, KeyUtils.getSecretsFromHex(hexKey, password));
+                cryptoManager.setSecrets(context, secrets);
+
+                secrets.destroy();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -110,10 +113,12 @@ public final class AuthActivityExtension {
         if (password != null) {
             try {
                 Context context = activity.getApplicationContext();
-                CryptoSecrets secrets = cryptoManager.getSecrets();
 
+                CryptoSecrets secrets = cryptoManager.getSecrets();
                 secrets.setPassword(password);
+
                 cryptoManager.setSecrets(context, secrets);
+                secrets.destroy();
 
                 showToastMessage(R.string.updated);
 
