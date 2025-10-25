@@ -11,7 +11,6 @@ import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.TransferListener;
 
 import android.util.Log;
-import android.util.LruCache;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,6 +20,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.util.LruCacheAdapter;
 
 @UnstableApi
 final class EncryptedMediaDataSource implements DataSource {
@@ -31,7 +31,7 @@ final class EncryptedMediaDataSource implements DataSource {
     private final List<File> blockFiles;
     private final long[] prefixSums;
     private final long totalPlainSize;
-    private final LruCache<Integer, byte[]> blockCache;
+    private final LruCacheAdapter blockCache;
 
     private DataSpec currentSpec;
     private boolean isOpened = false;
@@ -41,8 +41,8 @@ final class EncryptedMediaDataSource implements DataSource {
     public EncryptedMediaDataSource(
             AesCryptor cryptor,
             List<File> blockFiles,
-            int blockMetadataLength,
-            int cacheBlocks) throws IOException {
+            LruCacheAdapter lruCache,
+            int blockMetadataLength) throws IOException {
 
         if (cryptor == null) {
             throw new IllegalArgumentException("AesCryptor is null");
@@ -54,7 +54,7 @@ final class EncryptedMediaDataSource implements DataSource {
 
         this.cryptor = cryptor;
         this.blockFiles = blockFiles;
-        this.blockCache = new LruCache<>(Math.max(1, cacheBlocks));
+        this.blockCache = lruCache;
 
         int blockFilesCount = blockFiles.size();
         this.prefixSums = new long[blockFilesCount];

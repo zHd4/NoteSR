@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.util.LruCacheAdapterImpl;
 
 @UnstableApi
 final class EncryptedMediaDataSourceFactory implements DataSource.Factory {
@@ -39,8 +40,8 @@ final class EncryptedMediaDataSourceFactory implements DataSource.Factory {
     @Override
     public DataSource createDataSource() {
         try {
-            return new EncryptedMediaDataSource(cryptor, blockFiles, blockMetadataLength,
-                    cacheBlocks);
+            return new EncryptedMediaDataSource(cryptor, blockFiles,
+                    new LruCacheAdapterImpl(Math.max(1, cacheBlocks)), blockMetadataLength);
 
         } catch (IOException e) {
             return new DataSource() {
@@ -62,7 +63,8 @@ final class EncryptedMediaDataSourceFactory implements DataSource.Factory {
                 }
 
                 @Nullable
-                @Override public Uri getUri() {
+                @Override
+                public Uri getUri() {
                     return null;
                 }
 
