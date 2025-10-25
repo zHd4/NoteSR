@@ -3,12 +3,14 @@ package app.notesr.data;
 import android.content.Context;
 
 import androidx.room.Room;
+import androidx.room.migration.Migration;
 
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SupportFactory;
 
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.data.migration.MigrationRegistry;
 
 public final class DatabaseProvider {
     public static final String DB_NAME = "notesr.db";
@@ -29,6 +31,8 @@ public final class DatabaseProvider {
 
                 instance = Room.databaseBuilder(context, AppDatabase.class, DB_NAME)
                         .openHelperFactory(factory)
+                        .addMigrations(MigrationRegistry.getAllMigrations()
+                                .toArray(new Migration[0]))
                         .build();
             }
         }
