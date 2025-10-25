@@ -23,5 +23,6 @@ public final class SecretsSetupService {
 
     public void apply() throws EncryptionFailedException {
         cryptoManager.setSecrets(context, cryptoSecrets);
+        cryptoSecrets.destroy();
     }
 }
