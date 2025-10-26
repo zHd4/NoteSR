@@ -102,4 +102,3 @@ public final class SecureStringBuilder {
         return new String(buffer, 0, length);
     }
 }
-
