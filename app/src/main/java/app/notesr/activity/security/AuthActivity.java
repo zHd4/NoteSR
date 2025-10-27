@@ -3,10 +3,8 @@ package app.notesr.activity.security;
 import static app.notesr.core.util.ActivityUtils.disableBackButton;
 
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -19,11 +17,10 @@ import app.notesr.core.util.SecureStringBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Arrays;
+import java.util.List;
 
 public final class AuthActivity extends ActivityBase {
 
-    private static final String TAG = AuthActivity.class.getCanonicalName();
     public static final String HEX_KEY = "hex_key";
     public static final String EXTRA_MODE = "mode";
 
@@ -38,26 +35,15 @@ public final class AuthActivity extends ActivityBase {
         private final String mode;
     }
 
-    private static final Integer[] PIN_BUTTONS_ID = {
-        R.id.pinButton1,
-        R.id.pinButton2,
-        R.id.pinButton3,
-        R.id.pinButton4,
-        R.id.pinButton5,
-        R.id.pinButton6,
-        R.id.pinButton7,
-        R.id.pinButton8,
-        R.id.pinButton9,
-        R.id.pinButton0,
-        R.id.pinButtonSpecChars1,
-        R.id.pinButtonSpecChars2
-    };
-
     private AuthActivityExtension extension;
     private Mode currentMode;
-    private int inputIndex = 0;
-    private boolean capsLockEnabled = false;
+
     private final SecureStringBuilder passwordBuilder = new SecureStringBuilder();
+
+    private boolean capsLockEnabled = false;
+    private boolean showingSymbols = false;
+
+    private LinearLayout keyboardContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,154 +51,134 @@ public final class AuthActivity extends ActivityBase {
         setContentView(R.layout.activity_auth);
 
         String mode = getIntent().getStringExtra(EXTRA_MODE);
-
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
-        extension = new AuthActivityExtension(this, cryptoManager,
-                passwordBuilder);
+        extension = new AuthActivityExtension(this, cryptoManager, passwordBuilder);
 
         try {
             currentMode = Mode.valueOf(mode);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Authorization mode didn't provided", e);
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Invalid mode: " + mode, e);
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid or missing mode: " + mode, e);
         }
 
+        keyboardContainer = findViewById(R.id.keyboardContainer);
+
         configure();
+        buildKeyboard();
     }
 
     private void configure() {
         TextView topLabel = findViewById(R.id.authTopLabel);
 
-        Button changeInputIndexButton = findViewById(R.id.changeInputIndexButton);
         Button capsButton = findViewById(R.id.capsButton);
-
         Button backspaceButton = findViewById(R.id.pinBackspaceButton);
         Button authButton = findViewById(R.id.authButton);
+        Button changeLayoutButton = findViewById(R.id.changeKeyboardLayoutButton);
 
         switch (currentMode) {
             case AUTHORIZATION -> {
                 topLabel.setText(R.string.enter_access_code);
                 disableBackButton(this);
             }
-
             case CHANGE_PASSWORD -> topLabel.setText(R.string.create_new_access_code);
             default -> topLabel.setText(R.string.create_access_code);
         }
 
-        Arrays.stream(PIN_BUTTONS_ID).forEach(id -> findViewById(id)
-                .setOnClickListener(pinButtonOnClick()));
-
-        changeInputIndexButton.setOnClickListener(changeInputIndexButtonOnClick());
-        capsButton.setOnClickListener(capsButtonOnClick());
-
-        backspaceButton.setOnClickListener(pinBackspaceButtonOnClick());
-        authButton.setOnClickListener(authButtonOnClick());
-    }
-
-    private View.OnClickListener changeInputIndexButtonOnClick() {
-        return view -> {
-            Button self = ((Button) view);
-
-            switch (inputIndex) {
-                case 0 -> {
-                    self.setText("A");
-                    inputIndex++;
-                }
-                case 1 -> {
-                    self.setText("B");
-                    inputIndex++;
-                }
-                case 2 -> {
-                    self.setText("C");
-                    inputIndex++;
-                }
-                case 3 -> {
-                    self.setText("1");
-                    inputIndex = 0;
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + inputIndex);
-            }
-        };
-    }
-
-    private View.OnClickListener pinButtonOnClick() {
-        return view -> {
-            Button self = ((Button) view);
-            TextView censoredPasswordView = findViewById(R.id.censoredPasswordTextView);
-
-            char currentChar = self.getText()
-                    .toString()
-                    .replace("\n", "")
-                    .charAt(inputIndex);
-
-            if (capsLockEnabled) {
-                passwordBuilder.append(Character.toString(currentChar).toUpperCase());
-            } else {
-                passwordBuilder.append(Character.toString(currentChar).toLowerCase());
-            }
-
-            int passwordViewWidth = censoredPasswordView.getMeasuredWidth();
-            int passwordViewLength = censoredPasswordView.getText().length();
-
-            int screenWidth = getDisplayMetrics().widthPixels;
-
-            if (passwordViewLength == 0
-                    || screenWidth - passwordViewWidth > passwordViewWidth / passwordViewLength) {
-                String censoredPassword = censoredPasswordView.getText() + "•";
-                censoredPasswordView.setText(censoredPassword);
-            }
-        };
-    }
-
-    private View.OnClickListener capsButtonOnClick() {
-        return view -> {
-            Button self = ((Button) view);
+        capsButton.setOnClickListener(view -> {
             capsLockEnabled = !capsLockEnabled;
 
             int colorId = capsLockEnabled
                     ? R.color.caps_button_pressed
                     : R.color.caps_button_unpressed;
 
-            self.setTextColor(ContextCompat.getColor(getApplicationContext(), colorId));
-        };
-    }
+            capsButton.setTextColor(ContextCompat.getColor(getApplicationContext(), colorId));
 
-    private View.OnClickListener pinBackspaceButtonOnClick() {
-        return view -> {
+            if (!showingSymbols) {
+                buildKeyboard();
+            }
+        });
+
+        backspaceButton.setOnClickListener(view -> {
             TextView censoredPasswordView = findViewById(R.id.censoredPasswordTextView);
 
             if (passwordBuilder.length() > 0) {
                 String censoredPassword = censoredPasswordView.getText().toString();
 
-                if (censoredPassword.length() == passwordBuilder.length()) {
-                    censoredPasswordView.setText(censoredPassword
-                            .substring(0, censoredPassword.length() - 1));
-                }
+                censoredPasswordView.setText(censoredPassword.substring(0,
+                        censoredPassword.length() - 1));
 
                 passwordBuilder.deleteCharAt(passwordBuilder.length() - 1);
             }
-        };
-    }
+        });
 
-    private View.OnClickListener authButtonOnClick() {
-        return view -> {
+        authButton.setOnClickListener(view -> {
             switch (currentMode) {
                 case AUTHORIZATION -> extension.authorize();
                 case CREATE_PASSWORD -> extension.createPassword();
                 case KEY_RECOVERY -> extension.recoverKey();
                 case CHANGE_PASSWORD -> extension.changePassword();
-                default -> throw new IllegalStateException("Unexpected value: " + currentMode);
             }
-        };
+        });
+
+        changeLayoutButton.setOnClickListener(view -> {
+            showingSymbols = !showingSymbols;
+            changeLayoutButton.setText(showingSymbols ? "ABC" : "!#%");
+
+            buildKeyboard();
+        });
     }
 
-    private DisplayMetrics getDisplayMetrics() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    private void buildKeyboard() {
+        keyboardContainer.removeAllViews();
 
-        return displayMetrics;
+        if (showingSymbols) {
+            buildSymbolKeyboard();
+        } else {
+            buildAlphaNumericKeyboard();
+        }
+    }
+
+    private void buildAlphaNumericKeyboard() {
+        addKeyboardRow(List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"));
+        addKeyboardRow(List.of("q", "w", "e", "r", "t", "y", "u", "i", "o", "p"));
+        addKeyboardRow(List.of("a", "s", "d", "f", "g", "h", "j", "k", "l"));
+        addKeyboardRow(List.of("z", "x", "c", "v", "b", "n", "m"));
+    }
+
+    private void buildSymbolKeyboard() {
+        addKeyboardRow(List.of("!", "@", "#", "$", "%", "^", "&", "*", "(", ")"));
+        addKeyboardRow(List.of("-", "_", "+", "=", "{", "}", "[", "]", "|", "\\"));
+        addKeyboardRow(List.of(":", ";", "<", ">", "?", "/", "~", ".", ",", "'"));
+    }
+
+    private void addKeyboardRow(List<String> keys) {
+        LinearLayout row = new LinearLayout(this);
+
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+
+        for (String key : keys) {
+            Button button = new Button(this);
+            button.setLayoutParams(new LinearLayout.LayoutParams(0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+            button.setText(capsLockEnabled && !showingSymbols ? key.toUpperCase() : key);
+            button.setBackgroundResource(R.drawable.pin_button);
+
+            button.setOnClickListener(view -> {
+                TextView censoredPasswordView = findViewById(R.id.censoredPasswordTextView);
+                String charToAppend = capsLockEnabled && !showingSymbols ? key.toUpperCase() : key;
+                passwordBuilder.append(charToAppend);
+
+                String newCensoredPasswordText = censoredPasswordView.getText() + "•";
+                censoredPasswordView.setText(newCensoredPasswordText);
+            });
+
+            row.addView(button);
+        }
+
+        keyboardContainer.addView(row);
     }
 }
