@@ -121,7 +121,9 @@ public final class AuthActivity extends ActivityBase {
 
         changeLayoutButton.setOnClickListener(view -> {
             showingSymbols = !showingSymbols;
-            changeLayoutButton.setText(showingSymbols ? "ABC" : "!#%");
+
+            String buttonText = getString(showingSymbols ? R.string.abc : R.string.special_chars);
+            changeLayoutButton.setText(buttonText);
 
             buildKeyboard();
         });
