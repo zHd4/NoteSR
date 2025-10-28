@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import java.util.List;
+
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.crypto.CryptoManager;
@@ -16,8 +18,6 @@ import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.util.SecureStringBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.List;
 
 public final class AuthActivity extends ActivityBase {
 
@@ -122,7 +122,10 @@ public final class AuthActivity extends ActivityBase {
         changeLayoutButton.setOnClickListener(view -> {
             showingSymbols = !showingSymbols;
 
-            String buttonText = getString(showingSymbols ? R.string.abc : R.string.special_chars);
+            String buttonText = getString(showingSymbols
+                    ? R.string.abc
+                    : R.string.special_chars);
+
             changeLayoutButton.setText(buttonText);
 
             buildKeyboard();
@@ -166,12 +169,26 @@ public final class AuthActivity extends ActivityBase {
             button.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
-            button.setText(capsLockEnabled && !showingSymbols ? key.toUpperCase() : key);
+            String displayText;
+
+            if (capsLockEnabled && !showingSymbols) {
+                displayText = key.toUpperCase();
+                button.setAllCaps(true);
+            } else {
+                displayText = key;
+                button.setAllCaps(false);
+            }
+
+            button.setText(displayText);
             button.setBackgroundResource(R.drawable.pin_button);
 
             button.setOnClickListener(view -> {
                 TextView censoredPasswordView = findViewById(R.id.censoredPasswordTextView);
-                String charToAppend = capsLockEnabled && !showingSymbols ? key.toUpperCase() : key;
+
+                String charToAppend = capsLockEnabled && !showingSymbols
+                        ? key.toUpperCase()
+                        : key;
+
                 passwordBuilder.append(charToAppend);
 
                 String newCensoredPasswordText = censoredPasswordView.getText() + "•";
