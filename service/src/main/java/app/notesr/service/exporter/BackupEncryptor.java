@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public final class BackupEncryptor {
     private final AesCryptor cryptor;
 
-    public byte[] encrypt(String json) throws EncryptionFailedException, IOException {
+    public byte[] encrypt(String json) throws EncryptionFailedException {
         try {
             return cryptor.encrypt(json.getBytes());
         } catch (GeneralSecurityException e) {
@@ -21,7 +21,7 @@ public final class BackupEncryptor {
         }
     }
 
-    public byte[] encrypt(byte[] data) throws EncryptionFailedException, IOException {
+    public byte[] encrypt(byte[] data) throws EncryptionFailedException {
         try {
             return cryptor.encrypt(data);
         } catch (GeneralSecurityException e) {
