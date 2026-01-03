@@ -47,7 +47,7 @@ NoteSR is built with privacy in mind:
 
 ---
 
-## 📝 License
+## ⚖️ License
 [MIT](https://raw.githubusercontent.com/zHd4/NoteSR/refs/heads/master/LICENSE)
 
 ---
