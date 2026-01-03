@@ -47,6 +47,11 @@ NoteSR is built with privacy in mind:
 
 ---
 
+## 📝 License
+[MIT](https://github.com/zHd4/NoteSR/blob/master/LICENSE)
+
+---
+
 ## 🚀 Getting Started
 
 ### Install from APK
