@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 zHd4
+ * SPDX-License-Identifier: MIT
+ */
+
 package app.notesr.service.importer.v2;
 
 import static java.util.UUID.randomUUID;

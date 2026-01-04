@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 zHd4
+ * SPDX-License-Identifier: MIT
+ */
+ 
 package app.notesr.service.migration.changes.db;
 
 import app.notesr.core.security.exception.DecryptionFailedException;

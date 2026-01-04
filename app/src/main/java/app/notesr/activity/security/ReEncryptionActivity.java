@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 zHd4
+ * SPDX-License-Identifier: MIT
+ */
+ 
 package app.notesr.activity.security;
 
 import static app.notesr.core.util.ActivityUtils.disableBackButton;

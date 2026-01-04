@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 zHd4
+ * SPDX-License-Identifier: MIT
+ */
+
 package app.notesr.activity.file.viewer;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;

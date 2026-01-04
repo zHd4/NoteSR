@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 zHd4
+ * SPDX-License-Identifier: MIT
+ */
+
 package app.notesr.activity.migration;
 
 import static app.notesr.service.migration.AppMigrationAndroidService.EXTRA_COMPLETE;

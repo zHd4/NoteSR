@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 zHd4
+ * SPDX-License-Identifier: MIT
+ */
+ 
 package app.notesr.core.security.crypto;
 
 import static app.notesr.core.util.KeyUtils.getIvFromSecrets;
