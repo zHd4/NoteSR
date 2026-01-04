@@ -5,7 +5,7 @@
         android:id="@+id/saveImageButton"
         android:icon="@android:drawable/stat_sys_download"
         android:orderInCategory="2"
-        android:title="@string/save_note"
+        android:title="@string/save"
         app:showAsAction="ifRoom" />
 
     <item
