@@ -95,8 +95,8 @@ public class SecretsUpdateServiceIntegrationTest {
         testFileInfo = getTestFileInfo(testNote);
         testFileBlobInfo = getTestFileBlobInfo(testFileInfo);
         testFileData = getTestFileData(testFileInfo);
-        secretsUpdateService = new SecretsUpdateService(context, dbName, cryptoManager, newSecrets,
-                filesUtils);
+        secretsUpdateService = new SecretsUpdateService(context, dbName, cryptoManager,
+                CryptoSecrets.from(newSecrets), filesUtils);
 
         createTestDb(oldKey, testNote, testFileInfo, testFileBlobInfo, testFileData);
     }
