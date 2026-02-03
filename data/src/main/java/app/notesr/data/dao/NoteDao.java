@@ -2,7 +2,7 @@
  * Copyright (c) 2026 zHd4
  * SPDX-License-Identifier: MIT
  */
- 
+
 package app.notesr.data.dao;
 
 import androidx.room.Dao;

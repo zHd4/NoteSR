@@ -2,7 +2,7 @@
  * Copyright (c) 2026 zHd4
  * SPDX-License-Identifier: MIT
  */
- 
+
 package app.notesr.activity.security;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
