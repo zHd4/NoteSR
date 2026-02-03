@@ -41,7 +41,7 @@ import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 
-public final class OpenImageActivity extends MediaFileViewerActivityBase {
+public final class OpenImageActivity extends FileViewerActivityBase {
 
     private static final String TAG = OpenImageActivity.class.getCanonicalName();
 

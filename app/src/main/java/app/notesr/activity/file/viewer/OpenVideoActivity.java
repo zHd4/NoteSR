@@ -37,7 +37,7 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class OpenVideoActivity extends MediaFileViewerActivityBase {
+public final class OpenVideoActivity extends FileViewerActivityBase {
 
     private static final int CACHE_VIDEO_BLOCKS = 4;
     private static final int BLOCK_METADATA_LENGTH = AesGcmCryptor.IV_SIZE
