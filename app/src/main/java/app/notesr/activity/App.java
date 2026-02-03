@@ -32,10 +32,6 @@ public final class App extends Application implements Application.ActivityLifecy
         registerActivityLifecycleCallbacks(this);
     }
 
-    public Activity getCurrentActivity() {
-        return currentActivityRef.get();
-    }
-
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
         currentActivityRef = new WeakReference<>(activity);
