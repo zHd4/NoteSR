@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId "app.notesr"
         minSdk 29
-        targetSdk 34
+        targetSdk 36
         versionCode 56
         versionName "5.2.4"
         buildConfigField "int", "DATA_SCHEMA_VERSION", "2"
