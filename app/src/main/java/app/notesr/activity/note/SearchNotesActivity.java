@@ -34,6 +34,7 @@ public final class SearchNotesActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_notes);
+        applyInsets(findViewById(R.id.main));
 
         noteService = new NoteService(DatabaseProvider.getInstance(getApplicationContext()));
 

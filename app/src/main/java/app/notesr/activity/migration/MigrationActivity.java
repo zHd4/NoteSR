@@ -25,6 +25,7 @@ public final class MigrationActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_migration);
+        applyInsets(findViewById(R.id.main));
 
         MigrationBroadcastReceiver receiver = new MigrationBroadcastReceiver(
                 this::onMigrationComplete);

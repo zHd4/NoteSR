@@ -54,6 +54,7 @@ public final class OpenImageActivity extends FileViewerActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_image);
+        applyInsets(findViewById(R.id.main));
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         imageView = findViewById(R.id.image_view);

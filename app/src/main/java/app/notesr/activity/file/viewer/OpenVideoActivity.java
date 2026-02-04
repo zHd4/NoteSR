@@ -52,6 +52,7 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_open_video);
+        applyInsets(findViewById(R.id.main));
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 

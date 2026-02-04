@@ -48,6 +48,7 @@ public final class ImportKeyActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import_key);
+        applyInsets(findViewById(R.id.main));
 
         ActionBar actionBar = requireNonNull(getSupportActionBar());
 

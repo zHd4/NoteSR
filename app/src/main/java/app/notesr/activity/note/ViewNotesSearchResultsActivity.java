@@ -29,6 +29,7 @@ public final class ViewNotesSearchResultsActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_notes_search_results);
+        applyInsets(findViewById(R.id.main));
 
         ListView resultsView = findViewById(R.id.notesSearchResultsListView);
 

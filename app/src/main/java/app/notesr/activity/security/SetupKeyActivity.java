@@ -50,6 +50,7 @@ public final class SetupKeyActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_key);
+        applyInsets(findViewById(R.id.main));
 
         mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
 

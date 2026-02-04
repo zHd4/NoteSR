@@ -44,6 +44,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_key_recovery);
+        applyInsets(findViewById(R.id.main));
 
         ActionBar actionBar = getSupportActionBar();
         Objects.requireNonNull(actionBar).setTitle(getString(R.string.key_recovery));

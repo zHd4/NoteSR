@@ -53,6 +53,7 @@ public final class ExportActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
+        applyInsets(findViewById(R.id.main));
 
         Context context = getApplicationContext();
         AppDatabase db = DatabaseProvider.getInstance(this);

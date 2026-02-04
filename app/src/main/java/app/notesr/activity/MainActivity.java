@@ -32,6 +32,7 @@ public final class MainActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        applyInsets(findViewById(R.id.main));
 
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
         List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(App.getContext(),

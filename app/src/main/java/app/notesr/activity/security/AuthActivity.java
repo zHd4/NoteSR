@@ -54,6 +54,7 @@ public final class AuthActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+        applyInsets(findViewById(R.id.main));
 
         String mode = getIntent().getStringExtra(EXTRA_MODE);
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());

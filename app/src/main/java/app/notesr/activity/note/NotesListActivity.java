@@ -48,6 +48,7 @@ public final class NotesListActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_list);
+        applyInsets(findViewById(R.id.main));
 
         getOnBackPressedDispatcher()
                 .addCallback(this, new OnBackPressedCallback(true) {

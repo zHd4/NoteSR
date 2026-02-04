@@ -50,6 +50,7 @@ public final class ImportActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import);
+        applyInsets(findViewById(R.id.main));
 
         actionBar = getSupportActionBar();
         assert actionBar != null;

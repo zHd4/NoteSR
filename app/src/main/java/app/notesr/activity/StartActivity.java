@@ -28,6 +28,7 @@ public final class StartActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        applyInsets(findViewById(R.id.main));
 
         Intent authActivityIntent = new Intent(getApplicationContext(), AuthActivity.class)
                 .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CREATE_PASSWORD.toString());

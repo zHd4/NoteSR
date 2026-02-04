@@ -26,7 +26,7 @@ public final class ReEncryptionActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_re_encryption);
-
+        applyInsets(findViewById(R.id.main));
         disableBackButton(this);
 
         ReEncryptionBroadcastReceiver broadcastReceiver =

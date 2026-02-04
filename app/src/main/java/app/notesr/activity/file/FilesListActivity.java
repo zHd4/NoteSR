@@ -55,6 +55,7 @@ public final class FilesListActivity extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
+        applyInsets(findViewById(R.id.main));
 
         String noteId = getIntent().getStringExtra("noteId");
 

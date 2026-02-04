@@ -23,6 +23,7 @@ public final class OpenTextFileActivity extends FileViewerActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_text_file);
+        applyInsets(findViewById(R.id.main));
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         loadText();
