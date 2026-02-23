@@ -97,12 +97,12 @@ public class FileViewerActivityBase extends ActivityBase {
             return true;
         }
 
-        if (id == R.id.saveImageButton) {
+        if (id == R.id.saveFileButton) {
             saveFileOnClick();
             return true;
         }
 
-        if (id == R.id.deleteImageButton) {
+        if (id == R.id.deleteFileButton) {
             deleteFileOnClick();
             return true;
         }
