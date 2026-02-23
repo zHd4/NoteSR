@@ -15,6 +15,24 @@
 
 ---
 
+## 🚀 Getting Started
+
+### Install from APK
+
+1. Download the latest `.apk` from the [Releases page](https://github.com/zHd4/NoteSR/releases)
+2. Enable installation from unknown sources on your device
+3. Install and start using NoteSR
+
+### Build from source
+
+```bash
+git clone https://github.com/zHd4/NoteSR.git
+cd NoteSR
+./gradlew assembleRelease
+```
+
+---
+
 ## 📦 Download
 
 **Latest version:** [v5.2.5](https://github.com/zHd4/NoteSR/releases/tag/5.2.5)  
@@ -52,17 +70,12 @@ NoteSR is built with privacy in mind:
 
 ---
 
-## 🚀 Getting Started
+## 💖 Support the Project
 
-### Install from APK
+If you find this project helpful, you can support its development:
 
-1. Download the latest `.apk` from the [Releases page](https://github.com/zHd4/NoteSR/releases)
-2. Enable installation from unknown sources on your device
-3. Install and start using NoteSR
+**ETH (ERC-20 / Mainnet)**:
+0xE05fEc17183be09b0f09F16463b65152259681D1
 
-### Build from source
-
-```bash
-git clone https://github.com/zHd4/NoteSR.git
-cd NoteSR
-./gradlew assembleRelease
+**Please make sure you are using the correct network before sending funds.**   
+Thank you for your support!
