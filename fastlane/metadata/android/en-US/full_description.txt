@@ -1,0 +1,13 @@
+NoteSR is a privacy-first, offline note app that keeps your data on your device.
+
+Create text notes, attach files, and open attachments directly in the app, all protected with AES-256 encryption. No account, no cloud sync, and no tracking.
+
+<ul>
+    <li>Encrypted local storage for notes and attachments</li>
+    <li>Fully offline usage (no internet required)</li>
+    <li>Built-in viewer for common file types</li>
+    <li>Encrypted export/import for backup and restore</li>
+    <li>Simple, minimal interface focused on privacy</li>
+</ul>
+
+NoteSR is designed for people who want secure personal notes, journals, and sensitive files without giving up control of their data.
