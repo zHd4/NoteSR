@@ -1,0 +1,1 @@
+Secure offline notes with AES-256 encryption and encrypted file attachments.
