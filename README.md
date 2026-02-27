@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="NoteSR" src="icon.png" width="192" height="192">
+  <img alt="NoteSR" src="./fastlane/metadata/android/en-US/images/icon.png" width="192" height="192">
 </p>
 
 <h1 align="center" style="padding: 0;">NoteSR</h1>
@@ -74,7 +74,9 @@ NoteSR is built with privacy in mind:
 
 If you find this project helpful, you can support its development:
 
-**ETH (ERC-20 / Mainnet)**:
+**BTC (Network: Mainnet)**:
+bc1qn5skecvuydnnhls7hw86zmml6n75uequdsef00  
+**ETH (Network: Mainnet)**:
 0xE05fEc17183be09b0f09F16463b65152259681D1
 
 **Please make sure you are using the correct network before sending funds.**   
