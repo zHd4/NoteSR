@@ -1,0 +1,10 @@
+## Improvements
+
+- Added the [MIT license](https://raw.githubusercontent.com/zHd4/NoteSR/refs/heads/master/LICENSE)
+- Added copyright notices
+- Updated the target SDK to 36 (Android 16)
+- Applied edge-to-edge support
+
+## Bug Fixes
+
+- Fixed a naming issue with the **Save File** button in the **Open File** menu
