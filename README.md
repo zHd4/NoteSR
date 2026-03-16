@@ -17,6 +17,14 @@
 
 ## 🚀 Getting Started
 
+### App Stores
+
+<a href="https://f-droid.org/packages/app.notesr">
+    <img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">
+</a>
+
 ### Install from APK
 
 1. Download the latest `.apk` from the [Releases page](https://github.com/zHd4/NoteSR/releases)
@@ -30,13 +38,6 @@ git clone https://github.com/zHd4/NoteSR.git
 cd NoteSR
 ./gradlew assembleRelease
 ```
-
----
-
-## 📦 Download
-
-**Latest version:** [v5.2.5](https://github.com/zHd4/NoteSR/releases/tag/5.2.5)  
-You can download the APK from the [Releases page](https://github.com/zHd4/NoteSR/releases).
 
 ---
 
