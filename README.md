@@ -41,13 +41,6 @@ cd NoteSR
 
 ---
 
-## 📦 Download
-
-**Latest version:** [v5.2.5](https://github.com/zHd4/NoteSR/releases/tag/5.2.5)  
-You can download the APK from the [Releases page](https://github.com/zHd4/NoteSR/releases).
-
----
-
 ## ✨ Features
 
 - 🔐 **AES-256 encryption** — all data is encrypted and stored locally
