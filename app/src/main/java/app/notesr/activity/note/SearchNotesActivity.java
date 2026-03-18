@@ -9,15 +9,17 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import androidx.appcompat.app.ActionBar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
@@ -29,6 +31,8 @@ import app.notesr.service.note.NoteService;
 public final class SearchNotesActivity extends ActivityBase {
 
     private NoteService noteService;
+    private final Map<Long, String> notesIdsMap = new HashMap<>();
+    private ListView resultsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +49,11 @@ public final class SearchNotesActivity extends ActivityBase {
         actionBar.setTitle(getResources().getString(R.string.search));
 
         EditText queryField = findViewById(R.id.searchNotesQueryField);
+        resultsView = findViewById(R.id.notesSearchResultsListView);
+
         findViewById(R.id.searchNotesButton).setOnClickListener(searchButtonOnClick(queryField));
+
+        resultsView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
     }
 
     @Override
@@ -68,16 +76,29 @@ public final class SearchNotesActivity extends ActivityBase {
 
                     runOnUiThread(() -> {
                         progressDialog.dismiss();
-
-                        Context context = getApplicationContext();
-                        Intent intent = new Intent(context, ViewNotesSearchResultsActivity.class)
-                                .putExtra("results", results);
-
-                        startActivity(intent);
+                        displayResults(results);
                     });
                 });
             }
         };
+    }
+
+    private void displayResults(List<Note> results) {
+        notesIdsMap.clear();
+        results.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
+
+        NotesListAdapter adapter = new NotesListAdapter(
+                getApplicationContext(),
+                R.layout.notes_list_item,
+                results);
+
+        resultsView.setAdapter(adapter);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            String actionBarTitleFormat = getResources().getString(R.string.found_n);
+            actionBar.setTitle(String.format(actionBarTitleFormat, results.size()));
+        }
     }
 
     private ArrayList<Note> search(String query) {
