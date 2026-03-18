@@ -71,7 +71,8 @@ public final class MainActivity extends ActivityBase {
                 () -> {
                     if (!cryptoManager.isConfigured()) {
                         Intent intent = new Intent(context, AuthActivity.class);
-                        intent.putExtra("mode", AuthActivity.Mode.AUTHORIZATION.toString());
+                        intent.putExtra(AuthActivity.EXTRA_MODE,
+                                AuthActivity.Mode.AUTHORIZATION.toString());
 
                         return intent;
                     }
