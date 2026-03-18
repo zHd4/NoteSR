@@ -7,8 +7,6 @@ package app.notesr.util;
 
 import android.util.LruCache;
 
-import app.notesr.core.util.LruCacheAdapter;
-
 public final class LruCacheAdapterImpl implements LruCacheAdapter {
     private final LruCache<Integer, byte[]> cache;
 

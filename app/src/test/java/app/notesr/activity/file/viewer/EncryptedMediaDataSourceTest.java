@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.util.LruCacheAdapter;
+import app.notesr.util.LruCacheAdapter;
 
 import androidx.media3.common.C;
 import androidx.media3.datasource.DataSpec;

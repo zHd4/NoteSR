@@ -25,7 +25,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.util.LruCacheAdapter;
+import app.notesr.util.LruCacheAdapter;
 
 @UnstableApi
 final class EncryptedMediaDataSource implements DataSource {

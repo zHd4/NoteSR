@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.core.util;
+package app.notesr.util;
 
 public interface LruCacheAdapter {
     byte[] get(int key);
