@@ -39,6 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class AddFileActivity extends ActivityBase {
+
+    public static final String EXTRA_NOTE_ID = "noteId";
+
     private FileService fileService;
     private String noteId;
     private boolean noteModified = false;
@@ -60,7 +63,7 @@ public final class AddFileActivity extends ActivityBase {
                 new FilesUtils()
         );
 
-        noteId = getIntent().getStringExtra("noteId");
+        noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
         if (noteId == null) {
             throw new RuntimeException("Note id didn't provided");

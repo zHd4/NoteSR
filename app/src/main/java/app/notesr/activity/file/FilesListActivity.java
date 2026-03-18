@@ -139,7 +139,7 @@ public final class FilesListActivity extends ActivityBase {
         addFileButton.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), AddFileActivity.class);
 
-            intent.putExtra("noteId", note.getId());
+            intent.putExtra(AddFileActivity.EXTRA_NOTE_ID, note.getId());
             startActivity(intent);
         });
     }
