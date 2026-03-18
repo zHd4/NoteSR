@@ -21,10 +21,10 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.DialogFactory;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.service.file.FileService;
@@ -106,7 +106,8 @@ public final class AddFileActivity extends ActivityBase {
     }
 
     private void addFiles(Intent data) {
-        Dialog progressDialog = createProgressDialog();
+        Dialog progressDialog = new DialogFactory(this)
+                .getThemedProgressDialog(R.layout.progress_dialog_adding);
 
         newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);
@@ -144,12 +145,5 @@ public final class AddFileActivity extends ActivityBase {
         }
 
         return result;
-    }
-
-    private AlertDialog createProgressDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-        builder.setView(R.layout.progress_dialog_adding).setCancelable(false);
-
-        return builder.create();
     }
 }

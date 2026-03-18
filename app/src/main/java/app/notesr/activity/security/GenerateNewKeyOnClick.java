@@ -11,10 +11,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
-import androidx.appcompat.app.AlertDialog;
-
 import app.notesr.activity.ActivityBase;
 import app.notesr.R;
+import app.notesr.activity.DialogFactory;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
@@ -26,15 +25,14 @@ import java.util.function.Consumer;
 public final class GenerateNewKeyOnClick implements Consumer<ActivityBase> {
     @Override
     public void accept(ActivityBase activity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.AlertDialogTheme);
-
-        builder.setView(R.layout.dialog_re_encryption_warning);
-        builder.setTitle(R.string.warning);
-
-        builder.setPositiveButton(R.string.yes, regenerateKeyDialogOnClick(activity));
-        builder.setNegativeButton(R.string.no, regenerateKeyDialogOnClick(activity));
-
-        builder.create().show();
+        DialogInterface.OnClickListener buttonHandler = regenerateKeyDialogOnClick(activity);
+        new DialogFactory(activity)
+                .themedAlertDialogBuilder(R.layout.dialog_re_encryption_warning)
+                .setTitle(R.string.warning)
+                .setPositiveButton(R.string.yes, buttonHandler)
+                .setNegativeButton(R.string.no, buttonHandler)
+                .create()
+                .show();
     }
 
     private DialogInterface.OnClickListener regenerateKeyDialogOnClick(ActivityBase activity) {

@@ -9,9 +9,11 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
+import app.notesr.activity.DialogFactory;
 import app.notesr.core.util.FilesUtils;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,8 +27,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AlertDialog;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -68,11 +68,8 @@ public final class OpenImageActivity extends FileViewerActivityBase {
     }
 
     private void loadImage() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                R.style.AlertDialogTheme);
-
-        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
-        AlertDialog progressDialog = builder.create();
+        Dialog progressDialog = new DialogFactory(this)
+                .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
         newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);

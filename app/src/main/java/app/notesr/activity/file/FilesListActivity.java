@@ -10,6 +10,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,12 +22,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.DialogFactory;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.activity.note.OpenNoteActivity;
@@ -74,11 +75,9 @@ public final class FilesListActivity extends ActivityBase {
 
         NoteService noteService = new NoteService(db);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                R.style.AlertDialogTheme);
-        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
+        Dialog progressDialog = new DialogFactory(this)
+                .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
-        AlertDialog progressDialog = builder.create();
         Handler handler = new Handler(Looper.getMainLooper());
 
         newSingleThreadExecutor().execute(() -> {

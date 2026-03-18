@@ -18,11 +18,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.TextViewKt;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.DialogFactory;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.activity.file.FilesListActivity;
@@ -56,6 +56,7 @@ public final class OpenNoteActivity extends ActivityBase {
     private FileService fileService;
     private Note note;
     private Menu activityMenu;
+    private DialogFactory dialogFactory;
     private boolean isNoteModified;
 
     @Override
@@ -72,6 +73,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
         noteService = new NoteService(db);
         fileService = new FileService(context, db, cryptor, new FilesUtils());
+        dialogFactory = new DialogFactory(this);
 
         String noteId = getIntent().getStringExtra("noteId");
 
@@ -225,11 +227,8 @@ public final class OpenNoteActivity extends ActivityBase {
             note.setText(text);
             note.setUpdatedAt(LocalDateTime.now());
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                    R.style.AlertDialogTheme);
-            builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
-
-            Dialog progressDialog = builder.create();
+            Dialog progressDialog = dialogFactory
+                    .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
             newSingleThreadExecutor().execute(() -> {
                 runOnUiThread(progressDialog::show);
@@ -244,16 +243,13 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void deleteNoteOnClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                R.style.AlertDialogTheme);
-
-        builder.setView(R.layout.dialog_action_cannot_be_undo);
-        builder.setTitle(R.string.warning);
-
-        builder.setPositiveButton(R.string.delete, deleteNoteDialogOnClick());
-        builder.setNegativeButton(R.string.no, deleteNoteDialogOnClick());
-
-        builder.create().show();
+        DialogInterface.OnClickListener buttonHandler = deleteNoteDialogOnClick();
+        dialogFactory.themedAlertDialogBuilder(R.layout.dialog_action_cannot_be_undo)
+                .setTitle(R.string.warning)
+                .setPositiveButton(R.string.delete, buttonHandler)
+                .setNegativeButton(R.string.no, buttonHandler)
+                .create()
+                .show();
     }
 
     private void openFilesListOnClick() {
@@ -266,11 +262,8 @@ public final class OpenNoteActivity extends ActivityBase {
     private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                        R.style.AlertDialogTheme);
-                builder.setView(R.layout.progress_dialog_deleting).setCancelable(false);
-
-                AlertDialog progressDialog = builder.create();
+                Dialog progressDialog = dialogFactory
+                        .getThemedProgressDialog(R.layout.progress_dialog_deleting);
 
                 newSingleThreadExecutor().execute(() -> {
                     runOnUiThread(progressDialog::show);

@@ -16,12 +16,12 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.DialogFactory;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
@@ -59,11 +59,8 @@ public final class SearchNotesActivity extends ActivityBase {
             String query = queryField.getText().toString();
 
             if (!query.isBlank()) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                        R.style.AlertDialogTheme);
-                builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
-
-                Dialog progressDialog = builder.create();
+                Dialog progressDialog = new DialogFactory(this)
+                        .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
                 newSingleThreadExecutor().execute(() -> {
                     runOnUiThread(progressDialog::show);

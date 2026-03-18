@@ -10,6 +10,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,9 +20,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 
 import app.notesr.activity.DialogFactory;
 import app.notesr.R;
@@ -120,14 +121,13 @@ public class FileViewerActivityBase extends ActivityBase {
 
         DialogInterface.OnClickListener onConfirm = (d, w) -> {
             if (destFile.exists()) {
-                dialogFactory.showOverwriteDialog(() ->
-                        runWithProgressDialog(task, post));
+                showOverwriteDialog(() -> runWithProgressDialog(task, post));
             } else {
                 runWithProgressDialog(task, post);
             }
         };
 
-        dialogFactory.showConfirmationDialog(
+        showConfirmationDialog(
                 R.layout.dialog_are_you_sure,
                 R.string.warning,
                 R.string.save,
@@ -146,7 +146,7 @@ public class FileViewerActivityBase extends ActivityBase {
 
         Runnable post = this::returnToListActivity;
 
-        dialogFactory.showConfirmationDialog(
+        showConfirmationDialog(
                 R.layout.dialog_action_cannot_be_undo,
                 R.string.warning,
                 R.string.delete,
@@ -154,10 +154,11 @@ public class FileViewerActivityBase extends ActivityBase {
         );
     }
 
-    protected final void runWithProgressDialog(Runnable backgroundTask, @Nullable Runnable afterUi) {
-        AlertDialog dialog = dialogFactory.buildThemedDialog(R.layout.progress_dialog_deleting);
-        dialog.setCancelable(false);
-        dialog.show();
+    protected final void runWithProgressDialog(
+            Runnable backgroundTask, 
+            @Nullable Runnable afterUi) {
+        Dialog dialog = dialogFactory
+                .getThemedProgressDialog(R.layout.progress_dialog_deleting);
 
         newSingleThreadExecutor().execute(() -> {
             try {
@@ -196,5 +197,25 @@ public class FileViewerActivityBase extends ActivityBase {
         }
 
         return true;
+    }
+
+    private void showConfirmationDialog(
+            @LayoutRes int layout,
+            int titleRes,
+            int confirmRes,
+            DialogInterface.OnClickListener onConfirm) {
+        dialogFactory.themedAlertDialogBuilder(layout)
+                .setTitle(titleRes)
+                .setPositiveButton(confirmRes, onConfirm)
+                .create()
+                .show();
+    }
+
+    private void showOverwriteDialog(Runnable onOverwrite) {
+        dialogFactory.themedAlertDialogBuilder(R.layout.dialog_file_already_exists)
+                .setTitle(R.string.warning)
+                .setPositiveButton(R.string.overwrite, (d, w) -> onOverwrite.run())
+                .create()
+                .show();
     }
 }

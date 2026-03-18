@@ -7,6 +7,7 @@ package app.notesr.activity.note;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,12 +19,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.DialogFactory;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
 import app.notesr.activity.security.ChangePasswordOnClick;
@@ -102,12 +103,8 @@ public final class NotesListActivity extends ActivityBase {
     }
 
     private void loadNotes() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this,
-                R.style.AlertDialogTheme);
-
-        builder.setView(R.layout.progress_dialog_loading).setCancelable(false);
-
-        AlertDialog progressDialog = builder.create();
+        Dialog progressDialog = new DialogFactory(this)
+                .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
         AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
         NoteService noteService = new NoteService(db);
