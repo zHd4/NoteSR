@@ -44,7 +44,7 @@ public final class AddFileActivity extends ActivityBase {
 
     private FileService fileService;
     private String noteId;
-    private boolean noteModified = false;
+    private boolean parentNoteModified = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +85,8 @@ public final class AddFileActivity extends ActivityBase {
     public void finish() {
         Intent intent = new Intent(getApplicationContext(), FilesListActivity.class);
 
-        intent.putExtra("noteId", noteId);
-        intent.putExtra("modified", noteModified);
+        intent.putExtra(FilesListActivity.EXTRA_NOTE_ID, noteId);
+        intent.putExtra(FilesListActivity.EXTRA_PARENT_NOTE_MODIFIED, parentNoteModified);
         startActivity(intent);
 
         super.finish();
@@ -129,7 +129,7 @@ public final class AddFileActivity extends ActivityBase {
     }
 
     private void onFilesAddedCallback() {
-        noteModified = true;
+        parentNoteModified = true;
         finish();
     }
 

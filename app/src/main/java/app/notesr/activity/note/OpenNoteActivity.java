@@ -255,7 +255,7 @@ public final class OpenNoteActivity extends ActivityBase {
     private void openFilesListOnClick() {
         Intent intent = new Intent(getApplicationContext(), FilesListActivity.class);
 
-        intent.putExtra("noteId", note.getId());
+        intent.putExtra(FilesListActivity.EXTRA_NOTE_ID, note.getId());
         startActivity(intent);
     }
 

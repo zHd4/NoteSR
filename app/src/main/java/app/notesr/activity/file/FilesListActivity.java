@@ -46,11 +46,14 @@ import java.util.List;
 import java.util.Map;
 
 public final class FilesListActivity extends ActivityBase {
+
+    public static final String EXTRA_NOTE_ID = "noteId";
+    public static final String EXTRA_PARENT_NOTE_MODIFIED = "parentNoteModified";
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
     private FileService fileService;
     private Note note;
-    private boolean isNoteModified;
+    private boolean isParentNoteModified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +61,7 @@ public final class FilesListActivity extends ActivityBase {
         setContentView(R.layout.activity_file_list);
         applyInsets(findViewById(R.id.main));
 
-        String noteId = getIntent().getStringExtra("noteId");
+        String noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
         if (noteId == null) {
             throw new RuntimeException("Note id didn't provided");
@@ -71,7 +74,7 @@ public final class FilesListActivity extends ActivityBase {
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         fileService = new FileService(context, db, cryptor, new FilesUtils());
-        isNoteModified = getIntent().getBooleanExtra("modified", false);
+        isParentNoteModified = getIntent().getBooleanExtra(EXTRA_PARENT_NOTE_MODIFIED, false);
 
         NoteService noteService = new NoteService(db);
 
@@ -108,7 +111,7 @@ public final class FilesListActivity extends ActivityBase {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (isNoteModified) {
+            if (isParentNoteModified) {
                 Intent intent = new Intent(getApplicationContext(), OpenNoteActivity.class)
                         .putExtra("noteId", note.getId())
                         .putExtra("modified", true)

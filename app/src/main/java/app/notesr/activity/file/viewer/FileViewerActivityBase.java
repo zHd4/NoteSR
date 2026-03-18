@@ -176,8 +176,8 @@ public class FileViewerActivityBase extends ActivityBase {
 
     protected final void returnToListActivity() {
         Intent intent = new Intent(getApplicationContext(), FilesListActivity.class)
-                .putExtra("noteId", fileInfo.getNoteId())
-                .putExtra("modified", true)
+                .putExtra(FilesListActivity.EXTRA_NOTE_ID, fileInfo.getNoteId())
+                .putExtra(FilesListActivity.EXTRA_PARENT_NOTE_MODIFIED, true)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivity(intent);
