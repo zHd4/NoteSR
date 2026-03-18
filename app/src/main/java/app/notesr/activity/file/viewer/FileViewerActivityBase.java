@@ -42,6 +42,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileViewerActivityBase extends ActivityBase {
+
+    public static final String EXTRA_FILE_INFO = "fileInfo";
+
     protected FileInfo fileInfo;
     protected FileService fileService;
     protected FileIOHelper fileIOHelper;
@@ -66,7 +69,7 @@ public class FileViewerActivityBase extends ActivityBase {
         fileIOHelper = new FileIOHelper(new FilesUtils(), fileService);
         dialogFactory = new DialogFactory(this);
 
-        fileInfo = (FileInfo) getIntent().getSerializableExtra("fileInfo");
+        fileInfo = (FileInfo) getIntent().getSerializableExtra(EXTRA_FILE_INFO);
 
         if (fileInfo == null) {
             throw new RuntimeException("File info not provided");
