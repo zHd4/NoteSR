@@ -24,7 +24,7 @@ public final class OpenNoteOnClick implements AdapterView.OnItemClickListener {
         String noteId = notesIdsMap.get(id);
         Intent noteOpenActivtyIntent = new Intent(context, OpenNoteActivity.class);
 
-        noteOpenActivtyIntent.putExtra("noteId", noteId);
+        noteOpenActivtyIntent.putExtra(OpenNoteActivity.EXTRA_NOTE_ID, noteId);
         context.startActivity(noteOpenActivtyIntent);
     }
 }

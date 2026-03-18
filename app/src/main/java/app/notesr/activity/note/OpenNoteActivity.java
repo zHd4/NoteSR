@@ -49,6 +49,8 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 public final class OpenNoteActivity extends ActivityBase {
+    public static final String EXTRA_NOTE_ID = "noteId";
+    public static final String EXTRA_NOTE_MODIFIED = "modified";
     private static final long MAX_COUNT_IN_BADGE = 9;
     private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
 
@@ -75,11 +77,11 @@ public final class OpenNoteActivity extends ActivityBase {
         fileService = new FileService(context, db, cryptor, new FilesUtils());
         dialogFactory = new DialogFactory(this);
 
-        String noteId = getIntent().getStringExtra("noteId");
+        String noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
         newSingleThreadExecutor().execute(() -> {
             note = noteService.get(noteId);
-            isNoteModified = getIntent().getBooleanExtra("modified", false);
+            isNoteModified = getIntent().getBooleanExtra(EXTRA_NOTE_MODIFIED, false);
 
             runOnUiThread(() -> {
                 initializeActionBar();

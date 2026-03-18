@@ -113,8 +113,8 @@ public final class FilesListActivity extends ActivityBase {
         if (item.getItemId() == android.R.id.home) {
             if (isParentNoteModified) {
                 Intent intent = new Intent(getApplicationContext(), OpenNoteActivity.class)
-                        .putExtra("noteId", note.getId())
-                        .putExtra("modified", true)
+                        .putExtra(OpenNoteActivity.EXTRA_NOTE_ID, note.getId())
+                        .putExtra(OpenNoteActivity.EXTRA_NOTE_MODIFIED, true)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 startActivity(intent);
