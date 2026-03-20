@@ -2,13 +2,17 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/searchNotesButton"
+        android:title="@string/search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+
+    <item
         android:id="@+id/lockAppButton"
         android:icon="@android:drawable/ic_lock_idle_lock"
         android:title="@string/lock_app"
         app:showAsAction="ifRoom" />
-
-    <item android:id="@+id/searchMenuItem"
-        android:title="@string/search"/>
 
     <item android:id="@+id/exportMenuItem"
         android:title="@string/export"/>

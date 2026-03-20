@@ -5,6 +5,7 @@
 
 package app.notesr.activity.note;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.app.Dialog;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +21,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -38,12 +42,12 @@ import app.notesr.service.note.NoteService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class NotesListActivity extends ActivityBase {
     private final Map<Integer, Consumer<ActivityBase>> menuItemsMap = new HashMap<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
+    private String currentSearchQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +76,8 @@ public final class NotesListActivity extends ActivityBase {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Intent searchActivityIntent = new Intent(this, SearchNotesActivity.class);
+        super.onCreateOptionsMenu(menu);
+
         Intent importActivityIntent = new Intent(this, ImportActivity.class);
         Intent exportActivityIntent = new Intent(this, ExportActivity.class);
 
@@ -88,21 +93,71 @@ public final class NotesListActivity extends ActivityBase {
         menuItemsMap.put(R.id.importMenuItem, action ->
                 startActivity(importActivityIntent));
 
-        menuItemsMap.put(R.id.searchMenuItem, action ->
-                startActivity(searchActivityIntent));
+        SearchView searchView = (SearchView) menu.findItem(R.id.searchNotesButton).getActionView();
+        requireNonNull(searchView, "SearchView is null");
+
+        searchView.setOnQueryTextListener(getSearchQueryListener());
+        searchView.addOnAttachStateChangeListener(getSearchViewAttachStateChangeListener());
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        Objects.requireNonNull(menuItemsMap.get(id)).accept(this);
+        super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+
+        if (itemId != R.id.searchNotesButton) {
+            requireNonNull(menuItemsMap.get(itemId)).accept(this);
+        }
 
         return true;
     }
 
+    private SearchView.OnQueryTextListener getSearchQueryListener() {
+        return new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                loadNotes(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (currentSearchQuery != null && (newText == null || newText.isEmpty())) {
+                    currentSearchQuery = null;
+
+                    loadNotes();
+                    return true;
+                }
+
+                currentSearchQuery = newText;
+                return false;
+            }
+        };
+    }
+
+    private SearchView.OnAttachStateChangeListener getSearchViewAttachStateChangeListener() {
+        return new SearchView.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(@NonNull View view) {
+                Log.d("SearchView", "View attached");
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(@NonNull View view) {
+                SearchView searchView = (SearchView) view;
+                searchView.setQuery("", false);
+                loadNotes();
+            }
+        };
+    }
+
     private void loadNotes() {
+        loadNotes(null);
+    }
+
+    private void loadNotes(String searchQuery) {
         Dialog progressDialog = new DialogFactory(this)
                 .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
@@ -113,7 +168,9 @@ public final class NotesListActivity extends ActivityBase {
         newSingleThreadExecutor().execute(() -> {
             handler.post(progressDialog::show);
 
-            List<Note> notes = noteService.getAll();
+            List<Note> notes = searchQuery != null
+                    ? noteService.search(searchQuery)
+                    : noteService.getAll();
 
             notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
             fillNotesListView(notes);
@@ -127,13 +184,26 @@ public final class NotesListActivity extends ActivityBase {
         TextView missingNotesLabel = findViewById(R.id.missingNotesLabel);
 
         if (!notes.isEmpty()) {
-            missingNotesLabel.setVisibility(View.INVISIBLE);
+            runOnUiThread(() -> {
+                missingNotesLabel.setVisibility(View.INVISIBLE);
+
+                notesView.setEnabled(true);
+                notesView.setVisibility(View.VISIBLE);
+            });
+
             NotesListAdapter adapter = new NotesListAdapter(
                     getApplicationContext(),
                     R.layout.notes_list_item,
                     notes);
 
             runOnUiThread(() -> notesView.setAdapter(adapter));
+        } else {
+            runOnUiThread(() -> {
+                missingNotesLabel.setVisibility(View.VISIBLE);
+
+                notesView.setEnabled(false);
+                notesView.setVisibility(View.INVISIBLE);
+            });
         }
     }
 }
