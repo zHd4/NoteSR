@@ -28,6 +28,7 @@ import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
 
+@Deprecated(forRemoval = true)
 public final class SearchNotesActivity extends ActivityBase {
 
     private NoteService noteService;
