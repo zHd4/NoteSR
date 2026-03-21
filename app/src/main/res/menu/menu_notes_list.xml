@@ -24,5 +24,5 @@
         android:title="@string/change_access_code"/>
 
     <item android:id="@+id/generateNewKeyMenuItem"
-        android:title="@string/generate_new_key"/>
+        android:title="@string/regenerate_or_import_key"/>
 </menu>
