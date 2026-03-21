@@ -67,11 +67,6 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.note.SearchNotesActivity"
-            android:exported="false"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".activity.file.FilesListActivity"
             android:exported="false"
             android:screenOrientation="locked"
