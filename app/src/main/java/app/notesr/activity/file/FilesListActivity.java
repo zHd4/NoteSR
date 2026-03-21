@@ -132,8 +132,11 @@ public final class FilesListActivity extends ActivityBase {
         ActionBar actionBar = getSupportActionBar();
         requireNonNull(actionBar);
 
+        String title = getString(R.string.files_list_action_bar_title_format,
+                String.valueOf(filesCount), note.getName());
+
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("(" + filesCount + ") Files of: " + note.getName());
+        actionBar.setTitle(title);
     }
 
     private void configureButtons() {

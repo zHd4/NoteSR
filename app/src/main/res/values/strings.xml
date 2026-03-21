@@ -101,4 +101,5 @@
     <string name="continue_text">Continue</string>
     <string name="failed_to_load_the_file">Failed to load the file</string>
     <string name="migrating_your_data_please_wait">Migrating your data,\nplease wait…</string>
+    <string name="files_list_action_bar_title_format">(%s) Files of: %s</string>
 </resources>
