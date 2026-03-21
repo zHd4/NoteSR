@@ -173,7 +173,7 @@ public final class NotesListActivity extends ActivityBase {
                     : noteService.getAll();
 
             notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
-            fillNotesListView(notes);
+            runOnUiThread(() -> fillNotesListView(notes));
 
             progressDialog.dismiss();
         });
@@ -184,26 +184,22 @@ public final class NotesListActivity extends ActivityBase {
         TextView missingNotesLabel = findViewById(R.id.missingNotesLabel);
 
         if (!notes.isEmpty()) {
-            runOnUiThread(() -> {
-                missingNotesLabel.setVisibility(View.INVISIBLE);
+            missingNotesLabel.setVisibility(View.INVISIBLE);
 
-                notesView.setEnabled(true);
-                notesView.setVisibility(View.VISIBLE);
-            });
+            notesView.setEnabled(true);
+            notesView.setVisibility(View.VISIBLE);
 
             NotesListAdapter adapter = new NotesListAdapter(
                     getApplicationContext(),
                     R.layout.notes_list_item,
                     notes);
 
-            runOnUiThread(() -> notesView.setAdapter(adapter));
+            notesView.setAdapter(adapter);
         } else {
-            runOnUiThread(() -> {
-                missingNotesLabel.setVisibility(View.VISIBLE);
+            missingNotesLabel.setVisibility(View.VISIBLE);
 
-                notesView.setEnabled(false);
-                notesView.setVisibility(View.INVISIBLE);
-            });
+            notesView.setEnabled(false);
+            notesView.setVisibility(View.INVISIBLE);
         }
     }
 }
