@@ -39,7 +39,8 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
                 {"test_image.jpeg"},
                 {"test_image.jpg"},
                 {"test_image.png"},
-                {"test_image.webp"}
+                {"test_image.webp"},
+                {"test_image.bmp"}
         });
     }
 
