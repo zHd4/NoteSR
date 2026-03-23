@@ -10,6 +10,7 @@ import static java.util.UUID.randomUUID;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.exception.DecryptionFailedException;
@@ -41,6 +42,8 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public final class FileService {
+
+    private static final String TAG = FileService.class.getCanonicalName();
     public static final String BLOBS_DIR_NAME = "fblobs";
     private static final int FILE_BLOB_MAX_SIZE = 500000;
 
@@ -351,7 +354,6 @@ public final class FileService {
             fileInfo.setThumbnail(getFileThumbnail(uri, mimeType));
         }
 
-
         return fileInfo;
     }
 
@@ -389,8 +391,9 @@ public final class FileService {
             }
 
             return requireNonNull(creator).getThumbnail(uri);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (UnsupportedOperationException | IOException e) {
+            Log.e(TAG, "Failed to get thumbnail for file", e);
+            return null;
         }
     }
 }
