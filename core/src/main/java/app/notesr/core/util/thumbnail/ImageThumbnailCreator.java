@@ -11,12 +11,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Map;
 
 import app.notesr.core.util.FileExifDataResolver;
@@ -25,6 +27,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class ImageThumbnailCreator implements ThumbnailCreator {
+
+    private static final String TAG = ImageThumbnailCreator.class.getCanonicalName();
+
     public static final int WIDTH = 100;
     public static final int HEIGHT = 100;
     public static final int QUALITY = 80;
@@ -43,20 +48,43 @@ public final class ImageThumbnailCreator implements ThumbnailCreator {
     public byte[] getThumbnail(Uri uri) throws IOException {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(getInputStream(uri), null, options);
+
+        try (InputStream inputStream = getInputStream(uri)) {
+            if (inputStream == null) {
+                throw new IOException("Could not open input stream for URI: " + uri);
+            }
+
+            BitmapFactory.decodeStream(inputStream, null, options);
+        }
 
         int scaleFactor = Math.min(options.outWidth / WIDTH, options.outHeight / HEIGHT);
 
         options.inJustDecodeBounds = false;
-        options.inSampleSize = scaleFactor;
+        options.inSampleSize = Math.max(1, scaleFactor);
 
-        Bitmap bitmap = BitmapFactory.decodeStream(getInputStream(uri), null, options);
-        requireNonNull(bitmap, "Bitmap is null");
+        Bitmap bitmap;
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(getImageCompressFormat(uri), QUALITY, outputStream);
+        try (InputStream inputStream = getInputStream(uri)) {
+            if (inputStream == null) {
+                throw new IOException("Could not open input stream for URI: " + uri);
+            }
 
-        return outputStream.toByteArray();
+            bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+        }
+
+        if (bitmap == null) {
+            throw new IOException("Failed to decode bitmap from URI: " + uri);
+        }
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            bitmap.compress(getImageCompressFormat(uri), QUALITY, outputStream);
+            return outputStream.toByteArray();
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Unsupported image format", e);
+            throw new UnsupportedOperationException("Unsupported image format", e);
+        } finally {
+            bitmap.recycle();
+        }
     }
 
     private InputStream getInputStream(Uri uri) throws FileNotFoundException {
@@ -70,10 +98,16 @@ public final class ImageThumbnailCreator implements ThumbnailCreator {
 
         String extension = filesUtils.getFileExtension(filename);
 
-        if (!COMPRESS_FORMAT_MAP.containsKey(extension)) {
-            throw new IllegalArgumentException("Unsupported image format");
+        if (extension == null) {
+            throw new IllegalArgumentException("Unsupported image format: extension is null");
         }
 
-        return COMPRESS_FORMAT_MAP.get(extension);
+        String lowerExtension = extension.toLowerCase(Locale.ROOT);
+
+        if (!COMPRESS_FORMAT_MAP.containsKey(lowerExtension)) {
+            throw new IllegalArgumentException("Unsupported image format: " + extension);
+        }
+
+        return COMPRESS_FORMAT_MAP.get(lowerExtension);
     }
 }
