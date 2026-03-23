@@ -23,8 +23,7 @@ public final class DialogFactory {
     }
 
     public AlertDialog getThemedProgressDialog(@LayoutRes int layoutRes) {
-        return new AlertDialog.Builder(activity, R.style.AlertDialogTheme)
-                .setView(layoutRes)
+        return themedAlertDialogBuilder(layoutRes)
                 .setCancelable(false)
                 .create();
     }
