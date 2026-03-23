@@ -60,10 +60,10 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
         Size imageSize = getImageSize(imageFile);
         Size thumbnailSize = getImageSize(thumbnailFile);
 
-        int scaleFactor = Math.min(
+        int scaleFactor = Math.max(1, Math.min(
                 imageSize.getWidth() / ImageThumbnailCreator.WIDTH,
                 imageSize.getHeight() / ImageThumbnailCreator.HEIGHT
-        );
+        ));
 
         Size expectedSize = new Size(
                 imageSize.getWidth() / scaleFactor,
@@ -72,6 +72,6 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
 
         Size actualSize = new Size(thumbnailSize.getWidth(), thumbnailSize.getHeight());
 
-        assertEquals("Unexpected thumbnail size", expectedSize, actualSize);
+        assertEquals("Unexpected thumbnail size for " + fixtureFileName, expectedSize, actualSize);
     }
 }
