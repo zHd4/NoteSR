@@ -17,13 +17,12 @@ import lombok.RequiredArgsConstructor;
 public final class DialogFactory {
     private final Activity activity;
 
-    public AlertDialog.Builder themedAlertDialogBuilder(@LayoutRes int layoutRes) {
-        return new AlertDialog.Builder(activity, R.style.AlertDialogTheme)
-                .setView(layoutRes);
+    public AlertDialog.Builder getThemedAlertDialogBuilder(@LayoutRes int layoutRes) {
+        return new AlertDialog.Builder(activity, R.style.AlertDialogTheme).setView(layoutRes);
     }
 
     public AlertDialog getThemedProgressDialog(@LayoutRes int layoutRes) {
-        return themedAlertDialogBuilder(layoutRes)
+        return getThemedAlertDialogBuilder(layoutRes)
                 .setCancelable(false)
                 .create();
     }

@@ -207,7 +207,7 @@ public class FileViewerActivityBase extends ActivityBase {
             int titleRes,
             int confirmRes,
             DialogInterface.OnClickListener onConfirm) {
-        dialogFactory.themedAlertDialogBuilder(layout)
+        dialogFactory.getThemedAlertDialogBuilder(layout)
                 .setTitle(titleRes)
                 .setPositiveButton(confirmRes, onConfirm)
                 .create()
@@ -215,7 +215,7 @@ public class FileViewerActivityBase extends ActivityBase {
     }
 
     private void showOverwriteDialog(Runnable onOverwrite) {
-        dialogFactory.themedAlertDialogBuilder(R.layout.dialog_file_already_exists)
+        dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_file_already_exists)
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.overwrite, (d, w) -> onOverwrite.run())
                 .create()

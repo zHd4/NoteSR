@@ -246,7 +246,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
     private void deleteNoteOnClick() {
         DialogInterface.OnClickListener buttonHandler = deleteNoteDialogOnClick();
-        dialogFactory.themedAlertDialogBuilder(R.layout.dialog_action_cannot_be_undo)
+        dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_action_cannot_be_undo)
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.delete, buttonHandler)
                 .setNegativeButton(R.string.no, buttonHandler)

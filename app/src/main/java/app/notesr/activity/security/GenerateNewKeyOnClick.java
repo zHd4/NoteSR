@@ -27,7 +27,7 @@ public final class GenerateNewKeyOnClick implements Consumer<ActivityBase> {
     public void accept(ActivityBase activity) {
         DialogInterface.OnClickListener buttonHandler = regenerateKeyDialogOnClick(activity);
         new DialogFactory(activity)
-                .themedAlertDialogBuilder(R.layout.dialog_re_encryption_warning)
+                .getThemedAlertDialogBuilder(R.layout.dialog_re_encryption_warning)
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.yes, buttonHandler)
                 .setNegativeButton(R.string.no, buttonHandler)
