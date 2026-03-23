@@ -6,9 +6,11 @@
 package app.notesr.core.util.thumbnail;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Size;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -40,12 +42,18 @@ public class ImageThumbnailCreatorTest extends ThumbnailCreatorTestBase {
                 {"test_image.jpg"},
                 {"test_image.png"},
                 {"test_image.webp"},
-                {"test_image.bmp"}
+                {"test_image.bmp"},
+                {"test_image.avif"}
         });
     }
 
     @Test
     public void testGetThumbnail() throws IOException {
+        if (fixtureFileName.endsWith(".avif")) {
+            assumeTrue("AVIF decoding requires Android 12 (API 31)",
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
+        }
+
         File imageFile = getFixture(fixtureFileName);
         File thumbnailFile = File.createTempFile("thumbnail", "");
 
