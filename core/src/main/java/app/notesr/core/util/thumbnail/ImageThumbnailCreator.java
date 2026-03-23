@@ -42,7 +42,8 @@ public final class ImageThumbnailCreator implements ThumbnailCreator {
             "jpeg", Bitmap.CompressFormat.JPEG,
             "png", Bitmap.CompressFormat.PNG,
             "webp", Bitmap.CompressFormat.WEBP,
-            "bmp", Bitmap.CompressFormat.PNG
+            "bmp", Bitmap.CompressFormat.PNG,
+            "avif", Bitmap.CompressFormat.JPEG
     );
 
     @Override
