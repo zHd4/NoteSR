@@ -45,9 +45,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public final class NotesListActivity extends ActivityBase {
+
+    private final int SEARCH_DELAY = 300;
     private final Map<Integer, Consumer<ActivityBase>> menuItemsMap = new HashMap<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
-    private String currentSearchQuery;
+    private final Handler searchHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,15 +126,12 @@ public final class NotesListActivity extends ActivityBase {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (currentSearchQuery != null && (newText == null || newText.isEmpty())) {
-                    currentSearchQuery = null;
+                searchHandler.postDelayed(() -> {
+                    String query = newText == null || newText.isEmpty() ? null : newText;
+                    loadNotes(query);
+                }, SEARCH_DELAY);
 
-                    loadNotes();
-                    return true;
-                }
-
-                currentSearchQuery = newText;
-                return false;
+                return true;
             }
         };
     }
