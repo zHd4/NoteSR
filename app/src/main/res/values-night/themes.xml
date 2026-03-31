@@ -14,4 +14,11 @@
         <item name="android:textColorPrimary">@color/text_color</item>
         <item name="android:textColorSecondary">@color/text_color_secondary</item>
     </style>
+
+    <style name="Theme.NoteSR" parent="Base.Theme.NoteSR" />
+
+    <style name="Theme.NoteSR.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

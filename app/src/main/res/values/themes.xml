@@ -16,4 +16,9 @@
     </style>
 
     <style name="Theme.NoteSR" parent="Base.Theme.NoteSR" />
+
+    <style name="Theme.NoteSR.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>
