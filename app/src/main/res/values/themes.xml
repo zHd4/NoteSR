@@ -1,8 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.NoteSR" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/button_background</item>
+        <item name="colorOnPrimary">@color/text_color</item>
+
+        <item name="colorSecondary">@color/light_button_background</item>
+        <item name="colorOnSecondary">@color/text_color</item>
+
+        <item name="android:statusBarColor">@color/activity_background</item>
+
+        <item name="android:windowBackground">@color/activity_background</item>
+
+        <item name="android:textColorPrimary">@color/text_color</item>
+        <item name="android:textColorSecondary">@color/text_color_secondary</item>
     </style>
 
     <style name="Theme.NoteSR" parent="Base.Theme.NoteSR" />
