@@ -152,6 +152,7 @@ public final class NotesListActivity extends ActivityBase {
                 SearchView searchView = (SearchView) view;
                 searchView.setQuery("", false);
                 loadNotes();
+                invalidateOptionsMenu();
             }
         };
     }
