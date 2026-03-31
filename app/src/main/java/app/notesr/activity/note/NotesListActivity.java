@@ -145,6 +145,10 @@ public final class NotesListActivity extends ActivityBase {
 
             @Override
             public void onViewDetachedFromWindow(@NonNull View view) {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+
                 SearchView searchView = (SearchView) view;
                 searchView.setQuery("", false);
                 loadNotes();
