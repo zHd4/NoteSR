@@ -51,6 +51,10 @@ public final class ExportService {
     private final FileService fileService;
 
     private final ExportStatusHolder statusHolder;
+    
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     private File tempArchive;
     private int exportedEntities;
@@ -110,7 +114,7 @@ public final class ExportService {
         for (Note note : noteService.getAll()) {
             checkCancelled();
 
-            String json = getObjectMapper().writeValueAsString(note);
+            String json = objectMapper.writeValueAsString(note);
             byte[] encryptedJson = encryptor.encrypt(json);
 
             zipper.addNote(note.getId(), encryptedJson);
@@ -124,7 +128,7 @@ public final class ExportService {
         for (FileInfo fileInfo : fileService.getFilesInfo()) {
             checkCancelled();
 
-            String json = getObjectMapper().writeValueAsString(fileInfo);
+            String json = objectMapper.writeValueAsString(fileInfo);
             byte[] encryptedJson = encryptor.encrypt(json);
 
             zipper.addFileInfo(fileInfo.getId(), encryptedJson);
@@ -138,7 +142,7 @@ public final class ExportService {
         for (FileBlobInfo blobInfo : fileService.getFilesBlobInfo()) {
             checkCancelled();
 
-            String blobInfoJson = getObjectMapper().writeValueAsString(blobInfo);
+            String blobInfoJson = objectMapper.writeValueAsString(blobInfo);
             byte[] blobData = fileService.getBlobData(blobInfo.getId());
 
             byte[] encryptedBlobInfo = encryptor.encrypt(blobInfoJson);
@@ -210,14 +214,5 @@ public final class ExportService {
         long total = notesCount + filesCount + dataBlocksCount;
 
         return Math.round((exportedEntities * 99.0f) / total);
-    }
-
-    private ObjectMapper getObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        return mapper;
     }
 }
