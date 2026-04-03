@@ -98,6 +98,7 @@ public final class NotesListActivity extends ActivityBase {
         SearchView searchView = (SearchView) menu.findItem(R.id.searchNotesButton).getActionView();
         requireNonNull(searchView, "SearchView is null");
 
+        searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnQueryTextListener(getSearchQueryListener());
         searchView.addOnAttachStateChangeListener(getSearchViewAttachStateChangeListener());
 
