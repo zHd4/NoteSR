@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,7 +50,9 @@ public class FileViewerActivityBase extends ActivityBase {
     protected FileService fileService;
     protected FileIOHelper fileIOHelper;
     protected DialogFactory dialogFactory;
-    protected File saveDir;
+
+    protected File saveDir = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
