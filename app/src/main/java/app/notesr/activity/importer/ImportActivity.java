@@ -45,6 +45,7 @@ public final class ImportActivity extends ActivityBase {
     private TextView selectedFileTextView;
     private TextView statusTextView;
     private TextView infoTextView;
+    private TextView cannotBeCanceledLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +100,11 @@ public final class ImportActivity extends ActivityBase {
         selectedFileTextView = findViewById(R.id.selectedFileTextView);
         selectFileButton = findViewById(R.id.selectFileToImportButton);
         infoTextView = findViewById(R.id.importInfoText);
+        cannotBeCanceledLabel = findViewById(R.id.importCannotBeCanceledLabel);
 
         if (importRunning) {
             infoTextView.setVisibility(View.INVISIBLE);
+            cannotBeCanceledLabel.setVisibility(View.INVISIBLE);
 
             selectFileButton.setVisibility(View.INVISIBLE);
             selectFileButton.setEnabled(false);
@@ -140,8 +143,6 @@ public final class ImportActivity extends ActivityBase {
                             getApplicationContext(), new FilesUtils(), selectedFileUri);
                     String filename = resolver.getFileName();
 
-                    infoTextView.setVisibility(View.INVISIBLE);
-
                     selectedFileTextView.setVisibility(View.VISIBLE);
                     selectedFileTextView.setText(filename);
 
@@ -173,6 +174,9 @@ public final class ImportActivity extends ActivityBase {
 
             selectFileButton.setEnabled(false);
             selectFileButton.setVisibility(View.INVISIBLE);
+
+            infoTextView.setVisibility(View.INVISIBLE);
+            cannotBeCanceledLabel.setVisibility(View.INVISIBLE);
 
             selectedFileTextView.setVisibility(View.INVISIBLE);
 

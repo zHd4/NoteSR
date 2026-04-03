@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/select_the_data_file"
+        android:text="@string/select_backup_file"
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +64,9 @@
         android:id="@+id/startImportButton"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:layout_margin="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/button"
         android:enabled="false"
         android:text="@string/start"
@@ -73,16 +75,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.515"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.926" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/selectedFileTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="6dp"
         android:text="example.notesr.bak"
         android:textAlignment="center"
         android:textSize="14sp"
@@ -94,13 +94,12 @@
         android:id="@+id/importCannotBeCanceledLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="@string/import_cannot_be_canceled"
         android:textColor="@android:color/holo_red_light"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.973" />
+        app:layout_constraintTop_toBottomOf="@+id/importInfoText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
