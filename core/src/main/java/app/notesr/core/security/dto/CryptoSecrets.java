@@ -23,6 +23,10 @@ public final class CryptoSecrets {
     }
 
     public static CryptoSecrets from(CryptoSecrets secrets) {
+        if (secrets == null) {
+            return null;
+        }
+
         return new CryptoSecrets(Arrays.copyOf(secrets.key, secrets.key.length),
                 Arrays.copyOf(secrets.password, secrets.password.length));
     }
