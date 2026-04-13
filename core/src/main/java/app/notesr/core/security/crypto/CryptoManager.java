@@ -21,6 +21,7 @@ import java.util.Arrays;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.core.security.exception.SessionExpiredException;
 import app.notesr.core.util.FilesUtilsAdapter;
 import app.notesr.core.util.WiperAdapter;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +75,14 @@ public final class CryptoManager {
     }
 
     public CryptoSecrets getSecrets() {
-        return CryptoSecrets.from(secrets);
+        CryptoSecrets secretsCopy = CryptoSecrets.from(secrets);
+
+        if (secretsCopy == null) {
+            throw new SessionExpiredException("Crypto secrets are not configured"
+                    + " or session has expired");
+        }
+
+        return secretsCopy;
     }
 
     public void setSecrets(Context context, CryptoSecrets cryptoSecrets)
