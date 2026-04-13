@@ -64,6 +64,11 @@ public final class OpenNoteActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isFinishing()) {
+            return;
+        }
+
         setContentView(R.layout.activity_open_note);
         applyInsets(findViewById(R.id.main));
 

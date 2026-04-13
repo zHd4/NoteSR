@@ -52,6 +52,11 @@ public final class ExportActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isFinishing()) {
+            return;
+        }
+
         setContentView(R.layout.activity_export);
         applyInsets(findViewById(R.id.main));
 

@@ -58,6 +58,11 @@ public final class FilesListActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isFinishing()) {
+            return;
+        }
+
         setContentView(R.layout.activity_file_list);
         applyInsets(findViewById(R.id.main));
 

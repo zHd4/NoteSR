@@ -50,6 +50,11 @@ public final class ImportActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isFinishing()) {
+            return;
+        }
+
         setContentView(R.layout.activity_import);
         applyInsets(findViewById(R.id.main));
 

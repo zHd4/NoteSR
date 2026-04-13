@@ -58,6 +58,10 @@ public class FileViewerActivityBase extends ActivityBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (isFinishing()) {
+            return;
+        }
+
         Context context = getApplicationContext();
         CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));

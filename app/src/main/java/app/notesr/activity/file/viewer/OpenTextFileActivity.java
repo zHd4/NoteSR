@@ -22,6 +22,11 @@ public final class OpenTextFileActivity extends FileViewerActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isFinishing()) {
+            return;
+        }
+
         setContentView(R.layout.activity_open_text_file);
         applyInsets(findViewById(R.id.main));
 

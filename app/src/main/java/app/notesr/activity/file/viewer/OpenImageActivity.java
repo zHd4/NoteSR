@@ -53,6 +53,11 @@ public final class OpenImageActivity extends FileViewerActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isFinishing()) {
+            return;
+        }
+
         setContentView(R.layout.activity_open_image);
         applyInsets(findViewById(R.id.main));
 

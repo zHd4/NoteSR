@@ -13,6 +13,11 @@ public final class OpenUnknownFileActivity extends FileViewerActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isFinishing()) {
+            return;
+        }
+
         setContentView(R.layout.activity_open_unknown_file);
         applyInsets(findViewById(R.id.main));
     }
