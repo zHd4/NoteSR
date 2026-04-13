@@ -44,6 +44,11 @@ public final class MainActivity extends ActivityBase {
         finish();
     }
 
+    @Override
+    protected boolean requiresSession() {
+        return false;
+    }
+
     private List<Supplier<Intent>> getIntentSuppliers(App context, CryptoManager cryptoManager) {
         return List.of(
                 () -> cryptoManager.isBlocked(getApplicationContext())

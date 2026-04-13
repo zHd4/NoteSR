@@ -21,7 +21,6 @@ import app.notesr.service.security.SecretsUpdateAndroidService;
 
 public final class ReEncryptionActivity extends ActivityBase {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +35,11 @@ public final class ReEncryptionActivity extends ActivityBase {
                 new IntentFilter(SecretsUpdateAndroidService.BROADCAST_ACTION));
 
         startReEncryptionService();
+    }
+
+    @Override
+    protected boolean requiresSession() {
+        return false;
     }
 
     private void startReEncryptionService() {

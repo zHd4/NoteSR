@@ -58,6 +58,11 @@ public final class KeyRecoveryActivity extends ActivityBase {
         applyButton.setOnClickListener(applyButtonOnClick(hexKeyField));
     }
 
+    @Override
+    protected boolean requiresSession() {
+        return false;
+    }
+
     private View.OnClickListener applyButtonOnClick(EditText hexKeyField) {
         return view -> {
             Editable hexKeyEditable = hexKeyField.getText();

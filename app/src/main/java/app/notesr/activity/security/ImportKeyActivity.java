@@ -70,6 +70,11 @@ public final class ImportKeyActivity extends ActivityBase {
         return true;
     }
 
+    @Override
+    protected boolean requiresSession() {
+        return false;
+    }
+
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
             Editable hexKeyEditable = keyField.getText();

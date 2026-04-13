@@ -37,6 +37,11 @@ public final class MigrationActivity extends ActivityBase {
         startMigrationService();
     }
 
+    @Override
+    protected boolean requiresSession() {
+        return false;
+    }
+
     private void startMigrationService() {
         if (!App.getContext().isServiceRunning(AppMigrationAndroidService.class)) {
             Intent serviceIntent = new Intent(getApplicationContext(),

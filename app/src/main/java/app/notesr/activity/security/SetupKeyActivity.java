@@ -87,6 +87,11 @@ public final class SetupKeyActivity extends ActivityBase {
         nextButton.setOnClickListener(nextButtonOnClick());
     }
 
+    @Override
+    protected boolean requiresSession() {
+        return false;
+    }
+
     private void adaptKeyView() {
         TextView keyView = findViewById(R.id.aesKeyHex);
 

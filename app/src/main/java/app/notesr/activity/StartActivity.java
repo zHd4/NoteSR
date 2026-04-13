@@ -40,6 +40,11 @@ public final class StartActivity extends ActivityBase {
         placeBannerFront();
     }
 
+    @Override
+    protected boolean requiresSession() {
+        return false;
+    }
+
     private void placeBannerFront() {
         ConstraintLayout layout = findViewById(R.id.bannerFrontLayout);
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
