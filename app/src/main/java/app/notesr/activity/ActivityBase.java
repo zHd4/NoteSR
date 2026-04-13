@@ -5,6 +5,7 @@
 
 package app.notesr.activity;
 
+import android.content.Intent;
 import android.graphics.Insets;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -16,7 +17,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
+
 public class ActivityBase extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +29,10 @@ public class ActivityBase extends AppCompatActivity {
 
         int windowFlag = WindowManager.LayoutParams.FLAG_SECURE;
         getWindow().setFlags(windowFlag, windowFlag);
+
+        if (requiresSession() && !isSessionActive()) {
+            restartApp();
+        }
     }
 
     @Override
@@ -42,5 +51,21 @@ public class ActivityBase extends AppCompatActivity {
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return insets;
         });
+    }
+
+    protected boolean requiresSession() {
+        return true;
+    }
+
+    private boolean isSessionActive() {
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        return cryptoManager.isConfigured();
+    }
+
+    private void restartApp() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }
