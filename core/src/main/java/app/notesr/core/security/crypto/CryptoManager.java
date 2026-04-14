@@ -250,7 +250,7 @@ public final class CryptoManager {
             }
 
             filesUtils.writeFileBytes(encryptedKeyFile, encryptedKeyFileBytes);
-            setKeyHash(toSha256String(cryptoSecrets.getKey()), context);
+            setKeyHash(toSha256String(cryptoSecrets.getKey()));
             removeOldKeyHashFileIfExists(context);
         } catch (Exception e) {
             throw new EncryptionFailedException(e);
@@ -312,7 +312,7 @@ public final class CryptoManager {
      *
      * @param keyHash The key hash string.
      */
-    private void setKeyHash(String keyHash, Context context) throws IOException {
+    private void setKeyHash(String keyHash) {
         prefs.edit().putString(KEY_HASH_PREF, keyHash).apply();
     }
 
