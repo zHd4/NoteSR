@@ -42,7 +42,10 @@ public final class Wiper implements WiperAdapter {
     }
 
     public void wipeFile(File file) throws IOException {
-        Log.d(TAG, "Wiping file " + file.getAbsolutePath());
+        if (!file.exists()) {
+            Log.d(TAG, "File " + file.getAbsolutePath() + " does not exist");
+            return;
+        }
 
         for (int i = 0; i < LOOPS_COUNT; i++) {
             wipeFileData(file);
