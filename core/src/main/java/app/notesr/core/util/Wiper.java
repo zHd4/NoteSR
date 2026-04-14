@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public final class Wiper implements WiperAdapter {
+
     private static final String TAG = Wiper.class.getCanonicalName();
+    private static final int BUFFER_SIZE = 64 * 1024;
     private static final int LOOPS_COUNT = 6;
 
     public void wipeDir(File dir) throws IOException {
@@ -29,7 +31,6 @@ public final class Wiper implements WiperAdapter {
         for (File file : files) {
             if (file.isDirectory()) {
                 wipeDir(file);
-                wipeFile(file);
             } else {
                 wipeFile(file);
             }
@@ -49,29 +50,25 @@ public final class Wiper implements WiperAdapter {
     private static void wipeFileData(File file) throws IOException {
         long fileSize = file.length();
 
-        try (FileOutputStream stream = new FileOutputStream(file)) {
-            try {
-                stream.write(new byte[(int) fileSize]);
-            } catch (OutOfMemoryError e) {
-                long bytesWrite = 0;
-
-                do {
-                    try {
-                        byte[] empty = new byte[(int) (getAvailableMemory() / 2)];
-
-                        stream.write(empty);
-                        bytesWrite += empty.length;
-                    } catch (OutOfMemoryError error) {
-                        Log.e(TAG, "Failed to allocate memory for wipe", error);
-                    }
-
-                } while (bytesWrite < fileSize);
-            }
+        if (fileSize <= 0) {
+            return;
         }
-    }
 
-    private static long getAvailableMemory() {
-        Runtime runtime = Runtime.getRuntime();
-        return runtime.maxMemory() - (runtime.totalMemory() - runtime.freeMemory());
+        try (FileOutputStream stream = new FileOutputStream(file)) {
+            byte[] buffer = new byte[(int) Math.min(fileSize, BUFFER_SIZE)];
+            long bytesWritten = 0;
+
+            Log.d(TAG, "Buffer size for " + file.getAbsolutePath() + " is " + buffer.length
+                    + ", bytes written: " + bytesWritten);
+
+
+            while (bytesWritten < fileSize) {
+                int toWrite = (int) Math.min(buffer.length, fileSize - bytesWritten);
+                stream.write(buffer, 0, toWrite);
+                bytesWritten += toWrite;
+            }
+
+            stream.getFD().sync();
+        }
     }
 }
