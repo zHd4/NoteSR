@@ -156,8 +156,8 @@ public final class CryptoManager {
             }
 
             filesUtils.writeFileBytes(encryptedKeyFile, encryptedKeyFileBytes);
-
             setKeyHash(toSha256String(cryptoSecrets.getKey()), context);
+            removeOldKeyHashFileIfExists(context);
         } catch (Exception e) {
             throw new EncryptionFailedException(e);
         }
@@ -198,7 +198,11 @@ public final class CryptoManager {
 
     private void setKeyHash(String keyHash, Context context) throws IOException {
         prefs.edit().putString(KEY_HASH_PREF, keyHash).apply();
+    }
+
+    private void removeOldKeyHashFileIfExists(Context context) throws IOException {
         File keyHashFile = filesUtils.getInternalFile(context, KEY_HASH_FILENAME);
+
         if (keyHashFile.exists()) {
             wiper.wipeFile(keyHashFile);
         }
