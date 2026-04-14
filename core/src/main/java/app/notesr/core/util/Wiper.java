@@ -28,6 +28,8 @@ public final class Wiper implements WiperAdapter {
             throw new IOException("Cannot list directory " + dir.getAbsolutePath());
         }
 
+        Log.d(TAG, "Wiping directory " + dir.getAbsolutePath());
+
         for (File file : files) {
             if (file.isDirectory()) {
                 wipeDir(file);
@@ -40,6 +42,8 @@ public final class Wiper implements WiperAdapter {
     }
 
     public void wipeFile(File file) throws IOException {
+        Log.d(TAG, "Wiping file " + file.getAbsolutePath());
+
         for (int i = 0; i < LOOPS_COUNT; i++) {
             wipeFileData(file);
         }
@@ -51,8 +55,11 @@ public final class Wiper implements WiperAdapter {
         long fileSize = file.length();
 
         if (fileSize <= 0) {
+            Log.d(TAG, "File " + file.getAbsolutePath() + "  is empty");
             return;
         }
+
+        Log.d(TAG, "Size of " + file.getAbsolutePath() + " is " + fileSize);
 
         try (FileOutputStream stream = new FileOutputStream(file)) {
             byte[] buffer = new byte[(int) Math.min(fileSize, BUFFER_SIZE)];
