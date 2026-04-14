@@ -22,8 +22,9 @@ import java.nio.file.Files;
 import java.util.Random;
 
 public class WiperTest {
-    private static final int MIN_FILE_SIZE = 1024;
-    private static final int MAX_FILE_SIZE = 1024 * 10;
+
+    private static final int SMALL_FILE_SIZE = 10 * 1024;
+    private static final int LARGE_FILE_SIZE = 128 * 1024; // Larger than Wiper.BUFFER_SIZE
     private static final Random RANDOM = new Random();
 
     private static Context context;
@@ -40,7 +41,7 @@ public class WiperTest {
         File cacheDir = context.getCacheDir();
         File testFile = File.createTempFile("test", "file", cacheDir);
 
-        byte[] testData = getRandomFileData();
+        byte[] testData = getRandomFileData(SMALL_FILE_SIZE);
         Files.write(testFile.toPath(), testData);
 
         wiper.wipeFile(testFile);
@@ -49,28 +50,49 @@ public class WiperTest {
     }
 
     @Test
-    public void testWipeDir() throws IOException {
+    public void testWipeEmptyFile() throws IOException {
         File cacheDir = context.getCacheDir();
-        File testDir = new File(cacheDir, randomUUID().toString());
+        File testFile = File.createTempFile("test_empty", "file", cacheDir);
 
-        boolean isDirCreated = testDir.mkdir();
-        assertTrue("Cannot create directory " + testDir.getAbsolutePath(), isDirCreated);
+        wiper.wipeFile(testFile);
 
-        File testFile = File.createTempFile("test", "file", testDir);
-
-        byte[] testData = getRandomFileData();
-        Files.write(testFile.toPath(), testData);
-
-        wiper.wipeDir(testDir);
-
-        assertFalse(testDir.getAbsolutePath() + " must be deleted", testDir.exists());
-        assertFalse(testFile.getAbsolutePath() + " must be deleted", testFile.exists());
+        assertFalse("Empty file must be deleted", testFile.exists());
     }
 
-    private byte[] getRandomFileData() {
-        int size = RANDOM.nextInt(MAX_FILE_SIZE - MIN_FILE_SIZE + 1) + MIN_FILE_SIZE;
-        byte[] data = new byte[size];
+    @Test
+    public void testWipeLargeFile() throws IOException {
+        File cacheDir = context.getCacheDir();
+        File testFile = File.createTempFile("test_large", "file", cacheDir);
 
+        byte[] testData = getRandomFileData(LARGE_FILE_SIZE);
+        Files.write(testFile.toPath(), testData);
+
+        wiper.wipeFile(testFile);
+
+        assertFalse("Large file must be deleted", testFile.exists());
+    }
+
+    @Test
+    public void testWipeNestedDir() throws IOException {
+        File cacheDir = context.getCacheDir();
+        File parentDir = new File(cacheDir, "parent_" + randomUUID().toString());
+        File childDir = new File(parentDir, "child_" + randomUUID().toString());
+
+        assertTrue("Cannot create parent directory", parentDir.mkdir());
+        assertTrue("Cannot create child directory", childDir.mkdir());
+
+        File testFile = File.createTempFile("test", "file", childDir);
+        Files.write(testFile.toPath(), getRandomFileData(SMALL_FILE_SIZE));
+
+        wiper.wipeDir(parentDir);
+
+        assertFalse("Parent directory must be deleted", parentDir.exists());
+        assertFalse("Child directory must be deleted", childDir.exists());
+        assertFalse("Nested file must be deleted", testFile.exists());
+    }
+
+    private byte[] getRandomFileData(int size) {
+        byte[] data = new byte[size];
         RANDOM.nextBytes(data);
         return data;
     }
