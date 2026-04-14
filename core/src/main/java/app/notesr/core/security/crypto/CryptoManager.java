@@ -151,7 +151,10 @@ public final class CryptoManager {
 
             File encryptedKeyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
 
-            wiper.wipeFile(encryptedKeyFile);
+            if (encryptedKeyFile.exists()) {
+                wiper.wipeFile(encryptedKeyFile);
+            }
+
             filesUtils.writeFileBytes(encryptedKeyFile, encryptedKeyFileBytes);
 
             setKeyHash(toSha256String(cryptoSecrets.getKey()), context);
