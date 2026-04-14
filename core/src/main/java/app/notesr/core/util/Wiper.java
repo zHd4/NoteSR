@@ -42,9 +42,8 @@ public final class Wiper implements WiperAdapter {
     }
 
     public void wipeFile(File file) throws IOException {
-        if (!file.exists()) {
-            Log.d(TAG, "File " + file.getAbsolutePath() + " does not exist");
-            return;
+        if (file == null || !file.isFile()) {
+            throw new IllegalArgumentException("File is null or not a file");
         }
 
         for (int i = 0; i < LOOPS_COUNT; i++) {
@@ -58,7 +57,7 @@ public final class Wiper implements WiperAdapter {
         long fileSize = file.length();
 
         if (fileSize <= 0) {
-            Log.d(TAG, "File " + file.getAbsolutePath() + "  is empty");
+            Log.d(TAG, "File " + file.getAbsolutePath() + " is empty");
             return;
         }
 
