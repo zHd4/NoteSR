@@ -28,7 +28,7 @@ public class WiperTest {
     private static final Random RANDOM = new Random();
 
     private static Context context;
-    private static Wiper wiper;
+    private static WiperAdapter wiper;
 
     @BeforeClass
     public static void beforeAll() {
@@ -89,6 +89,52 @@ public class WiperTest {
         assertFalse("Parent directory must be deleted", parentDir.exists());
         assertFalse("Child directory must be deleted", childDir.exists());
         assertFalse("Nested file must be deleted", testFile.exists());
+    }
+
+    @Test
+    public void testWipeEmptyDir() throws IOException {
+        File cacheDir = context.getCacheDir();
+        File emptyDir = new File(cacheDir, "empty_dir_" + randomUUID().toString());
+        assertTrue("Cannot create empty directory", emptyDir.mkdir());
+
+        wiper.wipeDir(emptyDir);
+
+        assertFalse("Empty directory must be deleted", emptyDir.exists());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWipeFileNull() throws IOException {
+        wiper.wipeFile(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWipeFileWithDir() throws IOException {
+        wiper.wipeFile(context.getCacheDir());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWipeFileNotExists() throws IOException {
+        wiper.wipeFile(new File(context.getCacheDir(), randomUUID().toString()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWipeDirNull() throws IOException {
+        wiper.wipeDir(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWipeDirWithFile() throws IOException {
+        File testFile = File.createTempFile("test", "file", context.getCacheDir());
+        try {
+            wiper.wipeDir(testFile);
+        } finally {
+            testFile.delete();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWipeDirNotExists() throws IOException {
+        wiper.wipeDir(new File(context.getCacheDir(), randomUUID().toString()));
     }
 
     private byte[] getRandomFileData(int size) {
