@@ -13,10 +13,10 @@ import android.os.Bundle;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.activity.App;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
+import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.SecretsUpdateAndroidService;
 
 public final class ReEncryptionActivity extends ActivityBase {
@@ -43,7 +43,9 @@ public final class ReEncryptionActivity extends ActivityBase {
     }
 
     private void startReEncryptionService() {
-        if (!App.getContext().isServiceRunning(SecretsUpdateAndroidService.class)) {
+        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry.getInstance();
+
+        if (!serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)) {
             Intent serviceIntent = new Intent(getApplicationContext(),
                     SecretsUpdateAndroidService.class);
 
