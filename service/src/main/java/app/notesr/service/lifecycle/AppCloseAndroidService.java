@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.service.AndroidServiceRegistry;
 
 public class AppCloseAndroidService extends Service {
 
@@ -49,18 +50,39 @@ public class AppCloseAndroidService extends Service {
         }
 
         startForeground(startId, notification, type);
+        AndroidServiceRegistry.getInstance().register(getClass());
 
         return START_NOT_STICKY;
     }
 
     @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
-        cryptoManager.destroySecrets();
+    public void onDestroy() {
+        super.onDestroy();
+        AndroidServiceRegistry.getInstance().unregister(getClass());
+    }
 
-        stopForeground(true);
-        stopSelf();
-        super.onTaskRemoved(rootIntent);
-        System.exit(0);
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        if (getCurrentRunningServicesCount() == 0) {
+            CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+            cryptoManager.destroySecrets();
+
+            stopForeground(true);
+            stopSelf();
+
+            super.onTaskRemoved(rootIntent);
+            System.exit(0);
+        } else {
+            stopForeground(true);
+            stopSelf();
+        }
+    }
+
+    private long getCurrentRunningServicesCount() {
+        return AndroidServiceRegistry.getInstance()
+                .getSet()
+                .stream()
+                .filter(clazz -> clazz != getClass())
+                .count();
     }
 }
