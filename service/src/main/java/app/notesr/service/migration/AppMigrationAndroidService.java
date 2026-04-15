@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.core.R;
 import app.notesr.service.AndroidServiceRegistry;
 
 public class AppMigrationAndroidService extends Service implements Runnable {
@@ -91,10 +90,5 @@ public class AppMigrationAndroidService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
         stopForeground(true);
         stopSelf();
-    }
-
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
     }
 }
