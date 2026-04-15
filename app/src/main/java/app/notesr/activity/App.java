@@ -46,6 +46,7 @@ public final class App extends Application implements Application.ActivityLifecy
         }
     }
 
+    @Deprecated(forRemoval = true)
     public boolean isServiceRunning(Class<?> serviceClass) {
         String serviceName = serviceClass.getName();
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
