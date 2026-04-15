@@ -17,6 +17,7 @@ import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
 import app.notesr.activity.migration.MigrationActivity;
+import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.lifecycle.AppCloseAndroidService;
 import app.notesr.service.migration.AppMigrationAndroidService;
 import app.notesr.service.exporter.ExportAndroidService;
@@ -28,18 +29,25 @@ import app.notesr.activity.security.ReEncryptionActivity;
 import app.notesr.service.security.SecretsUpdateAndroidService;
 
 public final class MainActivity extends ActivityBase {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         applyInsets(findViewById(R.id.main));
 
+        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry.getInstance();
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
-        List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(App.getContext(),
-                cryptoManager);
+
+        List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(
+                App.getContext(),
+                cryptoManager,
+                serviceRegistry
+        );
+
         Intent defaultIntent = new Intent(getApplicationContext(), NotesListActivity.class);
 
-        startAppCloseService();
+        startAppCloseService(serviceRegistry);
         startActivity(new StartupIntentResolver(intentSuppliers, defaultIntent).resolve());
         finish();
     }
@@ -49,7 +57,10 @@ public final class MainActivity extends ActivityBase {
         return false;
     }
 
-    private List<Supplier<Intent>> getIntentSuppliers(App context, CryptoManager cryptoManager) {
+    private List<Supplier<Intent>> getIntentSuppliers(
+            App context,
+            CryptoManager cryptoManager,
+            AndroidServiceRegistry serviceRegistry) {
         return List.of(
                 () -> cryptoManager.isBlocked(getApplicationContext())
                         ? new Intent(context, KeyRecoveryActivity.class)
@@ -57,19 +68,19 @@ public final class MainActivity extends ActivityBase {
                 () -> !cryptoManager.isKeyExists(getApplicationContext())
                         ? new Intent(context, StartActivity.class)
                         : null,
-                () -> context.isServiceRunning(AppMigrationAndroidService.class)
+                () -> serviceRegistry.isServiceRunning(AppMigrationAndroidService.class)
                         ? new Intent(context, MigrationActivity.class)
                         : null,
 
-                () -> context.isServiceRunning(ExportAndroidService.class)
+                () -> serviceRegistry.isServiceRunning(ExportAndroidService.class)
                         ? new Intent(context, ExportActivity.class)
                         : null,
 
-                () -> context.isServiceRunning(ImportAndroidService.class)
+                () -> serviceRegistry.isServiceRunning(ImportAndroidService.class)
                         ? new Intent(context, ImportActivity.class)
                         : null,
 
-                () -> context.isServiceRunning(SecretsUpdateAndroidService.class)
+                () -> serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)
                         ? new Intent(context, ReEncryptionActivity.class)
                         : null,
 
@@ -87,8 +98,8 @@ public final class MainActivity extends ActivityBase {
         );
     }
 
-    private void startAppCloseService() {
-        if (!App.getContext().isServiceRunning(AppCloseAndroidService.class)) {
+    private void startAppCloseService(AndroidServiceRegistry serviceRegistry) {
+        if (!serviceRegistry.isServiceRunning(AppCloseAndroidService.class)) {
             Intent serviceIntent = new Intent(getApplicationContext(),
                     AppCloseAndroidService.class);
 
