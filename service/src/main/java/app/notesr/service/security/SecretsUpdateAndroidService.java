@@ -37,6 +37,8 @@ import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 
+import app.notesr.service.AndroidServiceRegistry;
+
 public final class SecretsUpdateAndroidService extends Service implements Runnable {
 
     private static final String TAG = SecretsUpdateAndroidService.class.getCanonicalName();
@@ -73,8 +75,15 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
         Thread thread = new Thread(this);
         thread.start();
         startForeground(startId, notification, type);
+        AndroidServiceRegistry.getInstance().register(getClass());
 
         return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        AndroidServiceRegistry.getInstance().unregister(getClass());
     }
 
     @Nullable
