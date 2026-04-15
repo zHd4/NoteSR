@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.R;
 import app.notesr.service.AndroidServiceRegistry;
 
 public class AppCloseAndroidService extends Service {
@@ -49,7 +50,7 @@ public class AppCloseAndroidService extends Service {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        startForeground(startId, notification, type);
+        startForeground(1005, notification, type);
         AndroidServiceRegistry.getInstance().register(getClass());
 
         return START_NOT_STICKY;

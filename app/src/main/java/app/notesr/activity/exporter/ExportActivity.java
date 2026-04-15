@@ -21,10 +21,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.activity.App;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.crypto.AesCryptor;
@@ -35,6 +35,7 @@ import app.notesr.core.util.FilesUtils;
 import app.notesr.core.util.VersionFetcher;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
+import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.exporter.ExportAndroidService;
 import app.notesr.service.exporter.ExportStatus;
 import app.notesr.service.file.FileService;
@@ -197,7 +198,8 @@ public final class ExportActivity extends ActivityBase {
     }
 
     private boolean isExportRunning() {
-        return App.getContext().isServiceRunning(ExportAndroidService.class);
+        return AndroidServiceRegistry.getInstance()
+                .isServiceRunning(ExportAndroidService.class);
     }
 
     private void cancelExport() {
