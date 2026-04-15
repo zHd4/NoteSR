@@ -18,16 +18,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import app.notesr.activity.App;
+
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
+import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.importer.ImportAndroidService;
 import app.notesr.service.importer.ImportStatus;
 import app.notesr.core.util.FileExifDataResolver;
@@ -236,6 +238,7 @@ public final class ImportActivity extends ActivityBase {
     }
 
     private boolean isImportRunning() {
-        return App.getContext().isServiceRunning(ImportAndroidService.class);
+        return AndroidServiceRegistry.getInstance()
+                .isServiceRunning(ImportAndroidService.class);
     }
 }
