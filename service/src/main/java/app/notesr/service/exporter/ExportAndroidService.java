@@ -32,6 +32,7 @@ import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
+import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 
@@ -97,8 +98,15 @@ public final class ExportAndroidService extends Service implements Runnable {
 
         thread.start();
         startForeground(startId, notification, type);
+        AndroidServiceRegistry.getInstance().register(getClass());
 
         return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        AndroidServiceRegistry.getInstance().unregister(getClass());
     }
 
     private void onUpdateCallback(Integer progress, ExportStatus status) {
