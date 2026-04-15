@@ -19,6 +19,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import app.notesr.core.R;
+import app.notesr.service.AndroidServiceRegistry;
+
 public class AppMigrationAndroidService extends Service implements Runnable {
     public static final String BROADCAST_ACTION = "app_migration_service_broadcast";
     public static final String EXTRA_CURRENT_DATA_SCHEMA_VERSION = "current_data_schema_version";
@@ -63,9 +66,16 @@ public class AppMigrationAndroidService extends Service implements Runnable {
         Thread thread = new Thread(this);
 
         thread.start();
-        startForeground(startId, notification, type);
+        startForeground(1004, notification, type);
+        AndroidServiceRegistry.getInstance().register(getClass());
 
         return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        AndroidServiceRegistry.getInstance().unregister(getClass());
     }
 
     @Override
@@ -81,5 +91,10 @@ public class AppMigrationAndroidService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
         stopForeground(true);
         stopSelf();
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
     }
 }
