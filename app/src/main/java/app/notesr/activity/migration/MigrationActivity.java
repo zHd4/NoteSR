@@ -11,11 +11,11 @@ import android.os.Bundle;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.activity.App;
 import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
+import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.AppMigrationAndroidService;
 import app.notesr.service.migration.DataVersionManager;
 
@@ -43,7 +43,9 @@ public final class MigrationActivity extends ActivityBase {
     }
 
     private void startMigrationService() {
-        if (!App.getContext().isServiceRunning(AppMigrationAndroidService.class)) {
+        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry.getInstance();
+
+        if (!serviceRegistry.isServiceRunning(AppMigrationAndroidService.class)) {
             Intent serviceIntent = new Intent(getApplicationContext(),
                     AppMigrationAndroidService.class);
 
