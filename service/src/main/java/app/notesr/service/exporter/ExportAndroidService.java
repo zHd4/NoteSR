@@ -127,6 +127,11 @@ public final class ExportAndroidService extends Service implements Runnable {
         stopSelf();
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+    }
+
     private void broadcastOutputPath(String outputPath) {
         Intent broadcast = new Intent(BROADCAST_ACTION).putExtra(EXTRA_OUTPUT_PATH, outputPath);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);

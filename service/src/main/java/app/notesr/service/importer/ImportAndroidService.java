@@ -99,6 +99,11 @@ public final class ImportAndroidService extends Service implements Runnable {
         stopSelf();
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+    }
+
     private void sendBroadcastData(ImportStatus status) {
         Intent intent = new Intent(BROADCAST_ACTION)
                 .putExtra(EXTRA_STATUS, status);

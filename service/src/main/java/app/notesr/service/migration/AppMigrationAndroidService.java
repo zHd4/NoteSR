@@ -91,4 +91,9 @@ public class AppMigrationAndroidService extends Service implements Runnable {
         stopForeground(true);
         stopSelf();
     }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+    }
 }
