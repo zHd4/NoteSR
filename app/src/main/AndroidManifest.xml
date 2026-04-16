@@ -115,18 +115,22 @@
         <service
             android:name=".service.exporter.ExportAndroidService"
             android:exported="false"
+            android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
         <service
             android:name=".service.importer.ImportAndroidService"
             android:exported="false"
+            android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
         <service
             android:name=".service.security.SecretsUpdateAndroidService"
             android:exported="false"
+            android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
         <service
             android:name=".service.migration.AppMigrationAndroidService"
             android:exported="false"
+            android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
         <service
             android:name=".service.lifecycle.AppCloseAndroidService"
