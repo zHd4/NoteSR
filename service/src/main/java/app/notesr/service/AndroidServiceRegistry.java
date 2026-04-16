@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
  * All Android services should be registered here.
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AndroidServiceRegistry {
+public final class AndroidServiceRegistry {
 
     /**
      * The singleton instance of the {@link AndroidServiceRegistry}.
