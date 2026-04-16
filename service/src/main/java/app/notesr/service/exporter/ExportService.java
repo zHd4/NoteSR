@@ -51,7 +51,7 @@ public final class ExportService {
     private final FileService fileService;
 
     private final ExportStatusHolder statusHolder;
-    
+
     private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
