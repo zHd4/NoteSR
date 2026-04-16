@@ -46,20 +46,6 @@ public final class App extends Application implements Application.ActivityLifecy
         }
     }
 
-    @Deprecated(forRemoval = true)
-    public boolean isServiceRunning(Class<?> serviceClass) {
-        String serviceName = serviceClass.getName();
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-
-        String foundName = manager.getRunningServices(Integer.MAX_VALUE).stream()
-                .map(info -> info.service.getClassName())
-                .filter(name -> name.equals(serviceName))
-                .findFirst()
-                .orElse(null);
-
-        return foundName != null;
-    }
-
     @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) { }
 
