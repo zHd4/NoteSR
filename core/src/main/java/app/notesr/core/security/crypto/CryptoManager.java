@@ -317,7 +317,7 @@ public final class CryptoManager {
     }
 
     /**
-     * Removes old key hash file that was in older versions of NoteSR
+     * Removes old key hash file that was in older versions of NoteSR.
      * @param context application context
      * @throws IOException if failed to delete file
      */
