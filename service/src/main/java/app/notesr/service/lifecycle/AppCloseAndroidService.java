@@ -19,7 +19,6 @@ import androidx.core.app.NotificationCompat;
 
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.R;
 import app.notesr.service.AndroidServiceRegistry;
 
 public class AppCloseAndroidService extends Service {
