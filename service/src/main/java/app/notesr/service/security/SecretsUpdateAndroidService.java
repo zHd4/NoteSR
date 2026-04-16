@@ -77,7 +77,7 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
         startForeground(startId, notification, type);
         AndroidServiceRegistry.getInstance().register(getClass());
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

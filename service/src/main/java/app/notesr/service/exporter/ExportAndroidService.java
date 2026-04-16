@@ -100,7 +100,7 @@ public final class ExportAndroidService extends Service implements Runnable {
         startForeground(startId, notification, type);
         AndroidServiceRegistry.getInstance().register(getClass());
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
