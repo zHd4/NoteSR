@@ -46,7 +46,8 @@ import java.util.function.Consumer;
 
 public final class NotesListActivity extends ActivityBase {
 
-    private final int SEARCH_DELAY = 300;
+    private static final int SEARCH_DELAY = 300;
+
     private final Map<Integer, Consumer<ActivityBase>> menuItemsMap = new HashMap<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
