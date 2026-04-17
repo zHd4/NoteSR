@@ -44,6 +44,7 @@ import java.io.IOException;
 
 public class FileViewerActivityBase extends ActivityBase {
 
+    private static final String TAG = FileViewerActivityBase.class.getCanonicalName();
     public static final String EXTRA_FILE_INFO = "fileInfo";
 
     protected FileInfo fileInfo;
@@ -200,7 +201,7 @@ public class FileViewerActivityBase extends ActivityBase {
         long maxAllowedSize = freeMemory / 4;
 
         if (fileSize > maxAllowedSize) {
-            Log.w("OpenImageActivity", "File too large: " + fileSize
+            Log.w(TAG, "File too large: " + fileSize
                     + " bytes, limit: " + maxAllowedSize);
 
             return false;
