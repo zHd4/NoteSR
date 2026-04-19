@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.util;
+package app.notesr.core.util;
 
 import android.util.LruCache;
 

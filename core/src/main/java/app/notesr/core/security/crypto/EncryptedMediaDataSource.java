@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.file.viewer;
+package app.notesr.core.security.crypto;
 
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.media3.common.C;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DataSpec;
@@ -24,11 +25,10 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.util.LruCacheAdapter;
+import app.notesr.core.util.LruCacheAdapter;
 
-@UnstableApi
-final class EncryptedMediaDataSource implements DataSource {
+@OptIn(markerClass = UnstableApi.class)
+public final class EncryptedMediaDataSource implements DataSource {
 
     private static final String TAG = EncryptedMediaDataSource.class.getCanonicalName();
 
@@ -43,7 +43,7 @@ final class EncryptedMediaDataSource implements DataSource {
     private long openPosition = 0;
     private long openRemaining = C.LENGTH_UNSET;
 
-    EncryptedMediaDataSource(
+    public EncryptedMediaDataSource(
             AesCryptor cryptor,
             List<File> blockFiles,
             LruCacheAdapter lruCache,

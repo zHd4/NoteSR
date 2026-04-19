@@ -27,6 +27,7 @@ import app.notesr.R;
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.crypto.EncryptedMediaDataSourceFactory;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.AppDatabase;

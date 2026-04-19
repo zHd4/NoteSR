@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.file.viewer;
+package app.notesr.core.security.crypto;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,8 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.util.LruCacheAdapter;
+import app.notesr.core.util.LruCacheAdapter;
 
 import androidx.media3.common.C;
 import androidx.media3.datasource.DataSpec;
