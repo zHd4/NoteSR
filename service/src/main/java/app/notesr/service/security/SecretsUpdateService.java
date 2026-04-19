@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Service for updating crypto secrets (master key and password).
- * It migrates the database and file blobs to the new encryption.
+ * It migrates the database and file blobs (fragments) to the new encryption.
  */
 @RequiredArgsConstructor
 public final class SecretsUpdateService {
@@ -47,6 +47,15 @@ public final class SecretsUpdateService {
     private final WiperAdapter wiper;
     private final DatabaseManager databaseManager;
 
+    /**
+     * Updates the crypto secrets (master key and password) and migrates all encrypted data.
+     * It performs a migration of the database and file blobs to the new encryption settings.
+     *
+     * @param newSecrets The new crypto secrets to be applied.
+     * @throws EncryptionFailedException If encryption of data with the new secrets fails.
+     * @throws DecryptionFailedException If decryption of data with the current secrets fails.
+     * @throws IOException               If an I/O error occurs during the migration process.
+     */
     public void updateSecrets(CryptoSecrets newSecrets)
             throws EncryptionFailedException, DecryptionFailedException, IOException {
 
@@ -88,12 +97,34 @@ public final class SecretsUpdateService {
         }
     }
 
+    /**
+     * Ensures that the specified directory exists.
+     * If the directory does not exist, it attempts to create it along with any necessary
+     * parent directories.
+     *
+     * @param dir The directory to ensure existence of.
+     * @throws IOException If the directory does not exist and could not be created.
+     */
     private void ensureDirectoryExists(File dir) throws IOException {
         if (!dir.exists() && !dir.mkdirs()) {
             throw new IOException("Failed to create directory: " + dir.getAbsolutePath());
         }
     }
 
+    /**
+     * Migrates the database and file blobs from the current encryption to the new encryption.
+     *
+     * @param currentKey      The current database encryption key.
+     * @param newKey          The new database encryption key.
+     * @param tempDbFile      The temporary database file to migrate data into.
+     * @param currentBlobsDir The directory containing current encrypted file blobs.
+     * @param tempBlobsDir    The temporary directory to store newly encrypted file blobs.
+     * @param currentCryptor  The cryptor used for decrypting current data.
+     * @param newCryptor      The cryptor used for encrypting data with new secrets.
+     * @throws IOException               If an I/O error occurs.
+     * @throws EncryptionFailedException If encryption fails.
+     * @throws DecryptionFailedException If decryption fails.
+     */
     private void migrateData(
             byte[] currentKey,
             byte[] newKey,
@@ -122,6 +153,12 @@ public final class SecretsUpdateService {
         }
     }
 
+    /**
+     * Copies all data from the current database to the new database.
+     *
+     * @param currentDb The source database.
+     * @param newDb     The destination database.
+     */
     private void copyDbData(AppDatabase currentDb, AppDatabase newDb) {
         newDb.runInTransaction(() -> {
             newDb.getNoteDao().insertAll(currentDb.getNoteDao().getAll());
@@ -131,6 +168,18 @@ public final class SecretsUpdateService {
         });
     }
 
+    /**
+     * Re-encrypts all file blobs from the current directory to the temporary directory.
+     *
+     * @param oldDb           The source database to retrieve blob information from.
+     * @param currentBlobsDir The source directory for file blobs.
+     * @param tempBlobsDir    The destination directory for re-encrypted file blobs.
+     * @param currentCryptor  The cryptor used to decrypt current blobs.
+     * @param newCryptor      The cryptor used to encrypt blobs with new secrets.
+     * @throws IOException               If an I/O error occurs.
+     * @throws EncryptionFailedException If encryption fails.
+     * @throws DecryptionFailedException If decryption fails.
+     */
     private void updateBlobsData(
             AppDatabase oldDb,
             File currentBlobsDir,
@@ -167,6 +216,17 @@ public final class SecretsUpdateService {
         }
     }
 
+    /**
+     * Swaps the current database and blob directory with the temporary ones.
+     * This operation attempts to be as atomic as possible to maintain data integrity.
+     *
+     * @param currentDbFile   The current database file.
+     * @param tempDbFile      The temporary (newly migrated) database file.
+     * @param currentBlobsDir The current blobs directory.
+     * @param tempBlobsDir    The temporary (newly migrated) blobs directory.
+     * @param oldBlobsDir     The directory where the old blobs will be moved to.
+     * @throws IOException If an I/O error occurs during the swap.
+     */
     private void performAtomicSwap(
             File currentDbFile,
             File tempDbFile,
@@ -185,6 +245,14 @@ public final class SecretsUpdateService {
         replaceDatabase(currentDbFile, tempDbFile);
     }
 
+    /**
+     * Replaces the current database files with the new ones.
+     * It creates a temporary backup of the old database files before replacing them.
+     *
+     * @param currentDbFile The current main database file.
+     * @param newDbFile     The new main database file.
+     * @throws IOException If an I/O error occurs during file replacement.
+     */
     private void replaceDatabase(File currentDbFile, File newDbFile) throws IOException {
         File[] currentDbFiles = getAllDbFiles(currentDbFile);
         File[] oldDbFiles = Arrays.stream(currentDbFiles)
@@ -202,6 +270,13 @@ public final class SecretsUpdateService {
         eraseFiles(oldDbFiles);
     }
 
+    /**
+     * Cleans up temporary data created during the migration process.
+     *
+     * @param tempDbFile   The temporary database file.
+     * @param tempBlobsDir The temporary blobs directory.
+     * @throws IOException If an I/O error occurs during cleanup.
+     */
     private void cleanupTempData(File tempDbFile, File tempBlobsDir) throws IOException {
         eraseFiles(getAllDbFiles(tempDbFile));
 
@@ -211,6 +286,13 @@ public final class SecretsUpdateService {
         }
     }
 
+    /**
+     * Returns an array of all files associated with a SQLite database.
+     * This includes the main database file, the SHM file, and the WAL file.
+     *
+     * @param dbFile The main database file.
+     * @return An array containing the main database file and its associated auxiliary files.
+     */
     private File[] getAllDbFiles(File dbFile) {
         return new File[] {
             dbFile,
@@ -219,6 +301,13 @@ public final class SecretsUpdateService {
         };
     }
 
+    /**
+     * Erases the specified files or directories.
+     * If a file is a directory, it is wiped recursively.
+     *
+     * @param files An array of files or directories to be erased.
+     * @throws IOException If an I/O error occurs during erasure.
+     */
     private void eraseFiles(File[] files) throws IOException {
         for (File file : files) {
             if (file.exists()) {
