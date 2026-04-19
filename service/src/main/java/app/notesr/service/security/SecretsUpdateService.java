@@ -9,14 +9,9 @@ import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.content.Context;
 
-import androidx.room.Room;
-
-import net.sqlcipher.database.SupportFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
@@ -28,89 +23,136 @@ import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.core.util.FilesUtilsAdapter;
+import app.notesr.core.util.WiperAdapter;
 import app.notesr.data.AppDatabase;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.FileBlobInfo;
-import app.notesr.data.model.FileInfo;
-import app.notesr.data.model.Note;
 import app.notesr.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Service for updating crypto secrets (master key and password).
+ * It migrates the database and file blobs to the new encryption.
+ */
 @RequiredArgsConstructor
 public final class SecretsUpdateService {
+
+    private static final String TEMP_DB_NAME = "tmp_notesr.db";
+    private static final String TEMP_BLOBS_DIR_NAME = "fblobs_tmp";
+    private static final String OLD_BLOBS_DIR_NAME = "fblobs_old";
 
     private final Context context;
     private final String dbName;
     private final CryptoManager cryptoManager;
-    private final CryptoSecrets newSecrets;
     private final FilesUtilsAdapter filesUtils;
+    private final WiperAdapter wiper;
+    private final DatabaseManager databaseManager;
 
-    public void update() throws EncryptionFailedException, DecryptionFailedException, IOException {
-        CryptoSecrets oldSecrets = cryptoManager.getSecrets();
+    public void updateSecrets(CryptoSecrets newSecrets)
+            throws EncryptionFailedException, DecryptionFailedException, IOException {
 
-        byte[] oldKey = oldSecrets.getKey();
-        byte[] newKey = newSecrets.getKey();
+        CryptoSecrets currentSecrets = cryptoManager.getSecrets();
 
-        File oldDbFile = context.getDatabasePath(dbName);
-        File newDbFile = context.getDatabasePath("tmp_" + dbName);
+        try {
+            AesCryptor currentCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(currentSecrets));
+            AesCryptor newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
 
-        DatabaseProvider.close();
+            File currentDbFile = filesUtils.getDatabaseFile(context, dbName);
+            File tempDbFile = filesUtils.getDatabaseFile(context, TEMP_DB_NAME);
 
-        AppDatabase oldDb = getDatabase(dbName, getSupportFactory(oldKey));
-        AppDatabase newDb = getDatabase(newDbFile.getName(), getSupportFactory(newKey));
+            File currentBlobsDir = filesUtils.getInternalFile(context, FileService.BLOBS_DIR_NAME);
+            File tempBlobsDir = filesUtils.getInternalFile(context, TEMP_BLOBS_DIR_NAME);
+            File oldBlobsDir = filesUtils.getInternalFile(context, OLD_BLOBS_DIR_NAME);
 
-        AesCryptor oldCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(oldSecrets));
-        AesCryptor newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
+            ensureDirectoryExists(tempBlobsDir);
 
+            databaseManager.closeProvider();
+
+            migrateData(
+                    currentSecrets.getKey(),
+                    newSecrets.getKey(),
+                    tempDbFile,
+                    currentBlobsDir,
+                    tempBlobsDir,
+                    currentCryptor,
+                    newCryptor
+            );
+
+            performAtomicSwap(currentDbFile, tempDbFile, currentBlobsDir, tempBlobsDir, oldBlobsDir);
+
+            cryptoManager.setSecrets(context, newSecrets);
+            databaseManager.reinitProvider(newSecrets.getKey());
+            wiper.wipeDir(oldBlobsDir);
+        } finally {
+            currentSecrets.destroy();
+            newSecrets.destroy();
+        }
+    }
+
+    private void ensureDirectoryExists(File dir) throws IOException {
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new IOException("Failed to create directory: " + dir.getAbsolutePath());
+        }
+    }
+
+    private void migrateData(
+            byte[] currentKey,
+            byte[] newKey,
+            File tempDbFile,
+            File currentBlobsDir,
+            File tempBlobsDir,
+            AesCryptor currentCryptor,
+            AesCryptor newCryptor
+    ) throws IOException, EncryptionFailedException, DecryptionFailedException {
+
+        AppDatabase currentDb = databaseManager.getDatabase(dbName, currentKey);
+        AppDatabase tempDb = databaseManager.getDatabase(tempDbFile.getName(), newKey);
+
+        if (!databaseManager.isDbAvailable(tempDb)) {
+            tempDb.close();
+            cleanupTempData(tempDbFile, tempBlobsDir);
+            tempDb = databaseManager.getDatabase(tempDbFile.getName(), newKey);
+        }
+
+        try {
+            copyDbData(currentDb, tempDb);
+            updateBlobsData(currentDb, currentBlobsDir, tempBlobsDir, currentCryptor, newCryptor);
+        } finally {
+            currentDb.close();
+            tempDb.close();
+        }
+    }
+
+    private void copyDbData(AppDatabase currentDb, AppDatabase newDb) {
         newDb.runInTransaction(() -> {
-            copyDbData(oldDb, newDb);
-
-            File blobsDir = new File(context.getFilesDir(), FileService.BLOBS_DIR_NAME);
-            updateBlobsData(newDb, blobsDir, oldCryptor, newCryptor);
-
+            newDb.getNoteDao().insertAll(currentDb.getNoteDao().getAll());
+            newDb.getFileInfoDao().insertAll(currentDb.getFileInfoDao().getAll());
+            newDb.getFileBlobInfoDao().insertAll(currentDb.getFileBlobInfoDao().getAll());
             return null;
         });
-
-        oldDb.close();
-        newDb.close();
-
-        replaceDatabase(oldDbFile, newDbFile);
-
-        cryptoManager.setSecrets(context, newSecrets);
-        DatabaseProvider.reinit(context, getSupportFactory(newKey));
-
-        oldSecrets.destroy();
-        newSecrets.destroy();
-
-        Arrays.fill(oldKey, (byte) 0);
-        Arrays.fill(newKey, (byte) 0);
     }
 
-    private void copyDbData(AppDatabase oldDb, AppDatabase newDb) {
-        List<Note> allNotes = oldDb.getNoteDao().getAll();
-        newDb.getNoteDao().insertAll(allNotes);
+    private void updateBlobsData(
+            AppDatabase oldDb,
+            File currentBlobsDir,
+            File tempBlobsDir,
+            AesCryptor currentCryptor,
+            AesCryptor newCryptor
+    ) throws IOException, EncryptionFailedException, DecryptionFailedException {
 
-        List<FileInfo> allFilesInfo = oldDb.getFileInfoDao().getAll();
-        newDb.getFileInfoDao().insertAll(allFilesInfo);
-
-        List<FileBlobInfo> allFilesBlobInfo = oldDb.getFileBlobInfoDao().getAll();
-        newDb.getFileBlobInfoDao().insertAll(allFilesBlobInfo);
-    }
-
-    private void updateBlobsData(AppDatabase db,
-                                 File blobsDir,
-                                 AesCryptor oldCryptor,
-                                 AesCryptor newCryptor)
-            throws IOException, EncryptionFailedException, DecryptionFailedException {
-
-        List<FileBlobInfo> blobsInfo = db.getFileBlobInfoDao().getAll();
+        List<FileBlobInfo> blobsInfo = oldDb.getFileBlobInfoDao().getAll();
 
         for (FileBlobInfo blobInfo : blobsInfo) {
-            File blobFile = new File(blobsDir, blobInfo.getId());
-            byte[] data = filesUtils.readFileBytes(blobFile);
+            File sourceFile = new File(currentBlobsDir, blobInfo.getId());
+            File targetFile = new File(tempBlobsDir, blobInfo.getId());
+
+            if (targetFile.exists() && targetFile.length() > 0) {
+                continue;
+            }
+
+            byte[] data = filesUtils.readFileBytes(sourceFile);
 
             try {
-                data = oldCryptor.decrypt(data);
+                data = currentCryptor.decrypt(data);
             } catch (GeneralSecurityException e) {
                 throw new DecryptionFailedException(e);
             }
@@ -121,32 +163,71 @@ public final class SecretsUpdateService {
                 throw new EncryptionFailedException(e);
             }
 
-            filesUtils.writeFileBytes(blobFile, data);
+            filesUtils.writeFileBytes(targetFile, data);
         }
     }
 
-    private void replaceDatabase(File oldDbFile, File newDbFile) throws IOException {
-        String oldDbPath = oldDbFile.getAbsolutePath();
-        List<String> filesToDelete = List.of(
-                oldDbPath,
-                oldDbPath + "-shm",
-                oldDbPath + "-wal"
-        );
+    private void performAtomicSwap(
+            File currentDbFile,
+            File tempDbFile,
+            File currentBlobsDir,
+            File tempBlobsDir,
+            File oldBlobsDir
+    ) throws IOException {
 
-        for (String path : filesToDelete) {
-            Files.deleteIfExists(Paths.get(path));
+        if (oldBlobsDir.exists()) {
+            wiper.wipeDir(oldBlobsDir);
         }
 
-        Files.move(newDbFile.toPath(), oldDbFile.toPath());
+        Files.move(currentBlobsDir.toPath(), oldBlobsDir.toPath());
+        Files.move(tempBlobsDir.toPath(), currentBlobsDir.toPath());
+
+        replaceDatabase(currentDbFile, tempDbFile);
     }
 
-    private SupportFactory getSupportFactory(byte[] key) {
-        return new SupportFactory(Arrays.copyOf(key, key.length));
+    private void replaceDatabase(File currentDbFile, File newDbFile) throws IOException {
+        File[] currentDbFiles = getAllDbFiles(currentDbFile);
+        File[] oldDbFiles = Arrays.stream(currentDbFiles)
+                .map(file -> new File(file.getAbsolutePath() + ".old"))
+                .toArray(File[]::new);
+
+        for (int i = 0; i < currentDbFiles.length; i++) {
+            if (currentDbFiles[i].exists()) {
+                Files.move(currentDbFiles[i].toPath(), oldDbFiles[i].toPath());
+            }
+        }
+
+        Files.move(newDbFile.toPath(), currentDbFile.toPath());
+
+        eraseFiles(oldDbFiles);
     }
 
-    private AppDatabase getDatabase(String name, SupportFactory factory) {
-        return Room.databaseBuilder(context, AppDatabase.class, name)
-                .openHelperFactory(factory)
-                .build();
+    private void cleanupTempData(File tempDbFile, File tempBlobsDir) throws IOException {
+        eraseFiles(getAllDbFiles(tempDbFile));
+
+        File[] tempBlobs = tempBlobsDir.listFiles();
+        if (tempBlobs != null) {
+            eraseFiles(tempBlobs);
+        }
+    }
+
+    private File[] getAllDbFiles(File dbFile) {
+        return new File[] {
+            dbFile,
+            new File(dbFile.getAbsolutePath() + "-shm"),
+            new File(dbFile.getAbsolutePath() + "-wal")
+        };
+    }
+
+    private void eraseFiles(File[] files) throws IOException {
+        for (File file : files) {
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    wiper.wipeDir(file);
+                } else {
+                    wiper.wipeFile(file);
+                }
+            }
+        }
     }
 }

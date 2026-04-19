@@ -33,6 +33,8 @@ import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.util.Wiper;
+import app.notesr.core.util.WiperAdapter;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
@@ -51,6 +53,7 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
 
 
     private SecretsUpdateService secretsUpdateService;
+    private CryptoSecrets newSecrets;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -69,8 +72,8 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        CryptoSecrets newSecrets = getNewSecrets();
-        secretsUpdateService = getSecretsUpdateService(newSecrets);
+        secretsUpdateService = getSecretsUpdateService();
+        newSecrets = getNewSecrets();
 
         Thread thread = new Thread(this);
         thread.start();
@@ -95,7 +98,7 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
     @Override
     public void run() {
         try {
-            secretsUpdateService.update();
+            secretsUpdateService.updateSecrets(newSecrets);
             onComplete();
         } catch (EncryptionFailedException | DecryptionFailedException | IOException e) {
             Log.e(TAG, "Filed to update database", e);
@@ -131,17 +134,21 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
         }
     }
 
-    private SecretsUpdateService getSecretsUpdateService(CryptoSecrets newSecrets) {
+    private SecretsUpdateService getSecretsUpdateService() {
         Context context = getApplicationContext();
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+
         FilesUtils filesUtils = new FilesUtils();
+        WiperAdapter wiper = new Wiper();
+        DatabaseManager databaseManager = new DatabaseManagerImpl(context);
 
         return new SecretsUpdateService(
                 context,
                 DatabaseProvider.DB_NAME,
                 cryptoManager,
-                newSecrets,
-                filesUtils
+                filesUtils,
+                wiper,
+                databaseManager
         );
     }
 }
