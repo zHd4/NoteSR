@@ -52,7 +52,8 @@ public final class CryptoManager {
     private CryptoSecrets secrets;
 
     /**
-     * Configures the CryptoManager by attempting to decrypt the stored master key with the provided password.
+     * Configures the CryptoManager by attempting to decrypt the stored master key with
+     * the provided password.
      *
      * @param context  The application context.
      * @param password The password to use for decryption.
