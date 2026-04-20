@@ -98,7 +98,8 @@ public final class ExportAndroidService extends Service implements Runnable {
 
         thread.start();
         startForeground(startId, notification, type);
-        AndroidServiceRegistry.getInstance().register(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext())
+                .register(getClass(), true);
 
         return START_NOT_STICKY;
     }
@@ -106,7 +107,7 @@ public final class ExportAndroidService extends Service implements Runnable {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        AndroidServiceRegistry.getInstance().unregister(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext()).unregister(getClass());
     }
 
     private void onUpdateCallback(Integer progress, ExportStatus status) {

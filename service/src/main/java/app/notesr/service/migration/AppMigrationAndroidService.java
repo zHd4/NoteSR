@@ -66,7 +66,8 @@ public class AppMigrationAndroidService extends Service implements Runnable {
 
         thread.start();
         startForeground(1004, notification, type);
-        AndroidServiceRegistry.getInstance().register(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext())
+                .register(getClass(), true);
 
         return START_NOT_STICKY;
     }
@@ -74,7 +75,7 @@ public class AppMigrationAndroidService extends Service implements Runnable {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        AndroidServiceRegistry.getInstance().unregister(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext()).unregister(getClass());
     }
 
     @Override

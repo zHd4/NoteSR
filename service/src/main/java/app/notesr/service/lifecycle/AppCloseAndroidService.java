@@ -50,7 +50,8 @@ public final class AppCloseAndroidService extends Service {
         }
 
         startForeground(1005, notification, type);
-        AndroidServiceRegistry.getInstance().register(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext())
+                .register(getClass());
 
         return START_NOT_STICKY;
     }
@@ -58,7 +59,8 @@ public final class AppCloseAndroidService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        AndroidServiceRegistry.getInstance().unregister(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext())
+                .unregister(getClass());
     }
 
     @Override
@@ -79,10 +81,11 @@ public final class AppCloseAndroidService extends Service {
     }
 
     private long getCurrentRunningServicesCount() {
-        return AndroidServiceRegistry.getInstance()
+        return AndroidServiceRegistry.getInstance(getApplicationContext())
                 .getSet()
                 .stream()
-                .filter(clazz -> clazz != getClass())
+                .filter(serviceEntry ->
+                        serviceEntry.getServiceClass() != getClass())
                 .count();
     }
 }

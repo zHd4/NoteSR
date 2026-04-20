@@ -36,7 +36,8 @@ public final class MainActivity extends ActivityBase {
         setContentView(R.layout.activity_main);
         applyInsets(findViewById(R.id.main));
 
-        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry.getInstance();
+        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
+                .getInstance(getApplicationContext());
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
 
         List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(

@@ -198,7 +198,7 @@ public final class ExportActivity extends ActivityBase {
     }
 
     private boolean isExportRunning() {
-        return AndroidServiceRegistry.getInstance()
+        return AndroidServiceRegistry.getInstance(getApplicationContext())
                 .isServiceRunning(ExportAndroidService.class);
     }
 

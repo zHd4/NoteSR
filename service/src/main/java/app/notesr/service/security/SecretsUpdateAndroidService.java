@@ -78,7 +78,8 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
         Thread thread = new Thread(this);
         thread.start();
         startForeground(startId, notification, type);
-        AndroidServiceRegistry.getInstance().register(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext())
+                .register(getClass(), true);
 
         return START_NOT_STICKY;
     }
@@ -86,7 +87,7 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
     @Override
     public void onDestroy() {
         super.onDestroy();
-        AndroidServiceRegistry.getInstance().unregister(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext()).unregister(getClass());
     }
 
     @Nullable

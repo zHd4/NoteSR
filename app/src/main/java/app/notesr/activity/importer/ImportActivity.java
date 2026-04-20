@@ -238,7 +238,7 @@ public final class ImportActivity extends ActivityBase {
     }
 
     private boolean isImportRunning() {
-        return AndroidServiceRegistry.getInstance()
+        return AndroidServiceRegistry.getInstance(getApplicationContext())
                 .isServiceRunning(ImportAndroidService.class);
     }
 }

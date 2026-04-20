@@ -81,7 +81,8 @@ public final class ImportAndroidService extends Service implements Runnable {
 
         startForeground(startId, notification, type);
 
-        AndroidServiceRegistry.getInstance().register(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext())
+                .register(getClass(), true);
 
         return START_NOT_STICKY;
     }
@@ -89,7 +90,7 @@ public final class ImportAndroidService extends Service implements Runnable {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        AndroidServiceRegistry.getInstance().unregister(getClass());
+        AndroidServiceRegistry.getInstance(getApplicationContext()).unregister(getClass());
     }
 
     @Override

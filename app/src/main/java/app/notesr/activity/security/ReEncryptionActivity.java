@@ -43,7 +43,8 @@ public final class ReEncryptionActivity extends ActivityBase {
     }
 
     private void startReEncryptionService() {
-        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry.getInstance();
+        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
+                .getInstance(getApplicationContext());
 
         if (!serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)) {
             Intent serviceIntent = new Intent(getApplicationContext(),
