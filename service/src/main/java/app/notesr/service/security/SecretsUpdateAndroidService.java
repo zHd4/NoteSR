@@ -81,7 +81,7 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
         AndroidServiceRegistry.getInstance(getApplicationContext())
                 .register(getClass(), true);
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
