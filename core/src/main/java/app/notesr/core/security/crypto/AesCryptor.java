@@ -49,7 +49,7 @@ public abstract class AesCryptor {
                 KEY_SIZE);
 
         SecretKey tmp = SecretKeyFactory.getInstance(PBE_ALGORITHM).generateSecret(spec);
-        return new SecretKeySpec(tmp.getEncoded(), "AES");
+        return new SecretKeySpec(tmp.getEncoded(), KEY_GENERATOR_ALGORITHM);
     }
 
     public abstract byte[] encrypt(byte[] plainData)
