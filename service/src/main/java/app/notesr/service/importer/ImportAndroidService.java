@@ -84,7 +84,7 @@ public final class ImportAndroidService extends Service implements Runnable {
         AndroidServiceRegistry.getInstance(getApplicationContext())
                 .register(getClass(), true);
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
