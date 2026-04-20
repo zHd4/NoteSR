@@ -21,7 +21,7 @@ import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.service.AndroidServiceRegistry;
 
-public class AppCloseAndroidService extends Service {
+public final class AppCloseAndroidService extends Service {
 
     private static final String CHANNEL_ID = "app_close_service_channel";
     private static final String CHANNEL_NAME = "App Close Service Channel";
