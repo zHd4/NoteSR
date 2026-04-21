@@ -5,6 +5,7 @@
 
 package app.notesr.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -41,7 +42,7 @@ public final class MainActivity extends ActivityBase {
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
 
         List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(
-                App.getContext(),
+                getApplicationContext(),
                 cryptoManager,
                 serviceRegistry
         );
@@ -59,7 +60,7 @@ public final class MainActivity extends ActivityBase {
     }
 
     private List<Supplier<Intent>> getIntentSuppliers(
-            App context,
+            Context context,
             CryptoManager cryptoManager,
             AndroidServiceRegistry serviceRegistry) {
         return List.of(
