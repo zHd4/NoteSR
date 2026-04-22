@@ -47,7 +47,7 @@ public final class AndroidServiceRegistry {
      *
      * @param prefs the {@link SharedPreferences} to use for persistence
      */
-    public AndroidServiceRegistry(SharedPreferences prefs) {
+    AndroidServiceRegistry(SharedPreferences prefs) {
         this.prefs = prefs;
         this.runningServices = getServicesFromPrefs();
     }
