@@ -44,6 +44,8 @@ public final class AndroidServiceRegistry {
 
     /**
      * Initializes a new instance of the {@link AndroidServiceRegistry}.
+     * This constructor only for testing purposes and internal use.
+     * Should not be used in production.
      *
      * @param prefs the {@link SharedPreferences} to use for persistence
      */
