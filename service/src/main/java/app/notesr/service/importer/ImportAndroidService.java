@@ -12,7 +12,6 @@ import app.notesr.core.util.FilesUtils;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
@@ -20,13 +19,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
-import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.AndroidService;
+import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.core.security.crypto.AesCryptor;
@@ -36,7 +39,7 @@ import app.notesr.core.security.dto.CryptoSecrets;
 
 import java.util.Set;
 
-public final class ImportAndroidService extends Service implements Runnable {
+public final class ImportAndroidService extends AndroidService implements Runnable {
 
     public static final String BROADCAST_ACTION = "import_data_broadcast";
     public static final String EXTRA_STATUS = "status";
@@ -50,6 +53,8 @@ public final class ImportAndroidService extends Service implements Runnable {
     private static final String CHANNEL_ID = "import_service_channel";
     private static final String CHANNEL_NAME = "Import Service Channel";
 
+    private Uri sourceUri;
+    private CryptoSecrets secrets;
     private ImportService importService;
 
     @Nullable
@@ -74,23 +79,33 @@ public final class ImportAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        importService = getImportService(intent);
+        sourceUri = intent.getData();
+        secrets = CryptoManagerProvider.getInstance(getApplicationContext()).getSecrets();
+        importService = getImportService();
 
         Thread thread = new Thread(this);
         thread.start();
 
         startForeground(startId, notification, type);
-
-        AndroidServiceRegistry.getInstance(getApplicationContext())
-                .register(getClass(), true);
+        register();
 
         return START_STICKY;
     }
 
+    @NonNull
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        AndroidServiceRegistry.getInstance(getApplicationContext()).unregister(getClass());
+    protected AndroidServiceEntry getEntry() {
+        String payload = getEncryptedPayload(
+                new ObjectMapper(),
+                new ImportAndroidServiceStarter.Payload(sourceUri),
+                secrets
+        );
+
+        return entryBuilder(ImportAndroidServiceStarter.class)
+                .autoStart(true)
+                .requiresAuth(true)
+                .payload(payload) // TODO: May be fail due to permissions, don't forget to check later
+                .build();
     }
 
     @Override
@@ -113,18 +128,16 @@ public final class ImportAndroidService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    private ImportService getImportService(Intent intent) {
+    private ImportService getImportService() {
         Context context = getApplicationContext();
-        AppDatabase db = DatabaseProvider.getInstance(context);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        AppDatabase db = DatabaseProvider.getInstance(context);
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         NoteService noteService = new NoteService(db);
         FileService fileService = new FileService(context, db, cryptor,
                 new FilesUtils());
 
-        Uri sourceUri = intent.getData();
         ImportStatusCallback statusCallback = new ImportStatusCallback(this::sendBroadcastData);
 
         return new ImportService(

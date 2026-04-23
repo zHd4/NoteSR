@@ -12,7 +12,6 @@ import static app.notesr.core.util.CharUtils.bytesToChars;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
@@ -20,6 +19,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -39,9 +39,10 @@ import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 
-import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.AndroidService;
+import app.notesr.service.AndroidServiceEntry;
 
-public final class SecretsUpdateAndroidService extends Service implements Runnable {
+public final class SecretsUpdateAndroidService extends AndroidService implements Runnable {
 
     private static final String TAG = SecretsUpdateAndroidService.class.getCanonicalName();
     public static final String NEW_KEY = "new_key";
@@ -77,17 +78,20 @@ public final class SecretsUpdateAndroidService extends Service implements Runnab
 
         Thread thread = new Thread(this);
         thread.start();
+
         startForeground(startId, notification, type);
-        AndroidServiceRegistry.getInstance(getApplicationContext())
-                .register(getClass(), true);
+        register();
 
         return START_STICKY;
     }
 
+    @NonNull
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        AndroidServiceRegistry.getInstance(getApplicationContext()).unregister(getClass());
+    protected AndroidServiceEntry getEntry() {
+        return entryBuilder(SecretsUpdateAndroidServiceStarter.class)
+                .autoStart(true)
+                .requiresAuth(true)
+                .build();
     }
 
     @Nullable

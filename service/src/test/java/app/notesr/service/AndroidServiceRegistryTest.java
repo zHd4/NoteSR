@@ -15,10 +15,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
+
+import androidx.annotation.NonNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,17 +32,35 @@ class AndroidServiceRegistryTest {
     private AndroidServiceRegistry registry;
     private SharedPreferences.Editor editor;
 
-    private static class TestService1 extends Service {
+    private static class TestService1 extends AndroidService {
         @Override
         public IBinder onBind(Intent intent) {
             return null;
         }
+
+        @NonNull
+        @Override
+        protected AndroidServiceEntry getEntry() {
+            return AndroidServiceEntry.builder()
+                    .serviceClass(TestService1.class)
+                    .serviceName("TestService1")
+                    .build();
+        }
     }
 
-    private static class TestService2 extends Service {
+    private static class TestService2 extends AndroidService {
         @Override
         public IBinder onBind(Intent intent) {
             return null;
+        }
+
+        @NonNull
+        @Override
+        protected AndroidServiceEntry getEntry() {
+            return AndroidServiceEntry.builder()
+                    .serviceClass(TestService2.class)
+                    .serviceName("TestService2")
+                    .build();
         }
     }
 
@@ -61,20 +80,26 @@ class AndroidServiceRegistryTest {
         assertFalse(registry.isServiceRunning(TestService1.class),
                 "Service 1 should not be running initially");
 
-        registry.register(TestService1.class);
+        registry.register(AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .serviceName("Test Service 1")
+                .build());
+
         assertTrue(registry.isServiceRunning(TestService1.class),
                 "Service 1 should be running after registration");
         assertFalse(registry.isServiceRunning(TestService2.class),
                 "Service 2 should not be running");
 
         verify(editor, times(1))
-                .putStringSet(eq("auto_start_services"), any());
+                .putStringSet(eq("current_running_services"), any());
         verify(editor, times(1)).apply();
     }
 
     @Test
     void testUnregister() {
-        registry.register(TestService1.class);
+        registry.register(AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .build());
         assertTrue(registry.isServiceRunning(TestService1.class),
                 "Service 1 should be running after registration");
 
@@ -87,7 +112,9 @@ class AndroidServiceRegistryTest {
 
     @Test
     void testGetSetReturnsACopy() {
-        registry.register(TestService1.class);
+        registry.register(AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .build());
         Set<AndroidServiceEntry> services = registry.getSet();
 
         assertEquals(1, services.size(),
@@ -103,8 +130,12 @@ class AndroidServiceRegistryTest {
 
     @Test
     void testMultipleServices() {
-        registry.register(TestService1.class);
-        registry.register(TestService2.class);
+        registry.register(AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .build());
+        registry.register(AndroidServiceEntry.builder()
+                .serviceClass(TestService2.class)
+                .build());
 
         assertTrue(registry.isServiceRunning(TestService1.class),
                 "Service 1 should be running");
@@ -125,7 +156,10 @@ class AndroidServiceRegistryTest {
 
     @Test
     void testRegisterWithAutoStart() {
-        registry.register(TestService1.class, true);
+        registry.register(AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .autoStart(true)
+                .build());
         assertTrue(registry.isServiceRunning(TestService1.class),
                 "Service 1 should be running");
 
@@ -136,17 +170,17 @@ class AndroidServiceRegistryTest {
 
     @Test
     void testLoadFromPrefs() throws Exception {
-        AndroidServiceEntry entry = new AndroidServiceEntry(
-                TestService1.class,
-                TestService1.class.getName(),
-                true
-        );
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .serviceName("Test Service 1")
+                .autoStart(true)
+                .build();
 
         Set<String> jsonSet = new HashSet<>();
         jsonSet.add(entry.toJson());
 
         SharedPreferences mockPrefs = mock(SharedPreferences.class);
-        when(mockPrefs.getStringSet(eq("auto_start_services"), eq(null)))
+        when(mockPrefs.getStringSet(eq("current_running_services"), eq(null)))
                 .thenReturn(jsonSet);
 
         AndroidServiceRegistry newRegistry = new AndroidServiceRegistry(mockPrefs);

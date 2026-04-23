@@ -8,20 +8,22 @@ package app.notesr.service.lifecycle;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.service.AndroidService;
+import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
 
-public final class AppCloseAndroidService extends Service {
+public final class AppCloseAndroidService extends AndroidService {
 
     private static final String CHANNEL_ID = "app_close_service_channel";
     private static final String CHANNEL_NAME = "App Close Service Channel";
@@ -50,17 +52,15 @@ public final class AppCloseAndroidService extends Service {
         }
 
         startForeground(1005, notification, type);
-        AndroidServiceRegistry.getInstance(getApplicationContext())
-                .register(getClass());
+        register();
 
         return START_NOT_STICKY;
     }
 
+    @NonNull
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        AndroidServiceRegistry.getInstance(getApplicationContext())
-                .unregister(getClass());
+    protected AndroidServiceEntry getEntry() {
+        return entryBuilder(AppCloseAndroidServiceStarter.class).build();
     }
 
     @Override

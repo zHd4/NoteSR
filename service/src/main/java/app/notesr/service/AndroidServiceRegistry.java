@@ -5,7 +5,6 @@
 
 package app.notesr.service;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -17,7 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * A registry that keeps track of currently running {@link Service} components.
+ * A registry that keeps track of currently running {@link AndroidService} components.
  * This is useful for checking if a background task is already in progress.
  * All Android services should be registered here.
  * <p>
@@ -29,18 +28,10 @@ public final class AndroidServiceRegistry {
     private static final String PREF_NAME = "android_services_registry_prefs";
     private static final String RUNNING_SERVICES_PREF = "current_running_services";
 
-    /**
-     * The singleton instance of the {@link AndroidServiceRegistry}.
-     */
     private static AndroidServiceRegistry instance;
 
     private final SharedPreferences prefs;
-
-    /**
-     * A thread-safe set of service classes that are currently active.
-     */
-    private Set<AndroidServiceEntry> runningServices =
-            Collections.synchronizedSet(new HashSet<>());
+    private final Set<AndroidServiceEntry> runningServices;
 
     /**
      * Initializes a new instance of the {@link AndroidServiceRegistry}.
@@ -74,28 +65,12 @@ public final class AndroidServiceRegistry {
     }
 
     /**
-     * Registers a service as running with auto-start set to {@code false}.
-     *
-     * @param serviceClass the class of the service to register
-     */
-    public void register(Class<? extends Service> serviceClass) {
-        register(serviceClass, false);
-    }
-
-    /**
      * Registers a service as running.
      *
-     * @param serviceClass the class of the service to register
-     * @param autoStart    whether the service should be automatically started on next boot
+     * @param serviceEntry the {@link AndroidServiceEntry} representing the service to register
      */
-    public void register(Class<? extends Service> serviceClass, boolean autoStart) {
-        AndroidServiceEntry entry = new AndroidServiceEntry(
-                serviceClass,
-                serviceClass.getSimpleName(),
-                autoStart
-        );
-
-        runningServices.add(entry);
+    public void register(AndroidServiceEntry serviceEntry) {
+        runningServices.add(serviceEntry);
         saveServices(runningServices);
     }
 
@@ -104,7 +79,7 @@ public final class AndroidServiceRegistry {
      *
      * @param serviceClass the class of the service to unregister
      */
-    public void unregister(Class<? extends Service> serviceClass) {
+    public void unregister(Class<? extends AndroidService> serviceClass) {
         runningServices.removeIf(entry ->
                 entry.getServiceClass().equals(serviceClass));
 
@@ -117,7 +92,7 @@ public final class AndroidServiceRegistry {
      * @param serviceClass the class of the service to check
      * @return {@code true} if the service is registered as running, {@code false} otherwise
      */
-    public boolean isServiceRunning(Class<? extends Service> serviceClass) {
+    public boolean isServiceRunning(Class<? extends AndroidService> serviceClass) {
         Optional<AndroidServiceEntry> entry = runningServices.stream()
                 .filter(s -> s.getServiceClass().equals(serviceClass))
                 .findAny();
@@ -132,6 +107,31 @@ public final class AndroidServiceRegistry {
      */
     public Set<AndroidServiceEntry> getSet() {
         return new HashSet<>(runningServices);
+    }
+
+    /**
+     * Retrieves the set of running services from {@link SharedPreferences}.
+     * Service entries are deserialized from JSON and added to the registry.
+     *
+     * @throws RuntimeException if a service entry fails to deserialize
+     * @return a new thread-safe set containing all loaded {@link AndroidServiceEntry} objects
+     */
+    private Set<AndroidServiceEntry> getServicesFromPrefs() {
+        Set<String> servicesJson = prefs.getStringSet(RUNNING_SERVICES_PREF, null);
+        Set<AndroidServiceEntry> services = Collections.synchronizedSet(new HashSet<>());
+
+        if (servicesJson != null) {
+            for (String serviceJson : servicesJson) {
+                try {
+                    AndroidServiceEntry entry = AndroidServiceEntry.fromJson(serviceJson);
+                    services.add(entry);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException("Failed to deserialize service", e);
+                }
+            }
+        }
+
+        return services;
     }
 
     /**
@@ -153,30 +153,5 @@ public final class AndroidServiceRegistry {
         }
 
         prefs.edit().putStringSet(RUNNING_SERVICES_PREF, servicesJson).apply();
-    }
-
-    /**
-     * Loads the set of running services from {@link SharedPreferences}.
-     * Service entries are deserialized from JSON and added to the registry.
-     *
-     * @throws RuntimeException if a service entry fails to deserialize
-     * @return a new set containing all loaded {@link AndroidServiceEntry} objects
-     */
-    private Set<AndroidServiceEntry> getServicesFromPrefs() {
-        Set<String> servicesJson = prefs.getStringSet(RUNNING_SERVICES_PREF, null);
-        Set<AndroidServiceEntry> services = new HashSet<>();
-
-        if (servicesJson != null) {
-            for (String serviceJson : servicesJson) {
-                try {
-                    AndroidServiceEntry entry = AndroidServiceEntry.fromJson(serviceJson);
-                    services.add(entry);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException("Failed to deserialize service", e);
-                }
-            }
-        }
-
-        return services;
     }
 }

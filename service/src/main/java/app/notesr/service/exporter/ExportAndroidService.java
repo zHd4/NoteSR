@@ -11,7 +11,6 @@ import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +20,12 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesGcmCryptor;
@@ -32,7 +34,8 @@ import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
-import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.AndroidService;
+import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 
@@ -44,7 +47,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public final class ExportAndroidService extends Service implements Runnable {
+public final class ExportAndroidService extends AndroidService implements Runnable {
     public static final String BROADCAST_ACTION = "export_data_broadcast";
     public static final String EXTRA_APP_VERSION = "app_version";
     public static final String EXTRA_STATUS = "status";
@@ -60,6 +63,7 @@ public final class ExportAndroidService extends Service implements Runnable {
             ExportStatus.ERROR
     );
 
+    private String appVersion;
     private File outputFile;
     private ExportService exportService;
 
@@ -85,7 +89,7 @@ public final class ExportAndroidService extends Service implements Runnable {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        String appVersion = intent.getStringExtra(EXTRA_APP_VERSION);
+        appVersion = intent.getStringExtra(EXTRA_APP_VERSION);
         requireNonNull(appVersion, "App version not provided");
 
         File outputDir = Environment.getExternalStoragePublicDirectory(
@@ -95,19 +99,25 @@ public final class ExportAndroidService extends Service implements Runnable {
         exportService = getExportService(outputFile, this::onUpdateCallback, appVersion);
 
         Thread thread = new Thread(this);
-
         thread.start();
+
         startForeground(startId, notification, type);
-        AndroidServiceRegistry.getInstance(getApplicationContext())
-                .register(getClass(), true);
+        register();
 
         return START_STICKY;
     }
 
+    @NonNull
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        AndroidServiceRegistry.getInstance(getApplicationContext()).unregister(getClass());
+    protected AndroidServiceEntry getEntry() {
+        String payload = getPlainPayload(new ObjectMapper(),
+                new ExportAndroidServiceStarter.Payload(appVersion));
+
+        return entryBuilder(ExportAndroidServiceStarter.class)
+                .autoStart(true)
+                .requiresAuth(true)
+                .payload(payload)
+                .build();
     }
 
     private void onUpdateCallback(Integer progress, ExportStatus status) {

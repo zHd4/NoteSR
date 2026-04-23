@@ -8,20 +8,23 @@ package app.notesr.service.migration;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import app.notesr.service.AndroidServiceRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class AppMigrationAndroidService extends Service implements Runnable {
+import app.notesr.service.AndroidService;
+import app.notesr.service.AndroidServiceEntry;
+
+public class AppMigrationAndroidService extends AndroidService implements Runnable {
     public static final String BROADCAST_ACTION = "app_migration_service_broadcast";
     public static final String EXTRA_CURRENT_DATA_SCHEMA_VERSION = "current_data_schema_version";
     public static final String EXTRA_COMPLETE = "migration_complete";
@@ -66,16 +69,22 @@ public class AppMigrationAndroidService extends Service implements Runnable {
 
         thread.start();
         startForeground(1004, notification, type);
-        AndroidServiceRegistry.getInstance(getApplicationContext())
-                .register(getClass(), true);
+        register();
 
         return START_STICKY;
     }
 
+    @NonNull
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        AndroidServiceRegistry.getInstance(getApplicationContext()).unregister(getClass());
+    protected AndroidServiceEntry getEntry() {
+        String payload = getPlainPayload(new ObjectMapper(),
+                new AppMigrationAndroidServiceStarter.Payload(currentDataSchemaVersion));
+
+        return entryBuilder(AppMigrationAndroidServiceStarter.class)
+                .autoStart(true)
+                .requiresAuth(true)
+                .payload(payload)
+                .build();
     }
 
     @Override
