@@ -6,6 +6,7 @@
 package app.notesr.core.security.crypto;
 
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 
 import app.notesr.core.security.exception.DecryptionFailedException;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,10 @@ public final class ValueDecryptor {
         } catch (GeneralSecurityException e) {
             throw new DecryptionFailedException(e);
         }
+    }
+
+    public String decrypt(String encryptedValue) throws DecryptionFailedException {
+        byte[] decryptedValue = decrypt(Base64.getDecoder().decode(encryptedValue));
+        return new String(decryptedValue);
     }
 }
