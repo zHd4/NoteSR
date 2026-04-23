@@ -31,6 +31,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.importer.ImportAndroidService;
+import app.notesr.service.importer.ImportAndroidServiceStarter;
 import app.notesr.service.importer.ImportStatus;
 import app.notesr.core.util.FileExifDataResolver;
 import app.notesr.core.util.FilesUtils;
@@ -231,10 +232,8 @@ public final class ImportActivity extends ActivityBase {
     }
 
     private void startImport() {
-        Intent intent = new Intent(this, ImportAndroidService.class)
-                .setData(selectedFileUri);
-
-        startForegroundService(intent);
+        new ImportAndroidServiceStarter(new ImportAndroidServiceStarter.Payload(selectedFileUri))
+                .start(getApplicationContext());
     }
 
     private boolean isImportRunning() {
