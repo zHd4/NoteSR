@@ -18,6 +18,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.SecretsUpdateAndroidService;
+import app.notesr.service.security.SecretsUpdateAndroidServiceStarter;
 
 public final class ReEncryptionActivity extends ActivityBase {
 
@@ -47,10 +48,7 @@ public final class ReEncryptionActivity extends ActivityBase {
                 .getInstance(getApplicationContext());
 
         if (!serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)) {
-            Intent serviceIntent = new Intent(getApplicationContext(),
-                    SecretsUpdateAndroidService.class);
-
-            startForegroundService(serviceIntent);
+            new SecretsUpdateAndroidServiceStarter().start(getApplicationContext());
         }
     }
 
