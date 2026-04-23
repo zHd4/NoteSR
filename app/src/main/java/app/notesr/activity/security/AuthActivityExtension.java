@@ -21,12 +21,15 @@ import java.util.Arrays;
 
 import app.notesr.BuildConfig;
 import app.notesr.R;
+import app.notesr.activity.FsaResolver;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.core.util.SecureStringBuilder;
+import app.notesr.service.AndroidServiceBootstrapper;
+import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.core.util.ActivityUtils;
 import app.notesr.core.util.KeyUtils;
@@ -46,11 +49,10 @@ public final class AuthActivityExtension {
     private char[] createdPassword;
 
     public void authorize() {
-        char[] password = passwordBuilder.toCharArray();
+        var password = passwordBuilder.toCharArray();
 
         if (password.length == 0) {
-            String enterCodeMessage = activity.getString(R.string.enter_the_code);
-            showToastMessage(enterCodeMessage);
+            showToastMessage(activity.getString(R.string.enter_the_code));
             return;
         }
 
@@ -62,32 +64,30 @@ public final class AuthActivityExtension {
     }
 
     public void createPassword() {
-        char[] password = proceedPasswordSetting();
+        var password = proceedPasswordSetting();
 
         if (password != null) {
-            Intent setupKeyActivityIntent = new Intent(activity.getApplicationContext(),
-                    SetupKeyActivity.class);
-
-            setupKeyActivityIntent.putExtra(SetupKeyActivity.EXTRA_MODE,
-                    KeySetupMode.FIRST_RUN.toString());
+            var context = activity.getApplicationContext();
+            var setupKeyActivityIntent = new Intent(context, SetupKeyActivity.class)
+                    .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.FIRST_RUN.toString());
 
             try {
-                byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
+                var passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
                 SecretCache.put(SetupKeyActivity.PASSWORD, passwordBytes);
             } catch (CharacterCodingException e) {
                 throw new RuntimeException(e);
             }
 
-            activity.startActivity(getNextIntent(setupKeyActivityIntent, false));
+            activity.startActivity(setupKeyActivityIntent);
         }
     }
 
     public void recoverKey() {
-        char[] password = proceedPasswordSetting();
+        var password = proceedPasswordSetting();
 
         if (password != null) {
             try {
-                char[] hexKey = bytesToChars(SecretCache.take(HEX_KEY),
+                var hexKey = bytesToChars(SecretCache.take(HEX_KEY),
                         StandardCharsets.UTF_8);
 
                 if (hexKey == null) {
@@ -105,32 +105,25 @@ public final class AuthActivityExtension {
                 throw new RuntimeException(e);
             }
 
-            Intent defaultIntent = new Intent(activity.getApplicationContext(),
-                    NotesListActivity.class);
-
-            activity.startActivity(getNextIntent(defaultIntent, true));
+            activity.startActivity(new Intent(activity.getApplicationContext(),
+                    NotesListActivity.class));
         }
     }
 
     public void changePassword() {
-        char[] password = proceedPasswordSetting();
+        var password = proceedPasswordSetting();
 
         if (password != null) {
             try {
-                Context context = activity.getApplicationContext();
-
-                CryptoSecrets secrets = cryptoManager.getSecrets();
+                var context = activity.getApplicationContext();
+                var secrets = cryptoManager.getSecrets();
                 secrets.setPassword(password);
 
                 cryptoManager.setSecrets(context, secrets);
                 secrets.destroy();
 
                 showToastMessage(R.string.updated);
-
-                Intent defaultIntent = new Intent(activity.getApplicationContext(),
-                        NotesListActivity.class);
-
-                activity.startActivity(getNextIntent(defaultIntent, false));
+                activity.startActivity(new Intent(context,  NotesListActivity.class));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -166,10 +159,15 @@ public final class AuthActivityExtension {
         TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
         censoredPasswordView.setText("");
 
-        Intent defaultIntent = new Intent(activity.getApplicationContext(),
-                NotesListActivity.class);
+        var context = activity.getApplicationContext();
+        var servicesRegistry = getServicesRegistry();
 
-        activity.startActivity(getNextIntent(defaultIntent, true));
+        new AndroidServiceBootstrapper(servicesRegistry).startServicesPostAuth(
+                context,
+                cryptoManager.getSecrets()
+        );
+
+        activity.startActivity(getNextIntentAfterAuth(context, servicesRegistry));
         activity.finish();
     }
 
@@ -201,19 +199,22 @@ public final class AuthActivityExtension {
         resetPassword();
     }
 
-    private Intent getNextIntent(Intent defaultIntent, boolean checkForMigrations) {
-        Context context = activity.getApplicationContext();
+    private Intent getNextIntentAfterAuth(
+            Context context,
+            AndroidServiceRegistry servicesRegistry
+    ) {
+        var fsaEntry = new FsaResolver(servicesRegistry).getFsaEntryOfCurrentRunningFs();
 
-        if (checkForMigrations) {
-            int lastMigrationVersion = new DataVersionManager(context).getCurrentVersion();
-            int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
+        int lastMigrationVersion = new DataVersionManager(context).getCurrentVersion();
+        int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
 
-            return lastMigrationVersion < currentDataSchemaVersion
-                    ? new Intent(context, MigrationActivity.class)
-                    : defaultIntent;
+        if (fsaEntry != null) {
+            return new Intent(context, fsaEntry.getActivityClass());
+        } else if (lastMigrationVersion < currentDataSchemaVersion) {
+            return new Intent(context, MigrationActivity.class);
         }
 
-        return defaultIntent;
+        return new Intent(context, NotesListActivity.class);
     }
 
     private void resetPassword() {
@@ -229,5 +230,9 @@ public final class AuthActivityExtension {
 
     private void showToastMessage(String text) {
         ActivityUtils.showToastMessage(activity, text, Toast.LENGTH_SHORT);
+    }
+
+    private AndroidServiceRegistry getServicesRegistry() {
+        return AndroidServiceRegistry.getInstance(activity.getApplicationContext());
     }
 }
