@@ -15,19 +15,13 @@ import java.util.function.Supplier;
 import app.notesr.R;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.activity.exporter.ExportActivity;
-import app.notesr.activity.importer.ImportActivity;
-import app.notesr.activity.migration.MigrationActivity;
+import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.lifecycle.AppCloseAndroidService;
-import app.notesr.service.migration.AppMigrationAndroidService;
-import app.notesr.service.exporter.ExportAndroidService;
-import app.notesr.service.importer.ImportAndroidService;
+import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
-import app.notesr.activity.security.ReEncryptionActivity;
-import app.notesr.service.security.SecretsUpdateAndroidService;
 
 public final class MainActivity extends ActivityBase {
 
@@ -37,17 +31,20 @@ public final class MainActivity extends ActivityBase {
         setContentView(R.layout.activity_main);
         applyInsets(findViewById(R.id.main));
 
-        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
-                .getInstance(getApplicationContext());
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        var serviceRegistry = AndroidServiceRegistry.getInstance(getApplicationContext());
+        var fsaResolver = new FsaResolver(serviceRegistry);
 
-        List<Supplier<Intent>> intentSuppliers = getIntentSuppliers(
+        new AndroidServiceBootstrapper(serviceRegistry)
+                .startServicesPreAuth(getApplicationContext());
+
+        var cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        var intentSuppliers = getIntentSuppliers(
                 getApplicationContext(),
                 cryptoManager,
-                serviceRegistry
+                fsaResolver
         );
 
-        Intent defaultIntent = new Intent(getApplicationContext(), NotesListActivity.class);
+        var defaultIntent = new Intent(getApplicationContext(), NotesListActivity.class);
 
         startAppCloseService(serviceRegistry);
         startActivity(new StartupIntentResolver(intentSuppliers, defaultIntent).resolve());
@@ -62,50 +59,39 @@ public final class MainActivity extends ActivityBase {
     private List<Supplier<Intent>> getIntentSuppliers(
             Context context,
             CryptoManager cryptoManager,
-            AndroidServiceRegistry serviceRegistry) {
+            FsaResolver fsaResolver
+    ) {
         return List.of(
                 () -> cryptoManager.isBlocked(getApplicationContext())
                         ? new Intent(context, KeyRecoveryActivity.class)
                         : null,
+
                 () -> !cryptoManager.isKeyExists(getApplicationContext())
                         ? new Intent(context, StartActivity.class)
                         : null,
-                () -> serviceRegistry.isServiceRunning(AppMigrationAndroidService.class)
-                        ? new Intent(context, MigrationActivity.class)
-                        : null,
 
-                () -> serviceRegistry.isServiceRunning(ExportAndroidService.class)
-                        ? new Intent(context, ExportActivity.class)
-                        : null,
-
-                () -> serviceRegistry.isServiceRunning(ImportAndroidService.class)
-                        ? new Intent(context, ImportActivity.class)
-                        : null,
-
-                () -> serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)
-                        ? new Intent(context, ReEncryptionActivity.class)
+                () -> !cryptoManager.isConfigured()
+                        ? new Intent(context, AuthActivity.class)
+                        .putExtra(AuthActivity.EXTRA_MODE,
+                                AuthActivity.Mode.AUTHORIZATION.toString())
                         : null,
 
                 () -> {
-                    if (!cryptoManager.isConfigured()) {
-                        Intent intent = new Intent(context, AuthActivity.class);
-                        intent.putExtra(AuthActivity.EXTRA_MODE,
-                                AuthActivity.Mode.AUTHORIZATION.toString());
+                    var fsaEntry = fsaResolver.getFsaEntryOfCurrentRunningFs();
+                    var activityClass = fsaEntry != null
+                            ? fsaEntry.getActivityClass()
+                            : null;
 
-                        return intent;
-                    }
-
-                    return null;
+                    return activityClass != null
+                            ? new Intent(context, activityClass)
+                            : null;
                 }
         );
     }
 
     private void startAppCloseService(AndroidServiceRegistry serviceRegistry) {
         if (!serviceRegistry.isServiceRunning(AppCloseAndroidService.class)) {
-            Intent serviceIntent = new Intent(getApplicationContext(),
-                    AppCloseAndroidService.class);
-
-            startForegroundService(serviceIntent);
+            new AppCloseAndroidServiceStarter().start(getApplicationContext());
         }
     }
 }
