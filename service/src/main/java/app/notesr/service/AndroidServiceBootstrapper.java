@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
  * <p>
  * This class handles the initialization and execution of services registered in the
  * {@link AndroidServiceRegistry}, distinguishing between those that can run immediately
- * and those that require user authentication (and thus access to {@link CryptoSecrets}).
+ * and those that require user authorization (and thus access to {@link CryptoSecrets}).
  */
 @RequiredArgsConstructor
 public final class AndroidServiceBootstrapper {
@@ -25,7 +25,7 @@ public final class AndroidServiceBootstrapper {
     private final AndroidServiceRegistry registry;
 
     /**
-     * Starts all auto-start services that do not require authentication.
+     * Starts all auto-start services that do not require authorization.
      *
      * @param context the Android application context used to initialize services
      */
@@ -38,7 +38,7 @@ public final class AndroidServiceBootstrapper {
     }
 
     /**
-     * Starts all auto-start services that require authentication.
+     * Starts all auto-start services that require authorization.
      *
      * @param context the Android application context used to initialize services
      * @param secrets the cryptographic secrets required for authenticated services
