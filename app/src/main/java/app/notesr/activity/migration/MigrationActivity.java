@@ -17,6 +17,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.AppMigrationAndroidService;
+import app.notesr.service.migration.AppMigrationAndroidServiceStarter;
 import app.notesr.service.migration.DataVersionManager;
 
 public final class MigrationActivity extends ActivityBase {
@@ -47,13 +48,9 @@ public final class MigrationActivity extends ActivityBase {
                 .getInstance(getApplicationContext());
 
         if (!serviceRegistry.isServiceRunning(AppMigrationAndroidService.class)) {
-            Intent serviceIntent = new Intent(getApplicationContext(),
-                    AppMigrationAndroidService.class);
-
-            serviceIntent.putExtra(AppMigrationAndroidService.EXTRA_CURRENT_DATA_SCHEMA_VERSION,
-                    BuildConfig.DATA_SCHEMA_VERSION);
-
-            startForegroundService(serviceIntent);
+            new AppMigrationAndroidServiceStarter(
+                    new AppMigrationAndroidServiceStarter.Payload(BuildConfig.DATA_SCHEMA_VERSION))
+                    .start(getApplicationContext());
         }
     }
 
