@@ -37,6 +37,7 @@ import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.exporter.ExportAndroidService;
+import app.notesr.service.exporter.ExportAndroidServiceStarter;
 import app.notesr.service.exporter.ExportStatus;
 import app.notesr.service.file.FileService;
 import app.notesr.activity.note.NotesListActivity;
@@ -138,16 +139,13 @@ public final class ExportActivity extends ActivityBase {
 
     private void startService() {
         VersionFetcher versionFetcher = new VersionFetcherImpl();
-        Intent serviceIntent = new Intent(this,
-                ExportAndroidService.class);
         try {
             String appVersion = versionFetcher.fetchVersionName(this, false);
-            serviceIntent.putExtra(ExportAndroidService.EXTRA_APP_VERSION, appVersion);
+            new ExportAndroidServiceStarter(new ExportAndroidServiceStarter.Payload(appVersion))
+                    .start(getApplicationContext());
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
-
-        startForegroundService(serviceIntent);
     }
 
     private void onOutputPathReceived(String outputPath) {
