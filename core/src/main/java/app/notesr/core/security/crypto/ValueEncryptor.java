@@ -18,7 +18,7 @@ public final class ValueEncryptor {
 
     public byte[] encrypt(byte[] plainValue) throws EncryptionFailedException {
         try {
-            return cryptor.decrypt(plainValue);
+            return cryptor.encrypt(plainValue);
         } catch (GeneralSecurityException e) {
             throw new EncryptionFailedException(e);
         }
