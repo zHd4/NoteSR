@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 public final class SecretCache {
     private static final ConcurrentHashMap<String, byte[]> MAP = new ConcurrentHashMap<>();
 
+    public static boolean contains(String key) {
+        return MAP.containsKey(key);
+    }
     public static void put(String key, byte[] value) {
         MAP.put(key, value);
     }
