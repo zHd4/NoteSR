@@ -13,6 +13,8 @@ import android.os.Bundle;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.nio.charset.CharacterCodingException;
+
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.note.NotesListActivity;
@@ -48,7 +50,11 @@ public final class ReEncryptionActivity extends ActivityBase {
                 .getInstance(getApplicationContext());
 
         if (!serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)) {
-            new SecretsUpdateAndroidServiceStarter().start(getApplicationContext());
+            try {
+                new SecretsUpdateAndroidServiceStarter().start(getApplicationContext());
+            } catch (CharacterCodingException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
