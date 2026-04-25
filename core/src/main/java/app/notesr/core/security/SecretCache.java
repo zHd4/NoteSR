@@ -37,6 +37,15 @@ public final class SecretCache {
         return value;
     }
 
+    public static void removeIfExists(String key) {
+        byte[] valueInMap = MAP.get(key);
+
+        if (valueInMap != null) {
+            Arrays.fill(valueInMap, (byte) 0);
+            MAP.remove(key);
+        }
+    }
+
     public static void clear() {
         MAP.values().forEach(arr -> Arrays.fill(arr, (byte) 0));
         MAP.clear();
