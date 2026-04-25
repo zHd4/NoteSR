@@ -6,7 +6,9 @@
 package app.notesr.core.security;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -25,8 +27,11 @@ class SecretCacheTest {
         SecretCache.put("key1", Arrays.copyOf(secret, secret.length));
 
         byte[] retrieved = SecretCache.take("key1");
-        assertArrayEquals(secret, retrieved,
-                "The retrieved value should match the value that was put in the cache");
+        assertArrayEquals(
+                secret,
+                retrieved,
+                "The retrieved value should match the value that was put in the cache"
+        );
 
         byte[] afterRemoval = SecretCache.take("key1");
         assertNull(afterRemoval,
@@ -41,6 +46,35 @@ class SecretCacheTest {
     }
 
     @Test
+    void testContainsReturnsCorrectBoolean() {
+        assertFalse(SecretCache.contains("key1"),
+                "Cache should not contain key1 initially");
+
+        SecretCache.put("key1", new byte[]{1});
+        assertTrue(SecretCache.contains("key1"),
+                "Cache should contain key1 after put");
+
+        SecretCache.take("key1");
+        assertFalse(SecretCache.contains("key1"),
+                "Cache should not contain key1 after take");
+    }
+
+    @Test
+    void testRemoveIfExistsClearsAndRemovesValue() {
+        byte[] secret = new byte[]{1, 2, 3};
+        SecretCache.put("key1", secret);
+
+        SecretCache.removeIfExists("key1");
+
+        assertFalse(SecretCache.contains("key1"),
+                "Cache should not contain key1 after removal");
+        assertArrayEquals(new byte[]{0, 0, 0}, secret,
+                "Original array should be zeroed after removal");
+
+        SecretCache.removeIfExists("nonexistent");
+    }
+
+    @Test
     void testClearEmptiesCacheAndZeroesValues() {
         byte[] secret1 = new byte[]{4, 5, 6};
         byte[] secret2 = new byte[]{7, 8, 9};
@@ -50,8 +84,10 @@ class SecretCacheTest {
 
         SecretCache.clear();
 
-        assertNull(SecretCache.take("key1"), "After clear, key1 should return null");
-        assertNull(SecretCache.take("key2"), "After clear, key2 should return null");
+        assertNull(SecretCache.take("key1"),
+                "After clear, key1 should return null");
+        assertNull(SecretCache.take("key2"),
+                "After clear, key2 should return null");
 
         assertArrayEquals(new byte[]{0,0,0}, secret1,
                 "Array for key1 should be zeroed after clear");
@@ -68,7 +104,10 @@ class SecretCacheTest {
         SecretCache.put("key", Arrays.copyOf(second, second.length));
 
         byte[] retrieved = SecretCache.take("key");
-        assertArrayEquals(second, retrieved,
-                "The last value put with the same key should overwrite the previous value");
+        assertArrayEquals(
+                second,
+                retrieved,
+                "The last value put with the same key should overwrite the previous value"
+        );
     }
 }
