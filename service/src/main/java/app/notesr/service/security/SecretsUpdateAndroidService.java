@@ -12,7 +12,6 @@ import static app.notesr.core.util.CharUtils.bytesToChars;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
@@ -24,6 +23,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +35,6 @@ import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.util.Wiper;
-import app.notesr.core.util.WiperAdapter;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
@@ -54,6 +54,7 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
 
 
     private SecretsUpdateService secretsUpdateService;
+    private CryptoSecrets currentSecrets;
     private CryptoSecrets newSecrets;
 
     @Override
@@ -73,7 +74,10 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        secretsUpdateService = getSecretsUpdateService();
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+
+        secretsUpdateService = getSecretsUpdateService(cryptoManager);
+        currentSecrets = cryptoManager.getSecrets();
         newSecrets = getNewSecrets();
 
         Thread thread = new Thread(this);
@@ -88,9 +92,16 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
     @NonNull
     @Override
     protected AndroidServiceEntry getEntry() {
+        var starterPayload = new SecretsUpdateAndroidServiceStarter.Payload(
+                newSecrets.getKey(),
+                newSecrets.getPassword()
+        );
+
+        var payload = getEncryptedPayload(new ObjectMapper(), starterPayload, currentSecrets);
         return entryBuilder(SecretsUpdateAndroidServiceStarter.class)
                 .autoStart(true)
                 .requiresAuth(true)
+                .payload(payload)
                 .build();
     }
 
@@ -139,13 +150,12 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
         }
     }
 
-    private SecretsUpdateService getSecretsUpdateService() {
-        Context context = getApplicationContext();
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+    private SecretsUpdateService getSecretsUpdateService(CryptoManager cryptoManager) {
+        var context = getApplicationContext();
 
-        FilesUtils filesUtils = new FilesUtils();
-        WiperAdapter wiper = new Wiper();
-        DatabaseManager databaseManager = new DatabaseManagerImpl(context);
+        var filesUtils = new FilesUtils();
+        var wiper = new Wiper();
+        var databaseManager = new DatabaseManagerImpl(context);
 
         return new SecretsUpdateService(
                 context,
