@@ -24,7 +24,11 @@ public final class ValueDecryptor {
     }
 
     public String decrypt(String encryptedValue) throws DecryptionFailedException {
-        byte[] decryptedValue = decrypt(Base64.getDecoder().decode(encryptedValue));
-        return new String(decryptedValue);
+        try {
+            byte[] decryptedValue = decrypt(Base64.getDecoder().decode(encryptedValue));
+            return new String(decryptedValue);
+        } catch (IllegalArgumentException e) {
+            throw new DecryptionFailedException(e);
+        }
     }
 }
