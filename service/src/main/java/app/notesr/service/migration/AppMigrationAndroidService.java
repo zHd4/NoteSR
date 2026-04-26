@@ -77,7 +77,7 @@ public class AppMigrationAndroidService extends AndroidService implements Runnab
     @NonNull
     @Override
     protected AndroidServiceEntry getEntry() {
-        String payload = getPlainPayload(new ObjectMapper(),
+        String payload = getPlainJson(new ObjectMapper(),
                 new AppMigrationAndroidServiceStarter.Payload(currentDataSchemaVersion));
 
         return entryBuilder(AppMigrationAndroidServiceStarter.class)

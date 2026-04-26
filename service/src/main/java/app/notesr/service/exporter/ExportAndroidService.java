@@ -110,7 +110,7 @@ public final class ExportAndroidService extends AndroidService implements Runnab
     @NonNull
     @Override
     protected AndroidServiceEntry getEntry() {
-        String payload = getPlainPayload(new ObjectMapper(),
+        String payload = getPlainJson(new ObjectMapper(),
                 new ExportAndroidServiceStarter.Payload(appVersion));
 
         return entryBuilder(ExportAndroidServiceStarter.class)

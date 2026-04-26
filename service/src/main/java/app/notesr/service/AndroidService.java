@@ -56,44 +56,44 @@ public abstract class AndroidService extends Service {
     }
 
     /**
-     * Serializes a payload object to a JSON string.
+     * Serializes an object to a JSON string.
      *
      * @param mapper  The {@link ObjectMapper} to use for serialization.
-     * @param payload The object to serialize.
-     * @return A JSON string representation of the payload.
+     * @param obj The object to serialize.
+     * @return A JSON string representation of the object.
      * @throws RuntimeException if serialization fails.
      */
-    protected String getPlainPayload(ObjectMapper mapper, Object payload) {
+    protected String getPlainJson(ObjectMapper mapper, Object obj) {
         try {
-            return mapper.writeValueAsString(payload);
+            return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize payload", e);
+            throw new RuntimeException("Failed to serialize object", e);
         }
     }
 
     /**
-     * Serializes a payload object to JSON and encrypts it using AES-GCM.
+     * Serializes an object to JSON and encrypts it using AES-GCM.
      *
      * @param mapper  The {@link ObjectMapper} to use for serialization.
-     * @param payload The object to serialize and encrypt.
+     * @param obj The object to serialize and encrypt.
      * @param secrets The {@link CryptoSecrets} containing the encryption key.
-     * @return An encrypted string representation of the payload.
+     * @return An encrypted string representation of the object.
      * @throws RuntimeException if serialization or encryption fails.
      */
-    protected String getEncryptedPayload(
+    protected String getEncryptedJson(
             ObjectMapper mapper,
-            Object payload,
+            Object obj,
             CryptoSecrets secrets
     ) {
         try {
-            var payloadJson = mapper.writeValueAsString(payload);
+            var payloadJson = mapper.writeValueAsString(obj);
             var encryptor = new ValueEncryptor(new AesGcmCryptor(getSecretKeyFromSecrets(secrets)));
 
             return encryptor.encrypt(payloadJson);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize payload", e);
+            throw new RuntimeException("Failed to serialize object", e);
         } catch (EncryptionFailedException e) {
-            throw new RuntimeException("Failed to encrypt payload", e);
+            throw new RuntimeException("Failed to encrypt object", e);
         }
     }
 

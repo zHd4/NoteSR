@@ -97,7 +97,7 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
                 newSecrets.getPassword()
         );
 
-        var payload = getEncryptedPayload(new ObjectMapper(), starterPayload, currentSecrets);
+        var payload = getEncryptedJson(new ObjectMapper(), starterPayload, currentSecrets);
         return entryBuilder(SecretsUpdateAndroidServiceStarter.class)
                 .autoStart(true)
                 .requiresAuth(true)

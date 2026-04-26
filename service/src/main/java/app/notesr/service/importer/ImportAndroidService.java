@@ -95,7 +95,7 @@ public final class ImportAndroidService extends AndroidService implements Runnab
     @NonNull
     @Override
     protected AndroidServiceEntry getEntry() {
-        String payload = getEncryptedPayload(
+        String payload = getEncryptedJson(
                 new ObjectMapper(),
                 new ImportAndroidServiceStarter.Payload(sourceUri),
                 secrets
