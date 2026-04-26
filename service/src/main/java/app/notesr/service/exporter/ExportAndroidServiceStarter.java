@@ -8,6 +8,7 @@ package app.notesr.service.exporter;
 import android.content.Context;
 import android.content.Intent;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import app.notesr.core.security.dto.CryptoSecrets;
@@ -28,7 +29,8 @@ public final class ExportAndroidServiceStarter implements AndroidServiceStarter 
     }
 
     @Override
-    public void start(Context context, CryptoSecrets secrets, String payload) throws Exception {
+    public void start(Context context, CryptoSecrets secrets, String payload)
+            throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         this.payload = mapper.readValue(payload, Payload.class);
         start(context);
