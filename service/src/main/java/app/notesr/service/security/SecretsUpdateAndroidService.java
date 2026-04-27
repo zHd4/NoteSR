@@ -117,8 +117,8 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
             secretsUpdateService.updateSecrets(newSecrets);
             onComplete();
         } catch (EncryptionFailedException | DecryptionFailedException | IOException e) {
-            Log.e(TAG, "Filed to update database", e);
-            throw new RuntimeException("Filed to update database", e);
+            Log.e(TAG, "Filed to update secrets", e);
+            throw new RuntimeException("Filed to update secrets", e);
         } finally {
             stopForeground(STOP_FOREGROUND_REMOVE);
             stopSelf();
