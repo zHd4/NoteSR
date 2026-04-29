@@ -101,6 +101,22 @@ public final class AndroidServiceRegistry {
     }
 
     /**
+     * Updates the state of an existing service entry and persists the change.
+     * This method finds the registered service matching the class of the provided
+     * entry and synchronizes its state.
+     *
+     * @param entry the {@link AndroidServiceEntry} containing the updated state
+     */
+    public void updateEntry(AndroidServiceEntry entry) {
+        runningServices.stream()
+                .filter(s -> s.getServiceClass().equals(entry.getServiceClass()))
+                .findFirst()
+                .ifPresent(s -> s.setState(entry.getState()));
+
+        saveServices(runningServices);
+    }
+
+    /**
      * Returns a copy of the set of currently running service entries.
      *
      * @return a new set containing all registered {@link AndroidServiceEntry} objects
