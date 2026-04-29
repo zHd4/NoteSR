@@ -7,14 +7,19 @@ package app.notesr.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
@@ -190,5 +195,96 @@ class AndroidServiceRegistryTest {
         AndroidServiceEntry loadedEntry = newRegistry.getSet().iterator().next();
         assertTrue(loadedEntry.isAutoStart(),
                 "Loaded service should have autoStart set to true");
+    }
+
+    @Test
+    void testUpdateEntry() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .serviceName("Test Service 1")
+                .state("initial state")
+                .build();
+
+        registry.register(entry);
+
+        AndroidServiceEntry updatedEntry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .state("updated state")
+                .build();
+
+        registry.updateEntry(updatedEntry);
+
+        AndroidServiceEntry result = registry.getSet().stream()
+                .filter(e -> e.getServiceClass().equals(TestService1.class))
+                .findFirst()
+                .orElseThrow();
+
+        assertEquals("updated state", result.getState(),
+                "Service state should be updated");
+        verify(editor, times(2)).apply();
+    }
+
+    @Test
+    void testUnregisterNonExistentService() {
+        registry.unregister(TestService1.class);
+        assertFalse(registry.isServiceRunning(TestService1.class));
+        verify(editor, times(1)).apply();
+    }
+
+    @Test
+    void testUpdateNonExistentEntry() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .state("new state")
+                .build();
+
+        registry.updateEntry(entry);
+        assertFalse(registry.isServiceRunning(TestService1.class));
+        verify(editor, times(1)).apply();
+    }
+
+    @Test
+    void testDeserializationError() {
+        Set<String> jsonSet = new HashSet<>();
+        jsonSet.add("invalid json");
+
+        SharedPreferences mockPrefs = mock(SharedPreferences.class);
+        when(mockPrefs.getStringSet(eq("current_running_services"), eq(null)))
+                .thenReturn(jsonSet);
+
+        assertThrows(RuntimeException.class, () -> new AndroidServiceRegistry(mockPrefs));
+    }
+
+    @Test
+    void testFullEntryPersistence() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .serviceName("Full Service")
+                .autoStart(true)
+                .requiresAuth(true)
+                .payload("test payload")
+                .state("test state")
+                .build();
+
+        registry.register(entry);
+
+        Set<AndroidServiceEntry> services = registry.getSet();
+        assertEquals(1, services.size());
+        AndroidServiceEntry savedEntry = services.iterator().next();
+
+        assertEquals(entry, savedEntry);
+    }
+
+    @Test
+    void testGetInstance() {
+        Context mockContext = mock(Context.class);
+        SharedPreferences mockPrefs = mock(SharedPreferences.class);
+        when(mockContext.getSharedPreferences(any(), anyInt())).thenReturn(mockPrefs);
+
+        AndroidServiceRegistry instance1 = AndroidServiceRegistry.getInstance(mockContext);
+        AndroidServiceRegistry instance2 = AndroidServiceRegistry.getInstance(mockContext);
+
+        assertNotNull(instance1);
+        assertSame(instance1, instance2, "Should return the same instance (singleton)");
     }
 }
