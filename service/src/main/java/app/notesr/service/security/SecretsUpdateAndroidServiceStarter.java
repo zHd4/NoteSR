@@ -54,7 +54,7 @@ public final class SecretsUpdateAndroidServiceStarter implements AndroidServiceS
     }
 
     @Override
-    public void start(Context context, CryptoSecrets secrets, String payload)
+    public void start(Context context, CryptoSecrets secrets, String payload, String state)
             throws DecryptionFailedException, JsonProcessingException, CharacterCodingException {
 
         requireNonNull(secrets, "Secrets are null");

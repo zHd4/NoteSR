@@ -17,5 +17,6 @@ import app.notesr.core.security.dto.CryptoSecrets;
 public interface AndroidServiceStarter {
 
     void start(Context context) throws Exception;
-    void start(Context context, CryptoSecrets secrets, String payload) throws Exception;
+    void start(Context context, CryptoSecrets secrets, String payload, String state)
+            throws Exception;
 }

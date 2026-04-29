@@ -38,7 +38,7 @@ public final class ImportAndroidServiceStarter implements AndroidServiceStarter 
     }
 
     @Override
-    public void start(Context context, CryptoSecrets secrets, String payload)
+    public void start(Context context, CryptoSecrets secrets, String payload, String state)
             throws DecryptionFailedException, JsonProcessingException {
 
         requireNonNull(secrets, "Secrets are null");

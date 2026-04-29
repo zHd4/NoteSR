@@ -19,7 +19,7 @@ public final class AppCloseAndroidServiceStarter implements AndroidServiceStarte
     }
 
     @Override
-    public void start(Context context, CryptoSecrets secrets, String payload) {
+    public void start(Context context, CryptoSecrets secrets, String payload, String state) {
         throw new UnsupportedOperationException();
     }
 }

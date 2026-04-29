@@ -29,8 +29,9 @@ public final class ExportAndroidServiceStarter implements AndroidServiceStarter 
     }
 
     @Override
-    public void start(Context context, CryptoSecrets secrets, String payload)
+    public void start(Context context, CryptoSecrets secrets, String payload, String state)
             throws JsonProcessingException {
+
         ObjectMapper mapper = new ObjectMapper();
         this.payload = mapper.readValue(payload, Payload.class);
         start(context);

@@ -32,7 +32,7 @@ public final class AppMigrationAndroidServiceStarter implements AndroidServiceSt
     }
 
     @Override
-    public void start(Context context, CryptoSecrets secrets, String payload)
+    public void start(Context context, CryptoSecrets secrets, String payload, String state)
             throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
