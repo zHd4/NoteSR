@@ -67,6 +67,13 @@ public final class AndroidServiceEntry {
     private String payload;
 
     /**
+     * An optional JSON-formatted string or base64-encoded current operational state
+     * associated with this service entry.
+     */
+    @JsonProperty(index = 7)
+    private String state;
+
+    /**
      * Deserializes a JSON string into an {@code AndroidServiceEntry} instance.
      *
      * @param json the JSON string representing the service entry.
