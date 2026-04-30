@@ -16,5 +16,7 @@ public interface FilesUtilsAdapter {
     byte[] readFileBytes(File file) throws IOException;
     void writeFileBytes(File file, byte[] data) throws IOException;
     void writeFileBytes(File file, byte[] data, boolean append) throws IOException;
+    void moveFile(File source, File target) throws IOException;
+    void deleteFile(File file) throws IOException;
     String getFileExtension(String fileName);
 }

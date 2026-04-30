@@ -11,8 +11,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public final class FilesUtils implements FilesUtilsAdapter {
+
+    @Override
     public byte[] readFileBytes(File file) throws IOException {
         byte[] data = new byte[(int) file.length()];
 
@@ -23,14 +27,26 @@ public final class FilesUtils implements FilesUtilsAdapter {
         return data;
     }
 
+    @Override
     public void writeFileBytes(File file, byte[] data) throws IOException {
         writeFileBytes(file, data, false);
     }
 
+    @Override
     public void writeFileBytes(File file, byte[] data, boolean append) throws IOException {
         try (FileOutputStream stream = new FileOutputStream(file, append)) {
             stream.write(data);
         }
+    }
+
+    @Override
+    public void moveFile(File source, File target) throws IOException {
+        Files.move(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public void deleteFile(File file) throws IOException {
+        Files.deleteIfExists(file.toPath());
     }
 
     public File getInternalFile(Context context, String path) {
