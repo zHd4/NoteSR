@@ -11,9 +11,7 @@ import android.content.Context;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.List;
 
 import app.notesr.core.security.crypto.AesCryptor;
@@ -22,8 +20,7 @@ import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
-import app.notesr.core.util.FilesUtilsAdapter;
-import app.notesr.core.util.WiperAdapter;
+import app.notesr.core.util.TransactionalFilesUtil;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.model.FileBlobInfo;
 import app.notesr.service.file.FileService;
@@ -36,15 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class SecretsUpdateService {
 
-    private static final String TEMP_DB_NAME = "tmp_notesr.db";
-    private static final String TEMP_BLOBS_DIR_NAME = "fblobs_tmp";
-    private static final String OLD_BLOBS_DIR_NAME = "fblobs_old";
-
     private final Context context;
-    private final String dbName;
-    private final CryptoManager cryptoManager;
-    private final FilesUtilsAdapter filesUtils;
-    private final WiperAdapter wiper;
     private final DatabaseManager databaseManager;
 
     /**
@@ -52,45 +41,52 @@ public final class SecretsUpdateService {
      * It performs a migration of the database and file blobs to the new encryption settings.
      *
      * @param newSecrets The new crypto secrets to be applied.
-     * @throws EncryptionFailedException If encryption of data with the new secrets fails.
-     * @throws DecryptionFailedException If decryption of data with the current secrets fails.
-     * @throws IOException               If an I/O error occurs during the migration process.
+     * @throws SecretsUpdateFailedException If the secrets update fails.
      */
-    public void updateSecrets(CryptoSecrets newSecrets)
-            throws EncryptionFailedException, DecryptionFailedException, IOException {
+    public void updateSecrets(
+            TransactionalFilesUtil txFiles,
+            CryptoManager cryptoManager,
+            String dbName,
+            SecretsUpdateStateHolder stateHolder,
+            CryptoSecrets newSecrets) {
 
-        CryptoSecrets currentSecrets = cryptoManager.getSecrets();
+        var currentSecrets = cryptoManager.getSecrets();
 
-        try {
-            AesCryptor currentCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(currentSecrets));
-            AesCryptor newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
+        try (txFiles) {
+            if (getStatus(stateHolder) == null) {
+                setStatus(stateHolder, SecretsUpdateStatus.INITIALIZING);
+            }
 
-            File currentDbFile = filesUtils.getDatabaseFile(context, dbName);
-            File tempDbFile = filesUtils.getDatabaseFile(context, TEMP_DB_NAME);
+            if (getStatus(stateHolder) == SecretsUpdateStatus.FAILED) {
+                throw new SecretsUpdateFailedException("Secrets update is already failed");
+            }
 
-            File currentBlobsDir = filesUtils.getInternalFile(context, FileService.BLOBS_DIR_NAME);
-            File tempBlobsDir = filesUtils.getInternalFile(context, TEMP_BLOBS_DIR_NAME);
-            File oldBlobsDir = filesUtils.getInternalFile(context, OLD_BLOBS_DIR_NAME);
-
-            ensureDirectoryExists(tempBlobsDir);
+            var currentCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(currentSecrets));
+            var newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
+            var currentBlobsDir = txFiles.getInternalFile(context, FileService.BLOBS_DIR_NAME);
 
             databaseManager.closeProvider();
 
             migrateData(
+                    txFiles,
+                    stateHolder,
+                    dbName,
                     currentSecrets.getKey(),
                     newSecrets.getKey(),
-                    tempDbFile,
                     currentBlobsDir,
-                    tempBlobsDir,
                     currentCryptor,
                     newCryptor
             );
 
-            performAtomicSwap(currentDbFile, tempDbFile, currentBlobsDir, tempBlobsDir, oldBlobsDir);
-
+            txFiles.commit();
             cryptoManager.setSecrets(context, newSecrets);
+            setStatus(stateHolder, SecretsUpdateStatus.DONE);
+
             databaseManager.reinitProvider(newSecrets.getKey());
-            wiper.wipeDir(oldBlobsDir);
+        } catch (Exception e) {
+            txFiles.rollback();
+            setStatus(stateHolder, SecretsUpdateStatus.FAILED);
+            throw new SecretsUpdateFailedException("Secrets update failed", e);
         } finally {
             currentSecrets.destroy();
             newSecrets.destroy();
@@ -98,27 +94,14 @@ public final class SecretsUpdateService {
     }
 
     /**
-     * Ensures that the specified directory exists.
-     * If the directory does not exist, it attempts to create it along with any necessary
-     * parent directories.
-     *
-     * @param dir The directory to ensure existence of.
-     * @throws IOException If the directory does not exist and could not be created.
-     */
-    private void ensureDirectoryExists(File dir) throws IOException {
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new IOException("Failed to create directory: " + dir.getAbsolutePath());
-        }
-    }
-
-    /**
      * Migrates the database and file blobs from the current encryption to the new encryption.
      *
+     * @param txFiles         The transactional files utility.
+     * @param stateHolder     The state holder for the update process.
+     * @param dbName          The name of the database to migrate.
      * @param currentKey      The current database encryption key.
      * @param newKey          The new database encryption key.
-     * @param tempDbFile      The temporary database file to migrate data into.
      * @param currentBlobsDir The directory containing current encrypted file blobs.
-     * @param tempBlobsDir    The temporary directory to store newly encrypted file blobs.
      * @param currentCryptor  The cryptor used for decrypting current data.
      * @param newCryptor      The cryptor used for encrypting data with new secrets.
      * @throws IOException               If an I/O error occurs.
@@ -126,30 +109,50 @@ public final class SecretsUpdateService {
      * @throws DecryptionFailedException If decryption fails.
      */
     private void migrateData(
+            TransactionalFilesUtil txFiles,
+            SecretsUpdateStateHolder stateHolder,
+            String dbName,
             byte[] currentKey,
             byte[] newKey,
-            File tempDbFile,
             File currentBlobsDir,
-            File tempBlobsDir,
             AesCryptor currentCryptor,
-            AesCryptor newCryptor
-    ) throws IOException, EncryptionFailedException, DecryptionFailedException {
+            AesCryptor newCryptor)
+            throws IOException, EncryptionFailedException, DecryptionFailedException {
 
-        AppDatabase currentDb = databaseManager.getDatabase(dbName, currentKey);
-        AppDatabase tempDb = databaseManager.getDatabase(tempDbFile.getName(), newKey);
-
-        if (!databaseManager.isDbAvailable(tempDb)) {
-            tempDb.close();
-            cleanupTempData(tempDbFile, tempBlobsDir);
-            tempDb = databaseManager.getDatabase(tempDbFile.getName(), newKey);
-        }
+        var currentDb = databaseManager.getDatabase(dbName, currentKey);
+        var currentDbFile = txFiles.getDatabaseFile(context, dbName);
 
         try {
-            copyDbData(currentDb, tempDb);
-            updateBlobsData(currentDb, currentBlobsDir, tempBlobsDir, currentCryptor, newCryptor);
+            if (getStatus(stateHolder).isBeforeOrEqual(SecretsUpdateStatus.MOVING_BLOBS_DATA)) {
+                setStatus(stateHolder, SecretsUpdateStatus.MOVING_BLOBS_DATA);
+                updateBlobsData(txFiles, currentDb, currentBlobsDir, currentCryptor, newCryptor);
+            }
+
+            if (getStatus(stateHolder).isBeforeOrEqual(SecretsUpdateStatus.MOVING_DB_DATA)) {
+                // Staging files for new database
+                File stagedDbFile = txFiles.stageFile(currentDbFile);
+
+                // Creating empty database
+                if (!stagedDbFile.delete()) {
+                    throw new IOException("Failed to delete staged database file: "
+                            + stagedDbFile.getAbsolutePath());
+                }
+
+                var tempDb = databaseManager.getDatabase(stagedDbFile.getAbsolutePath(), newKey);
+
+                try {
+                    setStatus(stateHolder, SecretsUpdateStatus.MOVING_DB_DATA);
+                    copyDbData(currentDb, tempDb);
+                } finally {
+                    tempDb.close();
+                }
+
+                // TODO: Check if we need to delete the files
+                txFiles.deleteFile(new File(currentDbFile.getPath() + "-shm"));
+                txFiles.deleteFile(new File(currentDbFile.getPath() + "-wal"));
+            }
         } finally {
             currentDb.close();
-            tempDb.close();
         }
     }
 
@@ -171,9 +174,9 @@ public final class SecretsUpdateService {
     /**
      * Re-encrypts all file blobs from the current directory to the temporary directory.
      *
+     * @param txFiles         The transactional files utility.
      * @param oldDb           The source database to retrieve blob information from.
      * @param currentBlobsDir The source directory for file blobs.
-     * @param tempBlobsDir    The destination directory for re-encrypted file blobs.
      * @param currentCryptor  The cryptor used to decrypt current blobs.
      * @param newCryptor      The cryptor used to encrypt blobs with new secrets.
      * @throws IOException               If an I/O error occurs.
@@ -181,9 +184,9 @@ public final class SecretsUpdateService {
      * @throws DecryptionFailedException If decryption fails.
      */
     private void updateBlobsData(
+            TransactionalFilesUtil txFiles,
             AppDatabase oldDb,
             File currentBlobsDir,
-            File tempBlobsDir,
             AesCryptor currentCryptor,
             AesCryptor newCryptor
     ) throws IOException, EncryptionFailedException, DecryptionFailedException {
@@ -191,132 +194,53 @@ public final class SecretsUpdateService {
         List<FileBlobInfo> blobsInfo = oldDb.getFileBlobInfoDao().getAll();
 
         for (FileBlobInfo blobInfo : blobsInfo) {
-            File sourceFile = new File(currentBlobsDir, blobInfo.getId());
-            File targetFile = new File(tempBlobsDir, blobInfo.getId());
+            var sourceFile = new File(currentBlobsDir, blobInfo.getId());
 
-            if (targetFile.exists() && targetFile.length() > 0) {
+            // If it already staged, it has already been processed
+            boolean isStaged = txFiles.isStaged(sourceFile);
+
+            // In transaction, we overwrite the same path, but it's staged
+            byte[] data = txFiles.readFileBytes(sourceFile);
+
+            if (isStaged) {
+                // Trying to check if already re-encrypted blob can be successfully
+                // decrypted and skip if it can, otherwise it will be failed
+                decryptBlobData(newCryptor, data);
                 continue;
             }
 
-            byte[] data = filesUtils.readFileBytes(sourceFile);
+            data = decryptBlobData(currentCryptor, data);
+            data = encryptBlobData(newCryptor, data);
 
-            try {
-                data = currentCryptor.decrypt(data);
-            } catch (GeneralSecurityException e) {
-                throw new DecryptionFailedException(e);
-            }
-
-            try {
-                data = newCryptor.encrypt(data);
-            } catch (GeneralSecurityException e) {
-                throw new EncryptionFailedException(e);
-            }
-
-            filesUtils.writeFileBytes(targetFile, data);
+            txFiles.writeFileBytes(sourceFile, data);
         }
     }
 
-    /**
-     * Swaps the current database and blob directory with the temporary ones.
-     * This operation attempts to be as atomic as possible to maintain data integrity.
-     *
-     * @param currentDbFile   The current database file.
-     * @param tempDbFile      The temporary (newly migrated) database file.
-     * @param currentBlobsDir The current blobs directory.
-     * @param tempBlobsDir    The temporary (newly migrated) blobs directory.
-     * @param oldBlobsDir     The directory where the old blobs will be moved to.
-     * @throws IOException If an I/O error occurs during the swap.
-     */
-    private void performAtomicSwap(
-            File currentDbFile,
-            File tempDbFile,
-            File currentBlobsDir,
-            File tempBlobsDir,
-            File oldBlobsDir
-    ) throws IOException {
+    private byte[] encryptBlobData(AesCryptor cryptor, byte[] data)
+            throws EncryptionFailedException {
 
-        if (oldBlobsDir.exists()) {
-            wiper.wipeDir(oldBlobsDir);
-        }
-
-        Files.move(currentBlobsDir.toPath(), oldBlobsDir.toPath());
-        Files.move(tempBlobsDir.toPath(), currentBlobsDir.toPath());
-
-        replaceDatabase(currentDbFile, tempDbFile);
-    }
-
-    /**
-     * Replaces the current database files with the new ones.
-     * It creates a temporary backup of the old database files before replacing them.
-     *
-     * @param currentDbFile The current main database file.
-     * @param newDbFile     The new main database file.
-     * @throws IOException If an I/O error occurs during file replacement.
-     */
-    private void replaceDatabase(File currentDbFile, File newDbFile) throws IOException {
-        File[] currentDbFiles = getAllDbFiles(currentDbFile);
-        File[] oldDbFiles = Arrays.stream(currentDbFiles)
-                .map(file -> new File(file.getAbsolutePath() + ".old"))
-                .toArray(File[]::new);
-
-        for (int i = 0; i < currentDbFiles.length; i++) {
-            if (currentDbFiles[i].exists()) {
-                Files.move(currentDbFiles[i].toPath(), oldDbFiles[i].toPath());
-            }
-        }
-
-        Files.move(newDbFile.toPath(), currentDbFile.toPath());
-
-        eraseFiles(oldDbFiles);
-    }
-
-    /**
-     * Cleans up temporary data created during the migration process.
-     *
-     * @param tempDbFile   The temporary database file.
-     * @param tempBlobsDir The temporary blobs directory.
-     * @throws IOException If an I/O error occurs during cleanup.
-     */
-    private void cleanupTempData(File tempDbFile, File tempBlobsDir) throws IOException {
-        eraseFiles(getAllDbFiles(tempDbFile));
-
-        File[] tempBlobs = tempBlobsDir.listFiles();
-        if (tempBlobs != null) {
-            eraseFiles(tempBlobs);
+        try {
+            return cryptor.encrypt(data);
+        } catch (GeneralSecurityException e) {
+            throw new EncryptionFailedException(e);
         }
     }
 
-    /**
-     * Returns an array of all files associated with a SQLite database.
-     * This includes the main database file, the SHM file, and the WAL file.
-     *
-     * @param dbFile The main database file.
-     * @return An array containing the main database file and its associated auxiliary files.
-     */
-    private File[] getAllDbFiles(File dbFile) {
-        return new File[] {
-            dbFile,
-            new File(dbFile.getAbsolutePath() + "-shm"),
-            new File(dbFile.getAbsolutePath() + "-wal")
-        };
+    private byte[] decryptBlobData(AesCryptor cryptor, byte[] data)
+            throws DecryptionFailedException {
+
+        try {
+            return cryptor.decrypt(data);
+        } catch (GeneralSecurityException e) {
+            throw new DecryptionFailedException(e);
+        }
     }
 
-    /**
-     * Erases the specified files or directories.
-     * If a file is a directory, it is wiped recursively.
-     *
-     * @param files An array of files or directories to be erased.
-     * @throws IOException If an I/O error occurs during erasure.
-     */
-    private void eraseFiles(File[] files) throws IOException {
-        for (File file : files) {
-            if (file.exists()) {
-                if (file.isDirectory()) {
-                    wiper.wipeDir(file);
-                } else {
-                    wiper.wipeFile(file);
-                }
-            }
-        }
+    private SecretsUpdateStatus getStatus(SecretsUpdateStateHolder stateHolder) {
+        return stateHolder.getState().getStatus();
+    }
+
+    private void setStatus(SecretsUpdateStateHolder stateHolder, SecretsUpdateStatus status) {
+        stateHolder.setState(stateHolder.getState().setStatus(status));
     }
 }
