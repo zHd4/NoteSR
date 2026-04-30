@@ -6,17 +6,14 @@
 package app.notesr.service.security;
 
 import static java.util.Objects.requireNonNull;
-
 import static app.notesr.core.util.CharUtils.bytesToChars;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,47 +22,46 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.exception.DecryptionFailedException;
-import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.util.Wiper;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.core.util.FilesUtils;
 
+import app.notesr.core.util.FilesUtils;
+import app.notesr.core.util.TransactionalFilesUtil;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
+import app.notesr.service.AndroidServiceRegistry;
 
 public final class SecretsUpdateAndroidService extends AndroidService implements Runnable {
 
-    private static final String TAG = SecretsUpdateAndroidService.class.getCanonicalName();
     public static final String NEW_KEY = "new_key";
     public static final String PASSWORD = "password";
     public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
+    public static final String EXTRA_CURRENT_STATE = "current_state";
     public static final String EXTRA_COMPLETE = "re_encryption_complete";
     private static final String CHANNEL_ID = "re_encryption_service_channel";
     private static final String CHANNEL_NAME = "Re-encryption Service Channel";
 
-
-    private SecretsUpdateService secretsUpdateService;
-    private CryptoSecrets currentSecrets;
+    private String dbName;
+    private CryptoManager cryptoManager;
+    private SecretsUpdateStateHolder stateHolder;
     private CryptoSecrets newSecrets;
+    private SecretsUpdateService secretsUpdateService;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
+        var notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        var notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(notificationChannel);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        var notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .build();
 
         int type = 0;
@@ -74,13 +70,16 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        dbName = DatabaseProvider.DB_NAME;
 
-        secretsUpdateService = getSecretsUpdateService(cryptoManager);
-        currentSecrets = cryptoManager.getSecrets();
+        cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
         newSecrets = getNewSecrets();
 
-        Thread thread = new Thread(this);
+        var state = (SecretsUpdateState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
+        stateHolder = new SecretsUpdateStateHolder(this::onStateUpdate).setState(state);
+        secretsUpdateService = getSecretsUpdateService();
+
+        var thread = new Thread(this);
         thread.start();
 
         startForeground(startId, notification, type);
@@ -92,16 +91,32 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
     @NonNull
     @Override
     protected AndroidServiceEntry getEntry() {
-        var starterPayload = new SecretsUpdateAndroidServiceStarter.Payload(
+        return getEntry(null);
+    }
+
+    private AndroidServiceEntry getEntry(SecretsUpdateState state) {
+        var payloadObj = new SecretsUpdateAndroidServiceStarter.Payload(
                 newSecrets.getKey(),
                 newSecrets.getPassword()
         );
 
-        var payload = getEncryptedJson(new ObjectMapper(), starterPayload, currentSecrets);
+        var encryptedPayload = getEncryptedJson(
+                new ObjectMapper(),
+                payloadObj,
+                cryptoManager.getSecrets()
+        );
+
+        String stateJson = null;
+
+        if (state != null) {
+            stateJson = getPlainJson(new ObjectMapper(), state);
+        }
+
         return entryBuilder(SecretsUpdateAndroidServiceStarter.class)
                 .autoStart(true)
                 .requiresAuth(true)
-                .payload(payload)
+                .payload(encryptedPayload)
+                .state(stateJson)
                 .build();
     }
 
@@ -114,11 +129,24 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
     @Override
     public void run() {
         try {
-            secretsUpdateService.updateSecrets(newSecrets);
+            var filesUtils = new FilesUtils();
+            var transactionId = stateHolder.getState().getTransactionId();
+            var txFiles = new TransactionalFilesUtil(getApplicationContext(), filesUtils, transactionId);
+
+            if (transactionId == null) {
+                transactionId = txFiles.getTransactionId();
+            }
+
+            stateHolder.setState(stateHolder.getState().setTransactionId(transactionId));
+            secretsUpdateService.updateSecrets(txFiles, cryptoManager, dbName, stateHolder,
+                    newSecrets);
+
             onComplete();
-        } catch (EncryptionFailedException | DecryptionFailedException | IOException e) {
-            Log.e(TAG, "Filed to update secrets", e);
-            throw new RuntimeException("Filed to update secrets", e);
+        } catch (SecretsUpdateFailedException e) {
+            // We need also to notify about the failure
+
+            onDestroy();
+            throw e;
         } finally {
             stopForeground(STOP_FOREGROUND_REMOVE);
             stopSelf();
@@ -130,8 +158,13 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
         super.onTaskRemoved(rootIntent);
     }
 
+    private void onStateUpdate(SecretsUpdateState newState) {
+        AndroidServiceRegistry.getInstance(getApplicationContext())
+                .updateEntry(getEntry(newState));
+    }
+
     private void onComplete() {
-        Intent broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(EXTRA_COMPLETE, true);
+        var broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(EXTRA_COMPLETE, true);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
     }
 
@@ -150,20 +183,10 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
         }
     }
 
-    private SecretsUpdateService getSecretsUpdateService(CryptoManager cryptoManager) {
+    private SecretsUpdateService getSecretsUpdateService() {
         var context = getApplicationContext();
-
-        var filesUtils = new FilesUtils();
-        var wiper = new Wiper();
         var databaseManager = new DatabaseManagerImpl(context);
 
-        return new SecretsUpdateService(
-                context,
-                DatabaseProvider.DB_NAME,
-                cryptoManager,
-                filesUtils,
-                wiper,
-                databaseManager
-        );
+        return new SecretsUpdateService(context, databaseManager);
     }
 }

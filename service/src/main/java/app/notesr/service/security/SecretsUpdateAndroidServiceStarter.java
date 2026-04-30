@@ -8,6 +8,7 @@ package app.notesr.service.security;
 import static java.util.Objects.requireNonNull;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
+import static app.notesr.service.security.SecretsUpdateAndroidService.EXTRA_CURRENT_STATE;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +34,7 @@ import lombok.NoArgsConstructor;
 public final class SecretsUpdateAndroidServiceStarter implements AndroidServiceStarter {
 
     private Payload payload;
+    private SecretsUpdateState state;
 
     @Override
     public void start(Context context) throws CharacterCodingException {
@@ -57,19 +59,31 @@ public final class SecretsUpdateAndroidServiceStarter implements AndroidServiceS
     public void start(Context context, CryptoSecrets secrets, String payload, String state)
             throws DecryptionFailedException, JsonProcessingException, CharacterCodingException {
 
-        requireNonNull(secrets, "Secrets are null");
-        var payloadJson = new ValueDecryptor(new AesGcmCryptor(getSecretKeyFromSecrets(secrets)))
-                .decrypt(payload);
-
         var mapper = new ObjectMapper();
-        this.payload = mapper.readValue(payloadJson,
-                SecretsUpdateAndroidServiceStarter.Payload.class);
 
+        if (state != null) {
+            this.state = mapper.readValue(state, SecretsUpdateState.class);
+        }
+
+        this.payload = decryptPayload(mapper, secrets, payload);
         start(context);
     }
 
+    private Payload decryptPayload(ObjectMapper mapper, CryptoSecrets secrets, String payload)
+            throws DecryptionFailedException, JsonProcessingException {
+
+        requireNonNull(secrets, "Secrets are null");
+        requireNonNull(payload, "Payload is null");
+
+        var payloadJson = new ValueDecryptor(new AesGcmCryptor(getSecretKeyFromSecrets(secrets)))
+                .decrypt(payload);
+
+        return mapper.readValue(payloadJson, Payload.class);
+    }
+
     private Intent buildIntent(Context context) {
-        return new Intent(context, SecretsUpdateAndroidService.class);
+        return new Intent(context, SecretsUpdateAndroidService.class)
+                .putExtra(EXTRA_CURRENT_STATE, state);
     }
 
     @Data
