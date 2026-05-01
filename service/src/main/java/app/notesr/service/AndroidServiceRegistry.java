@@ -65,11 +65,16 @@ public final class AndroidServiceRegistry {
     }
 
     /**
-     * Registers a service as running.
+     * Registers a service as running in the registry if it is not already registered.
      *
      * @param serviceEntry the {@link AndroidServiceEntry} representing the service to register
      */
     public void register(AndroidServiceEntry serviceEntry) {
+        if (isServiceRunning(serviceEntry.getServiceClass())) {
+            updateEntry(serviceEntry);
+            return;
+        }
+
         runningServices.add(serviceEntry);
         saveServices(runningServices);
     }
