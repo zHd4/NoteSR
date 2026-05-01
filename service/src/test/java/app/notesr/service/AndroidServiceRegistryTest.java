@@ -202,6 +202,7 @@ class AndroidServiceRegistryTest {
         AndroidServiceEntry entry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
                 .serviceName("Test Service 1")
+                .payload("initial payload")
                 .state("initial state")
                 .build();
 
@@ -209,6 +210,7 @@ class AndroidServiceRegistryTest {
 
         AndroidServiceEntry updatedEntry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .payload("updated payload")
                 .state("updated state")
                 .build();
 
@@ -219,8 +221,40 @@ class AndroidServiceRegistryTest {
                 .findFirst()
                 .orElseThrow();
 
+        assertEquals("updated payload", result.getPayload(),
+                "Service payload should be updated");
         assertEquals("updated state", result.getState(),
                 "Service state should be updated");
+        verify(editor, times(2)).apply();
+    }
+
+    @Test
+    void testRegisterExistingServiceUpdatesEntry() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .serviceName("Test Service 1")
+                .payload("initial payload")
+                .state("initial state")
+                .build();
+
+        registry.register(entry);
+
+        AndroidServiceEntry updatedEntry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .payload("updated payload")
+                .state("updated state")
+                .build();
+
+        registry.register(updatedEntry);
+
+        assertEquals(1, registry.getSet().size(),
+                "Registry should still contain only 1 service");
+
+        AndroidServiceEntry result = registry.getSet().iterator().next();
+        assertEquals("updated payload", result.getPayload(),
+                "Service payload should be updated via register");
+        assertEquals("updated state", result.getState(),
+                "Service state should be updated via register");
         verify(editor, times(2)).apply();
     }
 
