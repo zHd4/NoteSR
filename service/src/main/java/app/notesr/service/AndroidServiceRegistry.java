@@ -106,7 +106,7 @@ public final class AndroidServiceRegistry {
     }
 
     /**
-     * Updates the state of an existing service entry and persists the change.
+     * Updates the state and payload of an existing service entry and persists the change.
      * This method finds the registered service matching the class of the provided
      * entry and synchronizes its state.
      *
@@ -116,7 +116,10 @@ public final class AndroidServiceRegistry {
         runningServices.stream()
                 .filter(s -> s.getServiceClass().equals(entry.getServiceClass()))
                 .findFirst()
-                .ifPresent(s -> s.setState(entry.getState()));
+                .ifPresent(s -> {
+                    s.setPayload(entry.getPayload());
+                    s.setState(entry.getState());
+                });
 
         saveServices(runningServices);
     }
