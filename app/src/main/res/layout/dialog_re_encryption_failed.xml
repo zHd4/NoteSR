@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:padding="13dp"
+    android:layout_centerHorizontal="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/dialog_background">
+
+    <TextView
+        android:id="@+id/reEncryptionFailedErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:paddingStart="13dp"
+        android:paddingEnd="0dp"
+        android:layout_gravity="center_vertical"
+        android:text="@string/re_encryption_failed_your_key_and_your_data_remains_unchanged"
+        android:textColor="@android:color/holo_red_light"
+        android:textAppearance="?android:textAppearanceSmall" />
+
+</LinearLayout>
