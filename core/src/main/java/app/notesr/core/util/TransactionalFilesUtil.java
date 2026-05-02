@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import lombok.Getter;
+
 /**
  * A transactional version of {@link FilesUtilsAdapter} that stages file modifications
  * in the application's internal cache directory.
@@ -39,6 +41,8 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
     private final Map<File, File> stagedFiles = new HashMap<>();
     private final Set<File> deletedFiles = new HashSet<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Getter
     private boolean committed = false;
 
     /**
