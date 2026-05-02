@@ -5,6 +5,7 @@
 
 package app.notesr.core.util;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 
 import android.content.Context;
@@ -72,9 +73,9 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
 
         this.baseUtils = baseUtils;
 
-        if (transactionId == null) {
-            transactionId = randomUUID().toString();
-        }
+        requireNonNull(context, "Context cannot be null");
+        requireNonNull(baseUtils, "Base files utility cannot be null");
+        requireNonNull(transactionId, "Transaction ID cannot be null");
 
         this.transactionDir = new File(context.getCacheDir(), "tx_" + transactionId);
         this.journalFile = new File(transactionDir, JOURNAL_FILE_NAME);
