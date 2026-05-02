@@ -49,10 +49,14 @@ public abstract class AndroidService extends Service {
 
     /**
      * Registers this service instance in the {@link AndroidServiceRegistry}.
-     * Should be called when the service is ready to work.
+     * This method should be called when the service is fully initialized and ready to operate.
+     *
+     * @param payload The data payload associated with the service registration.
+     * @param state   The current operational state of the service.
      */
-    protected void register() {
-        AndroidServiceRegistry.getInstance(getApplicationContext()).register(getEntry());
+    protected void register(String payload, String state) {
+        AndroidServiceRegistry.getInstance(getApplicationContext())
+                .register(getEntry(payload, state));
     }
 
     /**
@@ -118,5 +122,5 @@ public abstract class AndroidService extends Service {
      * @return The {@link AndroidServiceEntry} defining this service's identity and metadata.
      */
     @NonNull
-    protected abstract AndroidServiceEntry getEntry();
+    protected abstract AndroidServiceEntry getEntry(String payload, String state);
 }

@@ -52,14 +52,14 @@ public final class AppCloseAndroidService extends AndroidService {
         }
 
         startForeground(1005, notification, type);
-        register();
+        register(null, null);
 
         return START_NOT_STICKY;
     }
 
     @NonNull
     @Override
-    protected AndroidServiceEntry getEntry() {
+    protected AndroidServiceEntry getEntry(String payload, String state) {
         return entryBuilder(AppCloseAndroidServiceStarter.class).build();
     }
 

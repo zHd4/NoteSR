@@ -45,10 +45,12 @@ class AndroidServiceRegistryTest {
 
         @NonNull
         @Override
-        protected AndroidServiceEntry getEntry() {
+        protected AndroidServiceEntry getEntry(String payload, String state) {
             return AndroidServiceEntry.builder()
                     .serviceClass(TestService1.class)
                     .serviceName("TestService1")
+                    .payload(payload)
+                    .state(state)
                     .build();
         }
     }
@@ -61,10 +63,12 @@ class AndroidServiceRegistryTest {
 
         @NonNull
         @Override
-        protected AndroidServiceEntry getEntry() {
+        protected AndroidServiceEntry getEntry(String payload, String state) {
             return AndroidServiceEntry.builder()
                     .serviceClass(TestService2.class)
                     .serviceName("TestService2")
+                    .payload(payload)
+                    .state(state)
                     .build();
         }
     }

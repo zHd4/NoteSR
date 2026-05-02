@@ -52,6 +52,7 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
     private SecretsUpdateStateHolder stateHolder;
     private CryptoSecrets newSecrets;
     private SecretsUpdateService secretsUpdateService;
+    private String encryptedPayload;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -78,46 +79,45 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
         var state = (SecretsUpdateState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
         stateHolder = new SecretsUpdateStateHolder(this::onStateUpdate).setState(state);
         secretsUpdateService = getSecretsUpdateService();
+        encryptedPayload = encryptPayload(getPayload());
 
         var thread = new Thread(this);
         thread.start();
 
         startForeground(startId, notification, type);
-        register();
+        register(encryptedPayload, serializeState(state));
 
         return START_STICKY;
     }
 
     @NonNull
     @Override
-    protected AndroidServiceEntry getEntry() {
-        return getEntry(null);
-    }
-
-    private AndroidServiceEntry getEntry(SecretsUpdateState state) {
-        var payloadObj = new SecretsUpdateAndroidServiceStarter.Payload(
-                newSecrets.getKey(),
-                newSecrets.getPassword()
-        );
-
-        var encryptedPayload = getEncryptedJson(
-                new ObjectMapper(),
-                payloadObj,
-                cryptoManager.getSecrets()
-        );
-
-        String stateJson = null;
-
-        if (state != null) {
-            stateJson = getPlainJson(new ObjectMapper(), state);
-        }
-
+    protected AndroidServiceEntry getEntry(String payload, String state) {
         return entryBuilder(SecretsUpdateAndroidServiceStarter.class)
                 .autoStart(true)
                 .requiresAuth(true)
-                .payload(encryptedPayload)
-                .state(stateJson)
+                .payload(payload)
+                .state(state)
                 .build();
+    }
+
+    private SecretsUpdateAndroidServiceStarter.Payload getPayload() {
+        return new SecretsUpdateAndroidServiceStarter.Payload(
+                newSecrets.getKey(),
+                newSecrets.getPassword()
+        );
+    }
+
+    private String encryptPayload(SecretsUpdateAndroidServiceStarter.Payload payload) {
+        return getEncryptedJson(new ObjectMapper(), payload, cryptoManager.getSecrets());
+    }
+
+    private String serializeState(SecretsUpdateState state) {
+        if (state == null) {
+            return null;
+        }
+
+        return getPlainJson(new ObjectMapper(), state);
     }
 
     @Nullable
@@ -131,11 +131,12 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
         try {
             var filesUtils = new FilesUtils();
             var transactionId = stateHolder.getState().getTransactionId();
-            var txFiles = new TransactionalFilesUtil(getApplicationContext(), filesUtils, transactionId);
 
-            if (transactionId == null) {
-                transactionId = txFiles.getTransactionId();
-            }
+            var txFiles = transactionId != null
+                    ? new TransactionalFilesUtil(getApplicationContext(), filesUtils, transactionId)
+                    : new TransactionalFilesUtil(getApplicationContext(), filesUtils);
+
+            transactionId = txFiles.getTransactionId();
 
             stateHolder.setState(stateHolder.getState().setTransactionId(transactionId));
             secretsUpdateService.updateSecrets(txFiles, cryptoManager, dbName, stateHolder,
@@ -160,7 +161,7 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
 
     private void onStateUpdate(SecretsUpdateState newState) {
         AndroidServiceRegistry.getInstance(getApplicationContext())
-                .updateEntry(getEntry(newState));
+                .updateEntry(getEntry(encryptedPayload, serializeState(newState)));
     }
 
     private void onComplete() {

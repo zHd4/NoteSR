@@ -69,17 +69,14 @@ public class AppMigrationAndroidService extends AndroidService implements Runnab
 
         thread.start();
         startForeground(1004, notification, type);
-        register();
+        register(getPayload(), null);
 
         return START_STICKY;
     }
 
     @NonNull
     @Override
-    protected AndroidServiceEntry getEntry() {
-        String payload = getPlainJson(new ObjectMapper(),
-                new AppMigrationAndroidServiceStarter.Payload(currentDataSchemaVersion));
-
+    protected AndroidServiceEntry getEntry(String payload, String state) {
         return entryBuilder(AppMigrationAndroidServiceStarter.class)
                 .autoStart(true)
                 .requiresAuth(true)
@@ -105,5 +102,10 @@ public class AppMigrationAndroidService extends AndroidService implements Runnab
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
+    }
+
+    private String getPayload() {
+        return getPlainJson(new ObjectMapper(),
+                new AppMigrationAndroidServiceStarter.Payload(currentDataSchemaVersion));
     }
 }

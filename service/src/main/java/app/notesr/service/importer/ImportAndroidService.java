@@ -87,20 +87,14 @@ public final class ImportAndroidService extends AndroidService implements Runnab
         thread.start();
 
         startForeground(startId, notification, type);
-        register();
+        register(encryptPayload(getPayload()), null);
 
         return START_STICKY;
     }
 
     @NonNull
     @Override
-    protected AndroidServiceEntry getEntry() {
-        String payload = getEncryptedJson(
-                new ObjectMapper(),
-                new ImportAndroidServiceStarter.Payload(sourceUri),
-                secrets
-        );
-
+    protected AndroidServiceEntry getEntry(String payload, String state) {
         return entryBuilder(ImportAndroidServiceStarter.class)
                 .autoStart(true)
                 .requiresAuth(true)
@@ -119,6 +113,14 @@ public final class ImportAndroidService extends AndroidService implements Runnab
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
+    }
+
+    private ImportAndroidServiceStarter.Payload getPayload() {
+        return new ImportAndroidServiceStarter.Payload(sourceUri);
+    }
+
+    private String encryptPayload(ImportAndroidServiceStarter.Payload payload) {
+        return getEncryptedJson(new ObjectMapper(), payload, secrets);
     }
 
     private void sendBroadcastData(ImportStatus status) {

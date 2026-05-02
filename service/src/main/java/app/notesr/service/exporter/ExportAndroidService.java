@@ -102,22 +102,24 @@ public final class ExportAndroidService extends AndroidService implements Runnab
         thread.start();
 
         startForeground(startId, notification, type);
-        register();
+        register(getPayload(), null);
 
         return START_STICKY;
     }
 
     @NonNull
     @Override
-    protected AndroidServiceEntry getEntry() {
-        String payload = getPlainJson(new ObjectMapper(),
-                new ExportAndroidServiceStarter.Payload(appVersion));
-
+    protected AndroidServiceEntry getEntry(String payload, String state) {
         return entryBuilder(ExportAndroidServiceStarter.class)
                 .autoStart(true)
                 .requiresAuth(true)
                 .payload(payload)
                 .build();
+    }
+
+    private String getPayload() {
+        return getPlainJson(new ObjectMapper(),
+                new ExportAndroidServiceStarter.Payload(appVersion));
     }
 
     private void onUpdateCallback(Integer progress, ExportStatus status) {
