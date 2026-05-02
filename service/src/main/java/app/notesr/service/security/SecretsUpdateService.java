@@ -163,9 +163,11 @@ public final class SecretsUpdateService {
                     tempDb.close();
                 }
 
-                // TODO: Check if we need to delete the files
-                txFiles.deleteFile(new File(currentDbFile.getPath() + "-shm"));
-                txFiles.deleteFile(new File(currentDbFile.getPath() + "-wal"));
+                // Deleting WAL and SHM files of the original database
+                // We must use the original file path because they might not be staged yet
+                File originalDbFile = context.getDatabasePath(dbName);
+                txFiles.deleteFile(new File(originalDbFile.getPath() + "-shm"));
+                txFiles.deleteFile(new File(originalDbFile.getPath() + "-wal"));
             }
         } finally {
             currentDb.close();
