@@ -27,8 +27,10 @@ import app.notesr.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Service for updating crypto secrets (master key and password).
- * It migrates the database and file blobs (fragments) to the new encryption.
+ * Service for updating crypto secrets, such as the master key and password.
+ * <p>
+ * It handles the migration of the database and encrypted file blobs (fragments)
+ * to the new encryption settings in a transactional manner.
  */
 @RequiredArgsConstructor
 public final class SecretsUpdateService {
@@ -38,8 +40,13 @@ public final class SecretsUpdateService {
 
     /**
      * Updates the crypto secrets (master key and password) and migrates all encrypted data.
+     * <p>
      * It performs a migration of the database and file blobs to the new encryption settings.
      *
+     * @param txFiles     The transactional files utility.
+     * @param cryptoManager The crypto manager instance.
+     * @param dbName      The name of the database file.
+     * @param stateHolder The state holder for tracking update progress.
      * @param newSecrets The new crypto secrets to be applied.
      * @throws SecretsUpdateFailedException If the secrets update fails.
      */
@@ -105,7 +112,7 @@ public final class SecretsUpdateService {
     }
 
     /**
-     * Migrates the database and file blobs from the current encryption to the new encryption.
+     * Migrates the database and file blobs from the current encryption settings to the new ones.
      *
      * @param txFiles         The transactional files utility.
      * @param stateHolder     The state holder for the update process.
@@ -190,7 +197,7 @@ public final class SecretsUpdateService {
     }
 
     /**
-     * Re-encrypts all file blobs from the current directory to the temporary directory.
+     * Re-encrypts all file blobs within the blobs directory using the new cryptor.
      *
      * @param txFiles         The transactional files utility.
      * @param oldDb           The source database to retrieve blob information from.
@@ -237,6 +244,14 @@ public final class SecretsUpdateService {
         }
     }
 
+    /**
+     * Encrypts blob data using the provided cryptor.
+     *
+     * @param cryptor The cryptor to use for encryption.
+     * @param data    The raw data to encrypt.
+     * @return The encrypted data.
+     * @throws EncryptionFailedException If the encryption process fails.
+     */
     private byte[] encryptBlobData(AesCryptor cryptor, byte[] data)
             throws EncryptionFailedException {
 
@@ -247,6 +262,14 @@ public final class SecretsUpdateService {
         }
     }
 
+    /**
+     * Decrypts blob data using the provided cryptor.
+     *
+     * @param cryptor The cryptor to use for decryption.
+     * @param data    The encrypted data.
+     * @return The decrypted raw data.
+     * @throws DecryptionFailedException If the decryption process fails.
+     */
     private byte[] decryptBlobData(AesCryptor cryptor, byte[] data)
             throws DecryptionFailedException {
 
@@ -257,10 +280,22 @@ public final class SecretsUpdateService {
         }
     }
 
+    /**
+     * Retrieves the current status from the state holder.
+     *
+     * @param stateHolder The state holder.
+     * @return The current {@link SecretsUpdateStatus}.
+     */
     private SecretsUpdateStatus getStatus(SecretsUpdateStateHolder stateHolder) {
         return stateHolder.getState().getStatus();
     }
 
+    /**
+     * Updates the status in the state holder.
+     *
+     * @param stateHolder The state holder.
+     * @param status      The new status to set.
+     */
     private void setStatus(SecretsUpdateStateHolder stateHolder, SecretsUpdateStatus status) {
         stateHolder.setState(stateHolder.getState().setStatus(status));
     }
