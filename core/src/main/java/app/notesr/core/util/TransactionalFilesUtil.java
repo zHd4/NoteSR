@@ -88,6 +88,15 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         loadJournal();
     }
 
+    /**
+     * Reads the content of a file. If the file has been modified within this transaction,
+     * the staged version is read.
+     *
+     * @param file The file to read.
+     * @return The byte content of the file.
+     * @throws IOException If the file has been deleted in this transaction or if
+     * an I/O error occurs.
+     */
     @Override
     public byte[] readFileBytes(File file) throws IOException {
         if (deletedFiles.contains(file)) {
@@ -99,11 +108,26 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         return baseUtils.readFileBytes(stagedFile != null ? stagedFile : file);
     }
 
+    /**
+     * Writes data to a file by staging it in the transaction directory.
+     *
+     * @param file The target file.
+     * @param data The data to write.
+     * @throws IOException If an I/O error occurs during staging.
+     */
     @Override
     public void writeFileBytes(File file, byte[] data) throws IOException {
         writeFileBytes(file, data, false);
     }
 
+    /**
+     * Writes data to a file by staging it, with an option to append.
+     *
+     * @param file   The target file.
+     * @param data   The data to write.
+     * @param append Whether to append to the existing staged content.
+     * @throws IOException If an I/O error occurs during staging.
+     */
     @Override
     public void writeFileBytes(File file, byte[] data, boolean append) throws IOException {
         File stagedFile = getOrCreateStagedFile(file);
@@ -114,6 +138,13 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         saveJournal();
     }
 
+    /**
+     * Stages a move or rename operation.
+     *
+     * @param source The source file or directory.
+     * @param target The destination file or directory.
+     * @throws IOException If an I/O error occurs during staging.
+     */
     @Override
     public void moveFile(File source, File target) throws IOException {
         File stagedSource = stagedFiles.remove(source);
@@ -144,6 +175,11 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         saveJournal();
     }
 
+    /**
+     * Marks a file for deletion upon commit.
+     *
+     * @param file The file to delete.
+     */
     @Override
     public void deleteFile(File file) {
         stagedFiles.remove(file);
@@ -151,35 +187,68 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         saveJournal();
     }
 
+    /**
+     * Resolves a path to a file in the internal storage, returning the staged version if present.
+     *
+     * @param context The application context.
+     * @param path    The relative path.
+     * @return The resolved (and potentially staged) file.
+     */
     @Override
     public File getInternalFile(Context context, String path) {
         File originalFile = baseUtils.getInternalFile(context, path);
         return stagedFiles.getOrDefault(originalFile, originalFile);
     }
 
+    /**
+     * Resolves a database file path, returning the staged version if present.
+     *
+     * @param context  The application context.
+     * @param filename The database filename.
+     * @return The resolved (and potentially staged) file.
+     */
     @Override
     public File getDatabaseFile(Context context, String filename) {
         File originalFile = baseUtils.getDatabaseFile(context, filename);
         return stagedFiles.getOrDefault(originalFile, originalFile);
     }
 
+    /**
+     * Extracts the file extension.
+     */
     @Override
     public String getFileExtension(String fileName) {
         return baseUtils.getFileExtension(fileName);
     }
 
+    /**
+     * Explicitly stages a file for modification.
+     *
+     * @param originalFile The original file to stage.
+     * @return The temporary staged file in the transaction directory.
+     * @throws IOException If the file cannot be staged.
+     */
     public File stageFile(File originalFile) throws IOException {
         File staged = getOrCreateStagedFile(originalFile);
         saveJournal();
         return staged;
     }
 
+    /**
+     * Checks if a file is currently part of this transaction (either as a source or a staged copy).
+     */
     public boolean isStaged(File file) {
         return stagedFiles.entrySet().stream()
                 .anyMatch(entry -> entry.getKey().equals(file)
                         || entry.getValue().equals(file));
     }
 
+    /**
+     * Applies all staged changes to the original files and deletes the transaction directory.
+     * This operation is atomic regarding the journal state.
+     *
+     * @throws IOException If applying changes fails.
+     */
     public void commit() throws IOException {
         if (committed) {
             return;
@@ -216,6 +285,9 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         committed = true;
     }
 
+    /**
+     * Discards all staged changes and cleans up the transaction directory.
+     */
     public void rollback() {
         if (committed) {
             return;
@@ -224,6 +296,11 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         cleanup();
     }
 
+    /**
+     * Closes the utility. Note that this does not automatically roll back changes,
+     * allowing for potential recovery of the transaction if the application was
+     * interrupted.
+     */
     @Override
     public void close() {
         // We don't automatically rollback in close() to allow for crash recovery.
@@ -231,6 +308,9 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         // it will stay on disk until resumed or manually cleaned.
     }
 
+    /**
+     * @return The unique ID associated with this transaction.
+     */
     public String getTransactionId() {
         return transactionDir.getName().substring(3);
     }
@@ -280,7 +360,8 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
             if (originalFile.isDirectory()) {
                 copyDirectory(originalFile, stagedFile);
             } else {
-                Files.copy(originalFile.toPath(), stagedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(originalFile.toPath(), stagedFile.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
             }
         }
 
