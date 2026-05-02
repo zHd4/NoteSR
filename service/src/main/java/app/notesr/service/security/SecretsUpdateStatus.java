@@ -20,6 +20,10 @@ public enum SecretsUpdateStatus {
     private final String status;
     private final int order;
 
+    public boolean isBefore(SecretsUpdateStatus other) {
+        return this.order < other.order;
+    }
+
     public boolean isBeforeOrEqual(SecretsUpdateStatus other) {
         return this.order <= other.order;
     }
