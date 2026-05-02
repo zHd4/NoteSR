@@ -122,7 +122,7 @@
             android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.security.SecretsUpdateAndroidService"
+            android:name=".service.security.crypto.update.SecretsUpdateAndroidService"
             android:exported="false"
             android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />

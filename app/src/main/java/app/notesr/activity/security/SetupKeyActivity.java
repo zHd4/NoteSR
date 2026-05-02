@@ -30,7 +30,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.service.security.SecretsSetupService;
+import app.notesr.service.security.crypto.setup.SecretsSetupService;
 import app.notesr.core.util.KeyUtils;
 import lombok.Getter;
 

@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.service.security;
+package app.notesr.service.security.crypto.update;
 
 import static java.util.Objects.requireNonNull;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-import static app.notesr.service.security.SecretsUpdateAndroidService.EXTRA_CURRENT_STATE;
+import static app.notesr.service.security.crypto.update.SecretsUpdateAndroidService.EXTRA_CURRENT_STATE;
 
 import android.content.Context;
 import android.content.Intent;

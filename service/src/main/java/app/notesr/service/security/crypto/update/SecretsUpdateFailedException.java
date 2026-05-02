@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.service.security;
+package app.notesr.service.security.crypto.update;
 
 public final class SecretsUpdateFailedException extends RuntimeException {
 

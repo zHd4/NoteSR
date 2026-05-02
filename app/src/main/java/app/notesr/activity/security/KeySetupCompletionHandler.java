@@ -20,9 +20,9 @@ import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.service.security.SecretsSetupService;
+import app.notesr.service.security.crypto.setup.SecretsSetupService;
 import app.notesr.service.migration.DataVersionManager;
-import app.notesr.service.security.SecretsUpdateAndroidService;
+import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

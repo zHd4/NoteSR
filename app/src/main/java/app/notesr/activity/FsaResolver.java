@@ -15,7 +15,7 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.exporter.ExportAndroidService;
 import app.notesr.service.importer.ImportAndroidService;
 import app.notesr.service.migration.AppMigrationAndroidService;
-import app.notesr.service.security.SecretsUpdateAndroidService;
+import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 /**
