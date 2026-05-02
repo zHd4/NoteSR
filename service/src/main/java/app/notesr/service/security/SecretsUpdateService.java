@@ -65,24 +65,31 @@ public final class SecretsUpdateService {
                 throw new SecretsUpdateFailedException("Secrets update is already failed");
             }
 
-            var currentCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(currentSecrets));
-            var newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
-            var currentBlobsDir = txFiles.getInternalFile(context, FileService.BLOBS_DIR_NAME);
-
             databaseManager.closeProvider();
 
-            migrateData(
-                    txFiles,
-                    stateHolder,
-                    dbName,
-                    currentSecrets.getKey(),
-                    newSecrets.getKey(),
-                    currentBlobsDir,
-                    currentCryptor,
-                    newCryptor
-            );
+            if (!txFiles.isCommitted()) {
+                var currentCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(currentSecrets));
+                var newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
+                var currentBlobsDir = txFiles.getInternalFile(context, FileService.BLOBS_DIR_NAME);
 
-            txFiles.commit();
+                migrateData(
+                        txFiles,
+                        stateHolder,
+                        dbName,
+                        currentSecrets.getKey(),
+                        newSecrets.getKey(),
+                        currentBlobsDir,
+                        currentCryptor,
+                        newCryptor
+                );
+
+                txFiles.commit();
+            } else {
+                if (getStatus(stateHolder).isBefore(SecretsUpdateStatus.DONE)) {
+                    setStatus(stateHolder, SecretsUpdateStatus.DONE);
+                }
+            }
+
             cryptoManager.setSecrets(context, newSecrets);
             setStatus(stateHolder, SecretsUpdateStatus.DONE);
 
