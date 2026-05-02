@@ -130,6 +130,11 @@ public final class SecretsUpdateService {
             AesCryptor newCryptor)
             throws IOException, EncryptionFailedException, DecryptionFailedException {
 
+        // Check if database is already migrated
+        if (databaseManager.isDbAvailable(databaseManager.getDatabase(dbName, newKey))) {
+            return;
+        }
+
         var currentDb = databaseManager.getDatabase(dbName, currentKey);
         var currentDbFile = txFiles.getDatabaseFile(context, dbName);
 
