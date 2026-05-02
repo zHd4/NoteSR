@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,11 +41,14 @@ import app.notesr.service.AndroidServiceRegistry;
 
 public final class SecretsUpdateAndroidService extends AndroidService implements Runnable {
 
+    private static final String TAG = SecretsUpdateAndroidService.class.getSimpleName();
+
     public static final String NEW_KEY = "new_key";
     public static final String PASSWORD = "password";
     public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
     public static final String EXTRA_CURRENT_STATE = "current_state";
     public static final String EXTRA_COMPLETE = "re_encryption_complete";
+    public static final String EXTRA_FAIL = "re_encryption_fail";
     private static final String CHANNEL_ID = "re_encryption_service_channel";
     private static final String CHANNEL_NAME = "Re-encryption Service Channel";
 
@@ -145,10 +149,8 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
 
             onComplete();
         } catch (SecretsUpdateFailedException | FilesTransactionException e) {
-            // We need also to notify about the failure
-
-            onDestroy();
-            throw e;
+            onFail();
+            Log.e(TAG, "Secrets update failed", e);
         } finally {
             stopForeground(STOP_FOREGROUND_REMOVE);
             stopSelf();
@@ -167,6 +169,11 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
 
     private void onComplete() {
         var broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(EXTRA_COMPLETE, true);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
+    }
+
+    private void onFail() {
+        var broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(EXTRA_FAIL, true);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
     }
 
