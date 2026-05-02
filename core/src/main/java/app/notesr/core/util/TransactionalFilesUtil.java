@@ -340,7 +340,8 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
             journal.committing = committing;
 
             objectMapper.writeValue(tempJournal, journal);
-            Files.move(tempJournal.toPath(), journalFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            Files.move(tempJournal.toPath(), journalFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
             Log.e(TAG, "Failed to save transaction journal", e);
             if (tempJournal.exists()) {
@@ -371,7 +372,12 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
             if (journal.committing) {
                 Log.w(TAG, "Resuming interrupted commit for transaction: "
                         + getTransactionId());
-                commit();
+                try {
+                    commit();
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to resume interrupted commit", e);
+                    throw new RuntimeException("Failed to resume interrupted commit", e);
+                }
             }
         } catch (IOException e) {
             Log.e(TAG, "Failed to load transaction journal", e);
