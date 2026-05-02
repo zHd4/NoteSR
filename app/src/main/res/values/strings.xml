@@ -102,4 +102,6 @@
     <string name="failed_to_load_the_file">Failed to load the file</string>
     <string name="migrating_your_data_please_wait">Migrating your data,\nplease wait…</string>
     <string name="files_list_action_bar_title_format">(%1$s) Files of: %2$s</string>
+    <string name="error">Error</string>
+    <string name="re_encryption_failed_your_key_and_your_data_remains_unchanged">Re-encryption failed, your key and your data remains unchanged.</string>
 </resources>
