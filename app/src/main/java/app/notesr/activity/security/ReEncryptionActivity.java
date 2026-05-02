@@ -17,6 +17,7 @@ import java.nio.charset.CharacterCodingException;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.DialogFactory;
 import app.notesr.activity.note.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
@@ -32,7 +33,8 @@ public final class ReEncryptionActivity extends ActivityBase {
         disableBackButton(this);
 
         ReEncryptionBroadcastReceiver broadcastReceiver =
-                new ReEncryptionBroadcastReceiver(this::onReEncryptionComplete);
+                new ReEncryptionBroadcastReceiver(this::onReEncryptionComplete,
+                        this::onReEncryptionFailed);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(SecretsUpdateAndroidService.BROADCAST_ACTION));
@@ -61,5 +63,18 @@ public final class ReEncryptionActivity extends ActivityBase {
     private void onReEncryptionComplete() {
         startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
         finish();
+    }
+
+    private void onReEncryptionFailed() {
+        DialogFactory dialogFactory = new DialogFactory(this);
+        dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_re_encryption_failed)
+                .setTitle(R.string.error)
+                .setCancelable(false)
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+                    finish();
+                })
+                .create()
+                .show();
     }
 }

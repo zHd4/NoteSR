@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class ReEncryptionBroadcastReceiver extends BroadcastReceiver {
     private final Runnable onReEncryptionComplete;
+    private final Runnable onReEncryptionFailed;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -22,8 +23,13 @@ public final class ReEncryptionBroadcastReceiver extends BroadcastReceiver {
             boolean isCompleted = intent.getBooleanExtra(SecretsUpdateAndroidService.EXTRA_COMPLETE,
                     false);
 
+            boolean isFailed = intent.getBooleanExtra(SecretsUpdateAndroidService.EXTRA_FAIL,
+                    false);
+
             if (isCompleted) {
                 onReEncryptionComplete.run();
+            } else if (isFailed) {
+                onReEncryptionFailed.run();
             }
         }
     }
