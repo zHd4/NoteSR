@@ -221,10 +221,13 @@ public final class SecretsUpdateService {
             byte[] data = txFiles.readFileBytes(sourceFile);
 
             if (isStaged) {
-                // Trying to check if already re-encrypted blob can be successfully
-                // decrypted and skip if it can, otherwise it will be failed
-                decryptBlobData(newCryptor, data);
-                continue;
+                try {
+                    // If it can be decrypted with new cryptor, it's already migrated
+                    decryptBlobData(newCryptor, data);
+                    continue;
+                } catch (DecryptionFailedException ignored) {
+                    // Not migrated yet
+                }
             }
 
             data = decryptBlobData(currentCryptor, data);
