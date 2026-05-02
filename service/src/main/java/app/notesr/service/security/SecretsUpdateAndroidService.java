@@ -30,6 +30,7 @@ import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 
+import app.notesr.core.util.FilesTransactionException;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.core.util.TransactionalFilesUtil;
 import app.notesr.data.DatabaseProvider;
@@ -143,7 +144,7 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
                     newSecrets);
 
             onComplete();
-        } catch (SecretsUpdateFailedException e) {
+        } catch (SecretsUpdateFailedException | FilesTransactionException e) {
             // We need also to notify about the failure
 
             onDestroy();
