@@ -48,10 +48,22 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
     /**
      * Creates a new transactional files utility.
      *
+     * @param context       The application context used to access the internal cache directory.
+     * @param baseUtils     The base files utility adapter for performing actual file operations.
+     * @throws RuntimeException if the transaction staging directory cannot be created.
+     */
+    public TransactionalFilesUtil(Context context, FilesUtilsAdapter baseUtils) {
+        this(context, baseUtils, randomUUID().toString());
+    }
+
+    /**
+     * Creates a new transactional files utility.
+     *
      * @param context       The application context.
      * @param baseUtils     The base files utility.
      * @param transactionId A unique ID for this transaction. If a transaction with this ID
      *                      already exists on disk, it will be loaded for recovery.
+     * @throws RuntimeException if the transaction staging directory cannot be created.
      */
     public TransactionalFilesUtil(
             Context context,
