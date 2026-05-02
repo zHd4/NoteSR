@@ -51,7 +51,7 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
      *
      * @param context       The application context used to access the internal cache directory.
      * @param baseUtils     The base files utility adapter for performing actual file operations.
-     * @throws RuntimeException if the transaction staging directory cannot be created.
+     * @throws FilesTransactionException if transaction initialization fails.
      */
     public TransactionalFilesUtil(Context context, FilesUtilsAdapter baseUtils) {
         this(context, baseUtils, randomUUID().toString());
@@ -64,7 +64,7 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
      * @param baseUtils     The base files utility.
      * @param transactionId A unique ID for this transaction. If a transaction with this ID
      *                      already exists on disk, it will be loaded for recovery.
-     * @throws RuntimeException if the transaction staging directory cannot be created.
+     * @throws FilesTransactionException if transaction initialization fails.
      */
     public TransactionalFilesUtil(
             Context context,
@@ -81,7 +81,7 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
         this.journalFile = new File(transactionDir, JOURNAL_FILE_NAME);
 
         if (!transactionDir.exists() && !transactionDir.mkdirs()) {
-            throw new RuntimeException("Failed to create transaction directory: "
+            throw new FilesTransactionException("Failed to create transaction directory: "
                     + transactionDir.getAbsolutePath());
         }
 
@@ -290,11 +290,15 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
 
     private File getStagedFileForTarget(File targetFile) {
         String parentPath = targetFile.getParent();
-        String pathHash = (parentPath != null) ? Integer.toHexString(parentPath.hashCode()) : "root";
+        String pathHash = (parentPath != null)
+                ? Integer.toHexString(parentPath.hashCode())
+                : "root";
+
         File dir = new File(transactionDir, pathHash);
 
         if (!dir.exists() && !dir.mkdirs()) {
-            throw new RuntimeException("Failed to create staged directory: " + dir.getAbsolutePath());
+            throw new FilesTransactionException("Failed to create staged directory: "
+                    + dir.getAbsolutePath());
         }
 
         return new File(dir, targetFile.getName());
@@ -313,7 +317,8 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
                 if (file.isDirectory()) {
                     copyDirectory(file, targetFile);
                 } else {
-                    Files.copy(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(file.toPath(), targetFile.toPath(),
+                            StandardCopyOption.REPLACE_EXISTING);
                 }
             }
         }
@@ -330,7 +335,8 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
             Journal journal = new Journal();
 
             for (Map.Entry<File, File> entry : stagedFiles.entrySet()) {
-                journal.stagedFiles.put(entry.getKey().getAbsolutePath(), entry.getValue().getAbsolutePath());
+                journal.stagedFiles.put(entry.getKey().getAbsolutePath(),
+                        entry.getValue().getAbsolutePath());
             }
 
             for (File file : deletedFiles) {
@@ -376,7 +382,7 @@ public final class TransactionalFilesUtil implements FilesUtilsAdapter, AutoClos
                     commit();
                 } catch (IOException e) {
                     Log.e(TAG, "Failed to resume interrupted commit", e);
-                    throw new RuntimeException("Failed to resume interrupted commit", e);
+                    throw new FilesTransactionException("Failed to resume interrupted commit", e);
                 }
             }
         } catch (IOException e) {
