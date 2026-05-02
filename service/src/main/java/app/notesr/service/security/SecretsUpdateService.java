@@ -57,6 +57,10 @@ public final class SecretsUpdateService {
                 setStatus(stateHolder, SecretsUpdateStatus.INITIALIZING);
             }
 
+            if (getStatus(stateHolder) == SecretsUpdateStatus.DONE) {
+                return;
+            }
+
             if (getStatus(stateHolder) == SecretsUpdateStatus.FAILED) {
                 throw new SecretsUpdateFailedException("Secrets update is already failed");
             }
