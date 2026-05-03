@@ -126,7 +126,7 @@ public final class SecretsUpdateService {
      * @throws EncryptionFailedException If encryption fails.
      * @throws DecryptionFailedException If decryption fails.
      */
-    private void migrateData(
+    void migrateData(
             TransactionalFilesUtil txFiles,
             SecretsUpdateStateHolder stateHolder,
             String dbName,
@@ -187,7 +187,7 @@ public final class SecretsUpdateService {
      * @param currentDb The source database.
      * @param newDb     The destination database.
      */
-    private void copyDbData(AppDatabase currentDb, AppDatabase newDb) {
+    void copyDbData(AppDatabase currentDb, AppDatabase newDb) {
         newDb.runInTransaction(() -> {
             newDb.getNoteDao().insertAll(currentDb.getNoteDao().getAll());
             newDb.getFileInfoDao().insertAll(currentDb.getFileInfoDao().getAll());
@@ -208,7 +208,7 @@ public final class SecretsUpdateService {
      * @throws EncryptionFailedException If encryption fails.
      * @throws DecryptionFailedException If decryption fails.
      */
-    private void updateBlobsData(
+    void updateBlobsData(
             TransactionalFilesUtil txFiles,
             AppDatabase oldDb,
             File currentBlobsDir,
@@ -252,7 +252,7 @@ public final class SecretsUpdateService {
      * @return The encrypted data.
      * @throws EncryptionFailedException If the encryption process fails.
      */
-    private byte[] encryptBlobData(AesCryptor cryptor, byte[] data)
+    byte[] encryptBlobData(AesCryptor cryptor, byte[] data)
             throws EncryptionFailedException {
 
         try {
@@ -270,7 +270,7 @@ public final class SecretsUpdateService {
      * @return The decrypted raw data.
      * @throws DecryptionFailedException If the decryption process fails.
      */
-    private byte[] decryptBlobData(AesCryptor cryptor, byte[] data)
+    byte[] decryptBlobData(AesCryptor cryptor, byte[] data)
             throws DecryptionFailedException {
 
         try {
@@ -286,7 +286,7 @@ public final class SecretsUpdateService {
      * @param stateHolder The state holder.
      * @return The current {@link SecretsUpdateStatus}.
      */
-    private SecretsUpdateStatus getStatus(SecretsUpdateStateHolder stateHolder) {
+    SecretsUpdateStatus getStatus(SecretsUpdateStateHolder stateHolder) {
         return stateHolder.getState().getStatus();
     }
 
@@ -296,7 +296,7 @@ public final class SecretsUpdateService {
      * @param stateHolder The state holder.
      * @param status      The new status to set.
      */
-    private void setStatus(SecretsUpdateStateHolder stateHolder, SecretsUpdateStatus status) {
+    void setStatus(SecretsUpdateStateHolder stateHolder, SecretsUpdateStatus status) {
         stateHolder.setState(stateHolder.getState().setStatus(status));
     }
 }
