@@ -38,8 +38,11 @@ import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
+import lombok.AccessLevel;
+import lombok.Setter;
 
-public final class SecretsUpdateAndroidService extends AndroidService implements Runnable {
+@Setter(AccessLevel.PACKAGE)
+public class SecretsUpdateAndroidService extends AndroidService implements Runnable {
 
     private static final String TAG = SecretsUpdateAndroidService.class.getSimpleName();
 
@@ -61,6 +64,26 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        dbName = DatabaseProvider.DB_NAME;
+
+        cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        newSecrets = getNewSecrets();
+
+        var state = (SecretsUpdateState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
+        stateHolder = new SecretsUpdateStateHolder(this::onStateUpdate).setState(state);
+        secretsUpdateService = getSecretsUpdateService();
+        encryptedPayload = encryptPayload(getPayload());
+
+        var thread = new Thread(this);
+        thread.start();
+
+        showForegroundNotification(startId);
+        register(encryptedPayload, serializeState(state));
+
+        return START_STICKY;
+    }
+
+    void showForegroundNotification(int startId) {
         var notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
@@ -76,23 +99,7 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        dbName = DatabaseProvider.DB_NAME;
-
-        cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
-        newSecrets = getNewSecrets();
-
-        var state = (SecretsUpdateState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
-        stateHolder = new SecretsUpdateStateHolder(this::onStateUpdate).setState(state);
-        secretsUpdateService = getSecretsUpdateService();
-        encryptedPayload = encryptPayload(getPayload());
-
-        var thread = new Thread(this);
-        thread.start();
-
         startForeground(startId, notification, type);
-        register(encryptedPayload, serializeState(state));
-
-        return START_STICKY;
     }
 
     @NonNull
@@ -113,11 +120,11 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
         );
     }
 
-    private String encryptPayload(SecretsUpdateAndroidServiceStarter.Payload payload) {
+    String encryptPayload(SecretsUpdateAndroidServiceStarter.Payload payload) {
         return getEncryptedJson(new ObjectMapper(), payload, cryptoManager.getSecrets());
     }
 
-    private String serializeState(SecretsUpdateState state) {
+    String serializeState(SecretsUpdateState state) {
         if (state == null) {
             return null;
         }
@@ -134,14 +141,8 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
     @Override
     public void run() {
         try {
-            var filesUtils = new FilesUtils();
-            var transactionId = stateHolder.getState().getTransactionId();
-
-            var txFiles = transactionId != null
-                    ? new TransactionalFilesUtil(getApplicationContext(), filesUtils, transactionId)
-                    : new TransactionalFilesUtil(getApplicationContext(), filesUtils);
-
-            transactionId = txFiles.getTransactionId();
+            var txFiles = getTransactionalFilesUtil(stateHolder.getState());
+            var transactionId = txFiles.getTransactionId();
 
             stateHolder.setState(stateHolder.getState().setTransactionId(transactionId));
             secretsUpdateService.updateSecrets(txFiles, cryptoManager, dbName, stateHolder,
@@ -152,9 +153,22 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
             onFail();
             Log.e(TAG, "Secrets update failed", e);
         } finally {
-            stopForeground(STOP_FOREGROUND_REMOVE);
-            stopSelf();
+            stopService();
         }
+    }
+
+    void stopService() {
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
+    }
+
+    TransactionalFilesUtil getTransactionalFilesUtil(SecretsUpdateState state) {
+        var filesUtils = new FilesUtils();
+        var transactionId = state.getTransactionId();
+
+        return transactionId != null
+                ? new TransactionalFilesUtil(getApplicationContext(), filesUtils, transactionId)
+                : new TransactionalFilesUtil(getApplicationContext(), filesUtils);
     }
 
     @Override
@@ -162,22 +176,25 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
         super.onTaskRemoved(rootIntent);
     }
 
-    private void onStateUpdate(SecretsUpdateState newState) {
+    void onStateUpdate(SecretsUpdateState newState) {
         AndroidServiceRegistry.getInstance(getApplicationContext())
                 .updateEntry(getEntry(encryptedPayload, serializeState(newState)));
     }
 
-    private void onComplete() {
-        var broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(EXTRA_COMPLETE, true);
+    void onComplete() {
+        sendUpdateBroadcast(EXTRA_COMPLETE);
+    }
+
+    void onFail() {
+        sendUpdateBroadcast(EXTRA_FAIL);
+    }
+
+    void sendUpdateBroadcast(String extra) {
+        var broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(extra, true);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
     }
 
-    private void onFail() {
-        var broadcastIntent = new Intent(BROADCAST_ACTION).putExtra(EXTRA_FAIL, true);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
-    }
-
-    private CryptoSecrets getNewSecrets() {
+    CryptoSecrets getNewSecrets() {
         try {
             byte[] newKey = SecretCache.take(NEW_KEY);
             char[] newPassword = bytesToChars(SecretCache.take(PASSWORD),
@@ -192,7 +209,7 @@ public final class SecretsUpdateAndroidService extends AndroidService implements
         }
     }
 
-    private SecretsUpdateService getSecretsUpdateService() {
+    SecretsUpdateService getSecretsUpdateService() {
         var context = getApplicationContext();
         var databaseManager = new DatabaseManagerImpl(context);
 
