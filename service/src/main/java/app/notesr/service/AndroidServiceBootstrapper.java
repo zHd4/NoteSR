@@ -86,7 +86,7 @@ public final class AndroidServiceBootstrapper {
             String payload = serviceEntry.getPayload();
             String state = serviceEntry.getState();
 
-            if (payload != null || state != null) {
+            if (payload != null || state != null || secrets != null) {
                 starter.start(context, secrets, payload, state);
             } else {
                 starter.start(context);
