@@ -116,7 +116,8 @@ public final class ImportAndroidService extends AndroidService implements Runnab
     }
 
     private ImportAndroidServiceStarter.Payload getPayload() {
-        return new ImportAndroidServiceStarter.Payload(sourceUri);
+        String sourceUriStr = sourceUri != null ? sourceUri.toString() : null;
+        return new ImportAndroidServiceStarter.Payload(sourceUriStr);
     }
 
     private String encryptPayload(ImportAndroidServiceStarter.Payload payload) {

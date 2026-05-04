@@ -232,7 +232,8 @@ public final class ImportActivity extends ActivityBase {
     }
 
     private void startImport() {
-        new ImportAndroidServiceStarter(new ImportAndroidServiceStarter.Payload(selectedFileUri))
+        String uriString = selectedFileUri != null ? selectedFileUri.toString() : null;
+        new ImportAndroidServiceStarter(new ImportAndroidServiceStarter.Payload(uriString))
                 .start(getApplicationContext());
     }
 

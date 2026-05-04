@@ -52,14 +52,14 @@ public final class ImportAndroidServiceStarter implements AndroidServiceStarter 
     }
 
     private Intent buildIntent(Context context) {
-        return new Intent(context, ImportAndroidService.class)
-                .setData(payload.getSourceUri());
+        Uri sourceUri = payload.getSourceUri() != null ? Uri.parse(payload.getSourceUri()) : null;
+        return new Intent(context, ImportAndroidService.class).setData(sourceUri);
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Payload {
-        private Uri sourceUri;
+        private String sourceUri;
     }
 }
