@@ -7,11 +7,9 @@ package app.notesr.activity;
 
 import java.util.Set;
 
-import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.activity.security.ReEncryptionActivity;
 import app.notesr.service.AndroidServiceRegistry;
-import app.notesr.service.exporter.ExportAndroidService;
 import app.notesr.service.migration.AppMigrationAndroidService;
 import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +30,7 @@ public final class FsaResolver {
      */
     private static final Set<FsaEntry> fsaRegistry = Set.of(
             new FsaEntry(AppMigrationAndroidService.class, MigrationActivity.class),
-            new FsaEntry(ExportAndroidService.class, ExportActivity.class),
+//            new FsaEntry(ExportAndroidService.class, ExportActivity.class),
 //            new FsaEntry(ImportAndroidService.class, ImportActivity.class),
             new FsaEntry(SecretsUpdateAndroidService.class, ReEncryptionActivity.class)
     );
