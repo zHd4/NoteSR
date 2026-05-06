@@ -43,6 +43,7 @@ public final class AndroidServiceRegistry {
     AndroidServiceRegistry(SharedPreferences prefs) {
         this.prefs = prefs;
         this.runningServices = getServicesFromPrefs();
+        saveServices(runningServices);
     }
 
     /**
@@ -148,6 +149,11 @@ public final class AndroidServiceRegistry {
             for (String serviceJson : servicesJson) {
                 try {
                     AndroidServiceEntry entry = AndroidServiceEntry.fromJson(serviceJson);
+
+                    if (!entry.isAutoStart()) {
+                        continue;
+                    }
+
                     services.add(entry);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException("Failed to deserialize service", e);

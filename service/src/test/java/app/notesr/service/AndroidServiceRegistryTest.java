@@ -99,9 +99,9 @@ class AndroidServiceRegistryTest {
         assertFalse(registry.isServiceRunning(TestService2.class),
                 "Service 2 should not be running");
 
-        verify(editor, times(1))
+        verify(editor, times(2))
                 .putStringSet(eq("current_running_services"), any());
-        verify(editor, times(1)).apply();
+        verify(editor, times(2)).apply();
     }
 
     @Test
@@ -116,7 +116,7 @@ class AndroidServiceRegistryTest {
         assertFalse(registry.isServiceRunning(TestService1.class),
                 "Service 1 should not be running after unregistration");
 
-        verify(editor, times(2)).apply();
+        verify(editor, times(3)).apply();
     }
 
     @Test
@@ -189,8 +189,11 @@ class AndroidServiceRegistryTest {
         jsonSet.add(entry.toJson());
 
         SharedPreferences mockPrefs = mock(SharedPreferences.class);
+        SharedPreferences.Editor mockEditor = mock(SharedPreferences.Editor.class);
         when(mockPrefs.getStringSet(eq("current_running_services"), eq(null)))
                 .thenReturn(jsonSet);
+        when(mockPrefs.edit()).thenReturn(mockEditor);
+        when(mockEditor.putStringSet(any(), any())).thenReturn(mockEditor);
 
         AndroidServiceRegistry newRegistry = new AndroidServiceRegistry(mockPrefs);
         assertTrue(newRegistry.isServiceRunning(TestService1.class),
@@ -199,6 +202,35 @@ class AndroidServiceRegistryTest {
         AndroidServiceEntry loadedEntry = newRegistry.getSet().iterator().next();
         assertTrue(loadedEntry.isAutoStart(),
                 "Loaded service should have autoStart set to true");
+    }
+
+    @Test
+    void testLoadFromPrefsSkipsNonAutoStart() throws Exception {
+        AndroidServiceEntry autoStartEntry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .autoStart(true)
+                .build();
+        AndroidServiceEntry noAutoStartEntry = AndroidServiceEntry.builder()
+                .serviceClass(TestService2.class)
+                .autoStart(false)
+                .build();
+
+        Set<String> jsonSet = new HashSet<>();
+        jsonSet.add(autoStartEntry.toJson());
+        jsonSet.add(noAutoStartEntry.toJson());
+
+        SharedPreferences mockPrefs = mock(SharedPreferences.class);
+        SharedPreferences.Editor mockEditor = mock(SharedPreferences.Editor.class);
+        when(mockPrefs.getStringSet(eq("current_running_services"), eq(null)))
+                .thenReturn(jsonSet);
+        when(mockPrefs.edit()).thenReturn(mockEditor);
+        when(mockEditor.putStringSet(any(), any())).thenReturn(mockEditor);
+
+        AndroidServiceRegistry newRegistry = new AndroidServiceRegistry(mockPrefs);
+        assertTrue(newRegistry.isServiceRunning(TestService1.class),
+                "Auto-start service should be loaded");
+        assertFalse(newRegistry.isServiceRunning(TestService2.class),
+                "Non auto-start service should be skipped");
     }
 
     @Test
@@ -229,7 +261,7 @@ class AndroidServiceRegistryTest {
                 "Service payload should be updated");
         assertEquals("updated state", result.getState(),
                 "Service state should be updated");
-        verify(editor, times(2)).apply();
+        verify(editor, times(3)).apply();
     }
 
     @Test
@@ -259,14 +291,15 @@ class AndroidServiceRegistryTest {
                 "Service payload should be updated via register");
         assertEquals("updated state", result.getState(),
                 "Service state should be updated via register");
-        verify(editor, times(2)).apply();
+        verify(editor, times(3)).apply();
     }
 
     @Test
     void testUnregisterNonExistentService() {
         registry.unregister(TestService1.class);
-        assertFalse(registry.isServiceRunning(TestService1.class));
-        verify(editor, times(1)).apply();
+        assertFalse(registry.isServiceRunning(TestService1.class),
+                "Service 1 should not be running");
+        verify(editor, times(2)).apply();
     }
 
     @Test
@@ -277,8 +310,9 @@ class AndroidServiceRegistryTest {
                 .build();
 
         registry.updateEntry(entry);
-        assertFalse(registry.isServiceRunning(TestService1.class));
-        verify(editor, times(1)).apply();
+        assertFalse(registry.isServiceRunning(TestService1.class),
+                "Service 1 should not be running after updating non-existent entry");
+        verify(editor, times(2)).apply();
     }
 
     @Test
@@ -290,7 +324,8 @@ class AndroidServiceRegistryTest {
         when(mockPrefs.getStringSet(eq("current_running_services"), eq(null)))
                 .thenReturn(jsonSet);
 
-        assertThrows(RuntimeException.class, () -> new AndroidServiceRegistry(mockPrefs));
+        assertThrows(RuntimeException.class, () -> new AndroidServiceRegistry(mockPrefs),
+                "Should throw RuntimeException when deserialization fails");
     }
 
     @Test
@@ -307,22 +342,27 @@ class AndroidServiceRegistryTest {
         registry.register(entry);
 
         Set<AndroidServiceEntry> services = registry.getSet();
-        assertEquals(1, services.size());
+        assertEquals(1, services.size(),
+                "The registry should contain exactly 1 service");
         AndroidServiceEntry savedEntry = services.iterator().next();
 
-        assertEquals(entry, savedEntry);
+        assertEquals(entry, savedEntry,
+                "The saved entry should be equal to the original entry");
     }
 
     @Test
     void testGetInstance() {
         Context mockContext = mock(Context.class);
         SharedPreferences mockPrefs = mock(SharedPreferences.class);
+        SharedPreferences.Editor mockEditor = mock(SharedPreferences.Editor.class);
         when(mockContext.getSharedPreferences(any(), anyInt())).thenReturn(mockPrefs);
+        when(mockPrefs.edit()).thenReturn(mockEditor);
+        when(mockEditor.putStringSet(any(), any())).thenReturn(mockEditor);
 
         AndroidServiceRegistry instance1 = AndroidServiceRegistry.getInstance(mockContext);
         AndroidServiceRegistry instance2 = AndroidServiceRegistry.getInstance(mockContext);
 
-        assertNotNull(instance1);
+        assertNotNull(instance1, "Registry instance should not be null");
         assertSame(instance1, instance2, "Should return the same instance (singleton)");
     }
 }
