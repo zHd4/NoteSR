@@ -78,7 +78,7 @@ public class AppMigrationAndroidService extends AndroidService implements Runnab
     @Override
     protected AndroidServiceEntry getEntry(String payload, String state) {
         return entryBuilder(AppMigrationAndroidServiceStarter.class)
-                .autoStart(true)
+                .autoStart(false) // TODO: Temporary disabled, will be enabled after revision of startup mechanism
                 .requiresAuth(true)
                 .payload(payload)
                 .build();
