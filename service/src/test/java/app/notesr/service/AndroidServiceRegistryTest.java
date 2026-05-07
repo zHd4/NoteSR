@@ -32,10 +32,22 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
+import app.notesr.core.security.dto.CryptoSecrets;
+
 class AndroidServiceRegistryTest {
 
     private AndroidServiceRegistry registry;
     private SharedPreferences.Editor editor;
+
+    private static class MockStarter1 implements AndroidServiceStarter {
+        @Override public void start(Context context) {}
+        @Override public void start(Context context, CryptoSecrets secrets, String payload, String state) {}
+    }
+
+    private static class MockStarter2 implements AndroidServiceStarter {
+        @Override public void start(Context context) {}
+        @Override public void start(Context context, CryptoSecrets secrets, String payload, String state) {}
+    }
 
     private static class TestService1 extends AndroidService {
         @Override
@@ -48,6 +60,7 @@ class AndroidServiceRegistryTest {
         protected AndroidServiceEntry getEntry(String payload, String state) {
             return AndroidServiceEntry.builder()
                     .serviceClass(TestService1.class)
+                    .starterClass(MockStarter1.class)
                     .serviceName("TestService1")
                     .payload(payload)
                     .state(state)
@@ -66,6 +79,7 @@ class AndroidServiceRegistryTest {
         protected AndroidServiceEntry getEntry(String payload, String state) {
             return AndroidServiceEntry.builder()
                     .serviceClass(TestService2.class)
+                    .starterClass(MockStarter1.class)
                     .serviceName("TestService2")
                     .payload(payload)
                     .state(state)
@@ -91,6 +105,7 @@ class AndroidServiceRegistryTest {
 
         registry.register(AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
                 .serviceName("Test Service 1")
                 .build());
 
@@ -108,6 +123,8 @@ class AndroidServiceRegistryTest {
     void testUnregister() {
         registry.register(AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
                 .build());
         assertTrue(registry.isServiceRunning(TestService1.class),
                 "Service 1 should be running after registration");
@@ -123,6 +140,8 @@ class AndroidServiceRegistryTest {
     void testGetSetReturnsACopy() {
         registry.register(AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
                 .build());
         Set<AndroidServiceEntry> services = registry.getSet();
 
@@ -141,9 +160,13 @@ class AndroidServiceRegistryTest {
     void testMultipleServices() {
         registry.register(AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
                 .build());
         registry.register(AndroidServiceEntry.builder()
                 .serviceClass(TestService2.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 2")
                 .build());
 
         assertTrue(registry.isServiceRunning(TestService1.class),
@@ -167,6 +190,8 @@ class AndroidServiceRegistryTest {
     void testRegisterWithAutoStart() {
         registry.register(AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
                 .autoStart(true)
                 .build());
         assertTrue(registry.isServiceRunning(TestService1.class),
@@ -181,6 +206,7 @@ class AndroidServiceRegistryTest {
     void testLoadFromPrefs() throws Exception {
         AndroidServiceEntry entry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
                 .serviceName("Test Service 1")
                 .autoStart(true)
                 .build();
@@ -208,10 +234,14 @@ class AndroidServiceRegistryTest {
     void testLoadFromPrefsSkipsNonAutoStart() throws Exception {
         AndroidServiceEntry autoStartEntry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
                 .autoStart(true)
                 .build();
         AndroidServiceEntry noAutoStartEntry = AndroidServiceEntry.builder()
                 .serviceClass(TestService2.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 2")
                 .autoStart(false)
                 .build();
 
@@ -237,6 +267,7 @@ class AndroidServiceRegistryTest {
     void testUpdateEntry() {
         AndroidServiceEntry entry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
                 .serviceName("Test Service 1")
                 .payload("initial payload")
                 .state("initial state")
@@ -246,6 +277,8 @@ class AndroidServiceRegistryTest {
 
         AndroidServiceEntry updatedEntry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
                 .payload("updated payload")
                 .state("updated state")
                 .build();
@@ -268,6 +301,7 @@ class AndroidServiceRegistryTest {
     void testRegisterExistingServiceUpdatesEntry() {
         AndroidServiceEntry entry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
                 .serviceName("Test Service 1")
                 .payload("initial payload")
                 .state("initial state")
@@ -277,6 +311,8 @@ class AndroidServiceRegistryTest {
 
         AndroidServiceEntry updatedEntry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
                 .payload("updated payload")
                 .state("updated state")
                 .build();
@@ -295,6 +331,74 @@ class AndroidServiceRegistryTest {
     }
 
     @Test
+    void testRegisterExistingServiceWithMismatchedStarterClass() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
+                .build();
+        registry.register(entry);
+
+        AndroidServiceEntry mismatchedStarter = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter2.class)
+                .serviceName("Test Service 1")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> registry.register(mismatchedStarter),
+                "register should throw IllegalArgumentException when starter class mismatches");
+    }
+
+    @Test
+    void testRegisterExistingServiceWithMismatchedServiceName() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
+                .build();
+        registry.register(entry);
+
+        AndroidServiceEntry mismatchedName = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Different Name")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> registry.register(mismatchedName),
+                "register should throw IllegalArgumentException when service name mismatches");
+    }
+
+    @Test
+    void testUpdateEntryDoesNotUpdateImmutableFields() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
+                .autoStart(true)
+                .requiresAuth(false)
+                .build();
+        registry.register(entry);
+
+        AndroidServiceEntry updatedEntry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
+                .autoStart(false) // This should NOT be updated
+                .requiresAuth(true) // This should NOT be updated
+                .payload("new payload")
+                .state("new state")
+                .build();
+
+        registry.updateEntry(updatedEntry);
+
+        AndroidServiceEntry result = registry.getSet().iterator().next();
+        assertTrue(result.isAutoStart(), "autoStart should remain immutable");
+        assertFalse(result.isRequiresAuth(), "requiresAuth should remain immutable");
+        assertEquals("new payload", result.getPayload());
+        assertEquals("new state", result.getState());
+    }
+
+    @Test
     void testUnregisterNonExistentService() {
         registry.unregister(TestService1.class);
         assertFalse(registry.isServiceRunning(TestService1.class),
@@ -306,6 +410,8 @@ class AndroidServiceRegistryTest {
     void testUpdateNonExistentEntry() {
         AndroidServiceEntry entry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
                 .state("new state")
                 .build();
 
@@ -313,6 +419,116 @@ class AndroidServiceRegistryTest {
         assertFalse(registry.isServiceRunning(TestService1.class),
                 "Service 1 should not be running after updating non-existent entry");
         verify(editor, times(2)).apply();
+    }
+
+    @Test
+    void testUnregisterNullClass() {
+        assertThrows(NullPointerException.class, () -> registry.unregister(null),
+                "Should throw NullPointerException when unregistering null class");
+    }
+
+    @Test
+    void testIsServiceRunningNullClass() {
+        assertThrows(NullPointerException.class, () -> registry.isServiceRunning(null),
+                "Should throw NullPointerException when checking if null class is running");
+    }
+
+    @Test
+    void testRegisterNullEntry() {
+        assertThrows(NullPointerException.class, () -> registry.register(null),
+                "Should throw NullPointerException when registering null entry");
+    }
+
+    @Test
+    void testRegisterEntryWithNullFields() {
+        AndroidServiceEntry entryMissingClass = AndroidServiceEntry.builder()
+                .starterClass(MockStarter1.class)
+                .serviceName("Test")
+                .build();
+        assertThrows(NullPointerException.class, () -> registry.register(entryMissingClass),
+                "Should throw NullPointerException when service class is null");
+
+        AndroidServiceEntry entryMissingStarter = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .serviceName("Test")
+                .build();
+        assertThrows(NullPointerException.class, () -> registry.register(entryMissingStarter),
+                "Should throw NullPointerException when starter class is null");
+
+        AndroidServiceEntry entryMissingName = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .build();
+        assertThrows(NullPointerException.class, () -> registry.register(entryMissingName),
+                "Should throw NullPointerException when service name is null");
+    }
+
+    @Test
+    void testUpdateEntryWithNullFields() {
+        AndroidServiceEntry entryMissingClass = AndroidServiceEntry.builder()
+                .starterClass(MockStarter1.class)
+                .serviceName("Test")
+                .build();
+        assertThrows(NullPointerException.class, () -> registry.updateEntry(entryMissingClass),
+                "Should throw NullPointerException when updating entry with null service class");
+
+        AndroidServiceEntry entryMissingStarter = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .serviceName("Test")
+                .build();
+        assertThrows(NullPointerException.class, () -> registry.updateEntry(entryMissingStarter),
+                "Should throw NullPointerException when updating entry with null starter class");
+
+        AndroidServiceEntry entryMissingName = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .build();
+        assertThrows(NullPointerException.class, () -> registry.updateEntry(entryMissingName),
+                "Should throw NullPointerException when updating entry with null service name");
+    }
+
+    @Test
+    void testUpdateEntryWithMismatchedStarterClass() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
+                .build();
+        registry.register(entry);
+
+        AndroidServiceEntry mismatchedStarter = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter2.class) // Different starter class
+                .serviceName("Test Service 1")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> registry.updateEntry(mismatchedStarter),
+                "updateEntry should throw IllegalArgumentException when starter class mismatches");
+    }
+
+    @Test
+    void testUpdateEntryWithMismatchedServiceName() {
+        AndroidServiceEntry entry = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Test Service 1")
+                .build();
+        registry.register(entry);
+
+        AndroidServiceEntry mismatchedName = AndroidServiceEntry.builder()
+                .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
+                .serviceName("Different Name")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> registry.updateEntry(mismatchedName),
+                "updateEntry should throw IllegalArgumentException when service name mismatches");
+    }
+
+    @Test
+    void testUpdateNullEntry() {
+        assertThrows(NullPointerException.class, () -> registry.updateEntry(null),
+                "Should throw NullPointerException when updating null entry");
     }
 
     @Test
@@ -332,6 +548,7 @@ class AndroidServiceRegistryTest {
     void testFullEntryPersistence() {
         AndroidServiceEntry entry = AndroidServiceEntry.builder()
                 .serviceClass(TestService1.class)
+                .starterClass(MockStarter1.class)
                 .serviceName("Full Service")
                 .autoStart(true)
                 .requiresAuth(true)
@@ -348,6 +565,12 @@ class AndroidServiceRegistryTest {
 
         assertEquals(entry, savedEntry,
                 "The saved entry should be equal to the original entry");
+    }
+
+    @Test
+    void testGetInstanceNullContext() {
+        assertThrows(NullPointerException.class, () -> AndroidServiceRegistry.getInstance(null),
+                "Should throw NullPointerException when context is null");
     }
 
     @Test
