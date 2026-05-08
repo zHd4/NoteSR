@@ -12,13 +12,16 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +43,8 @@ import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -96,7 +101,7 @@ public final class ExportAndroidService extends AndroidService implements Runnab
                 Environment.DIRECTORY_DOWNLOADS);
 
         outputFile = getOutputFile(outputDir.getPath());
-        exportService = getExportService(outputFile, this::onUpdateCallback, appVersion);
+        exportService = getExportService(this::onUpdateCallback, appVersion);
 
         Thread thread = new Thread(this);
         thread.start();
@@ -134,10 +139,15 @@ public final class ExportAndroidService extends AndroidService implements Runnab
     public void run() {
         registerCancelSignalReceiver();
         broadcastOutputPath(outputFile.getPath());
-        exportService.doExport();
 
-        stopForeground(STOP_FOREGROUND_REMOVE);
-        stopSelf();
+        try (OutputStream outputStream = getOutputStream(outputFile)) {
+            exportService.doExport(outputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            stopForeground(STOP_FOREGROUND_REMOVE);
+            stopSelf();
+        }
     }
 
     @Override
@@ -160,7 +170,6 @@ public final class ExportAndroidService extends AndroidService implements Runnab
     }
 
     private ExportService getExportService(
-            File backupOutputFile,
             BiConsumer<Integer, ExportStatus> updateCallback,
             String appVersion) {
 
@@ -177,7 +186,6 @@ public final class ExportAndroidService extends AndroidService implements Runnab
 
         return new ExportService(
                 secrets,
-                backupOutputFile,
                 appVersion,
                 context,
                 db,
@@ -185,6 +193,28 @@ public final class ExportAndroidService extends AndroidService implements Runnab
                 fileService,
                 statusHolder
         );
+    }
+
+    private OutputStream getOutputStream(File file) throws IOException {
+        ContentValues values = new ContentValues();
+
+        values.put(MediaStore.MediaColumns.DISPLAY_NAME, file.getName());
+        values.put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream");
+        values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+        Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+
+        if (uri == null) {
+            throw new IOException("Failed to create MediaStore entry");
+        }
+
+        OutputStream outputStream = getContentResolver().openOutputStream(uri);
+
+        if (outputStream == null) {
+            throw new IOException("Failed to open output stream from URI: " + uri);
+        }
+
+        return outputStream;
     }
 
     private File getOutputFile(String dirPath) {

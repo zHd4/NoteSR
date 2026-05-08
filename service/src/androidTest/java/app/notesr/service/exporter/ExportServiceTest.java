@@ -6,7 +6,6 @@
 package app.notesr.service.exporter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static java.util.UUID.randomUUID;
@@ -24,6 +23,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -69,7 +69,7 @@ public class ExportServiceTest {
         statusHolder = new ExportStatusHolder((progress, status) -> {
         });
 
-        exportService = new ExportService(cryptoSecrets, outputFile, TEST_APP_VERSION,
+        exportService = new ExportService(cryptoSecrets, TEST_APP_VERSION,
                 context, db, noteService, fileService, statusHolder);
     }
 
@@ -88,11 +88,13 @@ public class ExportServiceTest {
         fileService.importFileInfo(fileInfo);
         fileService.saveFileData(fileInfo.getId(), getTestFileDataInputStream());
 
-        exportService.doExport();
+        try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+            exportService.doExport(outputStream);
+        }
 
-        assertTrue(outputFile.exists());
-        assertEquals(ExportStatus.DONE, statusHolder.getStatus());
-        assertEquals(100, statusHolder.getProgress());
+        assertTrue("Output file should exist", outputFile.exists());
+        assertEquals("Export status should be DONE", ExportStatus.DONE, statusHolder.getStatus());
+        assertEquals("Progress should be 100", 100, statusHolder.getProgress());
     }
 
     @Test
@@ -101,7 +103,13 @@ public class ExportServiceTest {
             noteService.save(createTestNote());
         }
 
-        Thread exportThread = new Thread(() -> exportService.doExport());
+        Thread exportThread = new Thread(() -> {
+            try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+                exportService.doExport(outputStream);
+            } catch (IOException e) {
+                // Ignore
+            }
+        });
         exportThread.start();
 
         try {
@@ -113,8 +121,14 @@ public class ExportServiceTest {
             fail("Test interrupted");
         }
 
-        assertFalse(outputFile.exists());
-        assertEquals(ExportStatus.CANCELED, statusHolder.getStatus());
+        if (outputFile.exists()) {
+            try {
+                Files.delete(outputFile.toPath());
+            } catch (IOException e) {
+                // Ignore
+            }
+        }
+        assertEquals("Export status should be CANCELED", ExportStatus.CANCELED, statusHolder.getStatus());
     }
 
     private Note createTestNote() {

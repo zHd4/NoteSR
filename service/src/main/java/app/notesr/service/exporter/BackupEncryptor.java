@@ -5,9 +5,9 @@
 
 package app.notesr.service.exporter;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
 import app.notesr.core.security.crypto.AesCryptor;
@@ -34,7 +34,7 @@ public final class BackupEncryptor {
         }
     }
 
-    public void encrypt(FileInputStream inputStream, FileOutputStream outputStream)
+    public void encrypt(InputStream inputStream, OutputStream outputStream)
             throws EncryptionFailedException, IOException {
         try {
             cryptor.encrypt(inputStream, outputStream);

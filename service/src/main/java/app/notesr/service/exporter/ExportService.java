@@ -18,9 +18,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.OutputStream;
 
 import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.dto.CryptoSecrets;
@@ -42,7 +41,6 @@ public final class ExportService {
     private static final String TAG = ExportService.class.getCanonicalName();
 
     private final CryptoSecrets cryptoSecrets;
-    private final File outputFile;
     private final String appVersion;
 
     private final Context context;
@@ -59,7 +57,7 @@ public final class ExportService {
     private File tempArchive;
     private int exportedEntities;
 
-    public void doExport() {
+    public void doExport(OutputStream outputStream) {
         if (db.getNoteDao().getRowsCount() == 0) {
             throw new DataNotFoundException("No notes in table");
         }
@@ -80,8 +78,7 @@ public final class ExportService {
             }
 
             statusHolder.setStatus(ExportStatus.ENCRYPTING_DATA);
-            encryptFinalFile(backupEncryptor);
-            deleteFile(tempArchive);
+            encryptFinalFile(backupEncryptor, outputStream);
 
             statusHolder.setStatus(ExportStatus.DONE);
             statusHolder.setProgress(calculateProgress());
@@ -89,14 +86,13 @@ public final class ExportService {
             statusHolder.setStatus(ExportStatus.CANCELED);
         } catch (Throwable e) {
             Log.e(TAG, "Export failed", e);
-
+            statusHolder.setStatus(ExportStatus.ERROR);
+        } finally {
             try {
                 deleteFile(tempArchive);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to delete temp archive", e);
             }
-
-            statusHolder.setStatus(ExportStatus.ERROR);
         }
     }
 
@@ -153,13 +149,12 @@ public final class ExportService {
         }
     }
 
-    private void encryptFinalFile(BackupEncryptor encryptor)
+    private void encryptFinalFile(BackupEncryptor encryptor, OutputStream outputStream)
             throws IOException, EncryptionFailedException {
 
-        FileInputStream inputStream = new FileInputStream(tempArchive);
-        FileOutputStream outputStream = new FileOutputStream(outputFile);
-
-        encryptor.encrypt(inputStream, outputStream);
+        try (FileInputStream fileInputStream = new FileInputStream(tempArchive)) {
+            encryptor.encrypt(fileInputStream, outputStream);
+        }
     }
 
     private BackupEncryptor getBackupEncryptor() {
@@ -173,10 +168,6 @@ public final class ExportService {
         if (status == ExportStatus.CANCELLING) {
             try {
                 TempDataWiper.wipeTempData(tempArchive);
-
-                if (outputFile.exists()) {
-                    Files.delete(outputFile.toPath());
-                }
 
                 throw new ExportCancelledException();
             } catch (IOException e) {
