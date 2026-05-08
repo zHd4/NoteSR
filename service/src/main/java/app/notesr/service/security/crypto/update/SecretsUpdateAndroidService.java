@@ -80,7 +80,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
         showForegroundNotification(startId);
         register(encryptedPayload, serializeState(state));
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     void showForegroundNotification(int startId) {

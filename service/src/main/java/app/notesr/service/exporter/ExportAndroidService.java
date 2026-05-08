@@ -109,7 +109,7 @@ public final class ExportAndroidService extends AndroidService implements Runnab
         startForeground(startId, notification, type);
         register(getPayload(), null);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @NonNull

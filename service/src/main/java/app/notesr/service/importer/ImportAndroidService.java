@@ -89,7 +89,7 @@ public final class ImportAndroidService extends AndroidService implements Runnab
         startForeground(startId, notification, type);
         register(encryptPayload(getPayload()), null);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @NonNull

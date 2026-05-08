@@ -71,7 +71,7 @@ public class AppMigrationAndroidService extends AndroidService implements Runnab
         startForeground(1004, notification, type);
         register(getPayload(), null);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @NonNull
