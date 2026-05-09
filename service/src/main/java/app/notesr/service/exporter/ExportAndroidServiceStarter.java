@@ -39,7 +39,8 @@ public final class ExportAndroidServiceStarter implements AndroidServiceStarter 
 
     private Intent buildIntent(Context context) {
         return new Intent(context, ExportAndroidService.class)
-                .putExtra(ExportAndroidService.EXTRA_APP_VERSION, payload.getAppVersion());
+                .putExtra(ExportAndroidService.EXTRA_APP_VERSION, payload.getAppVersion())
+                .putExtra(ExportAndroidService.EXTRA_OUTPUT_PATH, payload.getUriString());
     }
 
     @Data
@@ -47,5 +48,6 @@ public final class ExportAndroidServiceStarter implements AndroidServiceStarter 
     @AllArgsConstructor
     public static class Payload {
         private String appVersion;
+        private String uriString;
     }
 }

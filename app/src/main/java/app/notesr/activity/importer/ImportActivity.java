@@ -129,9 +129,9 @@ public final class ImportActivity extends ActivityBase {
 
     private View.OnClickListener selectFileOnClick() {
         return view -> {
-            Intent intent = new Intent()
-                    .setType("application/x-trash")
-                    .setAction(Intent.ACTION_GET_CONTENT);
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                    .setType("*/*")
+                    .addCategory(Intent.CATEGORY_OPENABLE);
 
             fileChooserLauncher.launch(Intent.createChooser(intent, getString(R.string.select_a_dump)));
         };

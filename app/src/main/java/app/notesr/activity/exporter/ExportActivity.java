@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -22,8 +23,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
@@ -50,6 +56,15 @@ public final class ExportActivity extends ActivityBase {
     private FileService fileService;
     private ActionBar actionBar;
     private Button startStopButton;
+
+    private final ActivityResultLauncher<String> createDocumentLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument("application/octet-stream"),
+            uri -> {
+                if (uri != null) {
+                    startService(uri);
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +141,7 @@ public final class ExportActivity extends ActivityBase {
 
                     disableBackButton(this);
 
-                    startService();
+                    pickSaveLocation();
 
                     setCancelButton();
                 } else {
@@ -137,11 +152,19 @@ public final class ExportActivity extends ActivityBase {
         });
     }
 
-    private void startService() {
+    private void pickSaveLocation() {
+        LocalDateTime now = LocalDateTime.now();
+        String nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+        String filename = "nsr_export_" + nowStr + ".notesr.bak";
+
+        createDocumentLauncher.launch(filename);
+    }
+
+    private void startService(Uri uri) {
         VersionFetcher versionFetcher = new VersionFetcherImpl();
         try {
             String appVersion = versionFetcher.fetchVersionName(this, false);
-            new ExportAndroidServiceStarter(new ExportAndroidServiceStarter.Payload(appVersion))
+            new ExportAndroidServiceStarter(new ExportAndroidServiceStarter.Payload(appVersion, uri.toString()))
                     .start(getApplicationContext());
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);

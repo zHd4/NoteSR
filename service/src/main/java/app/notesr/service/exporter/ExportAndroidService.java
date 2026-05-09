@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 
@@ -38,14 +39,8 @@ import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -66,7 +61,7 @@ public final class ExportAndroidService extends AndroidService implements Runnab
     );
 
     private String appVersion;
-    private File outputFile;
+    private String outputUri;
     private ExportService exportService;
 
     @Nullable
@@ -92,15 +87,11 @@ public final class ExportAndroidService extends AndroidService implements Runnab
         }
 
         appVersion = intent.getStringExtra(EXTRA_APP_VERSION);
+        outputUri = intent.getStringExtra(EXTRA_OUTPUT_PATH);
+
         requireNonNull(appVersion, "App version not provided");
+        requireNonNull(outputUri, "Output URI not provided");
 
-        File outputDir = getExternalFilesDir(null);
-
-        if (outputDir == null) {
-            outputDir = getFilesDir();
-        }
-
-        outputFile = getOutputFile(outputDir.getPath());
         exportService = getExportService(this::onUpdateCallback, appVersion);
 
         Thread thread = new Thread(this);
@@ -124,7 +115,7 @@ public final class ExportAndroidService extends AndroidService implements Runnab
 
     private String getPayload() {
         return getPlainJson(new ObjectMapper(),
-                new ExportAndroidServiceStarter.Payload(appVersion));
+                new ExportAndroidServiceStarter.Payload(appVersion, outputUri));
     }
 
     private void onUpdateCallback(Integer progress, ExportStatus status) {
@@ -137,10 +128,15 @@ public final class ExportAndroidService extends AndroidService implements Runnab
 
     @Override
     public void run() {
-        registerCancelSignalReceiver();
-        broadcastOutputPath(outputFile.getPath());
+        Uri uri = Uri.parse(outputUri);
 
-        try (OutputStream outputStream = getOutputStream(outputFile)) {
+        registerCancelSignalReceiver();
+        broadcastOutputPath(uri.getPath());
+
+        try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
+            if (outputStream == null) {
+                throw new IOException("Could not open output stream for URI: " + outputUri);
+            }
             exportService.doExport(outputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -193,23 +189,5 @@ public final class ExportAndroidService extends AndroidService implements Runnab
                 fileService,
                 statusHolder
         );
-    }
-
-    private OutputStream getOutputStream(File file) throws IOException {
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs();
-        }
-        return new FileOutputStream(file);
-    }
-
-    private File getOutputFile(String dirPath) {
-        LocalDateTime now = LocalDateTime.now();
-        String nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
-
-        String filename = "nsr_export_" + nowStr + ".notesr.bak";
-        Path outputPath = Paths.get(dirPath, filename);
-
-        return new File(outputPath.toUri());
     }
 }
