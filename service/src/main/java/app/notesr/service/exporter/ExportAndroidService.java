@@ -12,16 +12,12 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.IBinder;
-import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +39,7 @@ import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -97,8 +94,11 @@ public final class ExportAndroidService extends AndroidService implements Runnab
         appVersion = intent.getStringExtra(EXTRA_APP_VERSION);
         requireNonNull(appVersion, "App version not provided");
 
-        File outputDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS);
+        File outputDir = getExternalFilesDir(null);
+
+        if (outputDir == null) {
+            outputDir = getFilesDir();
+        }
 
         outputFile = getOutputFile(outputDir.getPath());
         exportService = getExportService(this::onUpdateCallback, appVersion);
@@ -196,25 +196,11 @@ public final class ExportAndroidService extends AndroidService implements Runnab
     }
 
     private OutputStream getOutputStream(File file) throws IOException {
-        ContentValues values = new ContentValues();
-
-        values.put(MediaStore.MediaColumns.DISPLAY_NAME, file.getName());
-        values.put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream");
-        values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
-
-        Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
-
-        if (uri == null) {
-            throw new IOException("Failed to create MediaStore entry");
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
         }
-
-        OutputStream outputStream = getContentResolver().openOutputStream(uri);
-
-        if (outputStream == null) {
-            throw new IOException("Failed to open output stream from URI: " + uri);
-        }
-
-        return outputStream;
+        return new FileOutputStream(file);
     }
 
     private File getOutputFile(String dirPath) {
