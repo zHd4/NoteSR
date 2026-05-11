@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class FileExifDataResolverTest {
 
         try (InputStream inputStream = assets.open("test_image.jpg")) {
             try (FileOutputStream outputStream = new FileOutputStream(testFile)) {
-                byte[] imageBytes = inputStream.readAllBytes();
+                byte[] imageBytes = readAllBytes(inputStream);
                 testFileSize = imageBytes.length;
 
                 outputStream.write(imageBytes);
@@ -89,5 +90,18 @@ public class FileExifDataResolverTest {
         values.put(MediaStore.Images.Media.SIZE, size);
 
         return contentResolver.insert(imagesCollection, values);
+    }
+
+    private static byte[] readAllBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int bytesRead;
+        byte[] data = new byte[16384];
+
+        while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, bytesRead);
+        }
+
+        return buffer.toByteArray();
     }
 }
