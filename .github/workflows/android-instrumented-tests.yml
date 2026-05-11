@@ -1,0 +1,93 @@
+name: Android Instrumented Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  instrumented-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    env:
+      GRADLE_OPTS: -Xmx4g
+      ADB_INSTALL_TIMEOUT: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Show disk space
+        run: df -h
+
+      - name: Create emulator wait script
+        run: |
+          cat > wait-for-android.sh <<'EOF'
+          #!/usr/bin/env bash
+          set -e
+
+          adb wait-for-device
+
+          echo "Waiting for boot completion..."
+
+          until adb shell getprop sys.boot_completed | grep -m 1 '1'; do
+            sleep 5
+          done
+
+          echo "Boot completed"
+
+          until adb shell getprop ro.build.version.sdk | grep -E '^[0-9]+$'; do
+            echo "Waiting for SDK..."
+            sleep 5
+          done
+
+          echo "SDK ready"
+
+          until adb shell pm path android >/dev/null 2>&1; do
+            echo "Waiting for PackageManager..."
+            sleep 5
+          done
+
+          echo "PackageManager ready"
+          EOF
+
+          chmod +x wait-for-android.sh
+
+      - name: Run connected tests
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          target: default
+          profile: pixel_4
+
+          emulator-boot-timeout: 900
+
+          disable-spellchecker: true
+
+          emulator-options: >-
+            -no-window
+            -gpu swiftshader_indirect
+            -noaudio
+            -no-boot-anim
+            -camera-back none
+            -camera-front none
+            -no-snapshot
+            -memory 2048
+
+          script: |
+            ./wait-for-android.sh
+            adb shell getprop ro.build.version.sdk
+            ./gradlew connectedDebugAndroidTest --stacktrace --no-daemon
