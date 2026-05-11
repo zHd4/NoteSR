@@ -18,7 +18,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class VideoThumbnailCreatorTest extends ThumbnailCreatorTestBase {
     private static final int EXPECTED_WIDTH = 200;
@@ -34,7 +34,7 @@ public class VideoThumbnailCreatorTest extends ThumbnailCreatorTestBase {
         byte[] thumbnailBytes = thumbnailCreator.getThumbnail(Uri.fromFile(videoFile));
         assertNotNull("Thumbnail creator returned null", thumbnailBytes);
 
-        Files.write(Path.of(thumbnailFile.getAbsolutePath()), thumbnailBytes);
+        Files.write(Paths.get(thumbnailFile.getAbsolutePath()), thumbnailBytes);
 
         int actualWidth = getImageSize(thumbnailFile).getWidth();
 
