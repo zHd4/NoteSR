@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
@@ -66,6 +67,8 @@ public final class AppCloseAndroidService extends AndroidService {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         if (getCurrentRunningServicesCount() == 0) {
+            DatabaseProvider.close();
+
             CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
             cryptoManager.destroySecrets();
 
