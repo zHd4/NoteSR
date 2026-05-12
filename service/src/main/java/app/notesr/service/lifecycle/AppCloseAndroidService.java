@@ -26,6 +26,8 @@ import app.notesr.service.AndroidServiceRegistry;
 
 public final class AppCloseAndroidService extends AndroidService {
 
+    private static final int NOTIFICATION_ID = 1005;
+
     private static final String CHANNEL_ID = "app_close_service_channel";
     private static final String CHANNEL_NAME = "App Close Service Channel";
 
@@ -52,7 +54,7 @@ public final class AppCloseAndroidService extends AndroidService {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
-        startForeground(1005, notification, type);
+        startForeground(NOTIFICATION_ID, notification, type);
         register(null, null);
 
         return START_NOT_STICKY;
