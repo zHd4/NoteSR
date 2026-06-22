@@ -91,8 +91,9 @@
             android:id="@+id/viewer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="@color/text_color" />
+            android:textSize="15sp"
+            android:textColor="@color/text_color"
+            android:paddingBottom="15dp" />
 
     </ScrollView>
 
