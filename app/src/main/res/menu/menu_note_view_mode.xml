@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/editMenuItem"
+            android:title="@string/edit"
+            android:checkable="true" />
+
+        <item android:id="@+id/viewTextMenuItem"
+            android:title="@string/view_text"
+            android:checkable="true"/>
+
+        <item android:id="@+id/viewMarkdownMenuItem"
+            android:title="@string/view_markdown"
+            android:checkable="true"/>
+    </group>
+</menu>

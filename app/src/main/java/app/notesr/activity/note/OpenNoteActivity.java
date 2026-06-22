@@ -15,8 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.PopupMenu;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.widget.TextViewKt;
 
@@ -34,15 +37,13 @@ import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
+import io.noties.markwon.Markwon;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -52,7 +53,6 @@ public final class OpenNoteActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
     public static final String EXTRA_NOTE_MODIFIED = "modified";
     private static final long MAX_COUNT_IN_BADGE = 9;
-    private final Map<Integer, Consumer<?>> menuItemsMap = new HashMap<>();
 
     private NoteService noteService;
     private FileService fileService;
@@ -60,10 +60,26 @@ public final class OpenNoteActivity extends ActivityBase {
     private Menu activityMenu;
     private DialogFactory dialogFactory;
     private boolean isNoteModified;
+    private EditText nameField;
+    private EditText textField;
+    private TextView viewer;
+    private ScrollView viewerContainer;
+    private Markwon markwon;
+    private static final int MODE_EDIT = 0;
+    private static final int MODE_TEXT = 1;
+    private static final int MODE_MARKDOWN = 2;
+    private static final String STATE_VIEW_MODE = "viewMode";
+    private int viewMode = MODE_EDIT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            viewMode = savedInstanceState.getInt(STATE_VIEW_MODE, MODE_EDIT);
+        } else {
+            viewMode = MODE_EDIT;
+        }
 
         if (isFinishing()) {
             return;
@@ -81,6 +97,7 @@ public final class OpenNoteActivity extends ActivityBase {
         noteService = new NoteService(db);
         fileService = new FileService(context, db, cryptor, new FilesUtils());
         dialogFactory = new DialogFactory(this);
+        markwon = Markwon.create(this);
 
         String noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
@@ -90,7 +107,20 @@ public final class OpenNoteActivity extends ActivityBase {
 
             runOnUiThread(() -> {
                 initializeActionBar();
-                prepareEditorFields();
+                prepareViews();
+
+                switch (viewMode) {
+                    case MODE_TEXT:
+                        switchToViewTextMode();
+                        break;
+                    case MODE_MARKDOWN:
+                        switchToViewMarkdownMode();
+                        break;
+                    case MODE_EDIT:
+                    default:
+                        switchToEditMode();
+                        break;
+                }
             });
         });
     }
@@ -102,7 +132,7 @@ public final class OpenNoteActivity extends ActivityBase {
             actionBar.setDisplayHomeAsUpEnabled(true);
 
             if (note != null) {
-                actionBar.setTitle(getResources().getString(R.string.edit_note));
+                actionBar.setTitle(getResources().getString(R.string.edit));
             } else {
                 actionBar.setTitle(getResources().getString(R.string.new_note));
             }
@@ -111,9 +141,11 @@ public final class OpenNoteActivity extends ActivityBase {
         }
     }
 
-    private void prepareEditorFields() {
-        EditText nameField = findViewById(R.id.noteNameField);
-        EditText textField = findViewById(R.id.noteTextField);
+    private void prepareViews() {
+        nameField = findViewById(R.id.noteNameField);
+        textField = findViewById(R.id.noteTextField);
+        viewer = findViewById(R.id.viewer);
+        viewerContainer = findViewById(R.id.viewerContainer);
 
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -140,25 +172,34 @@ public final class OpenNoteActivity extends ActivityBase {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        EditText nameField = findViewById(R.id.noteNameField);
-        EditText textField = findViewById(R.id.noteTextField);
-
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
         this.activityMenu = menu;
 
+        MenuItem changeModeButton = menu.findItem(R.id.changeViewModeButton);
         MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
         MenuItem openFilesListButton = menu.findItem(R.id.openFilesListButton);
         MenuItem deleteNoteButton = menu.findItem(R.id.deleteNoteButton);
 
-        menuItemsMap.put(saveNoteButton.getItemId(),
-                action -> saveNoteOnClick(nameField, textField));
+        changeModeButton.setOnMenuItemClickListener(item -> {
+            changeViewModeButtonOnClick();
+            return true;
+        });
+
+        saveNoteButton.setOnMenuItemClickListener(item -> {
+            saveNoteOnClick(nameField, textField);
+            return true;
+        });
 
         if (note != null) {
-            menuItemsMap.put(openFilesListButton.getItemId(),
-                    action -> openFilesListOnClick());
+            openFilesListButton.setOnMenuItemClickListener(item -> {
+                openFilesListOnClick();
+                return true;
+            });
 
-            menuItemsMap.put(deleteNoteButton.getItemId(),
-                    action -> deleteNoteOnClick());
+            deleteNoteButton.setOnMenuItemClickListener(item -> {
+                deleteNoteOnClick();
+                return true;
+            });
 
             setAttachedFilesCountBadge(openFilesListButton);
         } else {
@@ -210,12 +251,6 @@ public final class OpenNoteActivity extends ActivityBase {
                 finish();
             }
             return true;
-        }
-
-        Consumer<?> action = menuItemsMap.get(id);
-
-        if (action != null) {
-            action.accept(null);
         }
 
         return super.onOptionsItemSelected(item);
@@ -288,6 +323,78 @@ public final class OpenNoteActivity extends ActivityBase {
                 });
             }
         };
+    }
+
+    private void changeViewModeButtonOnClick() {
+        View anchor = findViewById(R.id.changeViewModeButton);
+        PopupMenu popup = new PopupMenu(this, anchor);
+        popup.inflate(R.menu.menu_note_view_mode);
+
+        Menu popupMenu = popup.getMenu();
+
+        if (viewMode == MODE_EDIT) {
+            popupMenu.findItem(R.id.editMenuItem).setChecked(true);
+        } else if (viewMode == MODE_TEXT) {
+            popupMenu.findItem(R.id.viewTextMenuItem).setChecked(true);
+        } else if (viewMode == MODE_MARKDOWN) {
+            popupMenu.findItem(R.id.viewMarkdownMenuItem).setChecked(true);
+        }
+
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.editMenuItem) {
+                item.setChecked(true);
+                viewMode = MODE_EDIT;
+                switchToEditMode();
+                return true;
+            } else if (id == R.id.viewTextMenuItem) {
+                item.setChecked(true);
+                viewMode = MODE_TEXT;
+                switchToViewTextMode();
+                return true;
+            } else if (id == R.id.viewMarkdownMenuItem) {
+                item.setChecked(true);
+                viewMode = MODE_MARKDOWN;
+                switchToViewMarkdownMode();
+                return true;
+            }
+
+            return false;
+        });
+
+        nameField.post(popup::show);
+    }
+
+    private void switchToEditMode() {
+        viewMode = MODE_EDIT;
+        nameField.setEnabled(false);
+        textField.setVisibility(View.VISIBLE);
+        viewerContainer.setVisibility(View.GONE);
+    }
+
+    private void switchToViewTextMode() {
+        viewMode = MODE_TEXT;
+        nameField.setEnabled(true);
+        textField.setVisibility(View.GONE);
+
+        viewer.setText(textField.getText().toString());
+        viewerContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void switchToViewMarkdownMode() {
+        viewMode = MODE_MARKDOWN;
+        nameField.setEnabled(true);
+        textField.setVisibility(View.GONE);
+
+        markwon.setMarkdown(viewer, textField.getText().toString());
+        viewerContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_VIEW_MODE, viewMode);
     }
 
     private void disableMenuItem(MenuItem item) {
