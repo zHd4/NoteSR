@@ -279,7 +279,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
     private void switchToEditMode() {
         openMode = OpenNoteMode.EDIT;
-        nameField.setEnabled(false);
+        nameField.setEnabled(true);
         textField.setVisibility(View.VISIBLE);
         viewerContainer.setVisibility(View.GONE);
         actionBar.setTitle(getResources().getString(R.string.edit));
@@ -287,7 +287,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
     private void switchToViewMarkdownMode() {
         openMode = OpenNoteMode.MARKDOWN_VIEW;
-        nameField.setEnabled(true);
+        nameField.setEnabled(false);
         textField.setVisibility(View.GONE);
 
         markwon.setMarkdown(viewer, textField.getText().toString());
