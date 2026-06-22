@@ -5,10 +5,6 @@
             android:title="@string/edit"
             android:checkable="true" />
 
-        <item android:id="@+id/viewTextMenuItem"
-            android:title="@string/view_text"
-            android:checkable="true"/>
-
         <item android:id="@+id/viewMarkdownMenuItem"
             android:title="@string/view_markdown"
             android:checkable="true"/>

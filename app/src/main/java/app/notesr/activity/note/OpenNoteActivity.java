@@ -66,8 +66,7 @@ public final class OpenNoteActivity extends ActivityBase {
     private ScrollView viewerContainer;
     private Markwon markwon;
     private static final int MODE_EDIT = 0;
-    private static final int MODE_TEXT = 1;
-    private static final int MODE_MARKDOWN = 2;
+    private static final int MODE_MARKDOWN_VIEW = 1;
     private static final String STATE_OPEN_MODE = "openMode";
     private int openMode = MODE_EDIT;
 
@@ -110,10 +109,7 @@ public final class OpenNoteActivity extends ActivityBase {
                 prepareViews();
 
                 switch (openMode) {
-                    case MODE_TEXT:
-                        switchToViewTextMode();
-                        break;
-                    case MODE_MARKDOWN:
+                    case MODE_MARKDOWN_VIEW:
                         switchToViewMarkdownMode();
                         break;
                     case MODE_EDIT:
@@ -334,9 +330,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
         if (openMode == MODE_EDIT) {
             popupMenu.findItem(R.id.editMenuItem).setChecked(true);
-        } else if (openMode == MODE_TEXT) {
-            popupMenu.findItem(R.id.viewTextMenuItem).setChecked(true);
-        } else if (openMode == MODE_MARKDOWN) {
+        } else if (openMode == MODE_MARKDOWN_VIEW) {
             popupMenu.findItem(R.id.viewMarkdownMenuItem).setChecked(true);
         }
 
@@ -348,14 +342,9 @@ public final class OpenNoteActivity extends ActivityBase {
                 openMode = MODE_EDIT;
                 switchToEditMode();
                 return true;
-            } else if (id == R.id.viewTextMenuItem) {
-                item.setChecked(true);
-                openMode = MODE_TEXT;
-                switchToViewTextMode();
-                return true;
             } else if (id == R.id.viewMarkdownMenuItem) {
                 item.setChecked(true);
-                openMode = MODE_MARKDOWN;
+                openMode = MODE_MARKDOWN_VIEW;
                 switchToViewMarkdownMode();
                 return true;
             }
@@ -373,17 +362,8 @@ public final class OpenNoteActivity extends ActivityBase {
         viewerContainer.setVisibility(View.GONE);
     }
 
-    private void switchToViewTextMode() {
-        openMode = MODE_TEXT;
-        nameField.setEnabled(true);
-        textField.setVisibility(View.GONE);
-
-        viewer.setText(textField.getText().toString());
-        viewerContainer.setVisibility(View.VISIBLE);
-    }
-
     private void switchToViewMarkdownMode() {
-        openMode = MODE_MARKDOWN;
+        openMode = MODE_MARKDOWN_VIEW;
         nameField.setEnabled(true);
         textField.setVisibility(View.GONE);
 
