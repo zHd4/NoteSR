@@ -5,9 +5,7 @@
 
 package app.notesr.activity.note;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -28,7 +26,6 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
-import app.notesr.activity.file.FilesListActivity;
 import app.notesr.service.file.FileService;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
@@ -41,8 +38,6 @@ import io.noties.markwon.Markwon;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
@@ -101,6 +96,11 @@ public final class OpenNoteActivity extends ActivityBase {
 
         newSingleThreadExecutor().execute(() -> {
             note = noteService.get(noteId);
+
+            if (isNewNote()) {
+                note = new Note();
+            }
+
             isNoteModified = getIntent().getBooleanExtra(EXTRA_NOTE_MODIFIED, false);
 
             runOnUiThread(() -> {
@@ -126,11 +126,8 @@ public final class OpenNoteActivity extends ActivityBase {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-            if (note != null) {
-                actionBar.setTitle(getResources().getString(R.string.edit));
-            } else {
-                actionBar.setTitle(getResources().getString(R.string.new_note));
-            }
+            int titleId = isNewNote() ? R.string.new_note : R.string.edit;
+            actionBar.setTitle(getResources().getString(titleId));
         } else {
             throw new NullPointerException("Action bar is null");
         }
@@ -145,10 +142,8 @@ public final class OpenNoteActivity extends ActivityBase {
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
-        if (note != null) {
-            nameField.setText(note.getName());
-            textField.setText(note.getText());
-        }
+        nameField.setText(note.getName());
+        textField.setText(note.getText());
 
         Function1<Editable, Unit> afterTextChangedAction = editable -> {
             if (!isNoteModified) {
@@ -163,6 +158,11 @@ public final class OpenNoteActivity extends ActivityBase {
 
         TextViewKt.doAfterTextChanged(nameField, afterTextChangedAction);
         TextViewKt.doAfterTextChanged(textField, afterTextChangedAction);
+    }
+
+    @SuppressWarnings("ConstantValue") // Because note id could be null before first save
+    private boolean isNewNote() {
+        return note == null || note.getId() == null;
     }
 
     @Override
@@ -180,21 +180,15 @@ public final class OpenNoteActivity extends ActivityBase {
             return true;
         });
 
-        saveNoteButton.setOnMenuItemClickListener(item -> {
-            saveNoteOnClick(nameField, textField);
-            return true;
-        });
+        saveNoteButton.setOnMenuItemClickListener(new SaveNoteOnClick(this, note,
+                noteService, dialogFactory, nameField, textField));
 
-        if (note != null) {
-            openFilesListButton.setOnMenuItemClickListener(item -> {
-                openFilesListOnClick();
-                return true;
-            });
+        if (!isNewNote()) {
+            openFilesListButton.setOnMenuItemClickListener(
+                    new OpenFilesListOnClick(this, note));
 
-            deleteNoteButton.setOnMenuItemClickListener(item -> {
-                deleteNoteOnClick();
-                return true;
-            });
+            deleteNoteButton.setOnMenuItemClickListener(new DeleteNoteOnClick(this, note,
+                    noteService, fileService, dialogFactory));
 
             setAttachedFilesCountBadge(openFilesListButton);
         } else {
@@ -226,8 +220,6 @@ public final class OpenNoteActivity extends ActivityBase {
 
                     badge.setText(badgeText);
                     badge.setVisibility(View.VISIBLE);
-
-                    view.setOnClickListener(v -> openFilesListOnClick());
                 }
             });
         });
@@ -249,75 +241,6 @@ public final class OpenNoteActivity extends ActivityBase {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void saveNoteOnClick(EditText nameField, EditText textField) {
-        String name = nameField.getText().toString();
-        String text = textField.getText().toString();
-
-        if (!name.isBlank() && !text.isBlank()) {
-            if (note == null) {
-                note = new Note();
-            }
-
-            note.setName(name);
-            note.setText(text);
-            note.setUpdatedAt(LocalDateTime.now());
-
-            Dialog progressDialog = dialogFactory
-                    .getThemedProgressDialog(R.layout.progress_dialog_loading);
-
-            newSingleThreadExecutor().execute(() -> {
-                runOnUiThread(progressDialog::show);
-                noteService.save(note);
-
-                runOnUiThread(() -> {
-                    progressDialog.dismiss();
-                    startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-                });
-            });
-        }
-    }
-
-    private void deleteNoteOnClick() {
-        DialogInterface.OnClickListener buttonHandler = deleteNoteDialogOnClick();
-        dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_action_cannot_be_undo)
-                .setTitle(R.string.warning)
-                .setPositiveButton(R.string.delete, buttonHandler)
-                .setNegativeButton(R.string.no, buttonHandler)
-                .create()
-                .show();
-    }
-
-    private void openFilesListOnClick() {
-        Intent intent = new Intent(getApplicationContext(), FilesListActivity.class);
-
-        intent.putExtra(FilesListActivity.EXTRA_NOTE_ID, note.getId());
-        startActivity(intent);
-    }
-
-    private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
-        return (dialog, result) -> {
-            if (result == DialogInterface.BUTTON_POSITIVE) {
-                Dialog progressDialog = dialogFactory
-                        .getThemedProgressDialog(R.layout.progress_dialog_deleting);
-
-                newSingleThreadExecutor().execute(() -> {
-                    runOnUiThread(progressDialog::show);
-
-                    try {
-                        noteService.delete(note.getId(), fileService);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    runOnUiThread(() -> {
-                        progressDialog.dismiss();
-                        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-                    });
-                });
-            }
-        };
     }
 
     private void changeOpenModeButtonOnClick() {
