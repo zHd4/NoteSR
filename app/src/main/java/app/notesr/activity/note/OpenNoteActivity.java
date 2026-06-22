@@ -57,6 +57,7 @@ public final class OpenNoteActivity extends ActivityBase {
     private NoteService noteService;
     private FileService fileService;
     private Note note;
+    private ActionBar actionBar;
     private Menu activityMenu;
     private DialogFactory dialogFactory;
     private boolean isNoteModified;
@@ -122,7 +123,7 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void initializeActionBar() {
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
 
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -360,6 +361,7 @@ public final class OpenNoteActivity extends ActivityBase {
         nameField.setEnabled(false);
         textField.setVisibility(View.VISIBLE);
         viewerContainer.setVisibility(View.GONE);
+        actionBar.setTitle(getResources().getString(R.string.edit));
     }
 
     private void switchToViewMarkdownMode() {
@@ -369,6 +371,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
         markwon.setMarkdown(viewer, textField.getText().toString());
         viewerContainer.setVisibility(View.VISIBLE);
+        actionBar.setTitle(getResources().getString(R.string.view_markdown));
     }
 
     @Override
