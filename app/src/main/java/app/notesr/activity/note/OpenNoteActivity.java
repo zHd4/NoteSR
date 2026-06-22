@@ -68,17 +68,17 @@ public final class OpenNoteActivity extends ActivityBase {
     private static final int MODE_EDIT = 0;
     private static final int MODE_TEXT = 1;
     private static final int MODE_MARKDOWN = 2;
-    private static final String STATE_VIEW_MODE = "viewMode";
-    private int viewMode = MODE_EDIT;
+    private static final String STATE_OPEN_MODE = "openMode";
+    private int openMode = MODE_EDIT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            viewMode = savedInstanceState.getInt(STATE_VIEW_MODE, MODE_EDIT);
+            openMode = savedInstanceState.getInt(STATE_OPEN_MODE, MODE_EDIT);
         } else {
-            viewMode = MODE_EDIT;
+            openMode = MODE_EDIT;
         }
 
         if (isFinishing()) {
@@ -109,7 +109,7 @@ public final class OpenNoteActivity extends ActivityBase {
                 initializeActionBar();
                 prepareViews();
 
-                switch (viewMode) {
+                switch (openMode) {
                     case MODE_TEXT:
                         switchToViewTextMode();
                         break;
@@ -175,13 +175,13 @@ public final class OpenNoteActivity extends ActivityBase {
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
         this.activityMenu = menu;
 
-        MenuItem changeModeButton = menu.findItem(R.id.changeViewModeButton);
+        MenuItem changeModeButton = menu.findItem(R.id.changeOpenModeButton);
         MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
         MenuItem openFilesListButton = menu.findItem(R.id.openFilesListButton);
         MenuItem deleteNoteButton = menu.findItem(R.id.deleteNoteButton);
 
         changeModeButton.setOnMenuItemClickListener(item -> {
-            changeViewModeButtonOnClick();
+            changeOpenModeButtonOnClick();
             return true;
         });
 
@@ -325,18 +325,18 @@ public final class OpenNoteActivity extends ActivityBase {
         };
     }
 
-    private void changeViewModeButtonOnClick() {
-        View anchor = findViewById(R.id.changeViewModeButton);
+    private void changeOpenModeButtonOnClick() {
+        View anchor = findViewById(R.id.changeOpenModeButton);
         PopupMenu popup = new PopupMenu(this, anchor);
-        popup.inflate(R.menu.menu_note_view_mode);
+        popup.inflate(R.menu.menu_open_node_open_mode);
 
         Menu popupMenu = popup.getMenu();
 
-        if (viewMode == MODE_EDIT) {
+        if (openMode == MODE_EDIT) {
             popupMenu.findItem(R.id.editMenuItem).setChecked(true);
-        } else if (viewMode == MODE_TEXT) {
+        } else if (openMode == MODE_TEXT) {
             popupMenu.findItem(R.id.viewTextMenuItem).setChecked(true);
-        } else if (viewMode == MODE_MARKDOWN) {
+        } else if (openMode == MODE_MARKDOWN) {
             popupMenu.findItem(R.id.viewMarkdownMenuItem).setChecked(true);
         }
 
@@ -345,17 +345,17 @@ public final class OpenNoteActivity extends ActivityBase {
 
             if (id == R.id.editMenuItem) {
                 item.setChecked(true);
-                viewMode = MODE_EDIT;
+                openMode = MODE_EDIT;
                 switchToEditMode();
                 return true;
             } else if (id == R.id.viewTextMenuItem) {
                 item.setChecked(true);
-                viewMode = MODE_TEXT;
+                openMode = MODE_TEXT;
                 switchToViewTextMode();
                 return true;
             } else if (id == R.id.viewMarkdownMenuItem) {
                 item.setChecked(true);
-                viewMode = MODE_MARKDOWN;
+                openMode = MODE_MARKDOWN;
                 switchToViewMarkdownMode();
                 return true;
             }
@@ -367,14 +367,14 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void switchToEditMode() {
-        viewMode = MODE_EDIT;
+        openMode = MODE_EDIT;
         nameField.setEnabled(false);
         textField.setVisibility(View.VISIBLE);
         viewerContainer.setVisibility(View.GONE);
     }
 
     private void switchToViewTextMode() {
-        viewMode = MODE_TEXT;
+        openMode = MODE_TEXT;
         nameField.setEnabled(true);
         textField.setVisibility(View.GONE);
 
@@ -383,7 +383,7 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void switchToViewMarkdownMode() {
-        viewMode = MODE_MARKDOWN;
+        openMode = MODE_MARKDOWN;
         nameField.setEnabled(true);
         textField.setVisibility(View.GONE);
 
@@ -394,7 +394,7 @@ public final class OpenNoteActivity extends ActivityBase {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_VIEW_MODE, viewMode);
+        outState.putInt(STATE_OPEN_MODE, openMode);
     }
 
     private void disableMenuItem(MenuItem item) {
