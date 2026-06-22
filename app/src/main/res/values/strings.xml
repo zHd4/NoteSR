@@ -105,6 +105,6 @@
     <string name="error">Error</string>
     <string name="re_encryption_failed_your_key_and_your_data_remains_unchanged">Re-encryption failed, your key and your data remains unchanged.</string>
     <string name="view_text">View Text</string>
-    <string name="view_markdown">View Markdown</string>
+    <string name="view_markdown">Markdown View</string>
     <string name="change_open_mode">Change open mode</string>
 </resources>
