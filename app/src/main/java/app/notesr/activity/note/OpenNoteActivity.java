@@ -58,8 +58,8 @@ public final class OpenNoteActivity extends ActivityBase {
     private boolean isNoteModified;
     private EditText nameField;
     private EditText textField;
-    private TextView viewer;
-    private ScrollView viewerContainer;
+    private TextView markdownViewer;
+    private ScrollView markdownViewerContainer;
     private Markwon markwon;
     private static final String STATE_OPEN_MODE = "openMode";
     private OpenNoteMode openMode = OpenNoteMode.EDIT;
@@ -136,8 +136,8 @@ public final class OpenNoteActivity extends ActivityBase {
     private void prepareViews() {
         nameField = findViewById(R.id.noteNameField);
         textField = findViewById(R.id.noteTextField);
-        viewer = findViewById(R.id.viewer);
-        viewerContainer = findViewById(R.id.viewerContainer);
+        markdownViewer = findViewById(R.id.markdownViewer);
+        markdownViewerContainer = findViewById(R.id.markdownViewerContainer);
 
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -281,7 +281,7 @@ public final class OpenNoteActivity extends ActivityBase {
         openMode = OpenNoteMode.EDIT;
         nameField.setEnabled(true);
         textField.setVisibility(View.VISIBLE);
-        viewerContainer.setVisibility(View.GONE);
+        markdownViewerContainer.setVisibility(View.GONE);
         actionBar.setTitle(getResources().getString(R.string.edit));
     }
 
@@ -290,8 +290,8 @@ public final class OpenNoteActivity extends ActivityBase {
         nameField.setEnabled(false);
         textField.setVisibility(View.GONE);
 
-        markwon.setMarkdown(viewer, textField.getText().toString());
-        viewerContainer.setVisibility(View.VISIBLE);
+        markwon.setMarkdown(markdownViewer, textField.getText().toString());
+        markdownViewerContainer.setVisibility(View.VISIBLE);
         actionBar.setTitle(getResources().getString(R.string.view_markdown));
     }
 

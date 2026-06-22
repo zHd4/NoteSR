@@ -63,7 +63,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <ScrollView
-        android:id="@+id/viewerContainer"
+        android:id="@+id/markdownViewerContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:backgroundTint="@color/activity_background"
@@ -88,7 +88,7 @@
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/viewer"
+            android:id="@+id/markdownViewer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="15sp"
