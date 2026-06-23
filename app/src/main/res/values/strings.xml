@@ -32,7 +32,7 @@
     <string name="name">Name</string>
     <string name="start_typing">Start typing…</string>
     <string name="new_note">New</string>
-    <string name="edit_note">Edit</string>
+    <string name="edit">Edit</string>
     <string name="this_action_cannot_be_undo_are_you_sure">This action cannot be undone.\nAre you sure?</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
@@ -104,4 +104,7 @@
     <string name="files_list_action_bar_title_format">(%1$s) Files of: %2$s</string>
     <string name="error">Error</string>
     <string name="re_encryption_failed_your_key_and_your_data_remains_unchanged">Re-encryption failed, your key and your data remains unchanged.</string>
+    <string name="view_text">View Text</string>
+    <string name="view_markdown">Markdown View</string>
+    <string name="change_open_mode">Change open mode</string>
 </resources>

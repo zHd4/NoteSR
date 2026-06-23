@@ -4,7 +4,7 @@
     <item
         android:id="@+id/saveNoteButton"
         android:icon="@android:drawable/ic_menu_save"
-        android:orderInCategory="3"
+        android:orderInCategory="4"
         android:title="@string/save_note"
         android:visible="false"
         app:showAsAction="always" />
@@ -12,15 +12,22 @@
     <item
         android:id="@+id/deleteNoteButton"
         android:icon="@android:drawable/ic_menu_delete"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:title="@string/delete_note"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/openFilesListButton"
         android:icon="@drawable/ic_attachment"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         android:title="@string/open_attachments"
         android:actionLayout="@layout/button_open_files_list"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/changeOpenModeButton"
+        android:icon="@drawable/ic_visibility"
+        android:orderInCategory="1"
+        android:title="@string/change_open_mode"
+        app:showAsAction="ifRoom" />
 </menu>
