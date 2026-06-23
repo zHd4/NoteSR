@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -291,6 +292,7 @@ public final class OpenNoteActivity extends ActivityBase {
         textField.setVisibility(View.GONE);
 
         markwon.setMarkdown(markdownViewer, textField.getText().toString());
+        markdownViewer.setMovementMethod(LinkMovementMethod.getInstance());
         markdownViewerContainer.setVisibility(View.VISIBLE);
         actionBar.setTitle(getResources().getString(R.string.view_markdown));
     }

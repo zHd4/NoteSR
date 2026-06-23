@@ -93,7 +93,8 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:textColor="@color/text_color"
-            android:paddingBottom="15dp" />
+            android:paddingBottom="15dp"
+            android:textIsSelectable="true" />
 
     </ScrollView>
 
