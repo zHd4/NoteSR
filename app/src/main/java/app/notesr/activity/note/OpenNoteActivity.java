@@ -221,6 +221,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
                     badge.setText(badgeText);
                     badge.setVisibility(View.VISIBLE);
+                    view.setOnClickListener(new OpenFilesListOnClick(this, note));
                 }
             });
         });
