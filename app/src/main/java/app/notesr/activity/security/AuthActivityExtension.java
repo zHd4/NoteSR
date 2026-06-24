@@ -56,10 +56,17 @@ public final class AuthActivityExtension {
             return;
         }
 
-        if (cryptoManager.configure(activity.getApplicationContext(), password)) {
-            onAuthorizationSuccessful();
-        } else {
-            onAuthorizationFailed();
+        try {
+            boolean isAuthorized = cryptoManager.configure(activity.getApplicationContext(),
+                    password);
+
+            if (isAuthorized) {
+                onAuthorizationSuccessful();
+            } else {
+                onAuthorizationFailed();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
