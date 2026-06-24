@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
 public final class AesCryptorFactory implements CryptorFactory {
     @Override
     public AesCryptor create(char[] password, Class<? extends AesCryptor> cryptorClass)
-            throws NoSuchAlgorithmException {
+            throws NoSuchAlgorithmException, ReflectiveOperationException {
         byte[] salt = AesCryptor.generatePasswordBasedSalt(password);
 
         try {
@@ -21,7 +21,7 @@ public final class AesCryptorFactory implements CryptorFactory {
                  | InstantiationException
                  | InvocationTargetException
                  | NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new ReflectiveOperationException(e);
         }
     }
 }
