@@ -58,14 +58,12 @@ public final class CryptoManager {
      * @param context  The application context.
      * @param password The password to use for decryption.
      * @return {@code true} if configuration was successful, {@code false} if decryption failed.
-     * @throws RuntimeException if an unexpected I/O error occurs.
+     * @throws IOException if an I/O error occurs.
      */
-    public boolean configure(Context context, char[] password) {
+    public boolean configure(Context context, char[] password) throws IOException {
         try {
             this.secrets = tryGetSecretsWithFallback(context, password);
             return true;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (DecryptionFailedException e) {
             return false;
         }
@@ -217,11 +215,10 @@ public final class CryptoManager {
      * @param context  The application context.
      * @param password The password for decryption.
      * @return The retrieved {@link CryptoSecrets}.
-     * @throws IOException              if an I/O error occurs.
      * @throws DecryptionFailedException if decryption fails with both cryptors.
      */
     private CryptoSecrets tryGetSecretsWithFallback(Context context, char[] password)
-            throws IOException, DecryptionFailedException {
+            throws DecryptionFailedException {
         try {
             return getSecrets(context, password, AesGcmCryptor.class);
         } catch (DecryptionFailedException e) {
@@ -319,6 +316,7 @@ public final class CryptoManager {
 
     /**
      * Removes old key hash file that was in older versions of NoteSR.
+     *
      * @param context application context
      * @throws IOException if failed to delete file
      */
