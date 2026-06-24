@@ -215,11 +215,10 @@ public final class CryptoManager {
      * @param context  The application context.
      * @param password The password for decryption.
      * @return The retrieved {@link CryptoSecrets}.
-     * @throws IOException               if an I/O error occurs.
      * @throws DecryptionFailedException if decryption fails with both cryptors.
      */
     private CryptoSecrets tryGetSecretsWithFallback(Context context, char[] password)
-            throws IOException, DecryptionFailedException {
+            throws DecryptionFailedException {
         try {
             return getSecrets(context, password, AesGcmCryptor.class);
         } catch (DecryptionFailedException e) {
