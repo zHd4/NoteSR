@@ -36,7 +36,8 @@
     <string name="this_action_cannot_be_undo_are_you_sure">This action cannot be undone.\nAre you sure?</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
-    <string name="delete">DELETE</string>
+    <string name="delete">Delete</string>
+    <string name="delete_caps">DELETE</string>
     <string name="enter_the_code">Enter the code!</string>
     <string name="note">Note</string>
     <string name="search">Search</string>
@@ -106,5 +107,6 @@
     <string name="re_encryption_failed_your_key_and_your_data_remains_unchanged">Re-encryption failed, your key and your data remains unchanged.</string>
     <string name="view_text">View Text</string>
     <string name="view_markdown">Markdown View</string>
-    <string name="change_open_mode">Change open mode</string>
+    <string name="change_mode">Change mode</string>
+    <string name="invisible_popup_menu_anchor">Invisible popup menu anchor</string>
 </resources>

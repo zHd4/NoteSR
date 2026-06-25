@@ -25,7 +25,7 @@ import app.notesr.service.note.NoteService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DeleteNoteOnClick implements MenuItem.OnMenuItemClickListener {
+public final class DeleteNoteOnClick implements MenuItem.OnMenuItemClickListener {
 
     private final ActivityBase activity;
     private final Note note;
@@ -38,7 +38,7 @@ public class DeleteNoteOnClick implements MenuItem.OnMenuItemClickListener {
         DialogInterface.OnClickListener buttonHandler = deleteNoteDialogOnClick();
         dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_action_cannot_be_undo)
                 .setTitle(R.string.warning)
-                .setPositiveButton(R.string.delete, buttonHandler)
+                .setPositiveButton(R.string.delete_caps, buttonHandler)
                 .setNegativeButton(R.string.no, buttonHandler)
                 .create()
                 .show();

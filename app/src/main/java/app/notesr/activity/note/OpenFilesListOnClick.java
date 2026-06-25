@@ -17,7 +17,7 @@ import app.notesr.data.model.Note;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class OpenFilesListOnClick implements MenuItem.OnMenuItemClickListener, View.OnClickListener {
+public final class OpenFilesListOnClick implements MenuItem.OnMenuItemClickListener, View.OnClickListener {
 
     private final ActivityBase activity;
     private final Note note;
