@@ -54,7 +54,7 @@ public final class OpenNoteActivity extends ActivityBase {
     private FileService fileService;
     private Note note;
     private ActionBar actionBar;
-    private Menu activityMenu;
+    private Menu menu;
     private DialogFactory dialogFactory;
     private boolean isNoteModified;
     private EditText nameField;
@@ -150,7 +150,7 @@ public final class OpenNoteActivity extends ActivityBase {
             if (!isNoteModified) {
                 isNoteModified = true;
 
-                MenuItem saveNoteButton = activityMenu.findItem(R.id.saveNoteButton);
+                MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
                 saveNoteButton.setVisible(true);
             }
 
@@ -169,7 +169,7 @@ public final class OpenNoteActivity extends ActivityBase {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
-        this.activityMenu = menu;
+        this.menu = menu;
 
         MenuItem changeModeButton = menu.findItem(R.id.changeOpenModeButton);
         MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
