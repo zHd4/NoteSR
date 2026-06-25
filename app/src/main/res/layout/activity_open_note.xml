@@ -98,4 +98,13 @@
 
     </ScrollView>
 
+    <ImageButton
+        android:id="@+id/popupMenuAnchor"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:visibility="invisible"
+        android:contentDescription="@string/invisible_popup_menu_anchor"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
