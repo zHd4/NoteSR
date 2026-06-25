@@ -25,7 +25,7 @@ import app.notesr.service.note.NoteService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DeleteNoteOnClick implements MenuItem.OnMenuItemClickListener {
+public final class DeleteNoteOnClick implements MenuItem.OnMenuItemClickListener {
 
     private final ActivityBase activity;
     private final Note note;
