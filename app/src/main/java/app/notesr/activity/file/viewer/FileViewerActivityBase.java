@@ -160,7 +160,7 @@ public class FileViewerActivityBase extends ActivityBase {
         showConfirmationDialog(
                 R.layout.dialog_action_cannot_be_undo,
                 R.string.warning,
-                R.string.delete,
+                R.string.delete_caps,
                 (dialog, which) -> runWithProgressDialog(task, post)
         );
     }
