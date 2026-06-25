@@ -246,7 +246,7 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void changeOpenModeButtonOnClick() {
-        View anchor = findViewById(R.id.changeOpenModeButton);
+        View anchor = findViewById(R.id.popupMenuAnchor);
         PopupMenu popup = new PopupMenu(this, anchor);
         popup.inflate(R.menu.menu_open_node_open_mode);
 
