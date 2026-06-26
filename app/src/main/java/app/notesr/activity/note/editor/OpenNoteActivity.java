@@ -272,13 +272,16 @@ public final class OpenNoteActivity extends ActivityBase {
                     saveNoteAction.execute();
                     Intent intent = new Intent(getApplicationContext(), NotesListActivity.class);
                     startActivity(intent);
+                } else if (result == DialogInterface.BUTTON_NEUTRAL) {
+                    finish();
                 }
             };
 
             dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_unsaved_note_changes)
                     .setTitle(R.string.warning)
                     .setPositiveButton(R.string.save, buttonHandler)
-                    .setNegativeButton(R.string.cancel, buttonHandler)
+                    .setNeutralButton(R.string.dont_save, buttonHandler)
+                    .setNegativeButton(R.string.cancel, null)
                     .create()
                     .show();
         } else {
