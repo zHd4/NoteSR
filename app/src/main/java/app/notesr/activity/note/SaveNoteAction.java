@@ -9,10 +9,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.view.MenuItem;
 import android.widget.EditText;
-
-import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +21,7 @@ import app.notesr.service.note.NoteService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class SaveNoteOnClick implements MenuItem.OnMenuItemClickListener {
+final class SaveNoteAction {
 
     private final ActivityBase activity;
     private final Note note;
@@ -33,14 +30,15 @@ public final class SaveNoteOnClick implements MenuItem.OnMenuItemClickListener {
     private final EditText nameField;
     private final EditText textField;
 
-    @Override
-    public boolean onMenuItemClick(@NonNull MenuItem item) {
-        String name = nameField.getText().toString();
-        String text = textField.getText().toString();
+    boolean isFormCorrect() {
+        return !nameField.getText().toString().isBlank()
+                && !textField.getText().toString().isBlank();
+    }
 
-        if (!name.isBlank() && !text.isBlank()) {
-            note.setName(name);
-            note.setText(text);
+    void execute() {
+        if (isFormCorrect()) {
+            note.setName(nameField.getText().toString());
+            note.setText(textField.getText().toString());
             note.setUpdatedAt(LocalDateTime.now());
 
             Dialog progressDialog = dialogFactory
@@ -56,7 +54,5 @@ public final class SaveNoteOnClick implements MenuItem.OnMenuItemClickListener {
                 });
             });
         }
-
-        return true;
     }
 }
