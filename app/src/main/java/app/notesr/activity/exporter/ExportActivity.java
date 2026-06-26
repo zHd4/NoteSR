@@ -46,7 +46,7 @@ import app.notesr.service.exporter.ExportAndroidService;
 import app.notesr.service.exporter.ExportAndroidServiceStarter;
 import app.notesr.service.exporter.ExportStatus;
 import app.notesr.service.file.FileService;
-import app.notesr.activity.note.NotesListActivity;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.note.NoteService;
 import app.notesr.util.VersionFetcherImpl;
 

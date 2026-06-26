@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.note;
+package app.notesr.activity.note.list;
 
 import android.content.Context;
 import android.view.LayoutInflater;

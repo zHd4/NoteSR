@@ -26,7 +26,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.activity.note.NotesListActivity;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.AndroidServiceRegistry;

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.note;
+package app.notesr.activity.note.editor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

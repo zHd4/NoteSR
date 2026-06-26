@@ -19,7 +19,7 @@ import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.lifecycle.AppCloseAndroidService;
 import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;
-import app.notesr.activity.note.NotesListActivity;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 

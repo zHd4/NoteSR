@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.note;
+package app.notesr.activity.note.editor;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -25,6 +26,7 @@ import androidx.core.widget.TextViewKt;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
@@ -48,22 +50,26 @@ import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 public final class OpenNoteActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
     public static final String EXTRA_NOTE_MODIFIED = "modified";
+    private static final String STATE_OPEN_MODE = "openMode";
     private static final long MAX_COUNT_IN_BADGE = 9;
 
     private NoteService noteService;
     private FileService fileService;
     private Note note;
     private ActionBar actionBar;
-    private Menu activityMenu;
+    private Menu menu;
     private DialogFactory dialogFactory;
-    private boolean isNoteModified;
     private EditText nameField;
     private EditText textField;
     private TextView markdownViewer;
     private ScrollView markdownViewerContainer;
     private Markwon markwon;
-    private static final String STATE_OPEN_MODE = "openMode";
+    private SaveNoteAction saveNoteAction;
+    private OpenFilesListAction openFilesListAction;
+    private DeleteNoteAction deleteNoteAction;
+    private boolean isNoteModified;
     private OpenNoteMode openMode = OpenNoteMode.EDIT;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +146,13 @@ public final class OpenNoteActivity extends ActivityBase {
         markdownViewer = findViewById(R.id.markdownViewer);
         markdownViewerContainer = findViewById(R.id.markdownViewerContainer);
 
+        saveNoteAction = new SaveNoteAction(this, note, noteService, dialogFactory,
+                nameField, textField);
+        openFilesListAction = new OpenFilesListAction(this, note);
+        deleteNoteAction = new DeleteNoteAction(this, note, noteService, fileService,
+                dialogFactory);
+
+
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
 
@@ -150,7 +163,7 @@ public final class OpenNoteActivity extends ActivityBase {
             if (!isNoteModified) {
                 isNoteModified = true;
 
-                MenuItem saveNoteButton = activityMenu.findItem(R.id.saveNoteButton);
+                MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
                 saveNoteButton.setVisible(true);
             }
 
@@ -169,7 +182,7 @@ public final class OpenNoteActivity extends ActivityBase {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
-        this.activityMenu = menu;
+        this.menu = menu;
 
         MenuItem changeModeButton = menu.findItem(R.id.changeOpenModeButton);
         MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
@@ -181,15 +194,21 @@ public final class OpenNoteActivity extends ActivityBase {
             return true;
         });
 
-        saveNoteButton.setOnMenuItemClickListener(new SaveNoteOnClick(this, note,
-                noteService, dialogFactory, nameField, textField));
+        saveNoteButton.setOnMenuItemClickListener((item) -> {
+            saveNoteAction.execute();
+            return true;
+        });
 
         if (!isNewNote()) {
-            openFilesListButton.setOnMenuItemClickListener(
-                    new OpenFilesListOnClick(this, note));
+            openFilesListButton.setOnMenuItemClickListener(item -> {
+                openFilesListAction.execute();
+                return true;
+            });
 
-            deleteNoteButton.setOnMenuItemClickListener(new DeleteNoteOnClick(this, note,
-                    noteService, fileService, dialogFactory));
+            deleteNoteButton.setOnMenuItemClickListener(item -> {
+                deleteNoteAction.execute();
+                return true;
+            });
 
             setAttachedFilesCountBadge(openFilesListButton);
         } else {
@@ -221,28 +240,53 @@ public final class OpenNoteActivity extends ActivityBase {
 
                     badge.setText(badgeText);
                     badge.setVisibility(View.VISIBLE);
-                    view.setOnClickListener(new OpenFilesListOnClick(this, note));
+                    view.setOnClickListener(v -> openFilesListAction.execute());
                 }
             });
         });
 
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            if (isNoteModified) {
-                Intent intent = new Intent(getApplicationContext(), NotesListActivity.class);
-                startActivity(intent);
-            } else {
-                finish();
-            }
+            backButtonOnClick();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void backButtonOnClick() {
+        if (isNoteModified) {
+            if (!saveNoteAction.isFormCorrect()) {
+                finish();
+                return;
+            }
+
+            DialogInterface.OnClickListener buttonHandler = (dialog, result) -> {
+                if (result == DialogInterface.BUTTON_POSITIVE) {
+                    saveNoteAction.execute();
+                    Intent intent = new Intent(getApplicationContext(), NotesListActivity.class);
+                    startActivity(intent);
+                } else if (result == DialogInterface.BUTTON_NEUTRAL) {
+                    finish();
+                }
+            };
+
+            dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_unsaved_note_changes)
+                    .setTitle(R.string.warning)
+                    .setPositiveButton(R.string.save, buttonHandler)
+                    .setNeutralButton(R.string.dont_save, buttonHandler)
+                    .setNegativeButton(R.string.cancel, null)
+                    .create()
+                    .show();
+        } else {
+            finish();
+        }
     }
 
     private void changeOpenModeButtonOnClick() {
