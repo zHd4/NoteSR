@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 import app.notesr.BuildConfig;
 import app.notesr.activity.migration.MigrationActivity;
-import app.notesr.activity.note.NotesListActivity;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.crypto.setup.SecretsSetupService;

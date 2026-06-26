@@ -30,7 +30,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
-import app.notesr.activity.note.OpenNoteActivity;
+import app.notesr.activity.note.editor.OpenNoteActivity;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.data.model.FileInfo;

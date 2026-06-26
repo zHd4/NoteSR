@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.note;
+package app.notesr.activity.note.editor;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,6 +26,7 @@ import androidx.core.widget.TextViewKt;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;

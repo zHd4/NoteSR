@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.note;
+package app.notesr.activity.note.list;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -31,6 +31,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
+import app.notesr.activity.note.editor.OpenNoteActivity;
 import app.notesr.activity.security.ChangePasswordOnClick;
 import app.notesr.activity.security.GenerateNewKeyOnClick;
 import app.notesr.activity.security.LockOnClick;

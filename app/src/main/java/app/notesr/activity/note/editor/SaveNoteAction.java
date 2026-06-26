@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.note;
+package app.notesr.activity.note.editor;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
 import lombok.RequiredArgsConstructor;

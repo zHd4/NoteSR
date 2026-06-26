@@ -14,7 +14,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
-import app.notesr.activity.note.NotesListActivity;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.AppMigrationAndroidService;
 import app.notesr.service.migration.AppMigrationAndroidServiceStarter;
