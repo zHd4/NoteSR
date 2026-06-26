@@ -49,6 +49,7 @@ import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 public final class OpenNoteActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
     public static final String EXTRA_NOTE_MODIFIED = "modified";
+    private static final String STATE_OPEN_MODE = "openMode";
     private static final long MAX_COUNT_IN_BADGE = 9;
 
     private NoteService noteService;
@@ -57,15 +58,17 @@ public final class OpenNoteActivity extends ActivityBase {
     private ActionBar actionBar;
     private Menu menu;
     private DialogFactory dialogFactory;
-    private boolean isNoteModified;
     private EditText nameField;
     private EditText textField;
     private TextView markdownViewer;
     private ScrollView markdownViewerContainer;
     private Markwon markwon;
-    private static final String STATE_OPEN_MODE = "openMode";
-    private OpenNoteMode openMode = OpenNoteMode.EDIT;
     private SaveNoteAction saveNoteAction;
+    private OpenFilesListAction openFilesListAction;
+    private DeleteNoteAction deleteNoteAction;
+    private boolean isNoteModified;
+    private OpenNoteMode openMode = OpenNoteMode.EDIT;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +147,10 @@ public final class OpenNoteActivity extends ActivityBase {
 
         saveNoteAction = new SaveNoteAction(this, note, noteService, dialogFactory,
                 nameField, textField);
+        openFilesListAction = new OpenFilesListAction(this, note);
+        deleteNoteAction = new DeleteNoteAction(this, note, noteService, fileService,
+                dialogFactory);
+
 
         nameField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         textField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -192,11 +199,15 @@ public final class OpenNoteActivity extends ActivityBase {
         });
 
         if (!isNewNote()) {
-            openFilesListButton.setOnMenuItemClickListener(
-                    new OpenFilesListOnClick(this, note));
+            openFilesListButton.setOnMenuItemClickListener(item -> {
+                openFilesListAction.execute();
+                return true;
+            });
 
-            deleteNoteButton.setOnMenuItemClickListener(new DeleteNoteOnClick(this, note,
-                    noteService, fileService, dialogFactory));
+            deleteNoteButton.setOnMenuItemClickListener(item -> {
+                deleteNoteAction.execute();
+                return true;
+            });
 
             setAttachedFilesCountBadge(openFilesListButton);
         } else {
@@ -228,7 +239,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
                     badge.setText(badgeText);
                     badge.setVisibility(View.VISIBLE);
-                    view.setOnClickListener(new OpenFilesListOnClick(this, note));
+                    view.setOnClickListener(v -> openFilesListAction.execute());
                 }
             });
         });
