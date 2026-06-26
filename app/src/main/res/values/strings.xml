@@ -79,6 +79,7 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="file_already_exists_overwrite">File already exists.\nOverwrite?</string>
     <string name="save">Save</string>
+    <string name="dont_save">Don\'t save</string>
     <string name="overwrite">Overwrite</string>
     <string name="saving_canceled">Saving canceled</string>
     <string name="failed_to_add_all_files_at_once">Failed to add all files at once</string>
