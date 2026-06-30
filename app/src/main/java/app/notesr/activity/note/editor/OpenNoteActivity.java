@@ -132,9 +132,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-
-            int titleId = isNewNote() ? R.string.new_note : R.string.edit;
-            actionBar.setTitle(getResources().getString(titleId));
+            actionBar.setTitle(getActionBarTitle());
         } else {
             throw new NullPointerException("Action bar is null");
         }
@@ -247,7 +245,6 @@ public final class OpenNoteActivity extends ActivityBase {
 
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -328,7 +325,7 @@ public final class OpenNoteActivity extends ActivityBase {
         nameField.setEnabled(true);
         textField.setVisibility(View.VISIBLE);
         markdownViewerContainer.setVisibility(View.GONE);
-        actionBar.setTitle(getResources().getString(R.string.edit));
+        actionBar.setTitle(getActionBarTitle());
     }
 
     private void switchToViewMarkdownMode() {
@@ -339,13 +336,22 @@ public final class OpenNoteActivity extends ActivityBase {
         markwon.setMarkdown(markdownViewer, textField.getText().toString());
         markdownViewer.setMovementMethod(LinkMovementMethod.getInstance());
         markdownViewerContainer.setVisibility(View.VISIBLE);
-        actionBar.setTitle(getResources().getString(R.string.view_markdown));
+        actionBar.setTitle(getActionBarTitle());
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_OPEN_MODE, openMode.getModeCode());
+    }
+
+    private String getActionBarTitle() {
+        return switch (openMode) {
+            case EDIT -> isNewNote()
+                    ? getResources().getString(R.string.new_note)
+                    : getResources().getString(R.string.edit);
+            case MARKDOWN_VIEW -> getResources().getString(R.string.view_markdown);
+        };
     }
 
     private void disableMenuItem(MenuItem item) {
