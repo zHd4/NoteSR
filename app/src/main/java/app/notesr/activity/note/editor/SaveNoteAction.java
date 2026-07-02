@@ -8,7 +8,6 @@ package app.notesr.activity.note.editor;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.widget.EditText;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,6 @@ import java.time.LocalDateTime;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
-import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +46,7 @@ final class SaveNoteAction {
             newSingleThreadExecutor().execute(() -> {
                 activity.runOnUiThread(progressDialog::show);
                 noteService.save(note);
+                activity.runOnUiThread(progressDialog::dismiss);
             });
         }
     }
