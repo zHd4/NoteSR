@@ -19,6 +19,7 @@ import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -134,6 +135,14 @@ public final class OpenNoteActivity extends ActivityBase {
                 }
             });
         });
+
+        getOnBackPressedDispatcher()
+                .addCallback(this, new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        backButtonOnClick();
+                    }
+                });
     }
 
     private void initializeActionBar() {
