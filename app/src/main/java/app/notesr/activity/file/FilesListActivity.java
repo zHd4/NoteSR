@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -98,18 +99,30 @@ public final class FilesListActivity extends ActivityBase {
         filePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getAddFilesResultCallback());
 
+        getOnBackPressedDispatcher()
+                .addCallback(this, new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        onBackButtonPressed();
+                    }
+                });
+
         loadFiles(noteId);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            setResult(filesModified ? RESULT_OK : RESULT_CANCELED);
-            finish();
+            onBackButtonPressed();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onBackButtonPressed() {
+        setResult(filesModified ? RESULT_OK : RESULT_CANCELED);
+        finish();
     }
 
     private void loadFiles(String noteId) {
