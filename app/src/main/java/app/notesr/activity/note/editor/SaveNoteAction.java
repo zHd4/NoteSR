@@ -48,11 +48,6 @@ final class SaveNoteAction {
             newSingleThreadExecutor().execute(() -> {
                 activity.runOnUiThread(progressDialog::show);
                 noteService.save(note);
-
-                activity.runOnUiThread(() -> {
-                    progressDialog.dismiss();
-                    activity.startActivity(new Intent(activity, NotesListActivity.class));
-                });
             });
         }
     }

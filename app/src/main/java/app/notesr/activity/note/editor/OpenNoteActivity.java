@@ -49,7 +49,7 @@ import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 public final class OpenNoteActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
-    public static final String EXTRA_NOTE_MODIFIED = "modified";
+    public static final String EXTRA_NOTE_FIELDS_MODIFIED = "isNoteFieldsModified";
     private static final String STATE_OPEN_MODE = "openMode";
     private static final long MAX_COUNT_IN_BADGE = 9;
 
@@ -67,7 +67,7 @@ public final class OpenNoteActivity extends ActivityBase {
     private SaveNoteAction saveNoteAction;
     private OpenFilesListAction openFilesListAction;
     private DeleteNoteAction deleteNoteAction;
-    private boolean isNoteModified;
+    private boolean isNoteFieldsModified;
     private OpenNoteMode openMode = OpenNoteMode.EDIT;
 
 
@@ -108,7 +108,8 @@ public final class OpenNoteActivity extends ActivityBase {
                 note = new Note();
             }
 
-            isNoteModified = getIntent().getBooleanExtra(EXTRA_NOTE_MODIFIED, false);
+            isNoteFieldsModified = getIntent().getBooleanExtra(EXTRA_NOTE_FIELDS_MODIFIED,
+                    false);
 
             runOnUiThread(() -> {
                 initializeActionBar();
@@ -146,7 +147,10 @@ public final class OpenNoteActivity extends ActivityBase {
 
         saveNoteAction = new SaveNoteAction(this, note, noteService, dialogFactory,
                 nameField, textField);
-        openFilesListAction = new OpenFilesListAction(this, note);
+
+        openFilesListAction = new OpenFilesListAction(this, dialogFactory, saveNoteAction,
+                note);
+
         deleteNoteAction = new DeleteNoteAction(this, note, noteService, fileService,
                 dialogFactory);
 
@@ -158,8 +162,8 @@ public final class OpenNoteActivity extends ActivityBase {
         textField.setText(note.getText());
 
         Function1<Editable, Unit> afterTextChangedAction = editable -> {
-            if (!isNoteModified) {
-                isNoteModified = true;
+            if (!isNoteFieldsModified) {
+                isNoteFieldsModified = true;
 
                 MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
                 saveNoteButton.setVisible(true);
@@ -175,6 +179,13 @@ public final class OpenNoteActivity extends ActivityBase {
     @SuppressWarnings("ConstantValue") // Because note id could be null before first save
     private boolean isNewNote() {
         return note == null || note.getId() == null;
+    }
+
+    private void saveAndExit() {
+        saveNoteAction.execute();
+        Intent intent = new Intent(getApplicationContext(), NotesListActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -193,13 +204,13 @@ public final class OpenNoteActivity extends ActivityBase {
         });
 
         saveNoteButton.setOnMenuItemClickListener((item) -> {
-            saveNoteAction.execute();
+            saveAndExit();
             return true;
         });
 
         if (!isNewNote()) {
             openFilesListButton.setOnMenuItemClickListener(item -> {
-                openFilesListAction.execute();
+                openFilesListAction.execute(isNoteFieldsModified);
                 return true;
             });
 
@@ -214,7 +225,7 @@ public final class OpenNoteActivity extends ActivityBase {
             disableMenuItem(deleteNoteButton);
         }
 
-        if (isNoteModified) {
+        if (isNoteFieldsModified) {
             saveNoteButton.setVisible(true);
         }
 
@@ -238,7 +249,8 @@ public final class OpenNoteActivity extends ActivityBase {
 
                     badge.setText(badgeText);
                     badge.setVisibility(View.VISIBLE);
-                    view.setOnClickListener(v -> openFilesListAction.execute());
+                    view.setOnClickListener(v ->
+                            openFilesListAction.execute(isNoteFieldsModified));
                 }
             });
         });
@@ -258,7 +270,7 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void backButtonOnClick() {
-        if (isNoteModified) {
+        if (isNoteFieldsModified) {
             if (!saveNoteAction.isFormCorrect()) {
                 finish();
                 return;
@@ -266,9 +278,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
             DialogInterface.OnClickListener buttonHandler = (dialog, result) -> {
                 if (result == DialogInterface.BUTTON_POSITIVE) {
-                    saveNoteAction.execute();
-                    Intent intent = new Intent(getApplicationContext(), NotesListActivity.class);
-                    startActivity(intent);
+                    saveAndExit();
                 } else if (result == DialogInterface.BUTTON_NEUTRAL) {
                     finish();
                 }
