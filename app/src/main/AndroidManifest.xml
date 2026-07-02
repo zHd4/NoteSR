@@ -71,11 +71,6 @@
             android:screenOrientation="locked"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.file.AddFileActivity"
-            android:exported="false"
-            android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".activity.file.viewer.OpenImageActivity"
             android:exported="false"
             android:screenOrientation="locked"

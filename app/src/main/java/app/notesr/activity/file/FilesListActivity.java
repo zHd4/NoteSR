@@ -10,9 +10,12 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,6 +24,10 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,6 +35,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
+import app.notesr.activity.file.viewer.FileViewerActivityBase;
+import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.activity.note.editor.OpenNoteActivity;
@@ -41,6 +50,8 @@ import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +59,18 @@ import java.util.Map;
 public final class FilesListActivity extends ActivityBase {
 
     public static final String EXTRA_NOTE_ID = "noteId";
-    public static final String EXTRA_PARENT_NOTE_MODIFIED = "parentNoteModified";
+    public static final String EXTRA_NOTE_FIELDS_WERE_MODIFIED = "noteFieldsWereModified";
+    public static final String EXTRA_FILES_MODIFIED = "filesModified";
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
+    private NoteService noteService;
     private FileService fileService;
+    private ActivityResultLauncher<Intent> viewerLauncher;
+    private ActivityResultLauncher<Intent> filePickerLauncher;
     private Note note;
-    private boolean isParentNoteModified;
+
+    private boolean noteFieldsModified;
+    private boolean filesModified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +96,37 @@ public final class FilesListActivity extends ActivityBase {
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         fileService = new FileService(context, db, cryptor, new FilesUtils());
-        isParentNoteModified = getIntent().getBooleanExtra(EXTRA_PARENT_NOTE_MODIFIED, false);
+        noteFieldsModified = getIntent().getBooleanExtra(EXTRA_NOTE_FIELDS_WERE_MODIFIED,
+                false);
+        filesModified = getIntent().getBooleanExtra(EXTRA_FILES_MODIFIED,
+                false);
+        noteService = new NoteService(db);
+        viewerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), getViewerResultCallback());
+        filePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), getAddFilesResultCallback());
 
-        NoteService noteService = new NoteService(db);
+        loadFiles(noteId);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            if (noteFieldsModified || filesModified) {
+                Intent intent = new Intent(getApplicationContext(), OpenNoteActivity.class)
+                        .putExtra(OpenNoteActivity.EXTRA_NOTE_ID, note.getId());
+
+                startActivity(intent);
+            }
+
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void loadFiles(String noteId) {
         Dialog progressDialog = new DialogFactory(this)
                 .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
@@ -99,6 +143,8 @@ public final class FilesListActivity extends ActivityBase {
             long filesCount = fileService.getFilesCount(note.getId());
             runOnUiThread(() -> configureActionBar(filesCount));
 
+            filesIdsMap.clear();
+
             List<FileInfo> filesInfos = fileService.getFilesInfo(note.getId());
             filesInfos.forEach(fileInfo ->
                     filesIdsMap.put(fileInfo.getDecimalId(), fileInfo.getId()));
@@ -111,26 +157,6 @@ public final class FilesListActivity extends ActivityBase {
                 configureButtons();
             });
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            if (isParentNoteModified) {
-                Intent intent = new Intent(getApplicationContext(), OpenNoteActivity.class)
-                        .putExtra(OpenNoteActivity.EXTRA_NOTE_ID, note.getId())
-                        .putExtra(OpenNoteActivity.EXTRA_NOTE_MODIFIED, true)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                startActivity(intent);
-            } else {
-                finish();
-            }
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void configureActionBar(long filesCount) {
@@ -147,18 +173,13 @@ public final class FilesListActivity extends ActivityBase {
     private void configureButtons() {
         FloatingActionButton addFileButton = findViewById(R.id.addFileButton);
 
-        addFileButton.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), AddFileActivity.class);
-
-            intent.putExtra(AddFileActivity.EXTRA_NOTE_ID, note.getId());
-            startActivity(intent);
-        });
+        addFileButton.setOnClickListener(new AddFileOnClick(this, filePickerLauncher));
     }
 
     private void configureFilesListView() {
         ListView filesListView = findViewById(R.id.filesListView);
         filesListView.setOnItemClickListener(
-                new OpenFileOnClick(this, fileService, filesIdsMap)
+                new OpenFileOnClick(this, viewerLauncher, fileService, filesIdsMap)
         );
     }
 
@@ -175,5 +196,72 @@ public final class FilesListActivity extends ActivityBase {
 
             filesView.setAdapter(adapter);
         }
+    }
+
+    private ActivityResultCallback<ActivityResult> getViewerResultCallback() {
+        return result -> {
+            if (result.getResultCode() == FilesListActivity.RESULT_OK) {
+                var data = result.getData();
+
+                if (data != null && data.hasExtra(FileViewerActivityBase.EXTRA_FILE_MODIFIED)) {
+                    boolean fileModified = data.getBooleanExtra(
+                            FileViewerActivityBase.EXTRA_FILE_MODIFIED, false);
+
+                    if (fileModified) {
+                        loadFiles(note.getId());
+                    }
+                }
+            }
+        };
+    }
+
+    private ActivityResultCallback<ActivityResult> getAddFilesResultCallback() {
+        return result -> {
+            int resultCode = result.getResultCode();
+
+            if (resultCode == Activity.RESULT_OK) {
+                if (result.getData() != null) {
+                    addFiles(result.getData());
+                    loadFiles(note.getId());
+                } else {
+                    throw new IllegalStateException("Activity result is 'OK'" +
+                            ", but data not provided");
+                }
+            }
+        };
+    }
+
+    private void addFiles(Intent data) {
+        Dialog progressDialog = new DialogFactory(this)
+                .getThemedProgressDialog(R.layout.progress_dialog_adding);
+
+        newSingleThreadExecutor().execute(() -> {
+            runOnUiThread(progressDialog::show);
+
+            try {
+                fileService.saveFiles(note.getId(), getFileUris(data));
+            } catch (IOException | DecryptionFailedException e) {
+                throw new RuntimeException(e);
+            }
+
+            runOnUiThread(progressDialog::dismiss);
+        });
+    }
+
+    private List<Uri> getFileUris(Intent data) {
+        List<Uri> result = new ArrayList<>();
+
+        if (data.getClipData() != null) {
+            ClipData clipData = data.getClipData();
+            int filesCount = clipData.getItemCount();
+
+            for (int i = 0; i < filesCount; i++) {
+                result.add(clipData.getItemAt(i).getUri());
+            }
+        } else {
+            result.add(data.getData());
+        }
+
+        return result;
     }
 }
