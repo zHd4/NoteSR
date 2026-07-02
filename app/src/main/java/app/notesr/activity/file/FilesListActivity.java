@@ -39,7 +39,6 @@ import app.notesr.activity.file.viewer.FileViewerActivityBase;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
-import app.notesr.activity.note.editor.OpenNoteActivity;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.data.model.FileInfo;
@@ -59,8 +58,6 @@ import java.util.Map;
 public final class FilesListActivity extends ActivityBase {
 
     public static final String EXTRA_NOTE_ID = "noteId";
-    public static final String EXTRA_NOTE_FIELDS_WERE_MODIFIED = "noteFieldsWereModified";
-    public static final String EXTRA_FILES_MODIFIED = "filesModified";
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
     private NoteService noteService;
@@ -69,7 +66,6 @@ public final class FilesListActivity extends ActivityBase {
     private ActivityResultLauncher<Intent> filePickerLauncher;
     private Note note;
 
-    private boolean noteFieldsModified;
     private boolean filesModified;
 
     @Override
@@ -96,10 +92,6 @@ public final class FilesListActivity extends ActivityBase {
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
 
         fileService = new FileService(context, db, cryptor, new FilesUtils());
-        noteFieldsModified = getIntent().getBooleanExtra(EXTRA_NOTE_FIELDS_WERE_MODIFIED,
-                false);
-        filesModified = getIntent().getBooleanExtra(EXTRA_FILES_MODIFIED,
-                false);
         noteService = new NoteService(db);
         viewerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getViewerResultCallback());
@@ -112,13 +104,7 @@ public final class FilesListActivity extends ActivityBase {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (noteFieldsModified || filesModified) {
-                Intent intent = new Intent(getApplicationContext(), OpenNoteActivity.class)
-                        .putExtra(OpenNoteActivity.EXTRA_NOTE_ID, note.getId());
-
-                startActivity(intent);
-            }
-
+            setResult(filesModified ? RESULT_OK : RESULT_CANCELED);
             finish();
             return true;
         }
@@ -209,6 +195,7 @@ public final class FilesListActivity extends ActivityBase {
 
                     if (fileModified) {
                         loadFiles(note.getId());
+                        filesModified = true;
                     }
                 }
             }
@@ -223,6 +210,8 @@ public final class FilesListActivity extends ActivityBase {
                 if (result.getData() != null) {
                     addFiles(result.getData());
                     loadFiles(note.getId());
+
+                    filesModified = true;
                 } else {
                     throw new IllegalStateException("Activity result is 'OK'" +
                             ", but data not provided");

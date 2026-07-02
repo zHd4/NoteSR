@@ -7,6 +7,7 @@ package app.notesr.activity.note.editor;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.method.LinkMovementMethod;
@@ -18,6 +19,10 @@ import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.widget.TextViewKt;
@@ -25,6 +30,7 @@ import androidx.core.widget.TextViewKt;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
+import app.notesr.activity.file.FilesListActivity;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
@@ -53,6 +59,7 @@ public final class OpenNoteActivity extends ActivityBase {
     private NoteService noteService;
     private FileService fileService;
     private Note note;
+
     private ActionBar actionBar;
     private Menu menu;
     private DialogFactory dialogFactory;
@@ -60,11 +67,15 @@ public final class OpenNoteActivity extends ActivityBase {
     private EditText textField;
     private TextView markdownViewer;
     private ScrollView markdownViewerContainer;
+
     private Markwon markwon;
+    private ActivityResultLauncher<Intent> openFilesListLauncher;
+
     private SaveNoteAction saveNoteAction;
-    private OpenFilesListAction openFilesListAction;
     private DeleteNoteAction deleteNoteAction;
+
     private boolean isNoteFieldsModified;
+    private boolean isAttachedFilesModified;
     private OpenNoteMode openMode = OpenNoteMode.EDIT;
 
 
@@ -95,6 +106,9 @@ public final class OpenNoteActivity extends ActivityBase {
         fileService = new FileService(context, db, cryptor, new FilesUtils());
         dialogFactory = new DialogFactory(this);
         markwon = Markwon.create(this);
+        openFilesListLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                getOpenFilesListResultCallback());
 
         String noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
@@ -142,9 +156,6 @@ public final class OpenNoteActivity extends ActivityBase {
         saveNoteAction = new SaveNoteAction(this, note, noteService, dialogFactory,
                 nameField, textField);
 
-        openFilesListAction = new OpenFilesListAction(this, dialogFactory, saveNoteAction,
-                note);
-
         deleteNoteAction = new DeleteNoteAction(this, note, noteService, fileService,
                 dialogFactory);
 
@@ -189,7 +200,7 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void exitWithoutSaving() {
-        setResult(RESULT_CANCELED);
+        setResult(isAttachedFilesModified ? RESULT_OK : RESULT_CANCELED);
         finish();
     }
 
@@ -215,7 +226,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
         if (!isNewNote()) {
             openFilesListButton.setOnMenuItemClickListener(item -> {
-                openFilesListAction.execute(isNoteFieldsModified);
+                openFilesList();
                 return true;
             });
 
@@ -254,8 +265,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
                     badge.setText(badgeText);
                     badge.setVisibility(View.VISIBLE);
-                    view.setOnClickListener(v ->
-                            openFilesListAction.execute(isNoteFieldsModified));
+                    view.setOnClickListener(v -> openFilesList());
                 }
             });
         });
@@ -299,6 +309,22 @@ public final class OpenNoteActivity extends ActivityBase {
         } else {
             exitWithoutSaving();
         }
+    }
+
+    private void openFilesList() {
+        Intent intent = new Intent(getApplicationContext(), FilesListActivity.class)
+                .putExtra(FilesListActivity.EXTRA_NOTE_ID, note.getId());
+
+        openFilesListLauncher.launch(intent);
+    }
+
+    private ActivityResultCallback<ActivityResult> getOpenFilesListResultCallback() {
+        return result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                isAttachedFilesModified = true;
+                setAttachedFilesCountBadge(menu.findItem(R.id.openFilesListButton));
+            }
+        };
     }
 
     private void changeOpenModeButtonOnClick() {
