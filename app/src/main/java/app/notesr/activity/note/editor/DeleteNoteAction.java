@@ -9,14 +9,12 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 
 import java.io.IOException;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
-import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.data.model.Note;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
@@ -31,8 +29,8 @@ final class DeleteNoteAction {
     private final FileService fileService;
     private final DialogFactory dialogFactory;
 
-    void execute() {
-        DialogInterface.OnClickListener buttonHandler = deleteNoteDialogOnClick();
+    void execute(Runnable afterDelete) {
+        DialogInterface.OnClickListener buttonHandler = deleteNoteDialogOnClick(afterDelete);
         dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_action_cannot_be_undo)
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.delete_caps, buttonHandler)
@@ -41,7 +39,7 @@ final class DeleteNoteAction {
                 .show();
     }
 
-    private DialogInterface.OnClickListener deleteNoteDialogOnClick() {
+    private DialogInterface.OnClickListener deleteNoteDialogOnClick(Runnable afterDelete) {
         return (dialog, result) -> {
             if (result == DialogInterface.BUTTON_POSITIVE) {
                 Dialog progressDialog = dialogFactory
@@ -58,8 +56,7 @@ final class DeleteNoteAction {
 
                     activity.runOnUiThread(() -> {
                         progressDialog.dismiss();
-                        activity.startActivity(new Intent(activity.getApplicationContext(),
-                                NotesListActivity.class));
+                        activity.runOnUiThread(afterDelete);
                     });
                 });
             }

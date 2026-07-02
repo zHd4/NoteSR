@@ -7,7 +7,6 @@ package app.notesr.activity.note.editor;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.method.LinkMovementMethod;
@@ -26,7 +25,6 @@ import androidx.core.widget.TextViewKt;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
-import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
@@ -49,7 +47,6 @@ import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 public final class OpenNoteActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
-    public static final String EXTRA_NOTE_FIELDS_MODIFIED = "isNoteFieldsModified";
     private static final String STATE_OPEN_MODE = "openMode";
     private static final long MAX_COUNT_IN_BADGE = 9;
 
@@ -107,9 +104,6 @@ public final class OpenNoteActivity extends ActivityBase {
             if (isNewNote()) {
                 note = new Note();
             }
-
-            isNoteFieldsModified = getIntent().getBooleanExtra(EXTRA_NOTE_FIELDS_MODIFIED,
-                    false);
 
             runOnUiThread(() -> {
                 initializeActionBar();
@@ -183,8 +177,19 @@ public final class OpenNoteActivity extends ActivityBase {
 
     private void saveAndExit() {
         saveNoteAction.execute();
-        Intent intent = new Intent(getApplicationContext(), NotesListActivity.class);
-        startActivity(intent);
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    private void deleteNoteAndExit() {
+        deleteNoteAction.execute(() -> {
+            setResult(RESULT_OK);
+            finish();
+        });
+    }
+
+    private void exitWithoutSaving() {
+        setResult(RESULT_CANCELED);
         finish();
     }
 
@@ -215,7 +220,7 @@ public final class OpenNoteActivity extends ActivityBase {
             });
 
             deleteNoteButton.setOnMenuItemClickListener(item -> {
-                deleteNoteAction.execute();
+                deleteNoteAndExit();
                 return true;
             });
 
@@ -272,7 +277,7 @@ public final class OpenNoteActivity extends ActivityBase {
     private void backButtonOnClick() {
         if (isNoteFieldsModified) {
             if (!saveNoteAction.isFormCorrect()) {
-                finish();
+                exitWithoutSaving();
                 return;
             }
 
@@ -280,7 +285,7 @@ public final class OpenNoteActivity extends ActivityBase {
                 if (result == DialogInterface.BUTTON_POSITIVE) {
                     saveAndExit();
                 } else if (result == DialogInterface.BUTTON_NEUTRAL) {
-                    finish();
+                    exitWithoutSaving();
                 }
             };
 
@@ -292,7 +297,7 @@ public final class OpenNoteActivity extends ActivityBase {
                     .create()
                     .show();
         } else {
-            finish();
+            exitWithoutSaving();
         }
     }
 
