@@ -21,6 +21,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 
@@ -53,6 +57,8 @@ public final class NotesListActivity extends ActivityBase {
     private final Map<Long, String> notesIdsMap = new HashMap<>();
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
 
+    private ActivityResultLauncher<Intent> noteEditorLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,14 +79,21 @@ public final class NotesListActivity extends ActivityBase {
                     }
                 });
 
+        noteEditorLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), getOpenNoteResultCallback());
+
         ListView notesView = findViewById(R.id.notesListView);
         FloatingActionButton newNoteButton = findViewById(R.id.addNoteButton);
 
         loadNotes();
 
-        notesView.setOnItemClickListener(new OpenNoteOnClick(this, notesIdsMap));
-        newNoteButton.setOnClickListener((view) ->
-                startActivity(new Intent(getApplicationContext(), OpenNoteActivity.class)));
+        notesView.setOnItemClickListener(
+                (parent, view, position, id) -> {
+                    String noteId = notesIdsMap.get(id);
+                    openNote(noteId);
+                });
+
+        newNoteButton.setOnClickListener(view -> createNewNote());
     }
 
     @Override
@@ -184,6 +197,7 @@ public final class NotesListActivity extends ActivityBase {
                     ? noteService.search(searchQuery)
                     : noteService.getAll();
 
+            notesIdsMap.clear();
             notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
             runOnUiThread(() -> fillNotesListView(notes));
 
@@ -213,5 +227,27 @@ public final class NotesListActivity extends ActivityBase {
             notesView.setEnabled(false);
             notesView.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private ActivityResultCallback<ActivityResult> getOpenNoteResultCallback() {
+        return result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                loadNotes();
+            }
+        };
+    }
+
+    private void createNewNote() {
+        openNote(null);
+    }
+
+    private void openNote(String noteId) {
+        Intent intent = new Intent(getApplicationContext(), OpenNoteActivity.class);
+
+        if (noteId != null) {
+            intent.putExtra(OpenNoteActivity.EXTRA_NOTE_ID, noteId);
+        }
+
+        noteEditorLauncher.launch(intent);
     }
 }

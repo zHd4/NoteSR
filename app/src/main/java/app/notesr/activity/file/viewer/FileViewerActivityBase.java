@@ -29,7 +29,6 @@ import app.notesr.activity.DialogFactory;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.file.helper.FileIOHelper;
-import app.notesr.activity.file.FilesListActivity;
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
@@ -46,6 +45,7 @@ public class FileViewerActivityBase extends ActivityBase {
 
     private static final String TAG = FileViewerActivityBase.class.getCanonicalName();
     public static final String EXTRA_FILE_INFO = "fileInfo";
+    public static final String EXTRA_FILE_MODIFIED = "fileModified";
 
     protected FileInfo fileInfo;
     protected FileService fileService;
@@ -155,7 +155,11 @@ public class FileViewerActivityBase extends ActivityBase {
             }
         };
 
-        Runnable post = this::returnToListActivity;
+        Runnable post = () -> {
+            Intent result = new Intent().putExtra(EXTRA_FILE_MODIFIED, true);
+            setResult(RESULT_OK, result);
+            finish();
+        };
 
         showConfirmationDialog(
                 R.layout.dialog_action_cannot_be_undo,
@@ -183,15 +187,6 @@ public class FileViewerActivityBase extends ActivityBase {
                 });
             }
         });
-    }
-
-    protected final void returnToListActivity() {
-        Intent intent = new Intent(getApplicationContext(), FilesListActivity.class)
-                .putExtra(FilesListActivity.EXTRA_NOTE_ID, fileInfo.getNoteId())
-                .putExtra(FilesListActivity.EXTRA_PARENT_NOTE_MODIFIED, true)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        startActivity(intent);
     }
 
     protected boolean isFileSizeAllowed(long fileSize) {

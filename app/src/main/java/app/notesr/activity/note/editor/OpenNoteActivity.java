@@ -19,6 +19,11 @@ import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.widget.TextViewKt;
@@ -26,7 +31,7 @@ import androidx.core.widget.TextViewKt;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
-import app.notesr.activity.note.list.NotesListActivity;
+import app.notesr.activity.file.FilesListActivity;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
@@ -49,13 +54,13 @@ import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 public final class OpenNoteActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
-    public static final String EXTRA_NOTE_MODIFIED = "modified";
     private static final String STATE_OPEN_MODE = "openMode";
     private static final long MAX_COUNT_IN_BADGE = 9;
 
     private NoteService noteService;
     private FileService fileService;
     private Note note;
+
     private ActionBar actionBar;
     private Menu menu;
     private DialogFactory dialogFactory;
@@ -63,11 +68,15 @@ public final class OpenNoteActivity extends ActivityBase {
     private EditText textField;
     private TextView markdownViewer;
     private ScrollView markdownViewerContainer;
+
     private Markwon markwon;
+    private ActivityResultLauncher<Intent> openFilesListLauncher;
+
     private SaveNoteAction saveNoteAction;
-    private OpenFilesListAction openFilesListAction;
     private DeleteNoteAction deleteNoteAction;
-    private boolean isNoteModified;
+
+    private boolean isNoteFieldsModified;
+    private boolean isAttachedFilesModified;
     private OpenNoteMode openMode = OpenNoteMode.EDIT;
 
 
@@ -98,6 +107,9 @@ public final class OpenNoteActivity extends ActivityBase {
         fileService = new FileService(context, db, cryptor, new FilesUtils());
         dialogFactory = new DialogFactory(this);
         markwon = Markwon.create(this);
+        openFilesListLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                getFilesListResultCallback());
 
         String noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
@@ -107,8 +119,6 @@ public final class OpenNoteActivity extends ActivityBase {
             if (isNewNote()) {
                 note = new Note();
             }
-
-            isNoteModified = getIntent().getBooleanExtra(EXTRA_NOTE_MODIFIED, false);
 
             runOnUiThread(() -> {
                 initializeActionBar();
@@ -125,6 +135,14 @@ public final class OpenNoteActivity extends ActivityBase {
                 }
             });
         });
+
+        getOnBackPressedDispatcher()
+                .addCallback(this, new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        backButtonOnClick();
+                    }
+                });
     }
 
     private void initializeActionBar() {
@@ -146,7 +164,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
         saveNoteAction = new SaveNoteAction(this, note, noteService, dialogFactory,
                 nameField, textField);
-        openFilesListAction = new OpenFilesListAction(this, note);
+
         deleteNoteAction = new DeleteNoteAction(this, note, noteService, fileService,
                 dialogFactory);
 
@@ -158,8 +176,8 @@ public final class OpenNoteActivity extends ActivityBase {
         textField.setText(note.getText());
 
         Function1<Editable, Unit> afterTextChangedAction = editable -> {
-            if (!isNoteModified) {
-                isNoteModified = true;
+            if (!isNoteFieldsModified) {
+                isNoteFieldsModified = true;
 
                 MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
                 saveNoteButton.setVisible(true);
@@ -175,6 +193,24 @@ public final class OpenNoteActivity extends ActivityBase {
     @SuppressWarnings("ConstantValue") // Because note id could be null before first save
     private boolean isNewNote() {
         return note == null || note.getId() == null;
+    }
+
+    private void saveAndExit() {
+        saveNoteAction.execute();
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    private void deleteNoteAndExit() {
+        deleteNoteAction.execute(() -> {
+            setResult(RESULT_OK);
+            finish();
+        });
+    }
+
+    private void exitWithoutSaving() {
+        setResult(isAttachedFilesModified ? RESULT_OK : RESULT_CANCELED);
+        finish();
     }
 
     @Override
@@ -193,18 +229,18 @@ public final class OpenNoteActivity extends ActivityBase {
         });
 
         saveNoteButton.setOnMenuItemClickListener((item) -> {
-            saveNoteAction.execute();
+            saveAndExit();
             return true;
         });
 
         if (!isNewNote()) {
             openFilesListButton.setOnMenuItemClickListener(item -> {
-                openFilesListAction.execute();
+                openFilesList();
                 return true;
             });
 
             deleteNoteButton.setOnMenuItemClickListener(item -> {
-                deleteNoteAction.execute();
+                deleteNoteAndExit();
                 return true;
             });
 
@@ -214,7 +250,7 @@ public final class OpenNoteActivity extends ActivityBase {
             disableMenuItem(deleteNoteButton);
         }
 
-        if (isNoteModified) {
+        if (isNoteFieldsModified) {
             saveNoteButton.setVisible(true);
         }
 
@@ -238,7 +274,7 @@ public final class OpenNoteActivity extends ActivityBase {
 
                     badge.setText(badgeText);
                     badge.setVisibility(View.VISIBLE);
-                    view.setOnClickListener(v -> openFilesListAction.execute());
+                    view.setOnClickListener(v -> openFilesList());
                 }
             });
         });
@@ -258,19 +294,17 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void backButtonOnClick() {
-        if (isNoteModified) {
+        if (isNoteFieldsModified) {
             if (!saveNoteAction.isFormCorrect()) {
-                finish();
+                exitWithoutSaving();
                 return;
             }
 
             DialogInterface.OnClickListener buttonHandler = (dialog, result) -> {
                 if (result == DialogInterface.BUTTON_POSITIVE) {
-                    saveNoteAction.execute();
-                    Intent intent = new Intent(getApplicationContext(), NotesListActivity.class);
-                    startActivity(intent);
+                    saveAndExit();
                 } else if (result == DialogInterface.BUTTON_NEUTRAL) {
-                    finish();
+                    exitWithoutSaving();
                 }
             };
 
@@ -282,8 +316,24 @@ public final class OpenNoteActivity extends ActivityBase {
                     .create()
                     .show();
         } else {
-            finish();
+            exitWithoutSaving();
         }
+    }
+
+    private void openFilesList() {
+        Intent intent = new Intent(getApplicationContext(), FilesListActivity.class)
+                .putExtra(FilesListActivity.EXTRA_NOTE_ID, note.getId());
+
+        openFilesListLauncher.launch(intent);
+    }
+
+    private ActivityResultCallback<ActivityResult> getFilesListResultCallback() {
+        return result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                isAttachedFilesModified = true;
+                setAttachedFilesCountBadge(menu.findItem(R.id.openFilesListButton));
+            }
+        };
     }
 
     private void changeOpenModeButtonOnClick() {

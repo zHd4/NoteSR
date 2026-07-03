@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 
+import androidx.activity.result.ActivityResultLauncher;
+
 import app.notesr.activity.file.viewer.FileViewerActivityBase;
 import app.notesr.activity.file.viewer.OpenImageActivity;
 import app.notesr.activity.file.viewer.OpenTextFileActivity;
@@ -32,6 +34,7 @@ public final class OpenFileOnClick implements AdapterView.OnItemClickListener {
             );
 
     private final FilesListActivity activity;
+    private final ActivityResultLauncher<Intent> viewerLauncher;
     private final FileService fileService;
     private final Map<Long, String> filesIdsMap;
 
@@ -55,10 +58,10 @@ public final class OpenFileOnClick implements AdapterView.OnItemClickListener {
     }
 
     private void openViewer(Class<? extends FileViewerActivityBase> viewer, FileInfo fileInfo) {
-        Intent intent = new Intent(activity.getApplicationContext(), viewer);
+        var intent = new Intent(activity.getApplicationContext(), viewer)
+                .putExtra(FileViewerActivityBase.EXTRA_FILE_INFO, fileInfo);
 
-        intent.putExtra(FileViewerActivityBase.EXTRA_FILE_INFO, fileInfo);
-        activity.startActivity(intent);
+        viewerLauncher.launch(intent);
     }
 
     private String getFileType(FileInfo fileInfo) {
