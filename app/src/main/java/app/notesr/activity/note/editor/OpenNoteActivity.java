@@ -109,7 +109,7 @@ public final class OpenNoteActivity extends ActivityBase {
         markwon = Markwon.create(this);
         openFilesListLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                getOpenFilesListResultCallback());
+                getFilesListResultCallback());
 
         String noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
@@ -327,7 +327,7 @@ public final class OpenNoteActivity extends ActivityBase {
         openFilesListLauncher.launch(intent);
     }
 
-    private ActivityResultCallback<ActivityResult> getOpenFilesListResultCallback() {
+    private ActivityResultCallback<ActivityResult> getFilesListResultCallback() {
         return result -> {
             if (result.getResultCode() == RESULT_OK) {
                 isAttachedFilesModified = true;
