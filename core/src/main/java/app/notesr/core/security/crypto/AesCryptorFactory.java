@@ -5,23 +5,21 @@
 
 package app.notesr.core.security.crypto;
 
-import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public final class AesCryptorFactory implements CryptorFactory {
     @Override
     public AesCryptor create(char[] password, Class<? extends AesCryptor> cryptorClass)
-            throws NoSuchAlgorithmException, ReflectiveOperationException {
+            throws InvalidKeySpecException, NoSuchAlgorithmException {
         byte[] salt = AesCryptor.generatePasswordBasedSalt(password);
 
-        try {
-            return cryptorClass.getConstructor(char[].class, byte[].class)
-                    .newInstance(password, salt);
-        } catch (IllegalAccessException
-                 | InstantiationException
-                 | InvocationTargetException
-                 | NoSuchMethodException e) {
-            throw new ReflectiveOperationException(e);
+        if (cryptorClass == AesGcmCryptor.class) {
+            return new AesGcmCryptor(password, salt);
+        } else if (cryptorClass == AesCbcCryptor.class) {
+            return new AesCbcCryptor(password, salt);
+        } else {
+            throw new IllegalArgumentException("Unsupported cryptor class: " + cryptorClass);
         }
     }
 }
