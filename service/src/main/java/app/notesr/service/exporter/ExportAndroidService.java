@@ -6,9 +6,7 @@
 package app.notesr.service.exporter;
 
 import static java.util.Objects.requireNonNull;
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -27,12 +25,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
-import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
@@ -72,13 +67,13 @@ public final class ExportAndroidService extends AndroidService implements Runnab
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
+        var notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        var notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(notificationChannel);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).build();
+        var notification = new NotificationCompat.Builder(this, CHANNEL_ID).build();
 
         int type = 0;
 
@@ -119,7 +114,7 @@ public final class ExportAndroidService extends AndroidService implements Runnab
     }
 
     private void onUpdateCallback(Integer progress, ExportStatus status) {
-        Intent broadcast = new Intent(BROADCAST_ACTION)
+        var broadcast = new Intent(BROADCAST_ACTION)
                 .putExtra(EXTRA_STATUS, status)
                 .putExtra(EXTRA_PROGRESS, progress);
 
@@ -128,7 +123,7 @@ public final class ExportAndroidService extends AndroidService implements Runnab
 
     @Override
     public void run() {
-        Uri uri = Uri.parse(outputUri);
+        var uri = Uri.parse(outputUri);
 
         registerCancelSignalReceiver();
         broadcastOutputPath(uri.getPath());
@@ -171,14 +166,14 @@ public final class ExportAndroidService extends AndroidService implements Runnab
 
         Context context = getApplicationContext();
 
-        AppDatabase db = DatabaseProvider.getInstance(this);
-        NoteService noteService = new NoteService(db);
+        var db = DatabaseProvider.getInstance(this);
+        var noteService = new NoteService(db);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
-        FileService fileService = new FileService(context, db, cryptor, new FilesUtils());
-        ExportStatusHolder statusHolder = new ExportStatusHolder(updateCallback);
+        var fileService = new FileService(context, db, cryptor, new FilesUtils());
+        var statusHolder = new ExportStatusHolder(updateCallback);
 
         return new ExportService(
                 secrets,
