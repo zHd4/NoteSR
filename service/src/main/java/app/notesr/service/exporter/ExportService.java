@@ -7,8 +7,6 @@ package app.notesr.service.exporter;
 
 import static java.util.UUID.randomUUID;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -21,7 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
@@ -29,7 +27,6 @@ import app.notesr.core.util.TempDataWiper;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.model.FileBlobInfo;
 import app.notesr.data.model.FileInfo;
-import app.notesr.data.model.Note;
 
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
@@ -66,9 +63,9 @@ public final class ExportService {
             tempArchive = new File(context.getCacheDir(), randomUUID().toString() + ".zip");
 
             statusHolder.setStatus(ExportStatus.INITIALIZING);
-            BackupEncryptor backupEncryptor = getBackupEncryptor();
+            var backupEncryptor = getBackupEncryptor();
 
-            try (BackupZipper zipper = new BackupZipper(tempArchive)) {
+            try (var zipper = new BackupZipper(tempArchive)) {
                 statusHolder.setStatus(ExportStatus.EXPORTING_DATA);
 
                 exportVersion(zipper);
@@ -107,10 +104,10 @@ public final class ExportService {
     private void exportNotes(BackupZipper zipper, BackupEncryptor encryptor)
             throws IOException, EncryptionFailedException {
 
-        for (Note note : noteService.getAll()) {
+        for (var note : noteService.getAll()) {
             checkCancelled();
 
-            String json = objectMapper.writeValueAsString(note);
+            var json = objectMapper.writeValueAsString(note);
             byte[] encryptedJson = encryptor.encrypt(json);
 
             zipper.addNote(note.getId(), encryptedJson);
@@ -124,7 +121,7 @@ public final class ExportService {
         for (FileInfo fileInfo : fileService.getFilesInfo()) {
             checkCancelled();
 
-            String json = objectMapper.writeValueAsString(fileInfo);
+            var json = objectMapper.writeValueAsString(fileInfo);
             byte[] encryptedJson = encryptor.encrypt(json);
 
             zipper.addFileInfo(fileInfo.getId(), encryptedJson);
@@ -138,7 +135,7 @@ public final class ExportService {
         for (FileBlobInfo blobInfo : fileService.getFilesBlobInfo()) {
             checkCancelled();
 
-            String blobInfoJson = objectMapper.writeValueAsString(blobInfo);
+            var blobInfoJson = objectMapper.writeValueAsString(blobInfo);
             byte[] blobData = fileService.getBlobData(blobInfo.getId());
 
             byte[] encryptedBlobInfo = encryptor.encrypt(blobInfoJson);
@@ -152,18 +149,17 @@ public final class ExportService {
     private void encryptFinalFile(BackupEncryptor encryptor, OutputStream outputStream)
             throws IOException, EncryptionFailedException {
 
-        try (FileInputStream fileInputStream = new FileInputStream(tempArchive)) {
+        try (var fileInputStream = new FileInputStream(tempArchive)) {
             encryptor.encrypt(fileInputStream, outputStream);
         }
     }
 
     private BackupEncryptor getBackupEncryptor() {
-        AesGcmCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
-        return new BackupEncryptor(cryptor);
+        return new BackupEncryptor(AesCryptorFactory.createAesGcmCryptor(cryptoSecrets));
     }
 
     private void checkCancelled() {
-        ExportStatus status = statusHolder.getStatus();
+        var status = statusHolder.getStatus();
 
         if (status == ExportStatus.CANCELLING) {
             try {
@@ -190,7 +186,7 @@ public final class ExportService {
     }
 
     private int calculateProgress() {
-        ExportStatus status = statusHolder.getStatus();
+        var status = statusHolder.getStatus();
 
         if (status == null || status == ExportStatus.INITIALIZING) {
             return 0;
