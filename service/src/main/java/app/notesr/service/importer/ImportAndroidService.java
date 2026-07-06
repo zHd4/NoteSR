@@ -5,14 +5,11 @@
 
 package app.notesr.service.importer;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.util.FilesUtils;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.net.Uri;
@@ -26,14 +23,11 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 
@@ -65,11 +59,11 @@ public final class ImportAndroidService extends AndroidService implements Runnab
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
+        var notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).build();
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        var notification = new NotificationCompat.Builder(this, CHANNEL_ID).build();
+        var notificationManager = getSystemService(NotificationManager.class);
 
         notificationManager.createNotificationChannel(notificationChannel);
 
@@ -83,7 +77,7 @@ public final class ImportAndroidService extends AndroidService implements Runnab
         secrets = CryptoManagerProvider.getInstance(getApplicationContext()).getSecrets();
         importService = getImportService();
 
-        Thread thread = new Thread(this);
+        var thread = new Thread(this);
         thread.start();
 
         startForeground(startId, notification, type);
@@ -116,7 +110,7 @@ public final class ImportAndroidService extends AndroidService implements Runnab
     }
 
     private ImportAndroidServiceStarter.Payload getPayload() {
-        String sourceUriStr = sourceUri != null ? sourceUri.toString() : null;
+        var sourceUriStr = sourceUri != null ? sourceUri.toString() : null;
         return new ImportAndroidServiceStarter.Payload(sourceUriStr);
     }
 
@@ -125,23 +119,23 @@ public final class ImportAndroidService extends AndroidService implements Runnab
     }
 
     private void sendBroadcastData(ImportStatus status) {
-        Intent intent = new Intent(BROADCAST_ACTION)
+        var intent = new Intent(BROADCAST_ACTION)
                 .putExtra(EXTRA_STATUS, status);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private ImportService getImportService() {
-        Context context = getApplicationContext();
+        var context = getApplicationContext();
 
-        AppDatabase db = DatabaseProvider.getInstance(context);
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+        var db = DatabaseProvider.getInstance(context);
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
-        NoteService noteService = new NoteService(db);
-        FileService fileService = new FileService(context, db, cryptor,
+        var noteService = new NoteService(db);
+        var fileService = new FileService(context, db, cryptor,
                 new FilesUtils());
 
-        ImportStatusCallback statusCallback = new ImportStatusCallback(this::sendBroadcastData);
+        var statusCallback = new ImportStatusCallback(this::sendBroadcastData);
 
         return new ImportService(
                 this,
