@@ -8,8 +8,7 @@ package app.notesr.core.security.crypto;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
-public final class AesCryptorFactory implements CryptorFactory {
-    @Override
+public final class AesCryptorFactory {
     public AesCryptor create(char[] password, Class<? extends AesCryptor> cryptorClass)
             throws InvalidKeySpecException, NoSuchAlgorithmException {
         byte[] salt = AesCryptor.generatePasswordBasedSalt(password);
