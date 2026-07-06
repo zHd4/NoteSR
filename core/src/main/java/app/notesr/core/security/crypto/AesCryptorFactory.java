@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 public final class AesCryptorFactory {
-    public AesCryptor create(char[] password, Class<? extends AesCryptor> cryptorClass)
+    public AesCryptor createAesCryptor(char[] password, Class<? extends AesCryptor> cryptorClass)
             throws InvalidKeySpecException, NoSuchAlgorithmException {
         byte[] salt = AesCryptor.generatePasswordBasedSalt(password);
 

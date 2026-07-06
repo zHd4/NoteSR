@@ -156,7 +156,7 @@ class CryptoManagerTest {
             return Arrays.copyOf(input, input.length);
         });
 
-        when(aesCryptorFactory.create(any(char[].class), eq(AesGcmCryptor.class)))
+        when(aesCryptorFactory.createAesCryptor(any(char[].class), eq(AesGcmCryptor.class)))
                 .thenReturn(mockCryptor);
 
         when(prefs.edit()).thenReturn(editor);
@@ -203,7 +203,9 @@ class CryptoManagerTest {
         when(filesUtils.readFileBytes(keyFile)).thenReturn(encryptedKey);
 
         AesGcmCryptor mockCryptor = mock(AesGcmCryptor.class);
-        when(aesCryptorFactory.create(eq(password), eq(AesGcmCryptor.class))).thenReturn(mockCryptor);
+
+        when(aesCryptorFactory.createAesCryptor(eq(password), eq(AesGcmCryptor.class)))
+                .thenReturn(mockCryptor);
         when(mockCryptor.decrypt(encryptedKey)).thenReturn(decryptedKey);
 
         boolean result = cryptoManager.configure(null, password);
@@ -228,8 +230,8 @@ class CryptoManagerTest {
 
         AesGcmCryptor mockGcm = mock(AesGcmCryptor.class);
         AesCbcCryptor mockCbc = mock(AesCbcCryptor.class);
-        when(aesCryptorFactory.create(eq(password), eq(AesGcmCryptor.class))).thenReturn(mockGcm);
-        when(aesCryptorFactory.create(eq(password), eq(AesCbcCryptor.class))).thenReturn(mockCbc);
+        when(aesCryptorFactory.createAesCryptor(eq(password), eq(AesGcmCryptor.class))).thenReturn(mockGcm);
+        when(aesCryptorFactory.createAesCryptor(eq(password), eq(AesCbcCryptor.class))).thenReturn(mockCbc);
 
         when(mockGcm.decrypt(encryptedKey))
                 .thenThrow(new GeneralSecurityException("GCM failed"));
@@ -256,8 +258,11 @@ class CryptoManagerTest {
 
         AesGcmCryptor mockGcm = mock(AesGcmCryptor.class);
         AesCbcCryptor mockCbc = mock(AesCbcCryptor.class);
-        when(aesCryptorFactory.create(eq(password), eq(AesGcmCryptor.class))).thenReturn(mockGcm);
-        when(aesCryptorFactory.create(eq(password), eq(AesCbcCryptor.class))).thenReturn(mockCbc);
+
+        when(aesCryptorFactory.createAesCryptor(eq(password), eq(AesGcmCryptor.class)))
+                .thenReturn(mockGcm);
+        when(aesCryptorFactory.createAesCryptor(eq(password), eq(AesCbcCryptor.class)))
+                .thenReturn(mockCbc);
 
         when(mockGcm.decrypt(any()))
                 .thenThrow(new GeneralSecurityException("fail"));
@@ -324,7 +329,9 @@ class CryptoManagerTest {
         when(filesUtils.readFileBytes(keyFile)).thenReturn(encryptedKey);
 
         AesGcmCryptor mockCryptor = mock(AesGcmCryptor.class);
-        when(aesCryptorFactory.create(eq(password), eq(AesGcmCryptor.class))).thenReturn(mockCryptor);
+
+        when(aesCryptorFactory.createAesCryptor(eq(password), eq(AesGcmCryptor.class)))
+                .thenReturn(mockCryptor);
         when(mockCryptor.decrypt(encryptedKey)).thenReturn(decryptedKey);
 
         cryptoManager.configure(null, password);

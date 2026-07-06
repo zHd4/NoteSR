@@ -238,7 +238,7 @@ public final class CryptoManager {
             throws EncryptionFailedException {
         try {
             byte[] encryptedKeyFileBytes = aesCryptorFactory
-                    .create(cryptoSecrets.getPassword(), AesGcmCryptor.class)
+                    .createAesCryptor(cryptoSecrets.getPassword(), AesGcmCryptor.class)
                     .encrypt(cryptoSecrets.getKey());
 
             File encryptedKeyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
@@ -274,7 +274,7 @@ public final class CryptoManager {
             File keyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
             byte[] encryptedKeyFileBytes = filesUtils.readFileBytes(keyFile);
             byte[] keyFileBytes = aesCryptorFactory
-                    .create(password, cryptorClass)
+                    .createAesCryptor(password, cryptorClass)
                     .decrypt(encryptedKeyFileBytes);
             return new CryptoSecrets(Arrays.copyOf(keyFileBytes, keyFileBytes.length), password);
         } catch (Exception e) {
