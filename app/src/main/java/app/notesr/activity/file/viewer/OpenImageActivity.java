@@ -7,14 +7,11 @@ package app.notesr.activity.file.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import app.notesr.activity.DialogFactory;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.util.FilesUtils;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -32,14 +29,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import app.notesr.R;
-import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.service.file.FileService;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.security.dto.CryptoSecrets;
 
 public final class OpenImageActivity extends FileViewerActivityBase {
 
@@ -73,7 +66,7 @@ public final class OpenImageActivity extends FileViewerActivityBase {
     }
 
     private void loadImage() {
-        Dialog progressDialog = new DialogFactory(this)
+        var progressDialog = new DialogFactory(this)
                 .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
         newSingleThreadExecutor().execute(() -> {
@@ -87,10 +80,10 @@ public final class OpenImageActivity extends FileViewerActivityBase {
                 }
 
                 byte[] imageBytes = fileService.read(fileInfo.getId());
-                Bitmap bitmap = decodeAndScaleBitmap(imageBytes);
+                var bitmap = decodeAndScaleBitmap(imageBytes);
                 bitmap = applyExifOrientation(imageBytes, bitmap);
 
-                Bitmap finalBitmap = bitmap;
+                var finalBitmap = bitmap;
                 runOnUiThread(() -> imageView.setImageBitmap(finalBitmap));
 
             } catch (DecryptionFailedException | IOException | OutOfMemoryError e) {
@@ -104,13 +97,13 @@ public final class OpenImageActivity extends FileViewerActivityBase {
     }
 
     private Bitmap decodeAndScaleBitmap(byte[] imageBytes) {
-        DisplayMetrics metrics = new DisplayMetrics();
+        var metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         int screenWidth = metrics.widthPixels;
         int screenHeight = metrics.heightPixels;
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
+        var options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
 
@@ -123,13 +116,13 @@ public final class OpenImageActivity extends FileViewerActivityBase {
     private Bitmap applyExifOrientation(byte[] imageBytes, Bitmap bitmap) throws IOException {
         int orientation;
 
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes)) {
-            ExifInterface exif = new ExifInterface(inputStream);
+        try (var inputStream = new ByteArrayInputStream(imageBytes)) {
+            var exif = new ExifInterface(inputStream);
             orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                     ExifInterface.ORIENTATION_NORMAL);
         }
 
-        Matrix matrix = new Matrix();
+        var matrix = new Matrix();
 
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
@@ -178,12 +171,13 @@ public final class OpenImageActivity extends FileViewerActivityBase {
 
 
     private FileService getFileService() {
-        Context context = getApplicationContext();
+        var context = getApplicationContext();
+        var db = DatabaseProvider.getInstance(this);
 
-        AppDatabase db = DatabaseProvider.getInstance(this);
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
-        FilesUtils filesUtils = new FilesUtils();
+        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
+
+        var filesUtils = new FilesUtils();
 
         return new FileService(context, db, cryptor, filesUtils);
     }
