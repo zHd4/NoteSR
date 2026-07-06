@@ -5,21 +5,12 @@
 
 package app.notesr.service.migration.changes.db;
 
-import static app.notesr.core.util.KeyUtils.getIvFromSecrets;
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import android.content.Context;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
-import javax.crypto.SecretKey;
-
-import app.notesr.core.security.crypto.AesCbcCryptor;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.crypto.ValueDecryptor;
 import app.notesr.core.security.dto.CryptoSecrets;
@@ -91,7 +82,7 @@ public final class RoomIntegrationMigration implements AppMigration {
     }
 
     private void migrateNotes() {
-        for (Map<String, Object> noteMap : oldDbHelper.getAllNotes()) {
+        for (var noteMap : oldDbHelper.getAllNotes()) {
             try {
                 noteService.importNote(entityMapper.mapNote(noteMap));
             } catch (DecryptionFailedException e) {
@@ -102,7 +93,7 @@ public final class RoomIntegrationMigration implements AppMigration {
     }
 
     private void migrateFiles() {
-        for (Map<String, Object> fileInfoMap : oldDbHelper.getFilesInfo()) {
+        for (var fileInfoMap : oldDbHelper.getFilesInfo()) {
             FileInfo fileInfo;
 
             try {
@@ -114,8 +105,8 @@ public final class RoomIntegrationMigration implements AppMigration {
 
             fileService.importFileInfo(fileInfo);
 
-            for (String dataBlockId : oldDbHelper.getBlocksIdsByFileId(fileInfo.getId())) {
-                Map<String, Object> dataBlockMap = oldDbHelper.getDataBlockById(dataBlockId);
+            for (var dataBlockId : oldDbHelper.getBlocksIdsByFileId(fileInfo.getId())) {
+                var dataBlockMap = oldDbHelper.getDataBlockById(dataBlockId);
 
                 FileBlobInfo fileBlobInfo;
                 byte[] fileBlobBytes;
@@ -142,7 +133,7 @@ public final class RoomIntegrationMigration implements AppMigration {
 
     private void wipeOldDbs(Context context) {
         FILES_TO_WIPE.forEach(filePath -> {
-            File file = filesUtils.getDatabaseFile(context, filePath);
+            var file = filesUtils.getDatabaseFile(context, filePath);
 
             try {
                 wiper.wipeFile(file);
@@ -165,8 +156,8 @@ public final class RoomIntegrationMigration implements AppMigration {
     }
 
     FileService getFileService(Context context, AppDatabase db, FilesUtilsAdapter filesUtils) {
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
         return new FileService(context, db, cryptor, filesUtils);
     }
@@ -176,11 +167,8 @@ public final class RoomIntegrationMigration implements AppMigration {
     }
 
     EntityMapper getMapper(CryptoSecrets cryptoSecrets) {
-        SecretKey key = getSecretKeyFromSecrets(cryptoSecrets);
-        byte[] iv = getIvFromSecrets(cryptoSecrets);
-
-        AesCryptor aesCryptor = new AesCbcCryptor(key, iv);
-        ValueDecryptor valueDecryptor = new ValueDecryptor(aesCryptor);
+        var cryptor = AesCryptorFactory.createAesCbcCryptor(cryptoSecrets);
+        var valueDecryptor = new ValueDecryptor(cryptor);
 
         return new EntityMapper(valueDecryptor);
     }
