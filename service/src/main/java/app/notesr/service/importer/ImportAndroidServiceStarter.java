@@ -7,8 +7,6 @@ package app.notesr.service.importer;
 
 import static java.util.Objects.requireNonNull;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,7 +14,7 @@ import android.net.Uri;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.ValueDecryptor;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
@@ -42,7 +40,7 @@ public final class ImportAndroidServiceStarter implements AndroidServiceStarter 
             throws DecryptionFailedException, JsonProcessingException {
 
         requireNonNull(secrets, "Secrets are null");
-        var payloadJson = new ValueDecryptor(new AesGcmCryptor(getSecretKeyFromSecrets(secrets)))
+        var payloadJson = new ValueDecryptor(AesCryptorFactory.createAesGcmCryptor(secrets))
                 .decrypt(payload);
 
         var mapper = new ObjectMapper();
@@ -52,7 +50,7 @@ public final class ImportAndroidServiceStarter implements AndroidServiceStarter 
     }
 
     private Intent buildIntent(Context context) {
-        Uri sourceUri = payload.getSourceUri() != null ? Uri.parse(payload.getSourceUri()) : null;
+        var sourceUri = payload.getSourceUri() != null ? Uri.parse(payload.getSourceUri()) : null;
         return new Intent(context, ImportAndroidService.class).setData(sourceUri);
     }
 
