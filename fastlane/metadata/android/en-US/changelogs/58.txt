@@ -1,13 +1,13 @@
-## Improvements
+Improvements:
 
-- Replaced the separate search activity with an integrated SearchView in the notes list for a more seamless experience.
-- Implemented search debouncing in the notes list to improve performance and responsiveness.
-- Added support for AVIF and BMP image formats in the thumbnail generator.
-- Improved resource management and efficiency within the ImageThumbnailCreator.
-- Updated various UI labels and strings, including more descriptive menu titles for key management.
-- Refactored dialog creation to use a unified DialogFactory for a more consistent UI.
+• Replaced the separate search activity with an integrated SearchView in the notes list for a more seamless experience.
+• Implemented search debouncing in the notes list to improve performance and responsiveness.
+• Added support for AVIF and BMP image formats in the thumbnail generator.
+• Improved resource management and efficiency within the ImageThumbnailCreator.
+• Updated various UI labels and strings, including more descriptive menu titles for key management.
+• Refactored dialog creation to use a unified DialogFactory for a more consistent UI.
 
-## Bug Fixes
+Bug Fixes:
 
-- Fixed potential crashes (UnsupportedOperationException and IOException) during file thumbnail generation.
-- Corrected scale factor logic in image thumbnail creation.
+• Fixed potential crashes (UnsupportedOperationException and IOException) during file thumbnail generation.
+• Corrected scale factor logic in image thumbnail creation.
