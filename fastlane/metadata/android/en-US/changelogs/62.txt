@@ -1,0 +1,6 @@
+Improvements:
+
+• Improved notes and files navigation
+• Added warning dialog for unsaved notes
+• Added markdown support for open note activity
+• Some internal/intermediate improvements
