@@ -1,12 +1,12 @@
-## Improvements
+Improvements:
 
-- Enhanced data safety with a new transactional system that prevents data loss or corruption if the app is closed or crashes during important tasks.
-- Improved file handling by adopting the standard Android system file picker for all backup and import operations.
-- Reduced app requirements by removing unnecessary network-related permissions.
-- Significant boost in overall app stability through a complete overhaul of how background services are managed.
+• Enhanced data safety with a new transactional system that prevents data loss or corruption if the app is closed or crashes during important tasks.
+• Improved file handling by adopting the standard Android system file picker for all backup and import operations.
+• Reduced app requirements by removing unnecessary network-related permissions.
+• Significant boost in overall app stability through a complete overhaul of how background services are managed.
 
-## Bug Fixes
+Bug Fixes:
 
-- Resolved a critical issue that prevented users on Android 10 from successfully saving backups.
-- Fixed a potential issue that could cause data corruption if a storage re-encryption process was interrupted.
-- Resolved an issue where errors during re-encryption process were not properly communicated to the user.
+• Resolved a critical issue that prevented users on Android 10 from successfully saving backups.
+• Fixed a potential issue that could cause data corruption if a storage re-encryption process was interrupted.
+• Resolved an issue where errors during re-encryption process were not properly communicated to the user.
