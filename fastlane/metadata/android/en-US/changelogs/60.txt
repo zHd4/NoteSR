@@ -1,0 +1,12 @@
+Improvements:
+
+• Improved the reliability of the secure file erasure feature, especially for large files and complex folder structures.
+• Optimized background processes like data import, export, and migration for better stability.
+• Internal optimizations to improve overall app performance and stability.
+
+Bug Fixes:
+
+• Fixed a crash that occurred when returning to the app after it was closed by the system in the background to save memory.
+• Fixed a potential crash (Out of Memory error) when securely erasing large files.
+• Fixed issues where background tasks might not behave correctly when the app was closed or removed from the recent tasks list.
+• Resolved several minor bugs and stability issues for a smoother experience.

@@ -1,0 +1,13 @@
+Improvements:
+
+• Improved screen layouts and margins across the app for a cleaner, more consistent look.
+• Refined wording and fixed grammar in several areas to make the app easier to understand.
+• Improved the search bar behavior and appearance in your notes list.
+• Internal updates to support better visual themes across different screens.
+
+Bug Fixes:
+
+• Fixed a critical issue that caused the app to crash on older versions of Android (prior to Android 12).
+• Resolved an issue where the app would crash when saving files with unknown types to the device.
+• Fixed the sizing of the audio file icon.
+• Fixed an issue where the search icon could disappear.
