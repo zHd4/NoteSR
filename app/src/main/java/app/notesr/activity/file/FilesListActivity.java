@@ -8,12 +8,7 @@ package app.notesr.activity.file;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.ClipData;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,17 +32,14 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.file.viewer.FileViewerActivityBase;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.exception.DecryptionFailedException;
-import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 
 import java.io.IOException;
@@ -80,17 +72,17 @@ public final class FilesListActivity extends ActivityBase {
         setContentView(R.layout.activity_file_list);
         applyInsets(findViewById(R.id.main));
 
-        String noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
+        var noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
         if (noteId == null) {
             throw new RuntimeException("Note id didn't provided");
         }
 
-        Context context = getApplicationContext();
-        AppDatabase db = DatabaseProvider.getInstance(context);
+        var context = getApplicationContext();
+        var db = DatabaseProvider.getInstance(context);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
         fileService = new FileService(context, db, cryptor, new FilesUtils());
         noteService = new NoteService(db);
@@ -126,10 +118,10 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     private void loadFiles(String noteId) {
-        Dialog progressDialog = new DialogFactory(this)
+        var progressDialog = new DialogFactory(this)
                 .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
-        Handler handler = new Handler(Looper.getMainLooper());
+        var handler = new Handler(Looper.getMainLooper());
 
         newSingleThreadExecutor().execute(() -> {
             handler.post(progressDialog::show);
@@ -144,7 +136,7 @@ public final class FilesListActivity extends ActivityBase {
 
             filesIdsMap.clear();
 
-            List<FileInfo> filesInfos = fileService.getFilesInfo(note.getId());
+            var filesInfos = fileService.getFilesInfo(note.getId());
             filesInfos.forEach(fileInfo ->
                     filesIdsMap.put(fileInfo.getDecimalId(), fileInfo.getId()));
 
@@ -162,7 +154,7 @@ public final class FilesListActivity extends ActivityBase {
         ActionBar actionBar = getSupportActionBar();
         requireNonNull(actionBar);
 
-        String title = getString(R.string.files_list_action_bar_title_format,
+        var title = getString(R.string.files_list_action_bar_title_format,
                 String.valueOf(filesCount), note.getName());
 
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -188,7 +180,7 @@ public final class FilesListActivity extends ActivityBase {
 
         if (!filesInfos.isEmpty()) {
             missingFilesLabel.setVisibility(View.INVISIBLE);
-            FilesListAdapter adapter = new FilesListAdapter(
+            var adapter = new FilesListAdapter(
                     getApplicationContext(),
                     R.layout.files_list_item,
                     filesInfos);
@@ -234,7 +226,7 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     private void addFiles(Intent data) {
-        Dialog progressDialog = new DialogFactory(this)
+        var progressDialog = new DialogFactory(this)
                 .getThemedProgressDialog(R.layout.progress_dialog_adding);
 
         newSingleThreadExecutor().execute(() -> {
@@ -251,10 +243,10 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     private List<Uri> getFileUris(Intent data) {
-        List<Uri> result = new ArrayList<>();
+        var result = new ArrayList<Uri>();
 
         if (data.getClipData() != null) {
-            ClipData clipData = data.getClipData();
+            var clipData = data.getClipData();
             int filesCount = clipData.getItemCount();
 
             for (int i = 0; i < filesCount; i++) {

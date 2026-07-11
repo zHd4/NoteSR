@@ -5,9 +5,6 @@
 
 package app.notesr.core.security.crypto;
 
-import static app.notesr.core.util.KeyUtils.getIvFromSecrets;
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.util.Log;
@@ -17,8 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-
-import javax.crypto.SecretKey;
 
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
@@ -35,8 +30,8 @@ public final class BackupDecryptor {
 
     public void decrypt() throws DecryptionFailedException, IOException {
         try {
-            InputStream sourceStream = contentResolver.openInputStream(inputUri);
-            FileOutputStream outputStream = new FileOutputStream(outputFile);
+            var sourceStream = contentResolver.openInputStream(inputUri);
+            var outputStream = new FileOutputStream(outputFile);
 
             tryGcmDecryption(sourceStream, outputStream);
             return;
@@ -45,8 +40,8 @@ public final class BackupDecryptor {
         }
 
         try {
-            InputStream sourceStream = contentResolver.openInputStream(inputUri);
-            FileOutputStream outputStream = new FileOutputStream(outputFile);
+            var sourceStream = contentResolver.openInputStream(inputUri);
+            var outputStream = new FileOutputStream(outputFile);
 
             tryCbcDecryption(sourceStream, outputStream);
         } catch (GeneralSecurityException e) {
@@ -57,17 +52,13 @@ public final class BackupDecryptor {
 
     void tryGcmDecryption(InputStream sourceStream, FileOutputStream outputStream)
             throws GeneralSecurityException, IOException {
-        SecretKey key = getSecretKeyFromSecrets(cryptoSecrets);
-        AesGcmCryptor cryptor = new AesGcmCryptor(key);
-        cryptor.decrypt(sourceStream, outputStream);
+        AesCryptorFactory.createAesGcmCryptor(cryptoSecrets)
+                .decrypt(sourceStream, outputStream);
     }
 
     void tryCbcDecryption(InputStream sourceStream, FileOutputStream outputStream)
             throws GeneralSecurityException, IOException {
-        SecretKey key = getSecretKeyFromSecrets(cryptoSecrets);
-        byte[] iv = getIvFromSecrets(cryptoSecrets);
-
-        AesCbcCryptor cryptor = new AesCbcCryptor(key, iv);
-        cryptor.decrypt(sourceStream, outputStream);
+        AesCryptorFactory.createAesCbcCryptor(cryptoSecrets)
+                .decrypt(sourceStream, outputStream);
     }
 }

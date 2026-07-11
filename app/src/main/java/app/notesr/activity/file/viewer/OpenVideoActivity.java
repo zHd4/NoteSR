@@ -7,9 +7,6 @@ package app.notesr.activity.file.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,24 +15,21 @@ import android.view.WindowManager;
 import androidx.annotation.OptIn;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
-import androidx.media3.datasource.DataSource;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.ui.PlayerView;
 
 import app.notesr.R;
 import app.notesr.core.security.crypto.AesCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.crypto.EncryptedMediaDataSourceFactory;
-import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
-import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
 
 import java.io.File;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public final class OpenVideoActivity extends FileViewerActivityBase {
@@ -62,11 +56,11 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 
-        Context context = getApplicationContext();
-        AppDatabase db = DatabaseProvider.getInstance(context);
+        var context = getApplicationContext();
+        var db = DatabaseProvider.getInstance(context);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
         fileService = new FileService(context, db, cryptor, new FilesUtils());
         videoView = findViewById(R.id.video_view);
@@ -79,24 +73,23 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
         player = new ExoPlayer.Builder(getApplicationContext()).build();
         videoView.setPlayer(player);
 
-        MediaItem mediaItem = new MediaItem.Builder()
+        var mediaItem = new MediaItem.Builder()
                 .setUri(Uri.EMPTY)
                 .build();
 
         player.setMediaItem(mediaItem);
 
-        File blocksDir = new File(getFilesDir(), FileService.BLOBS_DIR_NAME);
+        var blocksDir = new File(getFilesDir(), FileService.BLOBS_DIR_NAME);
 
         newSingleThreadExecutor().execute(() -> {
-            List<File> blockFiles = fileService.getFileBlobInfoIds(fileInfo.getId()).stream()
+            var blockFiles = fileService.getFileBlobInfoIds(fileInfo.getId()).stream()
                     .map(blockId -> new File(blocksDir, blockId))
                     .collect(Collectors.toList());
 
-            DataSource.Factory dataSourceFactory = new EncryptedMediaDataSourceFactory(cryptor,
+            var dataSourceFactory = new EncryptedMediaDataSourceFactory(cryptor,
                     blockFiles, BLOCK_METADATA_LENGTH, CACHE_VIDEO_BLOCKS);
 
-            ProgressiveMediaSource mediaSource =
-                    new ProgressiveMediaSource.Factory(dataSourceFactory)
+            var mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
                             .createMediaSource(mediaItem);
 
             runOnUiThread(() -> {

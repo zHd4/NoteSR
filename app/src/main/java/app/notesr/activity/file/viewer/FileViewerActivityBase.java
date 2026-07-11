@@ -8,10 +8,8 @@ package app.notesr.activity.file.viewer;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,10 +27,8 @@ import app.notesr.activity.DialogFactory;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.file.helper.FileIOHelper;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.FileInfo;
@@ -63,9 +59,10 @@ public class FileViewerActivityBase extends ActivityBase {
             return;
         }
 
-        Context context = getApplicationContext();
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+        var context = getApplicationContext();
+
+        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
         fileService = new FileService(
                 context,
@@ -123,7 +120,7 @@ public class FileViewerActivityBase extends ActivityBase {
     }
 
     protected final void saveFileOnClick() {
-        File destFile = new File(saveDir, fileInfo.getName());
+        var destFile = new File(saveDir, fileInfo.getName());
 
         Runnable task = () -> fileIOHelper.exportFile(fileInfo.getId(), destFile);
         Runnable post = () -> showToastMessage(this,

@@ -5,8 +5,6 @@
 
 package app.notesr.service.security.crypto.update;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import android.content.Context;
 
 import java.io.File;
@@ -15,7 +13,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
@@ -75,8 +73,8 @@ public final class SecretsUpdateService {
             databaseManager.closeProvider();
 
             if (!txFiles.isCommitted()) {
-                var currentCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(currentSecrets));
-                var newCryptor = new AesGcmCryptor(getSecretKeyFromSecrets(newSecrets));
+                var currentCryptor = AesCryptorFactory.createAesGcmCryptor(currentSecrets);
+                var newCryptor = AesCryptorFactory.createAesGcmCryptor(newSecrets);
                 var currentBlobsDir = txFiles.getInternalFile(context, FileService.BLOBS_DIR_NAME);
 
                 migrateData(

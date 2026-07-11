@@ -5,23 +5,38 @@
 
 package app.notesr.core.security.crypto;
 
-import java.lang.reflect.InvocationTargetException;
-import java.security.NoSuchAlgorithmException;
+import static app.notesr.core.util.KeyUtils.getIvFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
-public final class AesCryptorFactory implements CryptorFactory {
-    @Override
-    public AesCryptor create(char[] password, Class<? extends AesCryptor> cryptorClass)
-            throws NoSuchAlgorithmException, ReflectiveOperationException {
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.SecretKey;
+
+import app.notesr.core.security.dto.CryptoSecrets;
+
+public final class AesCryptorFactory {
+    public AesCryptor createAesCryptor(char[] password, Class<? extends AesCryptor> cryptorClass)
+            throws InvalidKeySpecException, NoSuchAlgorithmException {
         byte[] salt = AesCryptor.generatePasswordBasedSalt(password);
 
-        try {
-            return cryptorClass.getConstructor(char[].class, byte[].class)
-                    .newInstance(password, salt);
-        } catch (IllegalAccessException
-                 | InstantiationException
-                 | InvocationTargetException
-                 | NoSuchMethodException e) {
-            throw new ReflectiveOperationException(e);
+        if (cryptorClass == AesGcmCryptor.class) {
+            return new AesGcmCryptor(password, salt);
+        } else if (cryptorClass == AesCbcCryptor.class) {
+            return new AesCbcCryptor(password, salt);
+        } else {
+            throw new IllegalArgumentException("Unsupported cryptor class: " + cryptorClass);
         }
+    }
+
+    public static AesGcmCryptor createAesGcmCryptor(CryptoSecrets secrets) {
+        return new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+    }
+
+    public static AesCbcCryptor createAesCbcCryptor(CryptoSecrets secrets) {
+        SecretKey key = getSecretKeyFromSecrets(secrets);
+        byte[] iv = getIvFromSecrets(secrets);
+
+        return new AesCbcCryptor(key, iv);
     }
 }

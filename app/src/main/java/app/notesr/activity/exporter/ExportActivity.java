@@ -9,9 +9,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import static app.notesr.core.util.ActivityUtils.disableBackButton;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -33,13 +31,9 @@ import java.time.format.DateTimeFormatter;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
-import app.notesr.core.util.VersionFetcher;
-import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.exporter.ExportAndroidService;
@@ -77,17 +71,18 @@ public final class ExportActivity extends ActivityBase {
         setContentView(R.layout.activity_export);
         applyInsets(findViewById(R.id.main));
 
-        Context context = getApplicationContext();
-        AppDatabase db = DatabaseProvider.getInstance(this);
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+        var context = getApplicationContext();
+        var db = DatabaseProvider.getInstance(this);
+
+        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
         noteService = new NoteService(db);
         fileService = new FileService(context, db, cryptor, new FilesUtils());
 
         actionBar = getSupportActionBar();
 
-        ExportBroadcastReceiver dataReceiver = new ExportBroadcastReceiver(
+        var dataReceiver = new ExportBroadcastReceiver(
                 this::onOutputPathReceived,
                 this::onExportRunning,
                 this::onExportComplete
@@ -127,7 +122,7 @@ public final class ExportActivity extends ActivityBase {
         return view -> newSingleThreadExecutor().execute(() -> {
             if (noteService.getCount() == 0) {
                 runOnUiThread(() -> {
-                    String messageText = getString(R.string.no_notes);
+                    var messageText = getString(R.string.no_notes);
                     showToastMessage(this, messageText, Toast.LENGTH_SHORT);
                 });
 
@@ -153,19 +148,22 @@ public final class ExportActivity extends ActivityBase {
     }
 
     private void pickSaveLocation() {
-        LocalDateTime now = LocalDateTime.now();
-        String nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
-        String filename = "nsr_export_" + nowStr + ".notesr.bak";
+        var now = LocalDateTime.now();
+        var nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+        var filename = "nsr_export_" + nowStr + ".notesr.bak";
 
         createDocumentLauncher.launch(filename);
     }
 
     private void startService(Uri uri) {
-        VersionFetcher versionFetcher = new VersionFetcherImpl();
+        var versionFetcher = new VersionFetcherImpl();
+
         try {
-            String appVersion = versionFetcher.fetchVersionName(this, false);
-            new ExportAndroidServiceStarter(new ExportAndroidServiceStarter.Payload(appVersion, uri.toString()))
-                    .start(getApplicationContext());
+            var appVersion = versionFetcher.fetchVersionName(this, false);
+
+            var exportServicePayload = new ExportAndroidServiceStarter.Payload(
+                    appVersion, uri.toString());
+            new ExportAndroidServiceStarter(exportServicePayload).start(getApplicationContext());
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -183,7 +181,7 @@ public final class ExportActivity extends ActivityBase {
         progressBar.setProgress(progress);
 
         TextView percentageView = findViewById(R.id.export_percentage_view);
-        String progressStr = progress + "%";
+        var progressStr = progress + "%";
 
         percentageView.setText(progressStr);
         percentageView.setVisibility(View.VISIBLE);

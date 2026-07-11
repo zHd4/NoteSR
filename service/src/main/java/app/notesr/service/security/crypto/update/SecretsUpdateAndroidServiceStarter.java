@@ -7,7 +7,6 @@ package app.notesr.service.security.crypto.update;
 
 import static java.util.Objects.requireNonNull;
 import static app.notesr.core.util.CharUtils.charsToBytes;
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 import static app.notesr.service.security.crypto.update.SecretsUpdateAndroidService.EXTRA_CURRENT_STATE;
 
 import android.content.Context;
@@ -20,7 +19,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.ValueDecryptor;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
@@ -75,7 +74,7 @@ public final class SecretsUpdateAndroidServiceStarter implements AndroidServiceS
         requireNonNull(secrets, "Secrets are null");
         requireNonNull(payload, "Payload is null");
 
-        var payloadJson = new ValueDecryptor(new AesGcmCryptor(getSecretKeyFromSecrets(secrets)))
+        var payloadJson = new ValueDecryptor(AesCryptorFactory.createAesGcmCryptor(secrets))
                 .decrypt(payload);
 
         return mapper.readValue(payloadJson, Payload.class);

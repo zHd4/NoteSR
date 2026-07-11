@@ -5,7 +5,6 @@
 
 package app.notesr.activity.note.editor;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,15 +31,12 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.file.FilesListActivity;
-import app.notesr.data.AppDatabase;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import io.noties.markwon.Markwon;
 import kotlin.Unit;
@@ -50,7 +46,6 @@ import java.util.Objects;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
 
 public final class OpenNoteActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
@@ -97,11 +92,11 @@ public final class OpenNoteActivity extends ActivityBase {
         setContentView(R.layout.activity_open_note);
         applyInsets(findViewById(R.id.main));
 
-        Context context = getApplicationContext();
-        AppDatabase db = DatabaseProvider.getInstance(context);
+        var context = getApplicationContext();
+        var db = DatabaseProvider.getInstance(context);
 
-        CryptoSecrets secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(secrets));
+        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
         noteService = new NoteService(db);
         fileService = new FileService(context, db, cryptor, new FilesUtils());
@@ -111,7 +106,7 @@ public final class OpenNoteActivity extends ActivityBase {
                 new ActivityResultContracts.StartActivityForResult(),
                 getFilesListResultCallback());
 
-        String noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
+        var noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
 
         newSingleThreadExecutor().execute(() -> {
             note = noteService.get(noteId);
@@ -218,10 +213,10 @@ public final class OpenNoteActivity extends ActivityBase {
         getMenuInflater().inflate(R.menu.menu_open_note, menu);
         this.menu = menu;
 
-        MenuItem changeModeButton = menu.findItem(R.id.changeOpenModeButton);
-        MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
-        MenuItem openFilesListButton = menu.findItem(R.id.openFilesListButton);
-        MenuItem deleteNoteButton = menu.findItem(R.id.deleteNoteButton);
+        var changeModeButton = menu.findItem(R.id.changeOpenModeButton);
+        var saveNoteButton = menu.findItem(R.id.saveNoteButton);
+        var openFilesListButton = menu.findItem(R.id.openFilesListButton);
+        var deleteNoteButton = menu.findItem(R.id.deleteNoteButton);
 
         changeModeButton.setOnMenuItemClickListener(item -> {
             changeOpenModeButtonOnClick();
@@ -268,7 +263,7 @@ public final class OpenNoteActivity extends ActivityBase {
                     View view = Objects.requireNonNull(openFilesListButton.getActionView());
                     TextView badge = view.findViewById(R.id.attachedFilesCountBadge);
 
-                    String badgeText = filesCount <= MAX_COUNT_IN_BADGE
+                    var badgeText = filesCount <= MAX_COUNT_IN_BADGE
                             ? String.valueOf(filesCount)
                             : MAX_COUNT_IN_BADGE + "+";
 
@@ -321,7 +316,7 @@ public final class OpenNoteActivity extends ActivityBase {
     }
 
     private void openFilesList() {
-        Intent intent = new Intent(getApplicationContext(), FilesListActivity.class)
+        var intent = new Intent(getApplicationContext(), FilesListActivity.class)
                 .putExtra(FilesListActivity.EXTRA_NOTE_ID, note.getId());
 
         openFilesListLauncher.launch(intent);

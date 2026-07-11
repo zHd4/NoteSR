@@ -5,8 +5,6 @@
 
 package app.notesr.service;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import android.app.Service;
 
 import androidx.annotation.NonNull;
@@ -14,7 +12,7 @@ import androidx.annotation.NonNull;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import app.notesr.core.security.crypto.AesGcmCryptor;
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.ValueEncryptor;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.EncryptionFailedException;
@@ -91,7 +89,7 @@ public abstract class AndroidService extends Service {
     ) {
         try {
             var payloadJson = mapper.writeValueAsString(obj);
-            var encryptor = new ValueEncryptor(new AesGcmCryptor(getSecretKeyFromSecrets(secrets)));
+            var encryptor = new ValueEncryptor(AesCryptorFactory.createAesGcmCryptor(secrets));
 
             return encryptor.encrypt(payloadJson);
         } catch (JsonProcessingException e) {

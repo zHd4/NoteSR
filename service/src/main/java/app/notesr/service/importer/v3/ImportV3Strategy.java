@@ -5,16 +5,13 @@
 
 package app.notesr.service.importer.v3;
 
-import static app.notesr.core.util.KeyUtils.getSecretKeyFromSecrets;
-
 import java.io.File;
-import java.nio.file.Path;
 
+import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.data.AppDatabase;
 import app.notesr.service.file.FileService;
 import app.notesr.service.importer.ImportStrategy;
 import app.notesr.service.note.NoteService;
-import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.dto.CryptoSecrets;
 import lombok.RequiredArgsConstructor;
 
@@ -30,20 +27,20 @@ public final class ImportV3Strategy implements ImportStrategy {
     @Override
     public void execute() {
         db.runInTransaction(() -> {
-            BackupDecryptor decryptor = getBackupDecryptor();
-            DataImporter dataImporter = getDataImporter(decryptor);
+            var decryptor = getBackupDecryptor();
+            var dataImporter = getDataImporter(decryptor);
+
             dataImporter.importData();
             return null;
         });
     }
 
     private BackupDecryptor getBackupDecryptor() {
-        AesGcmCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
-        return new BackupDecryptor(cryptor);
+        return new BackupDecryptor(AesCryptorFactory.createAesGcmCryptor(cryptoSecrets));
     }
 
     DataImporter getDataImporter(BackupDecryptor decryptor) {
-        Path backupZipPath = tempDecryptedBackupFile.toPath();
+        var backupZipPath = tempDecryptedBackupFile.toPath();
         return new DataImporter(decryptor, noteService, fileService, backupZipPath);
     }
 }
