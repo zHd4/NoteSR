@@ -25,7 +25,7 @@ public final class DatabaseProvider {
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
         byte[] passphrase = cryptoManager.getSecrets().getKey();
 
-        SupportFactory factory = new SupportFactory(passphrase);
+        var factory = new SupportFactory(passphrase);
         return getInstance(context, factory);
     }
 
@@ -34,10 +34,12 @@ public final class DatabaseProvider {
             if (instance == null) {
                 SQLiteDatabase.loadLibs(context);
 
+                Migration[] migrations = MigrationRegistry.getAllMigrations()
+                        .toArray(new Migration[0]);
+
                 instance = Room.databaseBuilder(context, AppDatabase.class, DB_NAME)
                         .openHelperFactory(factory)
-                        .addMigrations(MigrationRegistry.getAllMigrations()
-                                .toArray(new Migration[0]))
+                        .addMigrations(migrations)
                         .build();
             }
         }
@@ -45,22 +47,19 @@ public final class DatabaseProvider {
         return instance;
     }
 
-    public static void reinit(Context context, SupportFactory factory) {
+    public static void close() {
         synchronized (DatabaseProvider.class) {
             if (instance != null) {
                 instance.close();
                 instance = null;
             }
+        }
+    }
 
+    public static void reinit(Context context, SupportFactory factory) {
+        synchronized (DatabaseProvider.class) {
+            close();
             getInstance(context, factory);
         }
     }
-
-    public static void close() {
-        if (instance != null) {
-            instance.close();
-            instance = null;
-        }
-    }
 }
-
