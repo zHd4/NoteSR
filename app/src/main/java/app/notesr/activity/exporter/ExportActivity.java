@@ -51,14 +51,7 @@ public final class ExportActivity extends ActivityBase {
     private ActionBar actionBar;
     private Button startStopButton;
 
-    private final ActivityResultLauncher<String> createDocumentLauncher = registerForActivityResult(
-            new ActivityResultContracts.CreateDocument("application/octet-stream"),
-            uri -> {
-                if (uri != null) {
-                    startService(uri);
-                }
-            }
-    );
+    private ActivityResultLauncher<String> exportDestinationPicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +109,11 @@ public final class ExportActivity extends ActivityBase {
                 filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
             });
         });
+
+        exportDestinationPicker = registerForActivityResult(
+                new ActivityResultContracts.CreateDocument("application/octet-stream"),
+                this::startExporting
+        );
     }
 
     private View.OnClickListener startStopButtonOnClick() {
@@ -131,14 +129,7 @@ public final class ExportActivity extends ActivityBase {
 
             runOnUiThread(() -> {
                 if (!isExportRunning()) {
-                    actionBar.setDisplayHomeAsUpEnabled(false);
-                    actionBar.setTitle(getString(R.string.exporting));
-
-                    disableBackButton(this);
-
                     pickSaveLocation();
-
-                    setCancelButton();
                 } else {
                     view.setEnabled(false);
                     cancelExport();
@@ -152,10 +143,22 @@ public final class ExportActivity extends ActivityBase {
         var nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
         var filename = "nsr_export_" + nowStr + ".notesr.bak";
 
-        createDocumentLauncher.launch(filename);
+        exportDestinationPicker.launch(filename);
     }
 
-    private void startService(Uri uri) {
+    private void startExporting(Uri uri) {
+        if (uri != null) {
+            startExportService(uri);
+
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setTitle(getString(R.string.exporting));
+
+            disableBackButton(this);
+            setCancelButton();
+        }
+    }
+
+    private void startExportService(Uri uri) {
         var versionFetcher = new VersionFetcherImpl();
 
         try {
