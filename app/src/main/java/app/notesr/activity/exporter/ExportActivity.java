@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -33,6 +34,7 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.util.FileExifDataResolver;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidServiceRegistry;
@@ -46,19 +48,18 @@ import app.notesr.util.VersionFetcherImpl;
 
 public final class ExportActivity extends ActivityBase {
 
+    private static final String TAG = ExportActivity.class.getSimpleName();
+
     private NoteService noteService;
     private FileService fileService;
+
     private ActionBar actionBar;
     private Button startStopButton;
+    private TextView outputFileNameView;
 
-    private final ActivityResultLauncher<String> createDocumentLauncher = registerForActivityResult(
-            new ActivityResultContracts.CreateDocument("application/octet-stream"),
-            uri -> {
-                if (uri != null) {
-                    startService(uri);
-                }
-            }
-    );
+    private ActivityResultLauncher<String> exportDestinationPicker;
+
+    private boolean isExportCompleted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,17 +83,18 @@ public final class ExportActivity extends ActivityBase {
 
         actionBar = getSupportActionBar();
 
-        var dataReceiver = new ExportBroadcastReceiver(
-                this::onOutputPathReceived,
+        var serviceBroadcastReceiver = new ExportBroadcastReceiver(
                 this::onExportRunning,
                 this::onExportComplete
         );
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(dataReceiver,
+        LocalBroadcastManager.getInstance(this).registerReceiver(serviceBroadcastReceiver,
                 new IntentFilter(ExportAndroidService.BROADCAST_ACTION));
 
         startStopButton = findViewById(R.id.start_stop_export_button);
         startStopButton.setOnClickListener(startStopButtonOnClick());
+
+        outputFileNameView = findViewById(R.id.output_file_name_view);
 
         if (isExportRunning()) {
             actionBar.setTitle(getString(R.string.exporting));
@@ -116,6 +118,11 @@ public final class ExportActivity extends ActivityBase {
                 filesCountLabel.setText(String.format(getString(R.string.d_files), filesCount));
             });
         });
+
+        exportDestinationPicker = registerForActivityResult(
+                new ActivityResultContracts.CreateDocument("application/octet-stream"),
+                this::startExporting
+        );
     }
 
     private View.OnClickListener startStopButtonOnClick() {
@@ -131,14 +138,7 @@ public final class ExportActivity extends ActivityBase {
 
             runOnUiThread(() -> {
                 if (!isExportRunning()) {
-                    actionBar.setDisplayHomeAsUpEnabled(false);
-                    actionBar.setTitle(getString(R.string.exporting));
-
-                    disableBackButton(this);
-
                     pickSaveLocation();
-
-                    setCancelButton();
                 } else {
                     view.setEnabled(false);
                     cancelExport();
@@ -152,10 +152,29 @@ public final class ExportActivity extends ActivityBase {
         var nowStr = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
         var filename = "nsr_export_" + nowStr + ".notesr.bak";
 
-        createDocumentLauncher.launch(filename);
+        exportDestinationPicker.launch(filename);
     }
 
-    private void startService(Uri uri) {
+    private void startExporting(Uri uri) {
+        if (uri != null) {
+            startExportService(uri);
+
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setTitle(getString(R.string.exporting));
+
+            disableBackButton(this);
+            setCancelButton();
+
+            String outputFileName = new FileExifDataResolver(this, new FilesUtils(), uri)
+                    .getFileName();
+
+            outputFileNameView.setVisibility(View.VISIBLE);
+            outputFileNameView.setText(
+                    String.format("%s %s", getString(R.string.saving_in), outputFileName));
+        }
+    }
+
+    private void startExportService(Uri uri) {
         var versionFetcher = new VersionFetcherImpl();
 
         try {
@@ -167,13 +186,6 @@ public final class ExportActivity extends ActivityBase {
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void onOutputPathReceived(String outputPath) {
-        TextView outputPathView = findViewById(R.id.export_output_path_view);
-
-        outputPathView.setVisibility(View.VISIBLE);
-        outputPathView.setText(String.format("%s\n%s", getString(R.string.saving_in), outputPath));
     }
 
     private void onExportRunning(ExportStatus status, int progress) {
@@ -201,14 +213,20 @@ public final class ExportActivity extends ActivityBase {
     }
 
     private void onExportComplete(ExportStatus status) {
-        if (status == ExportStatus.DONE) {
-            showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
-        } else if (status == ExportStatus.ERROR) {
-            showToastMessage(this, getString(R.string.export_failed), Toast.LENGTH_LONG);
-        }
+        if (!isExportCompleted) {
+            isExportCompleted = true;
 
-        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-        finish();
+            if (status == ExportStatus.DONE) {
+                showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
+            } else if (status == ExportStatus.ERROR) {
+                showToastMessage(this, getString(R.string.export_failed), Toast.LENGTH_LONG);
+            }
+
+            startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+            finish();
+        } else {
+            Log.i(TAG, "Export already completed, ignoring duplicate completion signal");
+        }
     }
 
     private void setCancelButton() {

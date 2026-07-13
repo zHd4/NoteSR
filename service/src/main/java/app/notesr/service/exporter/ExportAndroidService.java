@@ -124,9 +124,7 @@ public final class ExportAndroidService extends AndroidService implements Runnab
     @Override
     public void run() {
         var uri = Uri.parse(outputUri);
-
         registerCancelSignalReceiver();
-        broadcastOutputPath(uri.getPath());
 
         try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
             if (outputStream == null) {
@@ -144,11 +142,6 @@ public final class ExportAndroidService extends AndroidService implements Runnab
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-    }
-
-    private void broadcastOutputPath(String outputPath) {
-        Intent broadcast = new Intent(BROADCAST_ACTION).putExtra(EXTRA_OUTPUT_PATH, outputPath);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
     }
 
     private void registerCancelSignalReceiver() {

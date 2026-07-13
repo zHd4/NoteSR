@@ -77,8 +77,8 @@ public final class ExportService {
             statusHolder.setStatus(ExportStatus.ENCRYPTING_DATA);
             encryptFinalFile(backupEncryptor, outputStream);
 
+            statusHolder.setProgress(100);
             statusHolder.setStatus(ExportStatus.DONE);
-            statusHolder.setProgress(calculateProgress());
         } catch (ExportCancelledException e) {
             statusHolder.setStatus(ExportStatus.CANCELED);
         } catch (Throwable e) {
