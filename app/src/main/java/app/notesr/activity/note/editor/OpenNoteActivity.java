@@ -171,13 +171,7 @@ public final class OpenNoteActivity extends ActivityBase {
         textField.setText(note.getText());
 
         Function1<Editable, Unit> afterTextChangedAction = editable -> {
-            if (!isNoteFieldsModified) {
-                isNoteFieldsModified = true;
-
-                MenuItem saveNoteButton = menu.findItem(R.id.saveNoteButton);
-                saveNoteButton.setVisible(true);
-            }
-
+            onFormTextChanged();
             return Unit.INSTANCE;
         };
 
@@ -224,7 +218,10 @@ public final class OpenNoteActivity extends ActivityBase {
         });
 
         saveNoteButton.setOnMenuItemClickListener((item) -> {
-            saveAndExit();
+            if (saveNoteAction.isFormCorrect()) {
+                saveAndExit();
+            }
+
             return true;
         });
 
@@ -320,6 +317,17 @@ public final class OpenNoteActivity extends ActivityBase {
                 .putExtra(FilesListActivity.EXTRA_NOTE_ID, note.getId());
 
         openFilesListLauncher.launch(intent);
+    }
+
+    private void onFormTextChanged() {
+        if (!isNoteFieldsModified) {
+            isNoteFieldsModified = true;
+        }
+
+        var saveNoteButton = menu.findItem(R.id.saveNoteButton);
+        boolean isSaveAllowed = isNoteFieldsModified && saveNoteAction.isFormCorrect();
+
+        saveNoteButton.setVisible(isSaveAllowed);
     }
 
     private ActivityResultCallback<ActivityResult> getFilesListResultCallback() {
