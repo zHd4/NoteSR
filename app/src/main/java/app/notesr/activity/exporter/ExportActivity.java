@@ -33,6 +33,7 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.util.FileExifDataResolver;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidServiceRegistry;
@@ -48,8 +49,10 @@ public final class ExportActivity extends ActivityBase {
 
     private NoteService noteService;
     private FileService fileService;
+
     private ActionBar actionBar;
     private Button startStopButton;
+    private TextView outputFileNameView;
 
     private ActivityResultLauncher<String> exportDestinationPicker;
 
@@ -75,17 +78,18 @@ public final class ExportActivity extends ActivityBase {
 
         actionBar = getSupportActionBar();
 
-        var dataReceiver = new ExportBroadcastReceiver(
-                this::onOutputPathReceived,
+        var serviceBroadcastReceiver = new ExportBroadcastReceiver(
                 this::onExportRunning,
                 this::onExportComplete
         );
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(dataReceiver,
+        LocalBroadcastManager.getInstance(this).registerReceiver(serviceBroadcastReceiver,
                 new IntentFilter(ExportAndroidService.BROADCAST_ACTION));
 
         startStopButton = findViewById(R.id.start_stop_export_button);
         startStopButton.setOnClickListener(startStopButtonOnClick());
+
+        outputFileNameView = findViewById(R.id.output_file_name_view);
 
         if (isExportRunning()) {
             actionBar.setTitle(getString(R.string.exporting));
@@ -155,6 +159,13 @@ public final class ExportActivity extends ActivityBase {
 
             disableBackButton(this);
             setCancelButton();
+
+            String outputFileName = new FileExifDataResolver(this, new FilesUtils(), uri)
+                    .getFileName();
+
+            outputFileNameView.setVisibility(View.VISIBLE);
+            outputFileNameView.setText(
+                    String.format("%s %s", getString(R.string.saving_in), outputFileName));
         }
     }
 
@@ -170,13 +181,6 @@ public final class ExportActivity extends ActivityBase {
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void onOutputPathReceived(String outputPath) {
-        TextView outputPathView = findViewById(R.id.export_output_path_view);
-
-        outputPathView.setVisibility(View.VISIBLE);
-        outputPathView.setText(String.format("%s\n%s", getString(R.string.saving_in), outputPath));
     }
 
     private void onExportRunning(ExportStatus status, int progress) {

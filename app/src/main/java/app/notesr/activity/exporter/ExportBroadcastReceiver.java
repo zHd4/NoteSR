@@ -20,26 +20,19 @@ import lombok.RequiredArgsConstructor;
 public final class ExportBroadcastReceiver extends BroadcastReceiver {
     private static final int DEFAULT_PROGRESS = -1;
 
-    private final Consumer<String> onOutputPathReceived;
     private final BiConsumer<ExportStatus, Integer> onExportRunning;
     private final Consumer<ExportStatus> onExportComplete;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (ExportAndroidService.BROADCAST_ACTION.equals(intent.getAction())) {
-            if (intent.hasExtra(ExportAndroidService.EXTRA_OUTPUT_PATH)) {
-                onOutputPathReceived(intent);
-            }
-
             if (intent.hasExtra(ExportAndroidService.EXTRA_STATUS)) {
                 onStatusReceived(intent);
+            } else {
+                throw new IllegalArgumentException("Unexpected intent action: "
+                        + intent.getAction());
             }
         }
-    }
-
-    private void onOutputPathReceived(Intent intent) {
-        String outputPath = intent.getStringExtra(ExportAndroidService.EXTRA_OUTPUT_PATH);
-        onOutputPathReceived.accept(outputPath);
     }
 
     private void onStatusReceived(Intent intent) {
