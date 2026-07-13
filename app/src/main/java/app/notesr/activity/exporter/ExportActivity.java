@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -47,6 +48,8 @@ import app.notesr.util.VersionFetcherImpl;
 
 public final class ExportActivity extends ActivityBase {
 
+    private static final String TAG = ExportActivity.class.getSimpleName();
+
     private NoteService noteService;
     private FileService fileService;
 
@@ -55,6 +58,8 @@ public final class ExportActivity extends ActivityBase {
     private TextView outputFileNameView;
 
     private ActivityResultLauncher<String> exportDestinationPicker;
+
+    private boolean isExportCompleted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,14 +213,20 @@ public final class ExportActivity extends ActivityBase {
     }
 
     private void onExportComplete(ExportStatus status) {
-        if (status == ExportStatus.DONE) {
-            showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
-        } else if (status == ExportStatus.ERROR) {
-            showToastMessage(this, getString(R.string.export_failed), Toast.LENGTH_LONG);
-        }
+        if (!isExportCompleted) {
+            isExportCompleted = true;
 
-        startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
-        finish();
+            if (status == ExportStatus.DONE) {
+                showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
+            } else if (status == ExportStatus.ERROR) {
+                showToastMessage(this, getString(R.string.export_failed), Toast.LENGTH_LONG);
+            }
+
+            startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+            finish();
+        } else {
+            Log.i(TAG, "Export already completed, ignoring duplicate completion signal");
+        }
     }
 
     private void setCancelButton() {
