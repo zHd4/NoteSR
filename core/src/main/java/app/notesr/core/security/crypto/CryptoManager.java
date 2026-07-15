@@ -33,10 +33,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class CryptoManager {
 
-    /**
-     * The size of the master key in bytes.
-     */
-    public static final int KEY_SIZE = 48;
     private static final String KEY_HASH_PREF = "key_hash";
     private static final String BLOCK_MARKER_PREF = "is_blocked";
     private static final String ENCRYPTED_KEY_FILENAME = "key.encrypted";
@@ -106,7 +102,7 @@ public final class CryptoManager {
      * @return A new {@link CryptoSecrets} instance.
      */
     public CryptoSecrets generateSecrets(char[] password) {
-        byte[] key = new byte[KEY_SIZE];
+        byte[] key = new byte[CryptoSecrets.MASTER_KEY_SIZE];
         secureRandom.nextBytes(key);
         return new CryptoSecrets(Arrays.copyOf(key, key.length), password);
     }
