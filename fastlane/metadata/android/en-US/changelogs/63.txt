@@ -1,0 +1,9 @@
+Improvements:
+
+• Improved the Save Note button behavior; it now only appears when a note is available to save.
+• Various internal improvements.
+
+Bug Fixes:
+
+• Fixed a UI bug on the export screen.
+• Fixed a bug with the Save button when creating a new note.
