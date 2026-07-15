@@ -55,6 +55,12 @@ public final class SecretsUpdateService {
             SecretsUpdateStateHolder stateHolder,
             CryptoSecrets newSecrets) {
 
+        try {
+            newSecrets.validate();
+        } catch (IllegalStateException e) {
+            throw new SecretsUpdateFailedException("Invalid new secrets", e);
+        }
+
         var currentSecrets = cryptoManager.getSecrets();
 
         try (txFiles) {
