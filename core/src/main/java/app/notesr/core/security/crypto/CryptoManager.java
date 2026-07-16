@@ -129,10 +129,17 @@ public final class CryptoManager {
      *
      * @param context       The application context.
      * @param cryptoSecrets The secrets to save and set.
+     * @throws IllegalArgumentException if the provided secrets are invalid.
      * @throws EncryptionFailedException if saving the secrets fails.
      */
     public void setSecrets(Context context, CryptoSecrets cryptoSecrets)
             throws EncryptionFailedException {
+        try {
+            cryptoSecrets.validate();
+        } catch (IllegalStateException e) {
+            throw new IllegalArgumentException("Invalid CryptoSecrets provided", e);
+        }
+
         saveSecrets(context, cryptoSecrets);
 
         if (secrets != null) {
