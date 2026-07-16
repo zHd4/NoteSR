@@ -7,7 +7,6 @@ package app.notesr.activity.security;
 
 import static app.notesr.core.util.CharUtils.charsToBytes;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -16,6 +15,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import app.notesr.BuildConfig;
+import app.notesr.R;
+import app.notesr.activity.ActivityBase;
+import app.notesr.activity.DialogFactory;
 import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.core.security.SecretCache;
@@ -27,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class KeySetupCompletionHandler {
-    private final Activity activity;
+    private final ActivityBase activity;
     private final SecretsSetupService secretsSetupService;
     private final KeySetupMode mode;
 
@@ -46,7 +48,7 @@ public final class KeySetupCompletionHandler {
             Context context = activity.getApplicationContext();
             Intent nextIntent = new Intent(context, NotesListActivity.class);
 
-            DataVersionManager dataVersionManager = new DataVersionManager(context);
+            var dataVersionManager = new DataVersionManager(context);
 
             int lastMigrationVersion = dataVersionManager.getCurrentVersion();
             int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
@@ -65,11 +67,23 @@ public final class KeySetupCompletionHandler {
     }
 
     private void proceedRegeneration() {
+        new DialogFactory(activity)
+                .getThemedAlertDialogBuilder(R.layout.dialog_re_encryption_warning)
+                .setTitle(R.string.warning)
+                .setPositiveButton(R.string.yes,
+                        (dialog, which) -> onRegenerationConfirmed())
+                .setNegativeButton(R.string.no, null)
+                .create()
+                .show();
+    }
+
+    private void onRegenerationConfirmed() {
         CryptoSecrets secrets = secretsSetupService.getCryptoSecrets();
 
+        byte[] keyBytes = Arrays.copyOf(secrets.getKey(), secrets.getKey().length);
+        char[] password = Arrays.copyOf(secrets.getPassword(), secrets.getPassword().length);
+
         try {
-            byte[] keyBytes = Arrays.copyOf(secrets.getKey(), secrets.getKey().length);
-            char[] password = Arrays.copyOf(secrets.getPassword(), secrets.getPassword().length);
             byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
 
             SecretCache.put(SecretsUpdateAndroidService.NEW_KEY, keyBytes);

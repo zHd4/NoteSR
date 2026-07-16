@@ -71,7 +71,7 @@ public final class AuthActivityExtension {
     }
 
     public void createPassword() {
-        var password = proceedPasswordSetting();
+        char[] password = proceedPasswordSetting();
 
         if (password != null) {
             var context = activity.getApplicationContext();
@@ -80,7 +80,7 @@ public final class AuthActivityExtension {
 
             try {
                 var passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
-                SecretCache.put(SetupKeyActivity.PASSWORD, passwordBytes);
+                SecretCache.put(SetupKeyActivity.CACHE_KEY_PASSWORD, passwordBytes);
             } catch (CharacterCodingException e) {
                 throw new RuntimeException(e);
             }
@@ -90,11 +90,11 @@ public final class AuthActivityExtension {
     }
 
     public void recoverKey() {
-        var password = proceedPasswordSetting();
+        char[] password = proceedPasswordSetting();
 
         if (password != null) {
             try {
-                var hexKey = bytesToChars(SecretCache.take(HEX_KEY),
+                char[] hexKey = bytesToChars(SecretCache.take(HEX_KEY),
                         StandardCharsets.UTF_8);
 
                 if (hexKey == null) {
@@ -118,19 +118,19 @@ public final class AuthActivityExtension {
     }
 
     public void changePassword() {
-        var password = proceedPasswordSetting();
+        char[] password = proceedPasswordSetting();
 
         if (password != null) {
             try {
-                var context = activity.getApplicationContext();
-                var secrets = cryptoManager.getSecrets();
+                Context context = activity.getApplicationContext();
+                CryptoSecrets secrets = cryptoManager.getSecrets();
                 secrets.setPassword(password);
 
                 cryptoManager.setSecrets(context, secrets);
                 secrets.destroy();
 
                 showToastMessage(R.string.updated);
-                activity.startActivity(new Intent(context,  NotesListActivity.class));
+                activity.startActivity(new Intent(context, NotesListActivity.class));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
