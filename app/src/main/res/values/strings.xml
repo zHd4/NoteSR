@@ -23,6 +23,7 @@
     <string name="enter_your_private_key_here">Enter your private key here…</string>
     <string name="blocked">Blocked!</string>
     <string name="key_recovery">Key Recovery</string>
+    <string name="key_setup">Key Setup</string>
     <string name="apply">Apply</string>
     <string name="wrong_key">Wrong key!</string>
     <string name="invalid_key">Invalid key</string>
