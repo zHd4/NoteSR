@@ -45,6 +45,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 public class NotesIntegrationTest {
+    private static final int KEY_SIZE = 48;
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final Faker FAKER = new Faker();
 
@@ -223,7 +224,7 @@ public class NotesIntegrationTest {
     }
 
     private static CryptoSecrets getTestSecrets() {
-        byte[] key = new byte[CryptoManager.KEY_SIZE];
+        byte[] key = new byte[KEY_SIZE];
         RANDOM.nextBytes(key);
 
         String password = FAKER.internet.password();

@@ -85,8 +85,23 @@ public final class KeyUtils {
         int ivSize = cryptoSecrets.getKey().length - (AesCryptor.KEY_SIZE / 8);
         byte[] iv = new byte[ivSize];
 
-        System.arraycopy(cryptoSecrets.getKey(), AesCryptor.KEY_SIZE / 8, iv, 0, ivSize);
+        System.arraycopy(cryptoSecrets.getKey(), AesCryptor.KEY_SIZE / 8, iv, 0,
+                ivSize);
         return iv;
+    }
+
+    public static boolean isKeyNulled(byte[] key) {
+        if (key == null) {
+            return false;
+        }
+
+        for (byte c : key) {
+            if (c != 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static String byteToHex(byte value) {

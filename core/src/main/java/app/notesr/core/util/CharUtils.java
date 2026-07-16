@@ -63,4 +63,18 @@ public final class CharUtils {
 
         return chars;
     }
+
+    public static boolean hasNonZeroChars(char[] chars) {
+        if (chars == null) {
+            return false;
+        }
+
+        for (char c : chars) {
+            if (c != '\0') {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

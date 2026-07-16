@@ -45,6 +45,7 @@ import app.notesr.core.util.WiperAdapter;
 @ExtendWith(MockitoExtension.class)
 class CryptoManagerTest {
 
+    private static final int MASTER_KEY_SIZE = 48;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom(new byte[]{1, 2, 3});
 
     @Mock
@@ -72,7 +73,7 @@ class CryptoManagerTest {
     @Test
     void testGenerateSecretsCreatesKeyOfCorrectSize() {
         CryptoSecrets secrets = cryptoManager.generateSecrets("pass".toCharArray());
-        assertEquals(CryptoManager.KEY_SIZE, secrets.getKey().length,
+        assertEquals(MASTER_KEY_SIZE, secrets.getKey().length,
                 "Generated key size should match constant");
         assertArrayEquals("pass".toCharArray(), secrets.getPassword(),
                 "Generated secrets should contain the provided password");
@@ -195,7 +196,7 @@ class CryptoManagerTest {
     void testConfigureSuccess() throws Exception {
         char[] password = "password".toCharArray();
         byte[] encryptedKey = new byte[]{1, 2, 3};
-        byte[] decryptedKey = new byte[CryptoManager.KEY_SIZE];
+        byte[] decryptedKey = new byte[MASTER_KEY_SIZE];
         SECURE_RANDOM.nextBytes(decryptedKey);
 
         File keyFile = mock(File.class);
@@ -221,7 +222,7 @@ class CryptoManagerTest {
     void testConfigureFallbackToCbc() throws Exception {
         char[] password = "password".toCharArray();
         byte[] encryptedKey = new byte[]{1, 2, 3};
-        byte[] decryptedKey = new byte[CryptoManager.KEY_SIZE];
+        byte[] decryptedKey = new byte[MASTER_KEY_SIZE];
         SECURE_RANDOM.nextBytes(decryptedKey);
 
         File keyFile = mock(File.class);
@@ -322,7 +323,7 @@ class CryptoManagerTest {
     void testDestroySecrets() throws Exception {
         char[] password = "password".toCharArray();
         byte[] encryptedKey = new byte[]{1, 2, 3};
-        byte[] decryptedKey = new byte[CryptoManager.KEY_SIZE];
+        byte[] decryptedKey = new byte[MASTER_KEY_SIZE];
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
