@@ -366,11 +366,88 @@ class SecretsUpdateServiceTest {
 
     @Test
     void testGetStatusReturnsStatusFromStateHolder() {
-        stateHolder.setState(new SecretsUpdateState().setStatus(SecretsUpdateStatus.MOVING_BLOBS_DATA));
+        stateHolder.setState(new SecretsUpdateState()
+                .setStatus(SecretsUpdateStatus.MOVING_BLOBS_DATA));
 
         SecretsUpdateStatus status = secretsUpdateService.getStatus(stateHolder);
 
         assertEquals(SecretsUpdateStatus.MOVING_BLOBS_DATA, status,
                 "Should return the correct status from the state holder");
+    }
+
+    @Test
+    void testUpdateSecretsThrowsWhenNewSecretsKeyIsNull() {
+        CryptoSecrets newSecrets = new CryptoSecrets(null, password.clone());
+
+        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+                txFiles, cryptoManager, dbName, stateHolder, newSecrets),
+                "Should throw SecretsUpdateFailedException when new secrets key is null");
+    }
+
+    @Test
+    void testUpdateSecretsThrowsWhenNewSecretsKeyIsEmpty() {
+        CryptoSecrets newSecrets = new CryptoSecrets(new byte[0], password.clone());
+
+        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+                txFiles, cryptoManager, dbName, stateHolder, newSecrets),
+                "Should throw SecretsUpdateFailedException when new secrets key is empty");
+    }
+
+    @Test
+    void testUpdateSecretsThrowsWhenNewSecretsKeyWrongSize() {
+        byte[] wrongSizedKey = new byte[32]; // Wrong size, should be 48
+        CryptoSecrets newSecrets = new CryptoSecrets(wrongSizedKey, password.clone());
+
+        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+                txFiles, cryptoManager, dbName, stateHolder, newSecrets),
+                "Should throw SecretsUpdateFailedException when new secrets key has wrong size");
+    }
+
+    @Test
+    void testUpdateSecretsThrowsWhenNewSecretsKeyIsAllZeros() {
+        byte[] nulledKey = new byte[KEY_SIZE]; // All zeros
+        CryptoSecrets newSecrets = new CryptoSecrets(nulledKey, password.clone());
+
+        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+                txFiles, cryptoManager, dbName, stateHolder, newSecrets),
+                "Should throw SecretsUpdateFailedException when new secrets key is all zeros");
+    }
+
+    @Test
+    void testUpdateSecretsThrowsWhenNewSecretsPasswordIsNull() {
+        CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), null);
+
+        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+                txFiles, cryptoManager, dbName, stateHolder, newSecrets),
+                "Should throw SecretsUpdateFailedException when new secrets password is null");
+    }
+
+    @Test
+    void testUpdateSecretsThrowsWhenNewSecretsPasswordIsEmpty() {
+        CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), new char[0]);
+
+        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+                txFiles, cryptoManager, dbName, stateHolder, newSecrets),
+                "Should throw SecretsUpdateFailedException when new secrets password is empty");
+    }
+
+    @Test
+    void testUpdateSecretsThrowsWhenNewSecretsPasswordTooShort() {
+        char[] shortPassword = "abc".toCharArray(); // Less than 4 characters
+        CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), shortPassword);
+
+        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+                txFiles, cryptoManager, dbName, stateHolder, newSecrets),
+                "Should throw SecretsUpdateFailedException when new secrets password is too short");
+    }
+
+    @Test
+    void testUpdateSecretsThrowsWhenNewSecretsPasswordIsAllZeros() {
+        char[] nulledPassword = new char[4]; // All '\0' characters
+        CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), nulledPassword);
+
+        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+                txFiles, cryptoManager, dbName, stateHolder, newSecrets),
+                "Should throw SecretsUpdateFailedException when new secrets password is all zeros");
     }
 }
