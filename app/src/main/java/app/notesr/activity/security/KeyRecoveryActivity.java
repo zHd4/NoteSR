@@ -91,13 +91,15 @@ public final class KeyRecoveryActivity extends ActivityBase {
     private void apply(EditText hexKeyField, char[] hexKey)
             throws IOException, NoSuchAlgorithmException {
 
-        byte[] keyBytes = getKeyBytesFromHex(Arrays.copyOf(hexKey, hexKey.length));
+        char[] hexKeyCopy = Arrays.copyOf(hexKey, hexKey.length);
+        byte[] keyBytes = getKeyBytesFromHex(hexKeyCopy);
 
         Context context = getApplicationContext();
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
 
         if (cryptoManager.verifyKey(context, keyBytes)) {
-            SecretCache.put(AuthActivity.HEX_KEY, charsToBytes(hexKey, StandardCharsets.UTF_8));
+            byte[] hexKeyBytes = charsToBytes(hexKey, StandardCharsets.UTF_8);
+            SecretCache.put(AuthActivity.HEX_KEY, hexKeyBytes);
 
             // The hex key has already been wiped by charsToBytes
             wipeSecretData(keyBytes, hexKeyField);
