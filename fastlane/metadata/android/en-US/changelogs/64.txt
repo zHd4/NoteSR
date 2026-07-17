@@ -1,0 +1,10 @@
+Improvements:
+
+• Added app bar with Back button to the key setup screen.
+• Improved navigation between the key setup and key import screens.
+• Implemented various internal enhancements.
+
+Bug Fixes:
+
+• Fixed critical bugs in the data re-encryption process.
+• Added additional checks for risky data-related operations.
