@@ -15,8 +15,8 @@ android {
         applicationId "app.notesr"
         minSdk 29
         targetSdk 36
-        versionCode 63
-        versionName "5.5.1"
+        versionCode 64
+        versionName "5.6.0"
         buildConfigField "int", "DATA_SCHEMA_VERSION", "2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
