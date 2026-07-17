@@ -50,7 +50,7 @@ public final class CryptoSecrets {
      * and that the key matches the expected 384-bit (48 bytes) length requirement
      * and that the password is at least 4 characters long.
      *
-     * @throws IllegalArgumentException if any validation check fails
+     * @throws IllegalStateException if any validation check fails
      */
     public void validate() {
         if (key == null || key.length == 0) {
