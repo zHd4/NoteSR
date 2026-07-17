@@ -33,6 +33,7 @@ class AppCloseAndroidServiceTest {
     @Test
     void testOnTaskRemovedWhenNoOtherServicesRunningClosesEverythingAndExits() {
         doReturn(0L).when(service).getOtherRunningServicesCount();
+        doNothing().when(service).clearSecretCache();
         doNothing().when(service).closeDatabase();
         doNothing().when(service).destroySecrets();
         doNothing().when(service).stopForegroundService();
@@ -44,6 +45,9 @@ class AppCloseAndroidServiceTest {
 
         service.onTaskRemoved(intent);
 
+        verify(service, description("Secret cache should be cleared" +
+                " when no other services are running"))
+                .clearSecretCache();
         verify(service, description("Database should be closed" +
                 " when no other services are running"))
                 .closeDatabase();
@@ -74,6 +78,9 @@ class AppCloseAndroidServiceTest {
 
         service.onTaskRemoved(intent);
 
+        verify(service, never().description("Secret cache should NOT be cleared" +
+                " when other services are running"))
+                .clearSecretCache();
         verify(service, never().description("Database should NOT be closed" +
                 " when other services are running"))
                 .closeDatabase();
