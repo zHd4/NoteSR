@@ -5,6 +5,15 @@
 
 package app.notesr.service.migration.changes.security.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
 import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.service.migration.AppMigrationException;
@@ -17,8 +26,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CbcToGcmKeyMigrationTest {
@@ -61,6 +68,19 @@ class CbcToGcmKeyMigrationTest {
         AppMigrationException exception = assertThrows(
             AppMigrationException.class,
             () -> migration.migrate(context)
+        );
+
+        assertEquals("Failed to migrate key", exception.getMessage());
+    }
+
+    @Test
+    void testMigrateWhenSecretsValidationFailsThrowsAppMigrationException()
+            throws EncryptionFailedException {
+        doThrow(new IllegalArgumentException()).when(cryptoManager).setSecrets(any(), any());
+
+        AppMigrationException exception = assertThrows(
+                AppMigrationException.class,
+                () -> migration.migrate(context)
         );
 
         assertEquals("Failed to migrate key", exception.getMessage());
