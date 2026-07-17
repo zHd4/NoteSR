@@ -33,7 +33,7 @@ public class CbcToGcmKeyMigration implements AppMigration {
 
             cryptoManager.setSecrets(context, secrets);
             secrets.destroy();
-        } catch (EncryptionFailedException e) {
+        } catch (EncryptionFailedException | IllegalArgumentException e) {
             throw new AppMigrationException("Failed to migrate key", e);
         }
     }
