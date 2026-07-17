@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
@@ -81,6 +81,7 @@ public final class AppCloseAndroidService extends AndroidService {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         if (getOtherRunningServicesCount() == 0) {
+            clearSecretCache();
             closeDatabase();
             destroySecrets();
 
@@ -114,6 +115,10 @@ public final class AppCloseAndroidService extends AndroidService {
                 .filter(serviceEntry ->
                         serviceEntry.getServiceClass() != getClass())
                 .count();
+    }
+
+    void clearSecretCache() {
+        SecretCache.clear();
     }
 
     void closeDatabase() {
