@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,9 +37,11 @@ import app.notesr.activity.DialogFactory;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
 import app.notesr.activity.note.editor.OpenNoteActivity;
-import app.notesr.activity.security.ChangePasswordOnClick;
-import app.notesr.activity.security.GenerateNewKeyOnClick;
-import app.notesr.activity.security.LockOnClick;
+import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.GenerateNewKeyAction;
+import app.notesr.activity.security.LockAction;
+import app.notesr.core.security.crypto.CryptoManager;
+import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.Note;
@@ -47,17 +50,18 @@ import app.notesr.service.note.NoteService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public final class NotesListActivity extends ActivityBase {
 
     private static final int SEARCH_DELAY = 300;
 
-    private final Map<Integer, Consumer<ActivityBase>> menuItemsMap = new HashMap<>();
+    private final SparseArray<Runnable> menuActions = new SparseArray<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
 
     private ActivityResultLauncher<Intent> noteEditorLauncher;
+    private LockAction lockAction;
+    private GenerateNewKeyAction generateNewKeyAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,17 +74,15 @@ public final class NotesListActivity extends ActivityBase {
         setContentView(R.layout.activity_note_list);
         applyInsets(findViewById(R.id.main));
 
-        getOnBackPressedDispatcher()
-                .addCallback(this, new OnBackPressedCallback(true) {
-                    @Override
-                    public void handleOnBackPressed() {
-                        LockOnClick lock = new LockOnClick();
-                        lock.accept(NotesListActivity.this);
-                    }
-                });
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+
+        lockAction = new LockAction(this, cryptoManager);
+        generateNewKeyAction = new GenerateNewKeyAction(this, cryptoManager);
 
         noteEditorLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getOpenNoteResultCallback());
+
+        getOnBackPressedDispatcher().addCallback(this, getOnBackPressedCallback());
 
         ListView notesView = findViewById(R.id.notesListView);
         FloatingActionButton newNoteButton = findViewById(R.id.addNoteButton);
@@ -100,20 +102,15 @@ public final class NotesListActivity extends ActivityBase {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        Intent importActivityIntent = new Intent(this, ImportActivity.class);
-        Intent exportActivityIntent = new Intent(this, ExportActivity.class);
-
         getMenuInflater().inflate(R.menu.menu_notes_list, menu);
 
-        menuItemsMap.put(R.id.lockAppButton, new LockOnClick());
-        menuItemsMap.put(R.id.changePasswordMenuItem, new ChangePasswordOnClick());
-        menuItemsMap.put(R.id.generateNewKeyMenuItem, new GenerateNewKeyOnClick());
-
-        menuItemsMap.put(R.id.exportMenuItem, action ->
-                startActivity(exportActivityIntent));
-
-        menuItemsMap.put(R.id.importMenuItem, action ->
-                startActivity(importActivityIntent));
+        menuActions.put(R.id.lockAppButton, lockAction::lock);
+        menuActions.put(R.id.changePasswordMenuItem, this::startChangePasswordActivity);
+        menuActions.put(R.id.generateNewKeyMenuItem, generateNewKeyAction::startActivity);
+        menuActions.put(R.id.exportMenuItem,
+                () -> startActivity(new Intent(this, ExportActivity.class)));
+        menuActions.put(R.id.importMenuItem,
+                () -> startActivity(new Intent(this, ImportActivity.class)));
 
         SearchView searchView = (SearchView) menu.findItem(R.id.searchNotesButton).getActionView();
         requireNonNull(searchView, "SearchView is null");
@@ -131,7 +128,7 @@ public final class NotesListActivity extends ActivityBase {
         int itemId = item.getItemId();
 
         if (itemId != R.id.searchNotesButton) {
-            requireNonNull(menuItemsMap.get(itemId)).accept(this);
+            requireNonNull(menuActions.get(itemId)).run();
         }
 
         return true;
@@ -249,5 +246,20 @@ public final class NotesListActivity extends ActivityBase {
         }
 
         noteEditorLauncher.launch(intent);
+    }
+
+    private void startChangePasswordActivity() {
+        Intent intent = new Intent(getApplicationContext(), AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CHANGE_PASSWORD.toString());
+        startActivity(intent);
+    }
+
+    private OnBackPressedCallback getOnBackPressedCallback() {
+        return new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                lockAction.lock();
+            }
+        };
     }
 }

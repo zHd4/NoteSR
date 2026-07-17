@@ -34,7 +34,7 @@
             android:name=".activity.security.SetupKeyActivity"
             android:exported="false"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.security.AuthActivity"
             android:exported="false"

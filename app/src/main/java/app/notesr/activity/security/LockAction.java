@@ -11,23 +11,29 @@ import android.content.Intent;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.data.DatabaseProvider;
+import lombok.RequiredArgsConstructor;
 
-import java.util.function.Consumer;
+@RequiredArgsConstructor
+public final class LockAction {
 
-public final class LockOnClick implements Consumer<ActivityBase> {
-    @Override
-    public void accept(ActivityBase activity) {
+    private final ActivityBase activity;
+    private final CryptoManager cryptoManager;
+
+    public void lock() {
         Context context = activity.getApplicationContext();
         Intent authActivityIntent = new Intent(context, AuthActivity.class)
                 .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHORIZATION.toString());
 
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-        cryptoManager.destroySecrets();
-
-        SecretCache.clear();
+        clearSecrets();
 
         activity.startActivity(authActivityIntent);
         activity.finish();
+    }
+
+    private void clearSecrets() {
+        DatabaseProvider.close();
+        cryptoManager.destroySecrets();
+        SecretCache.clear();
     }
 }

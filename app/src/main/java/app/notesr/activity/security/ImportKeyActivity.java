@@ -26,6 +26,7 @@ import androidx.appcompat.app.ActionBar;
 
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
@@ -37,12 +38,14 @@ import app.notesr.service.security.crypto.setup.SecretsSetupService;
 
 public final class ImportKeyActivity extends ActivityBase {
 
-    public static final String PASSWORD = "password";
+    public static final String CACHE_KEY_PASSWORD = "password";
     public static final String EXTRA_MODE = "mode";
     private static final String TAG = ImportKeyActivity.class.getCanonicalName();
 
     private KeySetupMode mode;
     private EditText keyField;
+    private char[] hexKey;
+    private char[] password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,7 @@ public final class ImportKeyActivity extends ActivityBase {
         actionBar.setTitle(getResources().getString(R.string.import_key));
 
         mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
+        password = getPasswordFromCache();
 
         keyField = findViewById(R.id.importKeyField);
         keyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -65,50 +69,72 @@ public final class ImportKeyActivity extends ActivityBase {
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        super.onBackPressed();
-        return true;
+    protected boolean requiresSession() {
+        return false;
     }
 
     @Override
-    protected boolean requiresSession() {
-        return false;
+    public void finish() {
+        wipeSecrets();
+        super.finish();
     }
 
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
             Editable hexKeyEditable = keyField.getText();
 
-            char[] hexKey = new char[hexKeyEditable.length()];
+            hexKey = new char[hexKeyEditable.length()];
             hexKeyEditable.getChars(0, hexKeyEditable.length(), hexKey, 0);
-            hexKeyEditable.replace(0, hexKeyEditable.length(), "");
-            keyField.setText("");
 
             if (hexKey.length > 0) {
+                Context context = getApplicationContext();
+                CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+
+                CryptoSecrets cryptoSecrets;
+
                 try {
-                    Context context = getApplicationContext();
-
-                    char[] password = bytesToChars(SecretCache.take(PASSWORD),
-                            StandardCharsets.UTF_8);
-
-                    CryptoSecrets cryptoSecrets = getSecretsFromHex(hexKey, password);
-                    CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-
-                    SecretsSetupService keySetupService = new SecretsSetupService(
-                            getApplicationContext(),
-                            cryptoManager,
-                            cryptoSecrets
-                    );
-
-                    new KeySetupCompletionHandler(this, keySetupService, mode).handle();
-                } catch (IllegalArgumentException e) {
+                    cryptoSecrets = getSecretsFromHex(hexKey, password);
+                    cryptoSecrets.validate();
+                } catch (IllegalArgumentException | IllegalStateException e) {
                     Log.e(TAG, "Invalid key", e);
                     showToastMessage(this, getString(R.string.invalid_key),
                             Toast.LENGTH_SHORT);
-                } catch (CharacterCodingException e) {
-                    throw new RuntimeException(e);
+
+                    return;
                 }
+
+                SecretsSetupService secretsSetupService = new SecretsSetupService(
+                        getApplicationContext(),
+                        cryptoManager,
+                        cryptoSecrets
+                );
+
+                new KeySetupCompletionHandler(this, secretsSetupService, mode).handle();
             }
         };
+    }
+
+    private char[] getPasswordFromCache() {
+        try {
+            byte[] passwordBytes = requireNonNull(SecretCache.take(CACHE_KEY_PASSWORD),
+                    "Password missing in secret cache");
+            return bytesToChars(passwordBytes, StandardCharsets.UTF_8);
+        } catch (CharacterCodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void wipeSecrets() {
+        // Clearing only key field, not password, because reference to password is stored in cache
+        // and still could be used by SetupKeyActivity. SetupKeyActivity as a parent activity
+        // is responsible to clear password from cache.
+        if (hexKey != null && hexKey.length > 0) {
+            Arrays.fill(hexKey, '\0');
+        }
+
+        Editable hexKeyEditable = keyField.getText();
+        hexKeyEditable.replace(0, hexKeyEditable.length(), "");
+
+        keyField.setText("");
     }
 }

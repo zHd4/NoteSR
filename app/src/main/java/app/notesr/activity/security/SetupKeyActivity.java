@@ -8,7 +8,6 @@ package app.notesr.activity.security;
 import static java.util.Objects.requireNonNull;
 
 import static app.notesr.core.util.ActivityUtils.copyToClipboard;
-import static app.notesr.core.util.ActivityUtils.disableBackButton;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.bytesToChars;
 import static app.notesr.core.util.CharUtils.charsToBytes;
@@ -17,13 +16,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.ActionBar;
+
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
@@ -37,7 +41,7 @@ import lombok.Getter;
 @Getter
 public final class SetupKeyActivity extends ActivityBase {
 
-    public static final String PASSWORD = "password";
+    public static final String CACHE_KEY_PASSWORD = "password";
     public static final String EXTRA_MODE = "mode";
     private static final int LOW_SCREEN_HEIGHT = 800;
     private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
@@ -53,16 +57,12 @@ public final class SetupKeyActivity extends ActivityBase {
         applyInsets(findViewById(R.id.main));
 
         mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
+        ActionBar actionBar = requireNonNull(getSupportActionBar());
 
-        if (mode == KeySetupMode.REGENERATION) {
-            disableBackButton(this);
-        }
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.key_setup);
 
-        try {
-            password = bytesToChars(SecretCache.take(PASSWORD), StandardCharsets.UTF_8);
-        } catch (CharacterCodingException e) {
-            throw new RuntimeException(e);
-        }
+        password = getPasswordFromCache();
 
         Context context = getApplicationContext();
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
@@ -85,11 +85,45 @@ public final class SetupKeyActivity extends ActivityBase {
         copyToClipboardButton.setOnClickListener(copyKeyButtonOnClick());
         importButton.setOnClickListener(importKeyButtonOnClick());
         nextButton.setOnClickListener(nextButtonOnClick());
+
+        getOnBackPressedDispatcher().addCallback(this, getOnBackPressedCallback());
     }
 
     @Override
     protected boolean requiresSession() {
         return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressedAction();
+            finish();
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void finish() {
+        wipeKeyView();
+        super.finish();
+    }
+
+    private OnBackPressedCallback getOnBackPressedCallback() {
+        return new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onBackPressedAction();
+                finish();
+            }
+        };
+    }
+
+    private void onBackPressedAction() {
+        SecretCache.removeIfExists(CACHE_KEY_PASSWORD);
     }
 
     private void adaptKeyView() {
@@ -111,25 +145,34 @@ public final class SetupKeyActivity extends ActivityBase {
 
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
-            Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class)
-                    .putExtra(ImportKeyActivity.EXTRA_MODE, mode.toString());
+            char[] passwordCopy = Arrays.copyOf(password, password.length);
 
             try {
-                byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
-                SecretCache.put(ImportKeyActivity.PASSWORD, passwordBytes);
+                byte[] passwordBytes = charsToBytes(passwordCopy, StandardCharsets.UTF_8);
+                SecretCache.put(ImportKeyActivity.CACHE_KEY_PASSWORD, passwordBytes);
             } catch (CharacterCodingException e) {
                 throw new RuntimeException(e);
             }
 
+            Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class)
+                    .putExtra(ImportKeyActivity.EXTRA_MODE, mode.toString());
             startActivity(intent);
         };
     }
 
+    private char[] getPasswordFromCache() {
+        try {
+            byte[] passwordBytes = requireNonNull(SecretCache.take(CACHE_KEY_PASSWORD),
+                    "Password missing in secret cache");
+            return bytesToChars(passwordBytes, StandardCharsets.UTF_8);
+        } catch (CharacterCodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private View.OnClickListener nextButtonOnClick() {
-        return view -> {
-            wipeKeyView();
-            new KeySetupCompletionHandler(this, keySetupService, mode).handle();
-        };
+        var handler = new KeySetupCompletionHandler(this, keySetupService, mode);
+        return view -> handler.handle();
     }
 
     private void wipeKeyView() {
