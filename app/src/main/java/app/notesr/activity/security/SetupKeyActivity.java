@@ -11,8 +11,9 @@ import static app.notesr.core.util.ActivityUtils.copyToClipboard;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.bytesToChars;
 import static app.notesr.core.util.CharUtils.charsToBytes;
+import static app.notesr.core.util.KeyUtils.getKeyHexFromSecrets;
+import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,6 +24,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 
 import java.nio.charset.CharacterCodingException;
@@ -34,8 +39,8 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.crypto.setup.SecretsSetupService;
-import app.notesr.core.util.KeyUtils;
 import lombok.Getter;
 
 @Getter
@@ -48,7 +53,9 @@ public final class SetupKeyActivity extends ActivityBase {
 
     private KeySetupMode mode;
     private char[] password;
-    private SecretsSetupService keySetupService;
+    private ActivityResultLauncher<Intent> importKeyLauncher;
+    private SecretsSetupService secretsSetupService;
+    private CryptoSecrets cryptoSecrets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,19 +71,13 @@ public final class SetupKeyActivity extends ActivityBase {
 
         password = getPasswordFromCache();
 
-        Context context = getApplicationContext();
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+        importKeyLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), getImportKeyCallback());
+        secretsSetupService = getSecretsSetupService();
+        cryptoSecrets = secretsSetupService.getSecretsWithRandomKey(password);
 
-        keySetupService = new SecretsSetupService(
-                getApplicationContext(),
-                cryptoManager,
-                password
-        );
-
-        TextView keyView = findViewById(R.id.aesKeyHex);
-        keyView.setText(KeyUtils.getKeyHexFromSecrets(keySetupService.getCryptoSecrets()));
-
-        adaptKeyView();
+        char[] hexKey = getKeyHexFromSecrets(cryptoSecrets);
+        showHexKey(hexKey);
 
         Button copyToClipboardButton = findViewById(R.id.copyAesKeyHex);
         Button importButton = findViewById(R.id.importHexKeyButton);
@@ -126,8 +127,9 @@ public final class SetupKeyActivity extends ActivityBase {
         SecretCache.removeIfExists(CACHE_KEY_PASSWORD);
     }
 
-    private void adaptKeyView() {
-        TextView keyView = findViewById(R.id.aesKeyHex);
+    private void showHexKey(char[] hexKey) {
+        TextView keyView = findViewById(R.id.hexKey);
+        keyView.setText(hexKey, 0, hexKey.length);
 
         if (getResources().getDisplayMetrics().heightPixels <= LOW_SCREEN_HEIGHT) {
             keyView.setTextSize(KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT);
@@ -136,7 +138,7 @@ public final class SetupKeyActivity extends ActivityBase {
 
     private View.OnClickListener copyKeyButtonOnClick() {
         return view -> {
-            String keyHex = ((TextView) findViewById(R.id.aesKeyHex)).getText().toString();
+            String keyHex = ((TextView) findViewById(R.id.hexKey)).getText().toString();
 
             copyToClipboard(this, keyHex);
             showToastMessage(this, getString(R.string.copied), Toast.LENGTH_SHORT);
@@ -154,9 +156,24 @@ public final class SetupKeyActivity extends ActivityBase {
                 throw new RuntimeException(e);
             }
 
-            Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class)
-                    .putExtra(ImportKeyActivity.EXTRA_MODE, mode.toString());
-            startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class);
+            importKeyLauncher.launch(intent);
+        };
+    }
+
+    private ActivityResultCallback<ActivityResult> getImportKeyCallback() {
+        return result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                byte[] hexKeyBytes = SecretCache.take(ImportKeyActivity.CACHE_KEY_HEX_KEY);
+
+                try {
+                    char[] hexKey = bytesToChars(hexKeyBytes, StandardCharsets.UTF_8);
+                    cryptoSecrets = getSecretsFromHex(hexKey, password);
+                    getCompletionHandler(cryptoSecrets).handle();
+                } catch (CharacterCodingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         };
     }
 
@@ -170,13 +187,21 @@ public final class SetupKeyActivity extends ActivityBase {
         }
     }
 
+    private SecretsSetupService getSecretsSetupService() {
+        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        return new SecretsSetupService(getApplicationContext(), cryptoManager);
+    }
+
     private View.OnClickListener nextButtonOnClick() {
-        var handler = new KeySetupCompletionHandler(this, keySetupService, mode);
-        return view -> handler.handle();
+        return view -> getCompletionHandler(cryptoSecrets).handle();
+    }
+
+    private KeySetupCompletionHandler getCompletionHandler(CryptoSecrets cryptoSecrets) {
+        return new KeySetupCompletionHandler(this, secretsSetupService, mode, cryptoSecrets);
     }
 
     private void wipeKeyView() {
-        TextView keyView = findViewById(R.id.aesKeyHex);
+        TextView keyView = findViewById(R.id.hexKey);
         CharSequence seq = keyView.getText();
 
         if (seq != null && seq.length() > 0) {

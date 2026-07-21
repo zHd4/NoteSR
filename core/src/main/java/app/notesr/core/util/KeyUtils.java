@@ -28,7 +28,7 @@ public final class KeyUtils {
         return secretKey;
     }
 
-    public static String getKeyHexFromSecrets(CryptoSecrets cryptoSecrets) {
+    public static char[] getKeyHexFromSecrets(CryptoSecrets cryptoSecrets) {
         return getHexFromKeyBytes(cryptoSecrets.getKey());
     }
 
@@ -36,12 +36,12 @@ public final class KeyUtils {
         return new CryptoSecrets(getKeyBytesFromHex(hex), password);
     }
 
-    public static String getHexFromKeyBytes(byte[] key) {
-        StringBuilder result = new StringBuilder();
+    public static char[] getHexFromKeyBytes(byte[] key) {
+        SecureStringBuilder result = new SecureStringBuilder();
         int lineLength = 0;
 
         for (int i = 0; i < key.length; i++) {
-            String hex = byteToHex(key[i]);
+            char[] hex = byteToHex(key[i]);
 
             if (lineLength < HEX_LINE_SIZE_LIMIT) {
                 result.append(hex);
@@ -62,7 +62,7 @@ public final class KeyUtils {
             }
         }
 
-        return result.toString().toUpperCase();
+        return result.toCharArray();
     }
 
     public static byte[] getKeyBytesFromHex(char[] hexChars) {
@@ -104,13 +104,16 @@ public final class KeyUtils {
         return true;
     }
 
-    private static String byteToHex(byte value) {
+    private static char[] byteToHex(byte value) {
         char[] hexDigits = new char[2];
 
         hexDigits[0] = Character.forDigit((value >> 4) & 0xF, 16);
         hexDigits[1] = Character.forDigit((value & 0xF), 16);
 
-        return String.valueOf(hexDigits);
+        hexDigits[0] = Character.toUpperCase(hexDigits[0]);
+        hexDigits[1] = Character.toUpperCase(hexDigits[1]);
+
+        return hexDigits;
     }
 
     private static int countHexTokens(char[] chars) {

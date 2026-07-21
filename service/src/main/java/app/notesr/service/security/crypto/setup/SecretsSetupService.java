@@ -18,15 +18,12 @@ import lombok.RequiredArgsConstructor;
 public final class SecretsSetupService {
     private final Context context;
     private final CryptoManager cryptoManager;
-    private final CryptoSecrets cryptoSecrets;
 
-    public SecretsSetupService(Context context, CryptoManager cryptoManager, char[] password) {
-        this.context = context;
-        this.cryptoManager = cryptoManager;
-        this.cryptoSecrets = cryptoManager.generateSecrets(password);
+    public CryptoSecrets getSecretsWithRandomKey(char[] password) {
+        return cryptoManager.generateSecrets(password);
     }
 
-    public void apply() throws EncryptionFailedException {
+    public void applySecrets(CryptoSecrets cryptoSecrets) throws EncryptionFailedException {
         cryptoManager.setSecrets(context, cryptoSecrets);
         cryptoSecrets.destroy();
     }

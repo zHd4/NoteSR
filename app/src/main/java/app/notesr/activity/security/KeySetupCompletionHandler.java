@@ -32,6 +32,7 @@ public final class KeySetupCompletionHandler {
     private final ActivityBase activity;
     private final SecretsSetupService secretsSetupService;
     private final KeySetupMode mode;
+    private final CryptoSecrets cryptoSecrets;
 
     public void handle() {
         switch (mode) {
@@ -43,7 +44,7 @@ public final class KeySetupCompletionHandler {
 
     private void proceedFirstRun() {
         try {
-            secretsSetupService.apply();
+            secretsSetupService.applySecrets(cryptoSecrets);
 
             Context context = activity.getApplicationContext();
             Intent nextIntent = new Intent(context, NotesListActivity.class);
@@ -78,10 +79,11 @@ public final class KeySetupCompletionHandler {
     }
 
     private void onRegenerationConfirmed() {
-        CryptoSecrets secrets = secretsSetupService.getCryptoSecrets();
+        byte[] keyBytes = Arrays.copyOf(cryptoSecrets.getKey(),
+                cryptoSecrets.getKey().length);
 
-        byte[] keyBytes = Arrays.copyOf(secrets.getKey(), secrets.getKey().length);
-        char[] password = Arrays.copyOf(secrets.getPassword(), secrets.getPassword().length);
+        char[] password = Arrays.copyOf(cryptoSecrets.getPassword(),
+                cryptoSecrets.getPassword().length);
 
         try {
             byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
@@ -92,10 +94,11 @@ public final class KeySetupCompletionHandler {
             throw new RuntimeException(e);
         }
 
-        secrets.destroy();
+        cryptoSecrets.destroy();
 
-        Context context = activity.getApplicationContext();
-        activity.startActivity(new Intent(context, ReEncryptionActivity.class));
+        Intent reEncryptionIntent = new Intent(activity.getApplicationContext(),
+                ReEncryptionActivity.class);
+        activity.startActivity(reEncryptionIntent);
         activity.finish();
     }
 }
