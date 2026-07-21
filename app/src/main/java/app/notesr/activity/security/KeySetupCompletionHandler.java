@@ -22,7 +22,7 @@ import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.service.security.crypto.setup.SecretsSetupService;
+import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class KeySetupCompletionHandler {
     private final ActivityBase activity;
-    private final SecretsSetupService secretsSetupService;
+    private final AppSecurityService appSecurityService;
     private final KeySetupMode mode;
     private final CryptoSecrets cryptoSecrets;
 
@@ -44,7 +44,7 @@ public final class KeySetupCompletionHandler {
 
     private void proceedFirstRun() {
         try {
-            secretsSetupService.applySecrets(cryptoSecrets);
+            appSecurityService.setSecrets(cryptoSecrets);
 
             Context context = activity.getApplicationContext();
             Intent nextIntent = new Intent(context, NotesListActivity.class);

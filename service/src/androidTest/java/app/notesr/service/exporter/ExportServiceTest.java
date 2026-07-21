@@ -30,8 +30,6 @@ import java.time.LocalDateTime;
 
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesGcmCryptor;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.core.util.FilesUtilsAdapter;
@@ -40,6 +38,7 @@ import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
+import app.notesr.service.security.AppSecurityService;
 
 public class ExportServiceTest {
 
@@ -56,8 +55,8 @@ public class ExportServiceTest {
     public void setUp() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-        CryptoSecrets cryptoSecrets = cryptoManager.generateSecrets("password".toCharArray());
+        var appSecurityService = new AppSecurityService(context);
+        CryptoSecrets cryptoSecrets = appSecurityService.getSecretsWithRandomKey("password".toCharArray());
 
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
         FilesUtilsAdapter filesUtils = new FilesUtils();

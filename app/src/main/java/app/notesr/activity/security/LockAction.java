@@ -9,31 +9,23 @@ import android.content.Context;
 import android.content.Intent;
 
 import app.notesr.activity.ActivityBase;
-import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.data.DatabaseProvider;
+import app.notesr.service.security.AppSecurityService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class LockAction {
 
     private final ActivityBase activity;
-    private final CryptoManager cryptoManager;
+    private final AppSecurityService appSecurityService;
 
     public void lock() {
+        appSecurityService.logout();
+
         Context context = activity.getApplicationContext();
         Intent authActivityIntent = new Intent(context, AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHORIZATION.toString());
-
-        clearSecrets();
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.toString());
 
         activity.startActivity(authActivityIntent);
         activity.finish();
-    }
-
-    private void clearSecrets() {
-        DatabaseProvider.close();
-        cryptoManager.destroySecrets();
-        SecretCache.clear();
     }
 }

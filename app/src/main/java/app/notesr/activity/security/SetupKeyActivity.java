@@ -40,7 +40,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.service.security.crypto.setup.SecretsSetupService;
+import app.notesr.service.security.AppSecurityService;
 import lombok.Getter;
 
 @Getter
@@ -54,7 +54,7 @@ public final class SetupKeyActivity extends ActivityBase {
     private KeySetupMode mode;
     private char[] password;
     private ActivityResultLauncher<Intent> importKeyLauncher;
-    private SecretsSetupService secretsSetupService;
+    private AppSecurityService appSecurityService;
     private CryptoSecrets cryptoSecrets;
 
     @Override
@@ -73,8 +73,8 @@ public final class SetupKeyActivity extends ActivityBase {
 
         importKeyLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getImportKeyCallback());
-        secretsSetupService = getSecretsSetupService();
-        cryptoSecrets = secretsSetupService.getSecretsWithRandomKey(password);
+        appSecurityService = getAppSecurityService();
+        cryptoSecrets = appSecurityService.getSecretsWithRandomKey(password);
 
         char[] hexKey = getKeyHexFromSecrets(cryptoSecrets);
         showHexKey(hexKey);
@@ -187,9 +187,9 @@ public final class SetupKeyActivity extends ActivityBase {
         }
     }
 
-    private SecretsSetupService getSecretsSetupService() {
+    private AppSecurityService getAppSecurityService() {
         CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
-        return new SecretsSetupService(getApplicationContext(), cryptoManager);
+        return new AppSecurityService(getApplicationContext(), cryptoManager);
     }
 
     private View.OnClickListener nextButtonOnClick() {
@@ -197,7 +197,7 @@ public final class SetupKeyActivity extends ActivityBase {
     }
 
     private KeySetupCompletionHandler getCompletionHandler(CryptoSecrets cryptoSecrets) {
-        return new KeySetupCompletionHandler(this, secretsSetupService, mode, cryptoSecrets);
+        return new KeySetupCompletionHandler(this, appSecurityService, mode, cryptoSecrets);
     }
 
     private void wipeKeyView() {

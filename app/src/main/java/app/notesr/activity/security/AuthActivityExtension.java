@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -23,7 +22,6 @@ import app.notesr.BuildConfig;
 import app.notesr.R;
 import app.notesr.activity.FsaResolver;
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.activity.migration.MigrationActivity;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.activity.note.list.NotesListActivity;
@@ -33,6 +31,9 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.core.util.ActivityUtils;
 import app.notesr.core.util.KeyUtils;
+import app.notesr.service.security.AppSecurityException;
+import app.notesr.service.security.AppSecurityService;
+import app.notesr.service.security.AuthenticationFailedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -42,13 +43,13 @@ public final class AuthActivityExtension {
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
 
     private final AuthActivity activity;
-    private final CryptoManager cryptoManager;
+    private final AppSecurityService appSecurityService;
     private final SecureStringBuilder passwordBuilder;
 
     private int attempts = MAX_ATTEMPTS;
     private char[] createdPassword;
 
-    public void authorize() {
+    public void authenticate() {
         var password = passwordBuilder.toCharArray();
 
         if (password.length == 0) {
@@ -57,17 +58,15 @@ public final class AuthActivityExtension {
         }
 
         try {
-            boolean isAuthorized = cryptoManager.configure(activity.getApplicationContext(),
-                    password);
-
-            if (isAuthorized) {
-                onAuthorizationSuccessful();
-            } else {
-                onAuthorizationFailed();
-            }
-        } catch (IOException e) {
+            appSecurityService.authenticate(password);
+        } catch (AuthenticationFailedException e) {
+            onAuthenticationFailed();
+            return;
+        } catch (AppSecurityException e) {
             throw new RuntimeException(e);
         }
+
+        onAuthenticationSuccessful();
     }
 
     public void createPassword() {
@@ -94,21 +93,20 @@ public final class AuthActivityExtension {
 
         if (password != null) {
             try {
-                char[] hexKey = bytesToChars(SecretCache.take(HEX_KEY),
-                        StandardCharsets.UTF_8);
 
-                if (hexKey == null) {
-                    throw new Exception("Missing hex key");
+                byte[] hexKeyBytes = SecretCache.take(HEX_KEY);
+
+                if (hexKeyBytes == null) {
+                    throw new RuntimeException("Missing hex key");
                 }
 
-                Context context = activity.getApplicationContext();
+                char[] hexKey = bytesToChars(hexKeyBytes,
+                        StandardCharsets.UTF_8);
+
                 CryptoSecrets secrets = KeyUtils.getSecretsFromHex(hexKey, password);
-
-                cryptoManager.unblock(context);
-                cryptoManager.setSecrets(context, secrets);
-
+                appSecurityService.unblockApp(secrets);
                 secrets.destroy();
-            } catch (Exception e) {
+            } catch (AppSecurityException | CharacterCodingException e) {
                 throw new RuntimeException(e);
             }
 
@@ -123,10 +121,10 @@ public final class AuthActivityExtension {
         if (password != null) {
             try {
                 Context context = activity.getApplicationContext();
-                CryptoSecrets secrets = cryptoManager.getSecrets();
-                secrets.setPassword(password);
+                CryptoSecrets secrets = appSecurityService.getActualSecrets();
 
-                cryptoManager.setSecrets(context, secrets);
+                secrets.setPassword(password);
+                appSecurityService.setSecrets(secrets);
                 secrets.destroy();
 
                 showToastMessage(R.string.updated);
@@ -162,7 +160,7 @@ public final class AuthActivityExtension {
         return null;
     }
 
-    private void onAuthorizationSuccessful() {
+    private void onAuthenticationSuccessful() {
         TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
         censoredPasswordView.setText("");
 
@@ -171,20 +169,20 @@ public final class AuthActivityExtension {
 
         new AndroidServiceBootstrapper(servicesRegistry).startServicesPostAuth(
                 context,
-                cryptoManager.getSecrets()
+                appSecurityService.getActualSecrets()
         );
 
         activity.startActivity(getNextIntentAfterAuth(context, servicesRegistry));
         activity.finish();
     }
 
-    private void onAuthorizationFailed() {
+    private void onAuthenticationFailed() {
         attempts--;
 
         if (attempts == 0) {
             try {
-                cryptoManager.block(activity.getApplicationContext());
-            } catch (IOException e) {
+                appSecurityService.blockApp();
+            } catch (AppSecurityException e) {
                 throw new RuntimeException(e);
             }
 

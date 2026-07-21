@@ -6,7 +6,7 @@
 package app.notesr.core.security.crypto;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,6 +38,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.SessionExpiredException;
 import app.notesr.core.util.FilesUtilsAdapter;
 import app.notesr.core.util.WiperAdapter;
@@ -67,16 +68,7 @@ class CryptoManagerTest {
 
     @BeforeEach
     void setUp() {
-        cryptoManager = new CryptoManager(prefs, filesUtils, wiper, SECURE_RANDOM, aesCryptorFactory);
-    }
-
-    @Test
-    void testGenerateSecretsCreatesKeyOfCorrectSize() {
-        CryptoSecrets secrets = cryptoManager.generateSecrets("pass".toCharArray());
-        assertEquals(MASTER_KEY_SIZE, secrets.getKey().length,
-                "Generated key size should match constant");
-        assertArrayEquals("pass".toCharArray(), secrets.getPassword(),
-                "Generated secrets should contain the provided password");
+        cryptoManager = new CryptoManager(prefs, filesUtils, wiper, aesCryptorFactory);
     }
 
     @Test
@@ -208,9 +200,9 @@ class CryptoManagerTest {
                 .thenReturn(mockCryptor);
         when(mockCryptor.decrypt(encryptedKey)).thenReturn(decryptedKey);
 
-        boolean result = cryptoManager.configure(null, password);
+        assertDoesNotThrow(() -> cryptoManager.configure(null, password),
+                "configure should not throw exception");
 
-        assertTrue(result, "configure should return true on success");
         assertTrue(cryptoManager.isConfigured(),
                 "CryptoManager should be configured after successful configuration");
         assertArrayEquals(decryptedKey, cryptoManager.getSecrets().getKey(),
@@ -236,10 +228,9 @@ class CryptoManagerTest {
                 .thenThrow(new GeneralSecurityException("GCM failed"));
         when(mockCbc.decrypt(encryptedKey)).thenReturn(decryptedKey);
 
-        boolean result = cryptoManager.configure(null, password);
+        assertDoesNotThrow(() -> cryptoManager.configure(null, password),
+                "configure should not throw exception when fallback to CBC succeeds");
 
-        assertTrue(result,
-                "configure should return true when fallback to CBC succeeds");
         assertTrue(cryptoManager.isConfigured(),
                 "CryptoManager should be configured after successful fallback");
         assertArrayEquals(decryptedKey, cryptoManager.getSecrets().getKey(),
@@ -268,10 +259,12 @@ class CryptoManagerTest {
         when(mockCbc.decrypt(any()))
                 .thenThrow(new GeneralSecurityException("fail"));
 
-        boolean result = cryptoManager.configure(null, password);
+        assertThrows(
+                DecryptionFailedException.class,
+                () -> cryptoManager.configure(null, password),
+                "configure should throw DecryptionFailedException" +
+                        " when both GCM and CBC decryption fail");
 
-        assertFalse(result,
-                "configure should return false when both GCM and CBC decryption fail");
         assertFalse(cryptoManager.isConfigured(),
                 "CryptoManager should not be configured" +
                         " after a failed configuration attempt");
