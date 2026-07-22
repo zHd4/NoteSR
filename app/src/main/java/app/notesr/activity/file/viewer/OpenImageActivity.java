@@ -8,6 +8,7 @@ package app.notesr.activity.file.viewer;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import app.notesr.activity.DialogFactory;
+import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.util.FilesUtils;
 
@@ -32,7 +33,7 @@ import app.notesr.R;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.service.file.FileService;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.service.security.AppSecurityService;
 
 public final class OpenImageActivity extends FileViewerActivityBase {
 
@@ -174,8 +175,8 @@ public final class OpenImageActivity extends FileViewerActivityBase {
         var context = getApplicationContext();
         var db = DatabaseProvider.getInstance(this);
 
-        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
+        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
+                new AppSecurityService(context).getActualSecrets());
 
         var filesUtils = new FilesUtils();
 
