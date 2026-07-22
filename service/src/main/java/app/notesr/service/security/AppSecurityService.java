@@ -188,6 +188,7 @@ public final class AppSecurityService {
      *
      * @param newCryptoSecrets the new secrets to set and persist
      * @throws AppSecurityException if encryption fails during persistence
+     * @throws IllegalArgumentException if the provided secrets are invalid
      */
     public void setSecrets(CryptoSecrets newCryptoSecrets) {
         try {
