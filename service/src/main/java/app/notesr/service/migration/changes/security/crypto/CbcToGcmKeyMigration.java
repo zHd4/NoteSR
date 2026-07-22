@@ -8,11 +8,10 @@ package app.notesr.service.migration.changes.security.crypto;
 import android.content.Context;
 
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.service.migration.AppMigration;
 import app.notesr.service.migration.AppMigrationException;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.service.security.AppSecurityException;
+import app.notesr.service.security.AppSecurityService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,17 +27,17 @@ public class CbcToGcmKeyMigration implements AppMigration {
     @Override
     public void migrate(Context context) {
         try {
-            CryptoManager cryptoManager = getCryptoManager(context);
-            CryptoSecrets secrets = cryptoManager.getSecrets();
+            AppSecurityService appSecurityService = getAppSecurityService(context);
+            CryptoSecrets secrets = appSecurityService.getActualSecrets();
 
-            cryptoManager.setSecrets(context, secrets);
+            appSecurityService.setSecrets(secrets);
             secrets.destroy();
-        } catch (EncryptionFailedException | IllegalArgumentException e) {
+        } catch (AppSecurityException | IllegalArgumentException e) {
             throw new AppMigrationException("Failed to migrate key", e);
         }
     }
 
-    CryptoManager getCryptoManager(Context context) {
-        return CryptoManagerProvider.getInstance(context);
+    AppSecurityService getAppSecurityService(Context context) {
+        return new AppSecurityService(context);
     }
 }
