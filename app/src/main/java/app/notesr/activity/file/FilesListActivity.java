@@ -32,6 +32,7 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.file.viewer.FileViewerActivityBase;
+import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.data.DatabaseProvider;
@@ -39,8 +40,8 @@ import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.util.FilesUtils;
+import app.notesr.service.security.AppSecurityService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,8 +82,8 @@ public final class FilesListActivity extends ActivityBase {
         var context = getApplicationContext();
         var db = DatabaseProvider.getInstance(context);
 
-        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
+        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
+                new AppSecurityService(context).getActualSecrets());
 
         fileService = new FileService(context, db, cryptor, new FilesUtils());
         noteService = new NoteService(db);
