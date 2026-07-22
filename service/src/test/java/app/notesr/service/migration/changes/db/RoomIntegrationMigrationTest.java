@@ -52,7 +52,7 @@ class RoomIntegrationMigrationTest {
 
         doReturn(mockDb).when(migration).getAppDatabase(any());
         doReturn(mockNoteService).when(migration).getNoteService(any());
-        doReturn(mockFileService).when(migration).getFileService(any(), any(), any());
+        doReturn(mockFileService).when(migration).getFileService(any(), any(), any(), any());
         doReturn(mockOldDbHelper).when(migration).getOldDbHelper(any());
         doReturn(mockEntityMapper).when(migration).getMapper(any());
         doReturn(mockFilesUtils).when(migration).getFilesUtils();

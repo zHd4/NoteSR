@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 
 import app.notesr.core.security.crypto.AesCryptorFactory;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.crypto.ValueDecryptor;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
@@ -28,6 +27,7 @@ import app.notesr.service.file.FileService;
 import app.notesr.service.migration.AppMigration;
 import app.notesr.service.migration.AppMigrationException;
 import app.notesr.service.note.NoteService;
+import app.notesr.service.security.AppSecurityService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -58,15 +58,13 @@ public final class RoomIntegrationMigration implements AppMigration {
     public void migrate(Context context) {
         try {
             AppDatabase db = getAppDatabase(context);
+            CryptoSecrets cryptoSecrets = getCryptoSecrets(context);
 
             filesUtils = getFilesUtils();
             noteService = getNoteService(db);
-            fileService = getFileService(context, db, filesUtils);
+            fileService = getFileService(context, cryptoSecrets, db, filesUtils);
             oldDbHelper = getOldDbHelper(context);
-
-            CryptoSecrets cryptoSecrets = getCryptoSecrets(context);
             entityMapper = getMapper(cryptoSecrets);
-
             wiper = getWiper();
 
             db.runInTransaction(() -> {
@@ -143,22 +141,29 @@ public final class RoomIntegrationMigration implements AppMigration {
         });
     }
 
-    CryptoSecrets getCryptoSecrets(Context context) {
-        return CryptoManagerProvider.getInstance(context).getSecrets();
-    }
-
     AppDatabase getAppDatabase(Context context) {
         return DatabaseProvider.getInstance(context);
+    }
+
+    CryptoSecrets getCryptoSecrets(Context context) {
+        return new AppSecurityService(context).getActualSecrets();
+    }
+
+    FilesUtilsAdapter getFilesUtils() {
+        return new FilesUtils();
     }
 
     NoteService getNoteService(AppDatabase db) {
         return new NoteService(db);
     }
 
-    FileService getFileService(Context context, AppDatabase db, FilesUtilsAdapter filesUtils) {
-        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
+    FileService getFileService(
+            Context context,
+            CryptoSecrets cryptoSecrets,
+            AppDatabase db,
+            FilesUtilsAdapter filesUtils) {
 
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(cryptoSecrets);
         return new FileService(context, db, cryptor, filesUtils);
     }
 
@@ -171,10 +176,6 @@ public final class RoomIntegrationMigration implements AppMigration {
         var valueDecryptor = new ValueDecryptor(cryptor);
 
         return new EntityMapper(valueDecryptor);
-    }
-
-    FilesUtilsAdapter getFilesUtils() {
-        return new FilesUtils();
     }
 
     WiperAdapter getWiper() {
