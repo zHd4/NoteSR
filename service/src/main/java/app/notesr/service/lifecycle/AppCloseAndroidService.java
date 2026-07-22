@@ -17,12 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.security.AppSecurityService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * A foreground {@link app.notesr.service.AndroidService} responsible for handling the application's
@@ -36,12 +36,16 @@ import app.notesr.service.AndroidServiceRegistry;
  * <p>The service operates as a foreground service to ensure the system grants it sufficient
  * time to execute cleanup logic during the task removal phase.</p>
  */
+@NoArgsConstructor
+@AllArgsConstructor
 public final class AppCloseAndroidService extends AndroidService {
 
     private static final int NOTIFICATION_ID = 1005;
 
     private static final String CHANNEL_ID = "app_close_service_channel";
     private static final String CHANNEL_NAME = "App Close Service Channel";
+
+    private AppSecurityService appSecurityService;
 
     @Nullable
     @Override
@@ -66,6 +70,8 @@ public final class AppCloseAndroidService extends AndroidService {
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
         }
 
+        appSecurityService = new AppSecurityService(getApplicationContext());
+
         startForeground(NOTIFICATION_ID, notification, type);
         register(null, null);
 
@@ -81,9 +87,7 @@ public final class AppCloseAndroidService extends AndroidService {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         if (getOtherRunningServicesCount() == 0) {
-            clearSecretCache();
-            closeDatabase();
-            destroySecrets();
+            appSecurityService.logout();
 
             stopForegroundService();
             stopService();
@@ -115,18 +119,6 @@ public final class AppCloseAndroidService extends AndroidService {
                 .filter(serviceEntry ->
                         serviceEntry.getServiceClass() != getClass())
                 .count();
-    }
-
-    void clearSecretCache() {
-        SecretCache.clear();
-    }
-
-    void closeDatabase() {
-        DatabaseProvider.close();
-    }
-
-    void destroySecrets() {
-        CryptoManagerProvider.getInstance(getApplicationContext()).destroySecrets();
     }
 
     void exitProcess() {
