@@ -37,8 +37,6 @@ import java.util.Arrays;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.AppSecurityService;
 import lombok.Getter;
@@ -188,8 +186,7 @@ public final class SetupKeyActivity extends ActivityBase {
     }
 
     private AppSecurityService getAppSecurityService() {
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
-        return new AppSecurityService(getApplicationContext(), cryptoManager);
+        return new AppSecurityService(getApplicationContext());
     }
 
     private View.OnClickListener nextButtonOnClick() {
