@@ -25,14 +25,16 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesCryptorFactory;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
+import app.notesr.service.security.AppSecurityService;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -162,8 +164,8 @@ public final class ExportAndroidService extends AndroidService implements Runnab
         var db = DatabaseProvider.getInstance(this);
         var noteService = new NoteService(db);
 
-        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
+        CryptoSecrets secrets = new AppSecurityService(context).getActualSecrets();
+        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
         var fileService = new FileService(context, db, cryptor, new FilesUtils());
         var statusHolder = new ExportStatusHolder(updateCallback);
