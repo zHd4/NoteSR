@@ -32,8 +32,8 @@ import java.time.format.DateTimeFormatter;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesCryptorFactory;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.util.FileExifDataResolver;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.DatabaseProvider;
@@ -44,6 +44,7 @@ import app.notesr.service.exporter.ExportStatus;
 import app.notesr.service.file.FileService;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.note.NoteService;
+import app.notesr.service.security.AppSecurityService;
 import app.notesr.util.VersionFetcherImpl;
 
 public final class ExportActivity extends ActivityBase {
@@ -75,8 +76,8 @@ public final class ExportActivity extends ActivityBase {
         var context = getApplicationContext();
         var db = DatabaseProvider.getInstance(this);
 
-        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
+        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
+                new AppSecurityService(context).getActualSecrets());
 
         noteService = new NoteService(db);
         fileService = new FileService(context, db, cryptor, new FilesUtils());
