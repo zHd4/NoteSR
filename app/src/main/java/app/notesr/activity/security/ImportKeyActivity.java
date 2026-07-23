@@ -11,9 +11,9 @@ import static java.util.Objects.requireNonNull;
 
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.bytesToChars;
+import static app.notesr.core.util.CharUtils.charsToBytes;
 import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -31,18 +31,15 @@ import java.util.Arrays;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.service.security.crypto.setup.SecretsSetupService;
 
 public final class ImportKeyActivity extends ActivityBase {
 
+    public static final String CACHE_KEY_HEX_KEY = "hexKey";
     public static final String CACHE_KEY_PASSWORD = "password";
-    public static final String EXTRA_MODE = "mode";
     private static final String TAG = ImportKeyActivity.class.getCanonicalName();
 
-    private KeySetupMode mode;
+    private int resultCode = RESULT_CANCELED;
     private EditText keyField;
     private char[] hexKey;
     private char[] password;
@@ -58,7 +55,6 @@ public final class ImportKeyActivity extends ActivityBase {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(getResources().getString(R.string.import_key));
 
-        mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
         password = getPasswordFromCache();
 
         keyField = findViewById(R.id.importKeyField);
@@ -75,7 +71,8 @@ public final class ImportKeyActivity extends ActivityBase {
 
     @Override
     public void finish() {
-        wipeSecrets();
+        wipeUiFields();
+        setResult(resultCode);
         super.finish();
     }
 
@@ -87,14 +84,10 @@ public final class ImportKeyActivity extends ActivityBase {
             hexKeyEditable.getChars(0, hexKeyEditable.length(), hexKey, 0);
 
             if (hexKey.length > 0) {
-                Context context = getApplicationContext();
-                CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
-
-                CryptoSecrets cryptoSecrets;
-
                 try {
-                    cryptoSecrets = getSecretsFromHex(hexKey, password);
+                    CryptoSecrets cryptoSecrets = getCryptoSecrets(hexKey, password);
                     cryptoSecrets.validate();
+                    cryptoSecrets.destroy();
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     Log.e(TAG, "Invalid key", e);
                     showToastMessage(this, getString(R.string.invalid_key),
@@ -103,15 +96,28 @@ public final class ImportKeyActivity extends ActivityBase {
                     return;
                 }
 
-                SecretsSetupService secretsSetupService = new SecretsSetupService(
-                        getApplicationContext(),
-                        cryptoManager,
-                        cryptoSecrets
-                );
-
-                new KeySetupCompletionHandler(this, secretsSetupService, mode).handle();
+                putResultsToCache(hexKey);
+                
+                resultCode = RESULT_OK;
+                finish();
             }
         };
+    }
+    
+    private CryptoSecrets getCryptoSecrets(char[] hexKey, char[] password) {
+        char[] hexKeyCopy = Arrays.copyOf(hexKey, hexKey.length);
+        return getSecretsFromHex(hexKeyCopy, password);
+    }
+    
+    private void putResultsToCache(char[] hexKey) {
+        try {
+            SecretCache.put(CACHE_KEY_HEX_KEY, charsToBytes(hexKey,
+                    StandardCharsets.UTF_8));
+        } catch (CharacterCodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        SecretCache.removeIfExists(CACHE_KEY_PASSWORD); // Should be already removed
     }
 
     private char[] getPasswordFromCache() {
@@ -124,14 +130,7 @@ public final class ImportKeyActivity extends ActivityBase {
         }
     }
 
-    private void wipeSecrets() {
-        // Clearing only key field, not password, because reference to password is stored in cache
-        // and still could be used by SetupKeyActivity. SetupKeyActivity as a parent activity
-        // is responsible to clear password from cache.
-        if (hexKey != null && hexKey.length > 0) {
-            Arrays.fill(hexKey, '\0');
-        }
-
+    private void wipeUiFields() {
         Editable hexKeyEditable = keyField.getText();
         hexKeyEditable.replace(0, hexKeyEditable.length(), "");
 

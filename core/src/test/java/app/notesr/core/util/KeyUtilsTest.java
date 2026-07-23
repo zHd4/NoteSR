@@ -70,10 +70,10 @@ class KeyUtilsTest {
                 (byte) 0xCD, (byte) 0xEF
         };
 
-        String expected = "01 23 45 67 \n89 AB CD EF";
-        String actual = KeyUtils.getHexFromKeyBytes(key);
+        char[] expected = "01 23 45 67 \n89 AB CD EF".toCharArray();
+        char[] actual = KeyUtils.getHexFromKeyBytes(key);
 
-        assertEquals(expected, actual,
+        assertArrayEquals(expected, actual,
                 "Hex conversion should format key with spaces and newlines correctly");
     }
 
@@ -131,8 +131,8 @@ class KeyUtilsTest {
     void hexConversionRoundTrip() {
         byte[] originalKey = new byte[]{0x10, 0x20, 0x30, 0x40, 0x50, 0x60};
 
-        String hex = KeyUtils.getHexFromKeyBytes(originalKey);
-        byte[] restoredKey = KeyUtils.getKeyBytesFromHex(hex.toCharArray());
+        char[] hex = KeyUtils.getHexFromKeyBytes(originalKey);
+        byte[] restoredKey = KeyUtils.getKeyBytesFromHex(hex);
 
         assertArrayEquals(originalKey, restoredKey,
                 "Round-trip hex conversion should restore original key bytes");
@@ -141,9 +141,9 @@ class KeyUtilsTest {
     @Test
     void getHexFromCryptoSecretsDelegatesCorrectly() {
         CryptoSecrets secrets = new CryptoSecrets(new byte[]{0x0A, 0x0B}, "password".toCharArray());
-        String hex = KeyUtils.getKeyHexFromSecrets(secrets);
+        char[] hex = KeyUtils.getKeyHexFromSecrets(secrets);
 
-        assertEquals("0A 0B", hex,
+        assertArrayEquals("0A 0B".toCharArray(), hex,
                 "getKeyHexFromSecrets should correctly delegate to getHexFromKeyBytes");
     }
 

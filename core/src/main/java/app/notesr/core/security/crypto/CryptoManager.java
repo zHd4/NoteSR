@@ -104,7 +104,7 @@ public final class CryptoManager {
     public CryptoSecrets generateSecrets(char[] password) {
         byte[] key = new byte[CryptoSecrets.MASTER_KEY_SIZE];
         secureRandom.nextBytes(key);
-        return new CryptoSecrets(Arrays.copyOf(key, key.length), password);
+        return new CryptoSecrets(key, password);
     }
 
     /**
