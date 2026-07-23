@@ -189,6 +189,10 @@ public final class AppSecurityService {
      * @throws IllegalArgumentException if the provided secrets are invalid
      */
     public void setSecrets(CryptoSecrets newCryptoSecrets) {
+        if (newCryptoSecrets == null) {
+            throw new IllegalArgumentException("New secrets cannot be null");
+        }
+
         try {
             newCryptoSecrets.validate();
         } catch (IllegalStateException e) {
