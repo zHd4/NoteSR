@@ -114,7 +114,7 @@ class CryptoManagerTest {
 
     @Test
     void testVerifyKeyReturnsTrueWhenHashesMatch() throws Exception {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] key = generateRandomBytes();
         String hash = toSha256String(key);
         when(prefs.getString("key_hash", null)).thenReturn(hash);
 
@@ -127,8 +127,8 @@ class CryptoManagerTest {
 
     @Test
     void testVerifyKeyReturnsFalseWhenHashesDoNotMatch() throws Exception {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        byte[] otherKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] key = generateRandomBytes();
+        byte[] otherKey = generateRandomBytes();
         byte[] hash = toSha256Bytes(otherKey);
         when(prefs.getString("key_hash", null)).thenReturn(toSha256String(hash));
 
@@ -164,7 +164,7 @@ class CryptoManagerTest {
 
         when(mockKeyHashFile.exists()).thenReturn(false);
 
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] key = generateRandomBytes();
         CryptoSecrets secrets = new CryptoSecrets(key, "password".toCharArray());
 
         cryptoManager.setSecrets(null, secrets);
@@ -186,8 +186,8 @@ class CryptoManagerTest {
     @Test
     void testConfigureSuccess() throws Exception {
         char[] password = "password".toCharArray();
-        byte[] encryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
-        byte[] decryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] encryptedKey = generateRandomBytes();
+        byte[] decryptedKey = generateRandomBytes();
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
@@ -211,8 +211,8 @@ class CryptoManagerTest {
     @Test
     void testConfigureFallbackToCbc() throws Exception {
         char[] password = "password".toCharArray();
-        byte[] encryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
-        byte[] decryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] encryptedKey = generateRandomBytes();
+        byte[] decryptedKey = generateRandomBytes();
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
@@ -239,7 +239,7 @@ class CryptoManagerTest {
     @Test
     void testConfigureFailure() throws Exception {
         char[] password = "wrong".toCharArray();
-        byte[] encryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] encryptedKey = generateRandomBytes();
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
@@ -312,8 +312,8 @@ class CryptoManagerTest {
     @Test
     void testDestroySecrets() throws Exception {
         char[] password = "password".toCharArray();
-        byte[] encryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
-        byte[] decryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] encryptedKey = generateRandomBytes();
+        byte[] decryptedKey = generateRandomBytes();
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
@@ -370,7 +370,7 @@ class CryptoManagerTest {
 
         when(mockKeyHashFile.exists()).thenReturn(false);
 
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] key = generateRandomBytes();
         CryptoSecrets secrets = new CryptoSecrets(key, "password".toCharArray());
 
         cryptoManager.setSecrets(null, secrets);
@@ -379,8 +379,8 @@ class CryptoManagerTest {
                 "CryptoManager should be configured after setting valid secrets");
     }
 
-    private byte[] generateRandomBytes(int size) {
-        byte[] key = new byte[size];
+    private byte[] generateRandomBytes() {
+        byte[] key = new byte[MASTER_KEY_SIZE];
         SECURE_RANDOM.nextBytes(key);
         return key;
     }
