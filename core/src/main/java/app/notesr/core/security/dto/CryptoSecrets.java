@@ -39,8 +39,13 @@ public final class CryptoSecrets {
      * Securely clears the secrets by filling the underlying arrays with zeros.
      */
     public void destroy() {
-        Arrays.fill(key, (byte) 0);
-        Arrays.fill(password, '\0');
+        if (key != null) {
+            Arrays.fill(key, (byte) 0);
+        }
+
+        if (password != null) {
+            Arrays.fill(password, '\0');
+        }
     }
 
     /**
@@ -92,7 +97,14 @@ public final class CryptoSecrets {
             return null;
         }
 
-        return new CryptoSecrets(Arrays.copyOf(secrets.key, secrets.key.length),
-                Arrays.copyOf(secrets.password, secrets.password.length));
+        byte[] key = secrets.key != null
+                ? Arrays.copyOf(secrets.key, secrets.key.length)
+                : null;
+
+        char[] password = secrets.password != null
+                ? Arrays.copyOf(secrets.password, secrets.password.length)
+                : null;
+
+        return new CryptoSecrets(key, password);
     }
 }
