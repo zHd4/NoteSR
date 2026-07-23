@@ -5,9 +5,22 @@
 
 package app.notesr.service.security;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
@@ -23,6 +36,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
@@ -32,6 +46,9 @@ import app.notesr.data.DatabaseProvider;
 
 @ExtendWith(MockitoExtension.class)
 class AppSecurityServiceTest {
+
+    private static final int MASTER_KEY_SIZE = 48;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Mock
     private Context mockContext;
@@ -66,7 +83,7 @@ class AppSecurityServiceTest {
         CryptoSecrets secrets = appSecurityService.getSecretsWithRandomKey(password);
 
         assertNotNull(secrets);
-        assertEquals(CryptoSecrets.MASTER_KEY_SIZE, secrets.getKey().length);
+        assertEquals(MASTER_KEY_SIZE, secrets.getKey().length);
     }
 
     @Test
@@ -283,16 +300,79 @@ class AppSecurityServiceTest {
     }
 
     @Test
-    void testSetSecretsThrowsIllegalArgumentExceptionOnInvalidSecrets() {
-        CryptoSecrets newSecrets = mock(CryptoSecrets.class);
-        doThrow(new IllegalStateException("Invalid secrets")).when(newSecrets).validate();
+    void testSetSecretsThrowsWhenSecretsIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(null),
+                "setSecrets should throw IllegalArgumentException when secrets are null");
+    }
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> appSecurityService.setSecrets(newSecrets));
+    @Test
+    void testSetSecretsThrowsWhenKeyIsNull() {
+        CryptoSecrets secrets = new CryptoSecrets(null, "password".toCharArray());
 
-        assertEquals("Invalid new secrets", exception.getMessage());
-        verify(newSecrets).validate();
-        verify(newSecrets).destroy();
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(secrets),
+                "setSecrets should throw IllegalArgumentException when key is null");
+    }
+
+    @Test
+    void testSetSecretsThrowsWhenKeyIsEmpty() {
+        CryptoSecrets secrets = new CryptoSecrets(new byte[0], "password".toCharArray());
+
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(secrets),
+                "setSecrets should throw IllegalArgumentException when key is empty");
+    }
+
+    @Test
+    void testSetSecretsThrowsWhenKeyLengthIsInvalid() {
+        byte[] invalidKey = generateRandomBytes(MASTER_KEY_SIZE - 1);
+        CryptoSecrets secrets = new CryptoSecrets(invalidKey, "password".toCharArray());
+
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(secrets),
+                "setSecrets should throw IllegalArgumentException when key length is invalid");
+    }
+
+    @Test
+    void testSetSecretsThrowsWhenPasswordIsNull() {
+        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        CryptoSecrets secrets = new CryptoSecrets(key, null);
+
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(secrets),
+                "setSecrets should throw IllegalArgumentException when password is null");
+    }
+
+    @Test
+    void testSetSecretsThrowsWhenPasswordIsEmpty() {
+        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        CryptoSecrets secrets = new CryptoSecrets(key, new char[0]);
+
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(secrets),
+                "setSecrets should throw IllegalArgumentException when password is empty");
+    }
+
+    @Test
+    void testSetSecretsThrowsWhenPasswordIsTooShort() {
+        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        CryptoSecrets secrets = new CryptoSecrets(key, "123".toCharArray());
+
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(secrets),
+                "setSecrets should throw IllegalArgumentException when password is too short");
+    }
+
+    @Test
+    void testSetSecretsThrowsWhenKeyIsAllZeros() {
+        byte[] key = new byte[MASTER_KEY_SIZE];
+        CryptoSecrets secrets = new CryptoSecrets(key, "password".toCharArray());
+
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(secrets),
+                "setSecrets should throw IllegalArgumentException when key is all zeros");
+    }
+
+    @Test
+    void testSetSecretsThrowsWhenPasswordIsAllZeros() {
+        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        CryptoSecrets secrets = new CryptoSecrets(key, new char[4]);
+
+        assertThrows(IllegalArgumentException.class, () -> appSecurityService.setSecrets(secrets),
+                "setSecrets should throw IllegalArgumentException when password is all zeros");
     }
 
     @Test
@@ -429,5 +509,11 @@ class AppSecurityServiceTest {
         inOrder.verify(mockCryptoManager).verifyKey(mockContext, key);
         inOrder.verify(mockCryptoManager).setSecrets(mockContext, secrets);
         inOrder.verify(mockCryptoManager).unblock(mockContext);
+    }
+
+    private byte[] generateRandomBytes(int size) {
+        byte[] key = new byte[size];
+        SECURE_RANDOM.nextBytes(key);
+        return key;
     }
 }
