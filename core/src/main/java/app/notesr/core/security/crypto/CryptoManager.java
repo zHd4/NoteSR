@@ -20,8 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.core.security.exception.DecryptionFailedException;
-import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.core.security.exception.SessionExpiredException;
 import app.notesr.core.util.FilesUtilsAdapter;
 import app.notesr.core.util.WiperAdapter;
@@ -53,14 +51,14 @@ public final class CryptoManager {
      *
      * @param context  The application context.
      * @param password The password to use for decryption.
-     * @throws DecryptionFailedException if decryption fails.
+     * @throws GeneralSecurityException if decryption fails.
      * @throws IOException if an I/O error occurs.
      */
     public void configure(Context context, char[] password)
-            throws DecryptionFailedException, IOException {
+            throws GeneralSecurityException, IOException {
         try {
             secrets = getSecrets(context, password, AesGcmCryptor.class);
-        } catch (DecryptionFailedException e) {
+        } catch (GeneralSecurityException e) {
             secrets = getSecrets(context, password, AesCbcCryptor.class);
         }
     }
@@ -115,17 +113,16 @@ public final class CryptoManager {
     /**
      * Saves the provided secrets to disk and sets them as the current active secrets.
      *
-     * @param context       The application context.
-     * @param cryptoSecrets The secrets to save and set.
-     * @throws IllegalArgumentException if the provided secrets are invalid.
-     * @throws EncryptionFailedException if saving the secrets fails.
+     * @param context                    The application context.
+     * @param cryptoSecrets              The secrets to save and set.
+     * @throws IllegalArgumentException if the provided secrets are null.
+     * @throws GeneralSecurityException if encryption of secrets before saving fails.
+     * @throws IOException               if an I/O error occurs during saving.
      */
     public void setSecrets(Context context, CryptoSecrets cryptoSecrets)
-            throws EncryptionFailedException {
-        try {
-            cryptoSecrets.validate();
-        } catch (IllegalStateException e) {
-            throw new IllegalArgumentException("Invalid CryptoSecrets provided", e);
+            throws GeneralSecurityException, IOException {
+        if (cryptoSecrets == null) {
+            throw new IllegalArgumentException("Secrets cannot be null");
         }
 
         saveSecrets(context, cryptoSecrets);
@@ -204,27 +201,24 @@ public final class CryptoManager {
      *
      * @param context       The application context.
      * @param cryptoSecrets The secrets to save.
-     * @throws EncryptionFailedException if an error occurs during encryption or writing.
+     * @throws IOException if an I/O error occurs during saving.
+     * @throws GeneralSecurityException if secrets encryption fails.
      */
     private void saveSecrets(Context context, CryptoSecrets cryptoSecrets)
-            throws EncryptionFailedException {
-        try {
-            byte[] encryptedKeyFileBytes = aesCryptorFactory
-                    .createAesCryptor(cryptoSecrets.getPassword(), AesGcmCryptor.class)
-                    .encrypt(cryptoSecrets.getKey());
+            throws IOException, GeneralSecurityException {
+        byte[] encryptedKeyFileBytes = aesCryptorFactory
+                .createAesCryptor(cryptoSecrets.getPassword(), AesGcmCryptor.class)
+                .encrypt(cryptoSecrets.getKey());
 
-            File encryptedKeyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
+        File encryptedKeyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
 
-            if (encryptedKeyFile.exists()) {
-                wiper.wipeFile(encryptedKeyFile);
-            }
-
-            filesUtils.writeFileBytes(encryptedKeyFile, encryptedKeyFileBytes);
-            setKeyHash(toSha256String(cryptoSecrets.getKey()));
-            removeOldKeyHashFileIfExists(context);
-        } catch (Exception e) {
-            throw new EncryptionFailedException(e);
+        if (encryptedKeyFile.exists()) {
+            wiper.wipeFile(encryptedKeyFile);
         }
+
+        filesUtils.writeFileBytes(encryptedKeyFile, encryptedKeyFileBytes);
+        setKeyHash(toSha256String(cryptoSecrets.getKey()));
+        removeOldKeyHashFileIfExists(context);
     }
 
     /**
@@ -234,25 +228,21 @@ public final class CryptoManager {
      * @param password     The password for decryption.
      * @param cryptorClass The cryptor class to use (e.g., AesGcmCryptor).
      * @return The decrypted {@link CryptoSecrets}.
-     * @throws DecryptionFailedException if decryption fails.
+     * @throws GeneralSecurityException if decryption fails.
      * @throws IOException               if an I/O error occurs.
      */
     private CryptoSecrets getSecrets(
             Context context,
             char[] password,
             Class<? extends AesCryptor> cryptorClass
-    ) throws DecryptionFailedException, IOException {
+    ) throws GeneralSecurityException, IOException {
 
-        try {
-            File keyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
-            byte[] encryptedKeyFileBytes = filesUtils.readFileBytes(keyFile);
-            byte[] keyFileBytes = aesCryptorFactory
-                    .createAesCryptor(password, cryptorClass)
-                    .decrypt(encryptedKeyFileBytes);
-            return new CryptoSecrets(Arrays.copyOf(keyFileBytes, keyFileBytes.length), password);
-        } catch (GeneralSecurityException e) {
-            throw new DecryptionFailedException(e);
-        }
+        File keyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
+        byte[] encryptedKeyFileBytes = filesUtils.readFileBytes(keyFile);
+        byte[] keyFileBytes = aesCryptorFactory
+                .createAesCryptor(password, cryptorClass)
+                .decrypt(encryptedKeyFileBytes);
+        return new CryptoSecrets(Arrays.copyOf(keyFileBytes, keyFileBytes.length), password);
     }
 
     /**

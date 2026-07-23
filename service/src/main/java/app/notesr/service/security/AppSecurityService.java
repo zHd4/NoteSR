@@ -9,6 +9,7 @@ import android.content.Context;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -16,8 +17,6 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.core.security.exception.DecryptionFailedException;
-import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.data.DatabaseProvider;
 import lombok.RequiredArgsConstructor;
 
@@ -122,8 +121,7 @@ public final class AppSecurityService {
      *
      * @param key the key bytes to verify against the stored hash
      * @return {@code true} if the key matches the stored hash, {@code false} otherwise
-     * @throws AppSecurityException if the key hash file is not found, an I/O error occurs,
-     *                              or the hash algorithm is not available
+     * @throws AppSecurityException if the key verification fails
      */
     public boolean isKeyMatchingWithStored(byte[] key) {
         try {
@@ -145,13 +143,13 @@ public final class AppSecurityService {
      *
      * @param password the password to authenticate with (will not be modified)
      * @throws AuthenticationFailedException if the password is invalid or decryption fails
-     * @throws AppSecurityException if an I/O error occurs during authentication
+     * @throws AppSecurityException if an unexpected error occurs during authentication
      * @see #logout()
      */
     public void authenticate(char[] password) {
         try {
             cryptoManager.configure(context, password);
-        } catch (DecryptionFailedException e) {
+        } catch (GeneralSecurityException e) {
             throw new AuthenticationFailedException("Failed to authenticate, " +
                     "invalid password or cryptographic issue");
         } catch (IOException e) {
@@ -187,17 +185,26 @@ public final class AppSecurityService {
      * to prevent sensitive data leaks.
      *
      * @param newCryptoSecrets the new secrets to set and persist
-     * @throws AppSecurityException if encryption fails during persistence
+     * @throws AppSecurityException if setting the new secrets fails
      * @throws IllegalArgumentException if the provided secrets are invalid
      */
     public void setSecrets(CryptoSecrets newCryptoSecrets) {
         try {
-            cryptoManager.setSecrets(context, newCryptoSecrets);
-        } catch (EncryptionFailedException e) {
-            throw new AppSecurityException("Failed to apply new secrets, encryption issue", e);
+            newCryptoSecrets.validate();
+        } catch (IllegalStateException e) {
+            newCryptoSecrets.destroy();
+            throw new IllegalArgumentException("Invalid new secrets", e);
         }
 
-        newCryptoSecrets.destroy();
+        try {
+            cryptoManager.setSecrets(context, newCryptoSecrets);
+        } catch (GeneralSecurityException e) {
+            throw new AppSecurityException("Failed to set new secrets, encryption issue", e);
+        } catch (IOException e) {
+            throw new AppSecurityException("Failed to set new secrets, I/O issue", e);
+        } finally {
+            newCryptoSecrets.destroy();
+        }
     }
 
     /**
@@ -205,7 +212,7 @@ public final class AppSecurityService {
      *
      * <p>This is typically used for security purposes (e.g., after detecting suspicious activity).
      *
-     * @throws AppSecurityException if an I/O error occurs during blocking
+     * @throws AppSecurityException if blocking the app fails
      * @see #unblockApp(CryptoSecrets)
      * @see #isAppBlocked()
      */
@@ -224,8 +231,8 @@ public final class AppSecurityService {
      * from the secrets must match the stored key hash.
      *
      * @param cryptoSecrets the cryptographic secrets to verify and apply before unblocking
-     * @throws AuthenticationFailedException if the key verification fails
-     * @throws AppSecurityException if an I/O error or encryption error occurs during unblocking
+     * @throws AuthenticationFailedException if the key is invalid
+     * @throws AppSecurityException if an unexpected error occurs during unblocking
      * @see #blockApp()
      */
     public void unblockApp(CryptoSecrets cryptoSecrets) {
@@ -235,15 +242,20 @@ public final class AppSecurityService {
             if (!isKeyValid) {
                 throw new AuthenticationFailedException("Failed to unblock app, invalid key");
             }
+        } catch (NoSuchAlgorithmException e) {
+            throw new AppSecurityException("Failed to unblock app, hash algorithm issue", e);
+        } catch (IOException e) {
+            throw new AppSecurityException("Failed to unblock app," +
+                    " an I/O issue has occurred during key verification", e);
+        }
 
+        try {
             cryptoManager.setSecrets(context, cryptoSecrets);
             cryptoManager.unblock(context);
         } catch (IOException e) {
             throw new AppSecurityException("Failed to unblock app, I/O issue", e);
-        } catch (EncryptionFailedException e) {
+        } catch (GeneralSecurityException e) {
             throw new AppSecurityException("Failed to unblock app, encryption issue", e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new AppSecurityException("Failed to unblock app, hash issue", e);
         }
     }
 }

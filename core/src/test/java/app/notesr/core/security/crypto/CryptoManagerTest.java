@@ -38,7 +38,6 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.SessionExpiredException;
 import app.notesr.core.util.FilesUtilsAdapter;
 import app.notesr.core.util.WiperAdapter;
@@ -260,9 +259,9 @@ class CryptoManagerTest {
                 .thenThrow(new GeneralSecurityException("fail"));
 
         assertThrows(
-                DecryptionFailedException.class,
+                GeneralSecurityException.class,
                 () -> cryptoManager.configure(null, password),
-                "configure should throw DecryptionFailedException" +
+                "configure should throw GeneralSecurityException" +
                         " when both GCM and CBC decryption fail");
 
         assertFalse(cryptoManager.isConfigured(),
@@ -340,73 +339,10 @@ class CryptoManagerTest {
     }
 
     @Test
-    void testSetSecretsThrowsWhenKeyIsNull() {
-        CryptoSecrets secrets = new CryptoSecrets(null, "password".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when key is null");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenKeyIsEmpty() {
-        CryptoSecrets secrets = new CryptoSecrets(new byte[0], "password".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when key is empty");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenKeyLengthIsInvalid() {
-        byte[] invalidKey = generateRandomBytes(MASTER_KEY_SIZE - 1);
-        CryptoSecrets secrets = new CryptoSecrets(invalidKey, "password".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when key length is invalid");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenPasswordIsNull() {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        CryptoSecrets secrets = new CryptoSecrets(key, null);
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when password is null");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenPasswordIsEmpty() {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        CryptoSecrets secrets = new CryptoSecrets(key, new char[0]);
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when password is empty");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenPasswordIsTooShort() {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        CryptoSecrets secrets = new CryptoSecrets(key, "123".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when password is too short");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenKeyIsAllZeros() {
-        byte[] key = new byte[MASTER_KEY_SIZE];
-        CryptoSecrets secrets = new CryptoSecrets(key, "password".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when key is all zeros");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenPasswordIsAllZeros() {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        CryptoSecrets secrets = new CryptoSecrets(key, new char[4]);
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when password is all zeros");
+    void testSetSecretsThrowsWhenSecretsIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> cryptoManager.setSecrets(null, null),
+                "setSecrets should throw IllegalArgumentException when secrets are null");
     }
 
     @Test
