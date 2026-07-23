@@ -46,7 +46,7 @@ import app.notesr.core.util.WiperAdapter;
 class CryptoManagerTest {
 
     private static final int MASTER_KEY_SIZE = 48;
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom(new byte[]{1, 2, 3});
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Mock
     private SharedPreferences prefs;
