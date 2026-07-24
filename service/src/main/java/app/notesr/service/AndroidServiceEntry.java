@@ -53,7 +53,7 @@ public final class AndroidServiceEntry {
     private boolean autoStart;
 
     /**
-     * Indicates whether the service requires user authorization before it
+     * Indicates whether the service requires user authentication before it
      * can be started or accessed.
      */
     @JsonProperty(index = 5)
