@@ -13,14 +13,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Arrays;
 
 import app.notesr.core.security.dto.CryptoSecrets;
-import app.notesr.core.security.exception.DecryptionFailedException;
-import app.notesr.core.security.exception.EncryptionFailedException;
 import app.notesr.core.security.exception.SessionExpiredException;
 import app.notesr.core.util.FilesUtilsAdapter;
 import app.notesr.core.util.WiperAdapter;
@@ -42,7 +41,6 @@ public final class CryptoManager {
     private final SharedPreferences prefs;
     private final FilesUtilsAdapter filesUtils;
     private final WiperAdapter wiper;
-    private final SecureRandom secureRandom;
     private final AesCryptorFactory aesCryptorFactory;
 
     private CryptoSecrets secrets;
@@ -53,15 +51,15 @@ public final class CryptoManager {
      *
      * @param context  The application context.
      * @param password The password to use for decryption.
-     * @return {@code true} if configuration was successful, {@code false} if decryption failed.
+     * @throws GeneralSecurityException if decryption fails.
      * @throws IOException if an I/O error occurs.
      */
-    public boolean configure(Context context, char[] password) throws IOException {
+    public void configure(Context context, char[] password)
+            throws GeneralSecurityException, IOException {
         try {
-            this.secrets = tryGetSecretsWithFallback(context, password);
-            return true;
-        } catch (DecryptionFailedException e) {
-            return false;
+            secrets = getSecrets(context, password, AesGcmCryptor.class);
+        } catch (GeneralSecurityException e) {
+            secrets = getSecrets(context, password, AesCbcCryptor.class);
         }
     }
 
@@ -96,18 +94,6 @@ public final class CryptoManager {
     }
 
     /**
-     * Generates a new set of {@link CryptoSecrets} with a randomly generated master key.
-     *
-     * @param password The password to associate with the new secrets.
-     * @return A new {@link CryptoSecrets} instance.
-     */
-    public CryptoSecrets generateSecrets(char[] password) {
-        byte[] key = new byte[CryptoSecrets.MASTER_KEY_SIZE];
-        secureRandom.nextBytes(key);
-        return new CryptoSecrets(key, password);
-    }
-
-    /**
      * Retrieves a copy of the current {@link CryptoSecrets}.
      *
      * @return A copy of the current secrets.
@@ -127,17 +113,16 @@ public final class CryptoManager {
     /**
      * Saves the provided secrets to disk and sets them as the current active secrets.
      *
-     * @param context       The application context.
-     * @param cryptoSecrets The secrets to save and set.
-     * @throws IllegalArgumentException if the provided secrets are invalid.
-     * @throws EncryptionFailedException if saving the secrets fails.
+     * @param context                    The application context.
+     * @param cryptoSecrets              The secrets to save and set.
+     * @throws IllegalArgumentException if the provided secrets are null.
+     * @throws GeneralSecurityException if encryption of secrets before saving fails.
+     * @throws IOException               if an I/O error occurs during saving.
      */
     public void setSecrets(Context context, CryptoSecrets cryptoSecrets)
-            throws EncryptionFailedException {
-        try {
-            cryptoSecrets.validate();
-        } catch (IllegalStateException e) {
-            throw new IllegalArgumentException("Invalid CryptoSecrets provided", e);
+            throws GeneralSecurityException, IOException {
+        if (cryptoSecrets == null) {
+            throw new IllegalArgumentException("Secrets cannot be null");
         }
 
         saveSecrets(context, cryptoSecrets);
@@ -154,18 +139,17 @@ public final class CryptoManager {
      *
      * @param context The application context.
      * @param key     The key to verify.
-     * @return {@code true} if the key is valid or no hash is stored, {@code false} otherwise.
+     * @return {@code true} if the key is valid, {@code false} otherwise.
+     * @throws FileNotFoundException    if the key hash is not found.
      * @throws IOException              if an I/O error occurs while reading the hash.
      * @throws NoSuchAlgorithmException if the hashing algorithm is not available.
      */
     public boolean verifyKey(Context context, byte[] key)
             throws IOException, NoSuchAlgorithmException {
         byte[] originalHash = getKeyHash(context);
-        if (originalHash != null) {
-            byte[] providedHash = toSha256Bytes(key);
-            return Arrays.equals(originalHash, providedHash);
-        }
-        return true;
+        byte[] providedHash = toSha256Bytes(key);
+
+        return Arrays.equals(originalHash, providedHash);
     }
 
     /**
@@ -212,50 +196,29 @@ public final class CryptoManager {
     }
 
     /**
-     * Attempts to retrieve secrets using the modern AES-GCM cryptor, falling back to AES-CBC
-     * for compatibility with older versions.
-     *
-     * @param context  The application context.
-     * @param password The password for decryption.
-     * @return The retrieved {@link CryptoSecrets}.
-     * @throws DecryptionFailedException if decryption fails with both cryptors.
-     */
-    private CryptoSecrets tryGetSecretsWithFallback(Context context, char[] password)
-            throws DecryptionFailedException {
-        try {
-            return getSecrets(context, password, AesGcmCryptor.class);
-        } catch (DecryptionFailedException e) {
-            return getSecrets(context, password, AesCbcCryptor.class);
-        }
-    }
-
-    /**
      * Encrypts and saves the provided secrets to the internal storage.
      * Also updates the key hash in preferences.
      *
      * @param context       The application context.
      * @param cryptoSecrets The secrets to save.
-     * @throws EncryptionFailedException if an error occurs during encryption or writing.
+     * @throws IOException if an I/O error occurs during saving.
+     * @throws GeneralSecurityException if secrets encryption fails.
      */
     private void saveSecrets(Context context, CryptoSecrets cryptoSecrets)
-            throws EncryptionFailedException {
-        try {
-            byte[] encryptedKeyFileBytes = aesCryptorFactory
-                    .createAesCryptor(cryptoSecrets.getPassword(), AesGcmCryptor.class)
-                    .encrypt(cryptoSecrets.getKey());
+            throws IOException, GeneralSecurityException {
+        byte[] encryptedKeyFileBytes = aesCryptorFactory
+                .createAesCryptor(cryptoSecrets.getPassword(), AesGcmCryptor.class)
+                .encrypt(cryptoSecrets.getKey());
 
-            File encryptedKeyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
+        File encryptedKeyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
 
-            if (encryptedKeyFile.exists()) {
-                wiper.wipeFile(encryptedKeyFile);
-            }
-
-            filesUtils.writeFileBytes(encryptedKeyFile, encryptedKeyFileBytes);
-            setKeyHash(toSha256String(cryptoSecrets.getKey()));
-            removeOldKeyHashFileIfExists(context);
-        } catch (Exception e) {
-            throw new EncryptionFailedException(e);
+        if (encryptedKeyFile.exists()) {
+            wiper.wipeFile(encryptedKeyFile);
         }
+
+        filesUtils.writeFileBytes(encryptedKeyFile, encryptedKeyFileBytes);
+        setKeyHash(toSha256String(cryptoSecrets.getKey()));
+        removeOldKeyHashFileIfExists(context);
     }
 
     /**
@@ -265,32 +228,30 @@ public final class CryptoManager {
      * @param password     The password for decryption.
      * @param cryptorClass The cryptor class to use (e.g., AesGcmCryptor).
      * @return The decrypted {@link CryptoSecrets}.
-     * @throws DecryptionFailedException if decryption fails.
+     * @throws GeneralSecurityException if decryption fails.
+     * @throws IOException               if an I/O error occurs.
      */
     private CryptoSecrets getSecrets(
             Context context,
             char[] password,
             Class<? extends AesCryptor> cryptorClass
-    ) throws DecryptionFailedException {
+    ) throws GeneralSecurityException, IOException {
 
-        try {
-            File keyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
-            byte[] encryptedKeyFileBytes = filesUtils.readFileBytes(keyFile);
-            byte[] keyFileBytes = aesCryptorFactory
-                    .createAesCryptor(password, cryptorClass)
-                    .decrypt(encryptedKeyFileBytes);
-            return new CryptoSecrets(Arrays.copyOf(keyFileBytes, keyFileBytes.length), password);
-        } catch (Exception e) {
-            throw new DecryptionFailedException(e);
-        }
+        File keyFile = filesUtils.getInternalFile(context, ENCRYPTED_KEY_FILENAME);
+        byte[] encryptedKeyFileBytes = filesUtils.readFileBytes(keyFile);
+        byte[] keyFileBytes = aesCryptorFactory
+                .createAesCryptor(password, cryptorClass)
+                .decrypt(encryptedKeyFileBytes);
+        return new CryptoSecrets(Arrays.copyOf(keyFileBytes, keyFileBytes.length), password);
     }
 
     /**
      * Retrieves the stored master key hash.
      *
      * @param context The application context.
-     * @return The key hash as a byte array, or {@code null} if not found.
-     * @throws IOException if an I/O error occurs.
+     * @return The key hash as a byte array.
+     * @throws FileNotFoundException if the key hash is not found in preferences and file.
+     * @throws IOException if or an I/O error occurs.
      */
     private byte[] getKeyHash(Context context) throws IOException {
         String keyHash = prefs.getString(KEY_HASH_PREF, null);
@@ -305,7 +266,7 @@ public final class CryptoManager {
             return filesUtils.readFileBytes(keyHashFile);
         }
 
-        return null;
+        throw new FileNotFoundException("Key hash not found in preferences or file");
     }
 
     /**

@@ -27,8 +27,8 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.service.security.AppSecurityException;
+import app.notesr.service.security.AppSecurityService;
 
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
@@ -40,11 +40,15 @@ import java.util.Objects;
 public final class KeyRecoveryActivity extends ActivityBase {
     private static final String TAG = KeyRecoveryActivity.class.toString();
 
+    private AppSecurityService appSecurityService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_key_recovery);
         applyInsets(findViewById(R.id.main));
+
+        appSecurityService = new AppSecurityService(getApplicationContext());
 
         ActionBar actionBar = getSupportActionBar();
         Objects.requireNonNull(actionBar).setTitle(getString(R.string.key_recovery));
@@ -95,23 +99,28 @@ public final class KeyRecoveryActivity extends ActivityBase {
         byte[] keyBytes = getKeyBytesFromHex(hexKeyCopy);
 
         Context context = getApplicationContext();
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
 
-        if (cryptoManager.verifyKey(context, keyBytes)) {
-            byte[] hexKeyBytes = charsToBytes(hexKey, StandardCharsets.UTF_8);
-            SecretCache.put(AuthActivity.HEX_KEY, hexKeyBytes);
+        try {
+            if (appSecurityService.isKeyMatchingWithStored(keyBytes)) {
+                byte[] hexKeyBytes = charsToBytes(hexKey, StandardCharsets.UTF_8);
+                SecretCache.put(AuthActivity.HEX_KEY, hexKeyBytes);
 
-            // The hex key has already been wiped by charsToBytes
-            wipeSecretData(keyBytes, hexKeyField);
+                // The hex key has already been wiped by charsToBytes
+                wipeSecretData(keyBytes, hexKeyField);
 
-            startActivity(new Intent(context, AuthActivity.class)
-                    .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.KEY_RECOVERY.toString()));
+                var targetMode = AuthActivity.Mode.KEY_RECOVERY;
+                var authActivityIntent = new Intent(context, AuthActivity.class)
+                        .putExtra(AuthActivity.EXTRA_MODE, targetMode.toString());
 
-            finish();
-        } else {
-            showToastMessage(this,
-                    getString(R.string.wrong_key),
-                    Toast.LENGTH_SHORT);
+                startActivity(authActivityIntent);
+                finish();
+            } else {
+                showToastMessage(this,
+                        getString(R.string.wrong_key),
+                        Toast.LENGTH_SHORT);
+            }
+        } catch (AppSecurityException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -18,9 +18,8 @@ import java.util.List;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.util.SecureStringBuilder;
+import app.notesr.service.security.AppSecurityService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -32,7 +31,7 @@ public final class AuthActivity extends ActivityBase {
     @AllArgsConstructor
     @Getter
     public enum Mode {
-        AUTHORIZATION("authorization"),
+        AUTHENTICATION("authentication"),
         CREATE_PASSWORD("create_password"),
         CHANGE_PASSWORD("change_password"),
         KEY_RECOVERY("key_recovery");
@@ -57,8 +56,8 @@ public final class AuthActivity extends ActivityBase {
         applyInsets(findViewById(R.id.main));
 
         String mode = getIntent().getStringExtra(EXTRA_MODE);
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
-        extension = new AuthActivityExtension(this, cryptoManager, passwordBuilder);
+        var appSecurityService = new AppSecurityService(getApplicationContext());
+        extension = new AuthActivityExtension(this, appSecurityService, passwordBuilder);
 
         try {
             currentMode = Mode.valueOf(mode);
@@ -86,7 +85,7 @@ public final class AuthActivity extends ActivityBase {
         Button changeLayoutButton = findViewById(R.id.changeKeyboardLayoutButton);
 
         switch (currentMode) {
-            case AUTHORIZATION -> {
+            case AUTHENTICATION -> {
                 topLabel.setText(R.string.enter_access_code);
                 disableBackButton(this);
             }
@@ -123,7 +122,7 @@ public final class AuthActivity extends ActivityBase {
 
         authButton.setOnClickListener(view -> {
             switch (currentMode) {
-                case AUTHORIZATION -> extension.authorize();
+                case AUTHENTICATION -> extension.authenticate();
                 case CREATE_PASSWORD -> extension.createPassword();
                 case KEY_RECOVERY -> extension.recoverKey();
                 case CHANGE_PASSWORD -> extension.changePassword();

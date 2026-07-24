@@ -17,10 +17,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
+import app.notesr.service.security.AppSecurityService;
 
 public class ActivityBase extends AppCompatActivity {
+
+    private AppSecurityService appSecurityService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,8 @@ public class ActivityBase extends AppCompatActivity {
 
         int windowFlag = WindowManager.LayoutParams.FLAG_SECURE;
         getWindow().setFlags(windowFlag, windowFlag);
+
+        appSecurityService = new AppSecurityService(getApplicationContext());
 
         if (requiresSession() && !isSessionActive()) {
             restartApp();
@@ -58,8 +61,7 @@ public class ActivityBase extends AppCompatActivity {
     }
 
     private boolean isSessionActive() {
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
-        return cryptoManager.isConfigured();
+        return appSecurityService.isAuthConfigured();
     }
 
     private void restartApp() {

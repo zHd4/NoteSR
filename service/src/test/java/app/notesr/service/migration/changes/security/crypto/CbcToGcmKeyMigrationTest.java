@@ -15,10 +15,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import app.notesr.core.security.exception.EncryptionFailedException;
+
 import app.notesr.service.migration.AppMigrationException;
-import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.service.security.AppSecurityException;
+import app.notesr.service.security.AppSecurityService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,53 +35,51 @@ class CbcToGcmKeyMigrationTest {
     private Context context;
 
     @Mock
-    private CryptoManager cryptoManager;
+    private AppSecurityService appSecurityService;
 
-    private CbcToGcmKeyMigration migration;
+    private CbcToGcmKeyMigration cbcToGcmKeyMigration;
 
     @BeforeEach
     void setUp() {
-        migration = new CbcToGcmKeyMigration(1, 2) {
+        cbcToGcmKeyMigration = new CbcToGcmKeyMigration(1, 2) {
             @Override
-            CryptoManager getCryptoManager(Context context) {
-                return cryptoManager;
+            AppSecurityService getAppSecurityService(Context context) {
+                return appSecurityService;
             }
         };
     }
 
     @Test
-    void testMigrateSuccess() throws EncryptionFailedException {
+    void testMigrateSuccess() {
         CryptoSecrets secrets = new CryptoSecrets(new byte[]{1, 2, 3}, "123".toCharArray());
 
-        when(cryptoManager.getSecrets()).thenReturn(secrets);
-        doNothing().when(cryptoManager).setSecrets(context, secrets);
+        when(appSecurityService.getActualSecrets()).thenReturn(secrets);
+        doNothing().when(appSecurityService).setSecrets(secrets);
 
-        assertDoesNotThrow(() -> migration.migrate(context));
-        verify(cryptoManager).getSecrets();
-        verify(cryptoManager).setSecrets(context, secrets);
+        assertDoesNotThrow(() -> cbcToGcmKeyMigration.migrate(context));
+        verify(appSecurityService).getActualSecrets();
+        verify(appSecurityService).setSecrets(secrets);
     }
 
     @Test
-    void testMigrateWhenEncryptionFailsThrowsAppMigrationException()
-            throws EncryptionFailedException {
-        doThrow(new EncryptionFailedException()).when(cryptoManager).setSecrets(any(), any());
+    void testMigrateWhenEncryptionFailsThrowsAppMigrationException() {
+        doThrow(new AppSecurityException("Stub")).when(appSecurityService).setSecrets(any());
 
         AppMigrationException exception = assertThrows(
             AppMigrationException.class,
-            () -> migration.migrate(context)
+            () -> cbcToGcmKeyMigration.migrate(context)
         );
 
         assertEquals("Failed to migrate key", exception.getMessage());
     }
 
     @Test
-    void testMigrateWhenSecretsValidationFailsThrowsAppMigrationException()
-            throws EncryptionFailedException {
-        doThrow(new IllegalArgumentException()).when(cryptoManager).setSecrets(any(), any());
+    void testMigrateWhenSecretsValidationFailsThrowsAppMigrationException() {
+        doThrow(new IllegalArgumentException()).when(appSecurityService).setSecrets(any());
 
         AppMigrationException exception = assertThrows(
                 AppMigrationException.class,
-                () -> migration.migrate(context)
+                () -> cbcToGcmKeyMigration.migrate(context)
         );
 
         assertEquals("Failed to migrate key", exception.getMessage());

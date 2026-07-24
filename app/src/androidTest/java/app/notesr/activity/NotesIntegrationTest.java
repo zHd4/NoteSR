@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr;
+package app.notesr.activity;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -20,8 +20,6 @@ import androidx.test.core.app.ApplicationProvider;
 
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesGcmCryptor;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
@@ -31,6 +29,7 @@ import app.notesr.data.model.Note;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.core.util.FilesUtilsAdapter;
+import app.notesr.service.security.AppSecurityService;
 import io.bloco.faker.Faker;
 
 import org.junit.Before;
@@ -58,14 +57,14 @@ public class NotesIntegrationTest {
     private Note testNote;
 
     @BeforeClass
-    public static void beforeAll() throws Exception {
+    public static void beforeAll() {
         context = ApplicationProvider.getApplicationContext();
 
         FilesUtilsAdapter filesUtils = new FilesUtils();
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(context);
+        var appSecurityService = new AppSecurityService(context);
         CryptoSecrets cryptoSecrets = getTestSecrets();
 
-        cryptoManager.setSecrets(context, cryptoSecrets);
+        appSecurityService.setSecrets(cryptoSecrets);
 
         cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
         db = DatabaseProvider.getInstance(context);

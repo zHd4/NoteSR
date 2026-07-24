@@ -40,12 +40,11 @@ import app.notesr.activity.note.editor.OpenNoteActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.GenerateNewKeyAction;
 import app.notesr.activity.security.LockAction;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
+import app.notesr.service.security.AppSecurityService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,10 +73,10 @@ public final class NotesListActivity extends ActivityBase {
         setContentView(R.layout.activity_note_list);
         applyInsets(findViewById(R.id.main));
 
-        CryptoManager cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        var appSecurityService = new AppSecurityService(getApplicationContext());
 
-        lockAction = new LockAction(this, cryptoManager);
-        generateNewKeyAction = new GenerateNewKeyAction(this, cryptoManager);
+        lockAction = new LockAction(this, appSecurityService);
+        generateNewKeyAction = new GenerateNewKeyAction(this, appSecurityService);
 
         noteEditorLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getOpenNoteResultCallback());

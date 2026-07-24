@@ -28,8 +28,8 @@ import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.service.security.AppSecurityService;
 
 import java.util.Set;
 
@@ -74,7 +74,7 @@ public final class ImportAndroidService extends AndroidService implements Runnab
         }
 
         sourceUri = intent.getData();
-        secrets = CryptoManagerProvider.getInstance(getApplicationContext()).getSecrets();
+        secrets = new AppSecurityService(getApplicationContext()).getActualSecrets();
         importService = getImportService();
 
         var thread = new Thread(this);
@@ -131,6 +131,7 @@ public final class ImportAndroidService extends AndroidService implements Runnab
         var db = DatabaseProvider.getInstance(context);
         var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
 
+        var appSecurityService = new AppSecurityService(context);
         var noteService = new NoteService(db);
         var fileService = new FileService(context, db, cryptor,
                 new FilesUtils());
@@ -140,6 +141,7 @@ public final class ImportAndroidService extends AndroidService implements Runnab
         return new ImportService(
                 this,
                 db,
+                appSecurityService,
                 noteService,
                 fileService,
                 secrets,

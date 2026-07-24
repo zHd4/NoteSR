@@ -8,8 +8,6 @@ package app.notesr.core.security.crypto;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.security.SecureRandom;
-
 import app.notesr.core.util.FilesUtils;
 import app.notesr.core.util.Wiper;
 import lombok.AccessLevel;
@@ -31,7 +29,6 @@ public final class CryptoManagerProvider {
                             prefs,
                             new FilesUtils(),
                             new Wiper(),
-                            new SecureRandom(),
                             new AesCryptorFactory()
                     );
                 }

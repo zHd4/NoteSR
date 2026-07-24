@@ -6,7 +6,7 @@
 package app.notesr.core.security.crypto;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,7 +46,7 @@ import app.notesr.core.util.WiperAdapter;
 class CryptoManagerTest {
 
     private static final int MASTER_KEY_SIZE = 48;
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom(new byte[]{1, 2, 3});
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Mock
     private SharedPreferences prefs;
@@ -67,16 +67,7 @@ class CryptoManagerTest {
 
     @BeforeEach
     void setUp() {
-        cryptoManager = new CryptoManager(prefs, filesUtils, wiper, SECURE_RANDOM, aesCryptorFactory);
-    }
-
-    @Test
-    void testGenerateSecretsCreatesKeyOfCorrectSize() {
-        CryptoSecrets secrets = cryptoManager.generateSecrets("pass".toCharArray());
-        assertEquals(MASTER_KEY_SIZE, secrets.getKey().length,
-                "Generated key size should match constant");
-        assertArrayEquals("pass".toCharArray(), secrets.getPassword(),
-                "Generated secrets should contain the provided password");
+        cryptoManager = new CryptoManager(prefs, filesUtils, wiper, aesCryptorFactory);
     }
 
     @Test
@@ -123,7 +114,7 @@ class CryptoManagerTest {
 
     @Test
     void testVerifyKeyReturnsTrueWhenHashesMatch() throws Exception {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] key = generateRandomBytes();
         String hash = toSha256String(key);
         when(prefs.getString("key_hash", null)).thenReturn(hash);
 
@@ -136,8 +127,8 @@ class CryptoManagerTest {
 
     @Test
     void testVerifyKeyReturnsFalseWhenHashesDoNotMatch() throws Exception {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        byte[] otherKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] key = generateRandomBytes();
+        byte[] otherKey = generateRandomBytes();
         byte[] hash = toSha256Bytes(otherKey);
         when(prefs.getString("key_hash", null)).thenReturn(toSha256String(hash));
 
@@ -173,7 +164,7 @@ class CryptoManagerTest {
 
         when(mockKeyHashFile.exists()).thenReturn(false);
 
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] key = generateRandomBytes();
         CryptoSecrets secrets = new CryptoSecrets(key, "password".toCharArray());
 
         cryptoManager.setSecrets(null, secrets);
@@ -195,8 +186,8 @@ class CryptoManagerTest {
     @Test
     void testConfigureSuccess() throws Exception {
         char[] password = "password".toCharArray();
-        byte[] encryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
-        byte[] decryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] encryptedKey = generateRandomBytes();
+        byte[] decryptedKey = generateRandomBytes();
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
@@ -208,9 +199,9 @@ class CryptoManagerTest {
                 .thenReturn(mockCryptor);
         when(mockCryptor.decrypt(encryptedKey)).thenReturn(decryptedKey);
 
-        boolean result = cryptoManager.configure(null, password);
+        assertDoesNotThrow(() -> cryptoManager.configure(null, password),
+                "configure should not throw exception");
 
-        assertTrue(result, "configure should return true on success");
         assertTrue(cryptoManager.isConfigured(),
                 "CryptoManager should be configured after successful configuration");
         assertArrayEquals(decryptedKey, cryptoManager.getSecrets().getKey(),
@@ -220,8 +211,8 @@ class CryptoManagerTest {
     @Test
     void testConfigureFallbackToCbc() throws Exception {
         char[] password = "password".toCharArray();
-        byte[] encryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
-        byte[] decryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] encryptedKey = generateRandomBytes();
+        byte[] decryptedKey = generateRandomBytes();
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
@@ -236,10 +227,9 @@ class CryptoManagerTest {
                 .thenThrow(new GeneralSecurityException("GCM failed"));
         when(mockCbc.decrypt(encryptedKey)).thenReturn(decryptedKey);
 
-        boolean result = cryptoManager.configure(null, password);
+        assertDoesNotThrow(() -> cryptoManager.configure(null, password),
+                "configure should not throw exception when fallback to CBC succeeds");
 
-        assertTrue(result,
-                "configure should return true when fallback to CBC succeeds");
         assertTrue(cryptoManager.isConfigured(),
                 "CryptoManager should be configured after successful fallback");
         assertArrayEquals(decryptedKey, cryptoManager.getSecrets().getKey(),
@@ -249,7 +239,7 @@ class CryptoManagerTest {
     @Test
     void testConfigureFailure() throws Exception {
         char[] password = "wrong".toCharArray();
-        byte[] encryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] encryptedKey = generateRandomBytes();
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
@@ -268,10 +258,12 @@ class CryptoManagerTest {
         when(mockCbc.decrypt(any()))
                 .thenThrow(new GeneralSecurityException("fail"));
 
-        boolean result = cryptoManager.configure(null, password);
+        assertThrows(
+                GeneralSecurityException.class,
+                () -> cryptoManager.configure(null, password),
+                "configure should throw GeneralSecurityException" +
+                        " when both GCM and CBC decryption fail");
 
-        assertFalse(result,
-                "configure should return false when both GCM and CBC decryption fail");
         assertFalse(cryptoManager.isConfigured(),
                 "CryptoManager should not be configured" +
                         " after a failed configuration attempt");
@@ -320,8 +312,8 @@ class CryptoManagerTest {
     @Test
     void testDestroySecrets() throws Exception {
         char[] password = "password".toCharArray();
-        byte[] encryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
-        byte[] decryptedKey = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] encryptedKey = generateRandomBytes();
+        byte[] decryptedKey = generateRandomBytes();
 
         File keyFile = mock(File.class);
         when(filesUtils.getInternalFile(null, "key.encrypted")).thenReturn(keyFile);
@@ -347,73 +339,10 @@ class CryptoManagerTest {
     }
 
     @Test
-    void testSetSecretsThrowsWhenKeyIsNull() {
-        CryptoSecrets secrets = new CryptoSecrets(null, "password".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when key is null");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenKeyIsEmpty() {
-        CryptoSecrets secrets = new CryptoSecrets(new byte[0], "password".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when key is empty");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenKeyLengthIsInvalid() {
-        byte[] invalidKey = generateRandomBytes(MASTER_KEY_SIZE - 1);
-        CryptoSecrets secrets = new CryptoSecrets(invalidKey, "password".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when key length is invalid");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenPasswordIsNull() {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        CryptoSecrets secrets = new CryptoSecrets(key, null);
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when password is null");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenPasswordIsEmpty() {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        CryptoSecrets secrets = new CryptoSecrets(key, new char[0]);
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when password is empty");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenPasswordIsTooShort() {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        CryptoSecrets secrets = new CryptoSecrets(key, "123".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when password is too short");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenKeyIsAllZeros() {
-        byte[] key = new byte[MASTER_KEY_SIZE];
-        CryptoSecrets secrets = new CryptoSecrets(key, "password".toCharArray());
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when key is all zeros");
-    }
-
-    @Test
-    void testSetSecretsThrowsWhenPasswordIsAllZeros() {
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
-        CryptoSecrets secrets = new CryptoSecrets(key, new char[4]);
-
-        assertThrows(IllegalArgumentException.class, () -> cryptoManager.setSecrets(null, secrets),
-                "setSecrets should throw IllegalArgumentException when password is all zeros");
+    void testSetSecretsThrowsWhenSecretsIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> cryptoManager.setSecrets(null, null),
+                "setSecrets should throw IllegalArgumentException when secrets are null");
     }
 
     @Test
@@ -441,7 +370,7 @@ class CryptoManagerTest {
 
         when(mockKeyHashFile.exists()).thenReturn(false);
 
-        byte[] key = generateRandomBytes(MASTER_KEY_SIZE);
+        byte[] key = generateRandomBytes();
         CryptoSecrets secrets = new CryptoSecrets(key, "password".toCharArray());
 
         cryptoManager.setSecrets(null, secrets);
@@ -450,8 +379,8 @@ class CryptoManagerTest {
                 "CryptoManager should be configured after setting valid secrets");
     }
 
-    private byte[] generateRandomBytes(int size) {
-        byte[] key = new byte[size];
+    private byte[] generateRandomBytes() {
+        byte[] key = new byte[MASTER_KEY_SIZE];
         SECURE_RANDOM.nextBytes(key);
         return key;
     }

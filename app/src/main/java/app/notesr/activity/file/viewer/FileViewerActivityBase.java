@@ -27,12 +27,13 @@ import app.notesr.activity.DialogFactory;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.file.helper.FileIOHelper;
+import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesCryptorFactory;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.FileInfo;
 import app.notesr.service.file.FileService;
+import app.notesr.service.security.AppSecurityService;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,8 +62,8 @@ public class FileViewerActivityBase extends ActivityBase {
 
         var context = getApplicationContext();
 
-        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
+        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
+                new AppSecurityService(context).getActualSecrets());
 
         fileService = new FileService(
                 context,

@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.notesr.R;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.lifecycle.AppCloseAndroidService;
@@ -22,6 +20,7 @@ import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
+import app.notesr.service.security.AppSecurityService;
 
 public final class MainActivity extends ActivityBase {
 
@@ -37,10 +36,10 @@ public final class MainActivity extends ActivityBase {
         new AndroidServiceBootstrapper(serviceRegistry)
                 .startServicesPreAuth(getApplicationContext());
 
-        var cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        var appSecurityService = new AppSecurityService(getApplicationContext());
         var intentSuppliers = getIntentSuppliers(
                 getApplicationContext(),
-                cryptoManager,
+                appSecurityService,
                 fsaResolver
         );
 
@@ -58,22 +57,22 @@ public final class MainActivity extends ActivityBase {
 
     private List<Supplier<Intent>> getIntentSuppliers(
             Context context,
-            CryptoManager cryptoManager,
+            AppSecurityService appSecurityService,
             FsaResolver fsaResolver
     ) {
         return List.of(
-                () -> cryptoManager.isBlocked(getApplicationContext())
+                () -> appSecurityService.isAppBlocked()
                         ? new Intent(context, KeyRecoveryActivity.class)
                         : null,
 
-                () -> !cryptoManager.isKeyExists(getApplicationContext())
+                () -> !appSecurityService.isKeyExists()
                         ? new Intent(context, StartActivity.class)
                         : null,
 
-                () -> !cryptoManager.isConfigured()
+                () -> !appSecurityService.isAuthConfigured()
                         ? new Intent(context, AuthActivity.class)
                         .putExtra(AuthActivity.EXTRA_MODE,
-                                AuthActivity.Mode.AUTHORIZATION.toString())
+                                AuthActivity.Mode.AUTHENTICATION.toString())
                         : null,
 
                 () -> {

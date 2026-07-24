@@ -12,8 +12,8 @@ import android.content.Intent;
 
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.service.security.AppSecurityService;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.charset.CharacterCodingException;
@@ -24,10 +24,10 @@ import java.util.Arrays;
 public final class GenerateNewKeyAction {
 
     private final ActivityBase activity;
-    private final CryptoManager cryptoManager;
+    private final AppSecurityService appSecurityService;
 
     public void startActivity() {
-        CryptoSecrets secrets = cryptoManager.getSecrets();
+        CryptoSecrets secrets = appSecurityService.getActualSecrets();
         char[] passwordChars = Arrays.copyOf(secrets.getPassword(), secrets.getPassword().length);
 
         try {

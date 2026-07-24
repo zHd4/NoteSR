@@ -23,11 +23,11 @@ import app.notesr.R;
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.AesGcmCryptor;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.crypto.EncryptedMediaDataSourceFactory;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
+import app.notesr.service.security.AppSecurityService;
 
 import java.io.File;
 import java.util.stream.Collectors;
@@ -59,8 +59,8 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
         var context = getApplicationContext();
         var db = DatabaseProvider.getInstance(context);
 
-        var secrets = CryptoManagerProvider.getInstance(context).getSecrets();
-        var cryptor = AesCryptorFactory.createAesGcmCryptor(secrets);
+        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
+                new AppSecurityService(context).getActualSecrets());
 
         fileService = new FileService(context, db, cryptor, new FilesUtils());
         videoView = findViewById(R.id.video_view);
