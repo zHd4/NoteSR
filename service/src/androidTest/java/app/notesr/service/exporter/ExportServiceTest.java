@@ -56,7 +56,10 @@ public class ExportServiceTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         var appSecurityService = new AppSecurityService(context);
-        CryptoSecrets cryptoSecrets = appSecurityService.getSecretsWithRandomKey("password".toCharArray());
+        byte[] key = appSecurityService.generateMasterKey();
+        char[] password = "password".toCharArray();
+
+        CryptoSecrets cryptoSecrets = new CryptoSecrets(key, password);
 
         AesCryptor cryptor = new AesGcmCryptor(getSecretKeyFromSecrets(cryptoSecrets));
         FilesUtilsAdapter filesUtils = new FilesUtils();

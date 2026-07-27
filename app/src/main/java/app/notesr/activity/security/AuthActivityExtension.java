@@ -73,10 +73,6 @@ public final class AuthActivityExtension {
         char[] password = proceedPasswordSetting();
 
         if (password != null) {
-            var context = activity.getApplicationContext();
-            var setupKeyActivityIntent = new Intent(context, SetupKeyActivity.class)
-                    .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.FIRST_RUN.toString());
-
             try {
                 var passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
                 SecretCache.put(SetupKeyActivity.CACHE_KEY_PASSWORD, passwordBytes);
@@ -84,7 +80,12 @@ public final class AuthActivityExtension {
                 throw new RuntimeException(e);
             }
 
+            var context = activity.getApplicationContext();
+            var setupKeyActivityIntent = new Intent(context, SetupKeyActivity.class)
+                    .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.FIRST_RUN.toString());
+
             activity.startActivity(setupKeyActivityIntent);
+            activity.finish();
         }
     }
 
@@ -103,7 +104,7 @@ public final class AuthActivityExtension {
                 char[] hexKey = bytesToChars(hexKeyBytes,
                         StandardCharsets.UTF_8);
 
-                CryptoSecrets secrets = KeyUtils.getSecretsFromHex(hexKey, password);
+                CryptoSecrets secrets = KeyUtils.getSecretsFromKeyHexAndPassword(hexKey, password);
                 appSecurityService.unblockApp(secrets);
                 secrets.destroy();
             } catch (AppSecurityException | CharacterCodingException e) {
@@ -112,6 +113,7 @@ public final class AuthActivityExtension {
 
             activity.startActivity(new Intent(activity.getApplicationContext(),
                     NotesListActivity.class));
+            activity.finish();
         }
     }
 
@@ -129,6 +131,7 @@ public final class AuthActivityExtension {
 
                 showToastMessage(R.string.updated);
                 activity.startActivity(new Intent(context, NotesListActivity.class));
+                activity.finish();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -150,6 +153,7 @@ public final class AuthActivityExtension {
             }
         } else {
             if (Arrays.equals(password, createdPassword)) {
+                resetPassword();
                 return password;
             } else {
                 showToastMessage(R.string.code_not_match);

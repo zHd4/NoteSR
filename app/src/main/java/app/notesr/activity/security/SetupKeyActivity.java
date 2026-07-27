@@ -9,10 +9,7 @@ import static java.util.Objects.requireNonNull;
 
 import static app.notesr.core.util.ActivityUtils.copyToClipboard;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
-import static app.notesr.core.util.CharUtils.bytesToChars;
-import static app.notesr.core.util.CharUtils.charsToBytes;
-import static app.notesr.core.util.KeyUtils.getKeyHexFromSecrets;
-import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
+import static app.notesr.core.util.KeyUtils.getKeyHexFromKeyBytes;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,14 +27,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.AppSecurityService;
 import lombok.Getter;
 
@@ -50,10 +42,10 @@ public final class SetupKeyActivity extends ActivityBase {
     private static final float KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT = 16;
 
     private KeySetupMode mode;
-    private char[] password;
     private ActivityResultLauncher<Intent> importKeyLauncher;
     private AppSecurityService appSecurityService;
-    private CryptoSecrets cryptoSecrets;
+
+    private byte[] newKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +56,15 @@ public final class SetupKeyActivity extends ActivityBase {
         mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
         ActionBar actionBar = requireNonNull(getSupportActionBar());
 
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(mode != KeySetupMode.FIRST_RUN);
         actionBar.setTitle(R.string.key_setup);
-
-        password = getPasswordFromCache();
 
         importKeyLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getImportKeyCallback());
         appSecurityService = getAppSecurityService();
-        cryptoSecrets = appSecurityService.getSecretsWithRandomKey(password);
 
-        char[] hexKey = getKeyHexFromSecrets(cryptoSecrets);
-        showHexKey(hexKey);
+        newKey = appSecurityService.generateMasterKey();
+        showKeyHex(newKey);
 
         Button copyToClipboardButton = findViewById(R.id.copyAesKeyHex);
         Button importButton = findViewById(R.id.importHexKeyButton);
@@ -96,9 +85,7 @@ public final class SetupKeyActivity extends ActivityBase {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressedAction();
             finish();
-
             return true;
         }
 
@@ -108,6 +95,11 @@ public final class SetupKeyActivity extends ActivityBase {
     @Override
     public void finish() {
         wipeKeyView();
+
+        if (mode == KeySetupMode.FIRST_RUN) {
+            clearCache();
+        }
+
         super.finish();
     }
 
@@ -115,19 +107,16 @@ public final class SetupKeyActivity extends ActivityBase {
         return new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                onBackPressedAction();
                 finish();
             }
         };
     }
 
-    private void onBackPressedAction() {
-        SecretCache.removeIfExists(CACHE_KEY_PASSWORD);
-    }
+    private void showKeyHex(byte[] keyBytes) {
+        char[] newHexKey = getKeyHexFromKeyBytes(keyBytes);
 
-    private void showHexKey(char[] hexKey) {
         TextView keyView = findViewById(R.id.hexKey);
-        keyView.setText(hexKey, 0, hexKey.length);
+        keyView.setText(newHexKey, 0, newHexKey.length);
 
         if (getResources().getDisplayMetrics().heightPixels <= LOW_SCREEN_HEIGHT) {
             keyView.setTextSize(KEY_VIEW_TEXT_SIZE_FOR_LOW_SCREEN_HEIGHT);
@@ -145,15 +134,6 @@ public final class SetupKeyActivity extends ActivityBase {
 
     private View.OnClickListener importKeyButtonOnClick() {
         return view -> {
-            char[] passwordCopy = Arrays.copyOf(password, password.length);
-
-            try {
-                byte[] passwordBytes = charsToBytes(passwordCopy, StandardCharsets.UTF_8);
-                SecretCache.put(ImportKeyActivity.CACHE_KEY_PASSWORD, passwordBytes);
-            } catch (CharacterCodingException e) {
-                throw new RuntimeException(e);
-            }
-
             Intent intent = new Intent(getApplicationContext(), ImportKeyActivity.class);
             importKeyLauncher.launch(intent);
         };
@@ -162,27 +142,10 @@ public final class SetupKeyActivity extends ActivityBase {
     private ActivityResultCallback<ActivityResult> getImportKeyCallback() {
         return result -> {
             if (result.getResultCode() == RESULT_OK) {
-                byte[] hexKeyBytes = SecretCache.take(ImportKeyActivity.CACHE_KEY_HEX_KEY);
-
-                try {
-                    char[] hexKey = bytesToChars(hexKeyBytes, StandardCharsets.UTF_8);
-                    cryptoSecrets = getSecretsFromHex(hexKey, password);
-                    getCompletionHandler(cryptoSecrets).handle();
-                } catch (CharacterCodingException e) {
-                    throw new RuntimeException(e);
-                }
+                newKey = SecretCache.take(ImportKeyActivity.CACHE_KEY_HEX_KEY);
+                getCompletionHandler(newKey).handle();
             }
         };
-    }
-
-    private char[] getPasswordFromCache() {
-        try {
-            byte[] passwordBytes = requireNonNull(SecretCache.take(CACHE_KEY_PASSWORD),
-                    "Password missing in secret cache");
-            return bytesToChars(passwordBytes, StandardCharsets.UTF_8);
-        } catch (CharacterCodingException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private AppSecurityService getAppSecurityService() {
@@ -190,11 +153,16 @@ public final class SetupKeyActivity extends ActivityBase {
     }
 
     private View.OnClickListener nextButtonOnClick() {
-        return view -> getCompletionHandler(cryptoSecrets).handle();
+        return view -> getCompletionHandler(newKey).handle();
     }
 
-    private KeySetupCompletionHandler getCompletionHandler(CryptoSecrets cryptoSecrets) {
-        return new KeySetupCompletionHandler(this, appSecurityService, mode, cryptoSecrets);
+    private KeySetupCompletionHandler getCompletionHandler(byte[] keyBytes) {
+        return new KeySetupCompletionHandler(this, appSecurityService, mode, keyBytes);
+    }
+
+    private void clearCache() {
+        SecretCache.removeIfExists(ImportKeyActivity.CACHE_KEY_HEX_KEY);
+        SecretCache.removeIfExists(SetupKeyActivity.CACHE_KEY_PASSWORD);
     }
 
     private void wipeKeyView() {

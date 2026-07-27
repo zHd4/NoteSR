@@ -5,6 +5,7 @@
 
 package app.notesr.activity.security;
 
+import static app.notesr.core.util.CharUtils.bytesToChars;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 
 import android.content.Context;
@@ -32,7 +33,7 @@ public final class KeySetupCompletionHandler {
     private final ActivityBase activity;
     private final AppSecurityService appSecurityService;
     private final KeySetupMode mode;
-    private final CryptoSecrets cryptoSecrets;
+    private final byte[] keyBytes;
 
     public void handle() {
         switch (mode) {
@@ -44,7 +45,10 @@ public final class KeySetupCompletionHandler {
 
     private void proceedFirstRun() {
         try {
-            appSecurityService.setSecrets(cryptoSecrets);
+            char[] password = getCurrentPassword();
+
+            CryptoSecrets newSecrets = new CryptoSecrets(keyBytes, password);
+            appSecurityService.setSecrets(newSecrets);
 
             Context context = activity.getApplicationContext();
             Intent nextIntent = new Intent(context, NotesListActivity.class);
@@ -73,19 +77,15 @@ public final class KeySetupCompletionHandler {
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.yes,
                         (dialog, which) -> onRegenerationConfirmed())
-                .setNegativeButton(R.string.no, null)
+                .setNegativeButton(R.string.no,
+                        (dialog, which) -> onRegenerationCanceled())
                 .create()
                 .show();
     }
 
     private void onRegenerationConfirmed() {
-        byte[] keyBytes = Arrays.copyOf(cryptoSecrets.getKey(),
-                cryptoSecrets.getKey().length);
-
-        char[] password = Arrays.copyOf(cryptoSecrets.getPassword(),
-                cryptoSecrets.getPassword().length);
-
         try {
+            char[] password = getCurrentPassword();
             byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
 
             SecretCache.put(SecretsUpdateAndroidService.NEW_KEY, keyBytes);
@@ -94,11 +94,36 @@ public final class KeySetupCompletionHandler {
             throw new RuntimeException(e);
         }
 
-        cryptoSecrets.destroy();
-
         Intent reEncryptionIntent = new Intent(activity.getApplicationContext(),
                 ReEncryptionActivity.class);
+
         activity.startActivity(reEncryptionIntent);
         activity.finish();
+    }
+
+    private void onRegenerationCanceled() {
+        if (keyBytes != null) {
+            Arrays.fill(keyBytes, (byte) 0);
+        }
+    }
+
+    private char[] getCurrentPassword() throws CharacterCodingException {
+        if (appSecurityService.isAuthConfigured()) {
+            CryptoSecrets cryptoSecrets = appSecurityService.getActualSecrets();
+
+            char[] password = cryptoSecrets.getPassword();
+            char[] passwordCopy = Arrays.copyOf(password, password.length);
+
+            cryptoSecrets.destroy();
+            return passwordCopy;
+        } else {
+            if (SecretCache.contains(SetupKeyActivity.CACHE_KEY_PASSWORD)) {
+                return bytesToChars(SecretCache.take(SetupKeyActivity.CACHE_KEY_PASSWORD),
+                        StandardCharsets.UTF_8);
+            }
+        }
+
+        throw new IllegalStateException("App authentication is not configured" +
+                " and password is not found in cache");
     }
 }

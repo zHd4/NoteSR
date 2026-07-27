@@ -42,6 +42,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.CryptoSecretsValidator;
 import app.notesr.data.DatabaseProvider;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,25 +78,22 @@ class AppSecurityServiceTest {
     }
 
     @Test
-    void testGetSecretsWithRandomKey() {
-        char[] password = "testPassword123".toCharArray();
+    void testGenerateMasterKey() {
 
-        CryptoSecrets secrets = appSecurityService.getSecretsWithRandomKey(password);
+        byte[] key = appSecurityService.generateMasterKey();
 
-        assertNotNull(secrets);
-        assertEquals(MASTER_KEY_SIZE, secrets.getKey().length);
+        assertNotNull(key);
+        assertEquals(MASTER_KEY_SIZE, key.length);
     }
 
     @Test
-    void testGetSecretsWithRandomKeyGeneratesDifferentKeys() {
-        char[] password = "testPassword123".toCharArray();
+    void testGenerateMasterKeyGeneratesDifferentKeys() {
+        byte[] key1 = appSecurityService.generateMasterKey();
+        byte[] key2 = appSecurityService.generateMasterKey();
 
-        CryptoSecrets secrets1 = appSecurityService.getSecretsWithRandomKey(password);
-        CryptoSecrets secrets2 = appSecurityService.getSecretsWithRandomKey(password);
-
-        assertNotNull(secrets1);
-        assertNotNull(secrets2);
-        assertNotEquals(secrets1.getKey(), secrets2.getKey());
+        assertNotNull(key1);
+        assertNotNull(key2);
+        assertNotEquals(key1, key2);
     }
 
     @Test
@@ -293,6 +291,9 @@ class AppSecurityServiceTest {
     void testSetSecretsSuccess() throws Exception {
         CryptoSecrets newSecrets = mock(CryptoSecrets.class);
 
+        when(newSecrets.getKey()).thenReturn(generateRandomBytes(MASTER_KEY_SIZE));
+        when(newSecrets.getPassword()).thenReturn("validPassword".toCharArray());
+
         appSecurityService.setSecrets(newSecrets);
 
         verify(mockCryptoManager).setSecrets(mockContext, newSecrets);
@@ -377,30 +378,44 @@ class AppSecurityServiceTest {
 
     @Test
     void testSetSecretsThrowsAppSecurityExceptionOnEncryptionFailure() throws Exception {
-        CryptoSecrets newSecrets = mock(CryptoSecrets.class);
-        doThrow(new GeneralSecurityException())
-                .when(mockCryptoManager).setSecrets(mockContext, newSecrets);
+        MockedStatic<CryptoSecretsValidator> mockedValidator =
+                mockStatic(CryptoSecretsValidator.class);
 
-        AppSecurityException exception = assertThrows(AppSecurityException.class,
-                () -> appSecurityService.setSecrets(newSecrets));
+        try (mockedValidator) {
+            CryptoSecrets newSecrets = mock(CryptoSecrets.class);
+            doThrow(new GeneralSecurityException())
+                    .when(mockCryptoManager).setSecrets(mockContext, newSecrets);
 
-        assertEquals("Failed to set new secrets, encryption issue", exception.getMessage());
-        verify(mockCryptoManager).setSecrets(mockContext, newSecrets);
-        verify(newSecrets).validate();
-        verify(newSecrets).destroy();
+            AppSecurityException exception = assertThrows(AppSecurityException.class,
+                    () -> appSecurityService.setSecrets(newSecrets));
+
+            assertEquals("Failed to set new secrets, encryption issue",
+                    exception.getMessage());
+
+            verify(mockCryptoManager).setSecrets(mockContext, newSecrets);
+            mockedValidator.verify(() -> CryptoSecretsValidator.validate(newSecrets));
+            verify(newSecrets).destroy();
+        }
     }
 
     @Test
     void testSetSecretsDestroysSecretsEvenOnException() throws Exception {
-        CryptoSecrets newSecrets = mock(CryptoSecrets.class);
-        doThrow(new GeneralSecurityException())
-                .when(mockCryptoManager).setSecrets(mockContext, newSecrets);
+        MockedStatic<CryptoSecretsValidator> mockedValidator =
+                mockStatic(CryptoSecretsValidator.class);
 
-        assertThrows(AppSecurityException.class,
-                () -> appSecurityService.setSecrets(newSecrets));
+        try (mockedValidator) {
+            CryptoSecrets newSecrets = mock(CryptoSecrets.class);
+            doThrow(new GeneralSecurityException())
+                    .when(mockCryptoManager).setSecrets(mockContext, newSecrets);
 
-        verify(newSecrets).validate();
-        verify(newSecrets).destroy();
+            assertThrows(AppSecurityException.class,
+                    () -> appSecurityService.setSecrets(newSecrets));
+
+            verify(mockCryptoManager).setSecrets(mockContext, newSecrets);
+            mockedValidator.verify(() -> CryptoSecretsValidator.validate(newSecrets));
+            verify(newSecrets).destroy();
+        }
+
     }
 
     @Test

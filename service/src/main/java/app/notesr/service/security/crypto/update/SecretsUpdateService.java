@@ -18,6 +18,7 @@ import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
+import app.notesr.core.util.CryptoSecretsValidator;
 import app.notesr.core.util.TransactionalFilesUtil;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.model.FileBlobInfo;
@@ -56,8 +57,8 @@ public final class SecretsUpdateService {
             CryptoSecrets newSecrets) {
 
         try {
-            newSecrets.validate();
-        } catch (IllegalStateException e) {
+            CryptoSecretsValidator.validate(newSecrets);
+        } catch (IllegalArgumentException e) {
             throw new SecretsUpdateFailedException("Invalid new secrets", e);
         }
 

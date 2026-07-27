@@ -49,43 +49,6 @@ public final class CryptoSecrets {
     }
 
     /**
-     * Validates the integrity of the cryptographic secrets.
-     * <p>
-     * Ensures that both the key and password arrays are not null or empty,
-     * and that the key matches the expected 384-bit (48 bytes) length requirement
-     * and that the password is at least 4 characters long.
-     *
-     * @throws IllegalStateException if any validation check fails
-     */
-    public void validate() {
-        if (key == null || key.length == 0) {
-            throw new IllegalStateException("CryptoSecrets key cannot be null or empty");
-        }
-
-        if (password == null || password.length == 0) {
-            throw new IllegalStateException("CryptoSecrets password cannot be null or empty");
-        }
-
-        if (key.length != MASTER_KEY_SIZE) {
-            throw new IllegalStateException("Key must be "
-                    + MASTER_KEY_SIZE + " bytes long");
-        }
-
-        if (password.length < PASSWORD_MIN_LENGTH) {
-            throw new IllegalStateException("Password must be at least "
-                    + PASSWORD_MIN_LENGTH + " characters long");
-        }
-
-        if (KeyUtils.isKeyNulled(key)) {
-            throw new IllegalStateException("Key cannot be empty");
-        }
-
-        if (!CharUtils.hasNonZeroChars(password)) {
-            throw new IllegalStateException("Password cannot be empty");
-        }
-    }
-
-    /**
      * Creates a deep copy of the provided {@link CryptoSecrets} instance.
      *
      * @param secrets the secrets to copy, may be {@code null}

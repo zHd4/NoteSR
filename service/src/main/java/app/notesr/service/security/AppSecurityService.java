@@ -17,6 +17,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.CryptoSecretsValidator;
 import app.notesr.data.DatabaseProvider;
 import lombok.RequiredArgsConstructor;
 
@@ -62,18 +63,16 @@ public final class AppSecurityService {
     }
 
     /**
-     * Generates new cryptographic secrets which contains randomly generated master key
-     * and the provided password.
-     * The key is absolutely random and not derived from the password.
+     * Generates new 384-bit master key.
      *
-     * @param password the password to derive secrets from (will not be modified)
-     * @return a new {@link CryptoSecrets} object containing derived key material
+     * @return the generated master key as a byte array
+     * @see CryptoSecrets#MASTER_KEY_SIZE
      */
-    public CryptoSecrets getSecretsWithRandomKey(char[] password) {
+    public byte[] generateMasterKey() {
         byte[] key = new byte[CryptoSecrets.MASTER_KEY_SIZE];
         SECURE_RANDOM.nextBytes(key);
 
-        return new CryptoSecrets(key, password);
+        return key;
     }
 
     /**
@@ -194,8 +193,8 @@ public final class AppSecurityService {
         }
 
         try {
-            newCryptoSecrets.validate();
-        } catch (IllegalStateException e) {
+            CryptoSecretsValidator.validate(newCryptoSecrets);
+        } catch (IllegalArgumentException e) {
             newCryptoSecrets.destroy();
             throw new IllegalArgumentException("Invalid new secrets", e);
         }

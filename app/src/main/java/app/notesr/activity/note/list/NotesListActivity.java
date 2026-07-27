@@ -76,7 +76,7 @@ public final class NotesListActivity extends ActivityBase {
         var appSecurityService = new AppSecurityService(getApplicationContext());
 
         lockAction = new LockAction(this, appSecurityService);
-        generateNewKeyAction = new GenerateNewKeyAction(this, appSecurityService);
+        generateNewKeyAction = new GenerateNewKeyAction(this);
 
         noteEditorLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getOpenNoteResultCallback());
