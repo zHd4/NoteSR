@@ -81,6 +81,7 @@ public final class KeyUtils {
         }
     }
 
+    // Used only for supporting migration from older versions of NoteSR
     public static byte[] getIvFromSecrets(CryptoSecrets cryptoSecrets) {
         int ivSize = cryptoSecrets.getKey().length - (AesCryptor.KEY_SIZE / 8);
         byte[] iv = new byte[ivSize];
