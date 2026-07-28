@@ -39,7 +39,7 @@ public final class AuthActivity extends ActivityBase {
         private final String mode;
     }
 
-    private AuthActivityExtension extension;
+    private AuthHandler authHandler;
     private Mode currentMode;
 
     private final SecureStringBuilder passwordBuilder = new SecureStringBuilder();
@@ -122,10 +122,10 @@ public final class AuthActivity extends ActivityBase {
 
         authButton.setOnClickListener(view -> {
             switch (currentMode) {
-                case AUTHENTICATION -> extension.authenticate();
-                case CREATE_PASSWORD -> extension.createPassword();
-                case KEY_RECOVERY -> extension.recoverKey();
-                case CHANGE_PASSWORD -> extension.changePassword();
+                case AUTHENTICATION -> authHandler.authenticate();
+                case CREATE_PASSWORD -> authHandler.createPassword();
+                case KEY_RECOVERY -> authHandler.recoverKey();
+                case CHANGE_PASSWORD -> authHandler.changePassword();
             }
         });
 

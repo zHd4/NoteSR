@@ -5,7 +5,7 @@
 
 package app.notesr.activity.security;
 
-import static app.notesr.activity.security.AuthActivity.HEX_KEY;
+import static app.notesr.activity.security.AuthActivity.CACHE_KEY_HEX_KEY;
 import static app.notesr.core.util.CharUtils.bytesToChars;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 
@@ -37,7 +37,7 @@ import app.notesr.service.security.AuthenticationFailedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class AuthActivityExtension {
+public final class AuthHandler {
     private static final int MAX_ATTEMPTS = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
@@ -95,7 +95,7 @@ public final class AuthActivityExtension {
         if (password != null) {
             try {
 
-                byte[] hexKeyBytes = SecretCache.take(HEX_KEY);
+                byte[] hexKeyBytes = SecretCache.take(CACHE_KEY_HEX_KEY);
 
                 if (hexKeyBytes == null) {
                     throw new RuntimeException("Missing hex key");
