@@ -39,7 +39,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class AuthHandler {
     private static final int MAX_ATTEMPTS = 3;
-    private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
 
     private final AuthActivity activity;
@@ -143,13 +142,13 @@ public final class AuthHandler {
         TextView topLabel = activity.findViewById(R.id.authTopLabel);
 
         if (createdPassword == null) {
-            if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
+            if (passwordBuilder.length() >= CryptoSecrets.PASSWORD_MIN_LENGTH) {
                 createdPassword = password;
                 topLabel.setText(activity.getString(R.string.repeat_access_code));
             } else {
                 showToastMessage(String.format(
                         activity.getString(R.string.minimum_password_length_is_n),
-                        MIN_PASSWORD_LENGTH));
+                        CryptoSecrets.PASSWORD_MIN_LENGTH));
             }
         } else {
             if (Arrays.equals(password, createdPassword)) {
