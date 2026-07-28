@@ -28,15 +28,19 @@ public final class KeyUtils {
         return secretKey;
     }
 
-    public static char[] getKeyHexFromSecrets(CryptoSecrets cryptoSecrets) {
-        return getHexFromKeyBytes(cryptoSecrets.getKey());
+    public static CryptoSecrets getSecretsFromKeyHexAndPassword(char[] keyHex, char[] password) {
+        byte[] keyBytes = getKeyBytesFromKeyHex(keyHex);
+        char[] passwordCopy = Arrays.copyOf(password, password.length);
+
+        var cryptoSecrets = new CryptoSecrets(keyBytes, passwordCopy);
+
+        Arrays.fill(keyHex, '\0');
+        Arrays.fill(password, '\0');
+
+        return cryptoSecrets;
     }
 
-    public static CryptoSecrets getSecretsFromHex(char[] hex, char[] password) {
-        return new CryptoSecrets(getKeyBytesFromHex(hex), password);
-    }
-
-    public static char[] getHexFromKeyBytes(byte[] key) {
+    public static char[] getKeyHexFromKeyBytes(byte[] key) {
         SecureStringBuilder result = new SecureStringBuilder();
         int lineLength = 0;
 
@@ -65,22 +69,23 @@ public final class KeyUtils {
         return result.toCharArray();
     }
 
-    public static byte[] getKeyBytesFromHex(char[] hexChars) {
-        requireNonNull(hexChars, "hexChars must not be null");
+    public static byte[] getKeyBytesFromKeyHex(char[] keyHex) {
+        requireNonNull(keyHex, "keyHex must not be null");
 
         try {
-            int tokenCount = countHexTokens(hexChars);
+            int tokenCount = countHexTokens(keyHex);
             byte[] key = new byte[tokenCount];
 
-            parseHexTokens(hexChars, key);
+            parseHexTokens(keyHex, key);
 
-            Arrays.fill(hexChars, '\0');
+            Arrays.fill(keyHex, '\0');
             return key;
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid hex key", e);
         }
     }
 
+    // Used only for supporting migration from older versions of NoteSR
     public static byte[] getIvFromSecrets(CryptoSecrets cryptoSecrets) {
         int ivSize = cryptoSecrets.getKey().length - (AesCryptor.KEY_SIZE / 8);
         byte[] iv = new byte[ivSize];

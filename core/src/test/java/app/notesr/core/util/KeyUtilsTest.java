@@ -71,14 +71,14 @@ class KeyUtilsTest {
         };
 
         char[] expected = "01 23 45 67 \n89 AB CD EF".toCharArray();
-        char[] actual = KeyUtils.getHexFromKeyBytes(key);
+        char[] actual = KeyUtils.getKeyHexFromKeyBytes(key);
 
         assertArrayEquals(expected, actual,
                 "Hex conversion should format key with spaces and newlines correctly");
     }
 
     @Test
-    void getKeyBytesFromHexParsesCorrectly() {
+    void getKeyBytesFromKeyHexParsesCorrectly() {
         char[] hex = "01 23 45 67\n89 AB CD EF".toCharArray();
 
         byte[] expected = new byte[]{
@@ -87,28 +87,28 @@ class KeyUtilsTest {
                 (byte) 0xCD, (byte) 0xEF
         };
 
-        byte[] actual = KeyUtils.getKeyBytesFromHex(hex);
+        byte[] actual = KeyUtils.getKeyBytesFromKeyHex(hex);
         assertArrayEquals(expected, actual,
                 "Hex parsing should correctly convert formatted hex string to bytes");
     }
 
     @Test
-    void getKeyBytesFromHexHandlesExtraWhitespace() {
+    void getKeyBytesFromKeyHexHandlesExtraWhitespace() {
         char[] hex = "  0a   1b  \t2c\n3d\r\n4e 5f ".toCharArray();
 
         byte[] expected = new byte[]{0x0a, 0x1b, 0x2c, 0x3d, 0x4e, 0x5f};
-        byte[] actual = KeyUtils.getKeyBytesFromHex(hex);
+        byte[] actual = KeyUtils.getKeyBytesFromKeyHex(hex);
 
         assertArrayEquals(expected, actual,
                 "Hex parsing should handle extra whitespace (spaces, tabs, newlines)");
     }
 
     @Test
-    void getKeyBytesFromHexThrowsOnInvalidHex() {
+    void getKeyBytesFromHexThrowsOnInvalidKeyHex() {
         char[] invalidHex = "zz yy xx".toCharArray();
 
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                KeyUtils.getKeyBytesFromHex(invalidHex),
+                KeyUtils.getKeyBytesFromKeyHex(invalidHex),
                 "Should throw IllegalArgumentException for invalid hex characters");
 
         assertNotNull(exception.getMessage(), "Exception message should not be null");
@@ -117,13 +117,13 @@ class KeyUtilsTest {
     }
 
     @Test
-    void getKeyBytesFromHexThrowsOnNullInput() {
+    void getKeyBytesFromKeyHexThrowsOnNullInput() {
         Exception exception = assertThrows(NullPointerException.class, () ->
-                KeyUtils.getKeyBytesFromHex(null),
+                KeyUtils.getKeyBytesFromKeyHex(null),
                 "Should throw NullPointerException for null hex input");
 
         assertNotNull(exception.getMessage(), "Exception message should not be null");
-        assertTrue(exception.getMessage().contains("hexChars must not be null"),
+        assertTrue(exception.getMessage().contains("keyHex must not be null"),
                 "Exception message should contain 'hexChars must not be null'");
     }
 
@@ -131,28 +131,19 @@ class KeyUtilsTest {
     void hexConversionRoundTrip() {
         byte[] originalKey = new byte[]{0x10, 0x20, 0x30, 0x40, 0x50, 0x60};
 
-        char[] hex = KeyUtils.getHexFromKeyBytes(originalKey);
-        byte[] restoredKey = KeyUtils.getKeyBytesFromHex(hex);
+        char[] hex = KeyUtils.getKeyHexFromKeyBytes(originalKey);
+        byte[] restoredKey = KeyUtils.getKeyBytesFromKeyHex(hex);
 
         assertArrayEquals(originalKey, restoredKey,
                 "Round-trip hex conversion should restore original key bytes");
     }
 
     @Test
-    void getHexFromCryptoSecretsDelegatesCorrectly() {
-        CryptoSecrets secrets = new CryptoSecrets(new byte[]{0x0A, 0x0B}, "password".toCharArray());
-        char[] hex = KeyUtils.getKeyHexFromSecrets(secrets);
-
-        assertArrayEquals("0A 0B".toCharArray(), hex,
-                "getKeyHexFromSecrets should correctly delegate to getHexFromKeyBytes");
-    }
-
-    @Test
-    void getSecretsFromHexProducesCorrectObject() {
+    void getSecretsFromKeyHexAndPasswordProducesCorrectObject() {
         char[] hex = "0C 0D 0E".toCharArray();
         String password = "secret";
 
-        CryptoSecrets secrets = KeyUtils.getSecretsFromHex(hex, password.toCharArray());
+        CryptoSecrets secrets = KeyUtils.getSecretsFromKeyHexAndPassword(hex, password.toCharArray());
 
         assertArrayEquals(new byte[]{0x0C, 0x0D, 0x0E}, secrets.getKey(),
                 "CryptoSecrets key should match parsed hex");

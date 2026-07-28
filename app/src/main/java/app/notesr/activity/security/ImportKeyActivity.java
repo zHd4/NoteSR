@@ -10,9 +10,7 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import static java.util.Objects.requireNonNull;
 
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
-import static app.notesr.core.util.CharUtils.bytesToChars;
-import static app.notesr.core.util.CharUtils.charsToBytes;
-import static app.notesr.core.util.KeyUtils.getSecretsFromHex;
+import static app.notesr.core.util.KeyUtils.getKeyBytesFromKeyHex;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,25 +22,21 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.util.CryptoSecretsValidator;
 
 public final class ImportKeyActivity extends ActivityBase {
 
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
-    public static final String CACHE_KEY_PASSWORD = "password";
     private static final String TAG = ImportKeyActivity.class.getCanonicalName();
 
     private int resultCode = RESULT_CANCELED;
     private EditText keyField;
     private char[] hexKey;
-    private char[] password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +48,6 @@ public final class ImportKeyActivity extends ActivityBase {
 
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(getResources().getString(R.string.import_key));
-
-        password = getPasswordFromCache();
 
         keyField = findViewById(R.id.importKeyField);
         keyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -72,6 +64,7 @@ public final class ImportKeyActivity extends ActivityBase {
     @Override
     public void finish() {
         wipeUiFields();
+        wipeSensitiveClassFields();
         setResult(resultCode);
         super.finish();
     }
@@ -84,11 +77,12 @@ public final class ImportKeyActivity extends ActivityBase {
             hexKeyEditable.getChars(0, hexKeyEditable.length(), hexKey, 0);
 
             if (hexKey.length > 0) {
+                byte[] keyBytes;
+
                 try {
-                    CryptoSecrets cryptoSecrets = getCryptoSecrets(hexKey, password);
-                    cryptoSecrets.validate();
-                    cryptoSecrets.destroy();
-                } catch (IllegalArgumentException | IllegalStateException e) {
+                    keyBytes = getKeyBytesFromKeyHex(hexKey);
+                    CryptoSecretsValidator.validateKey(keyBytes);
+                } catch (IllegalArgumentException e) {
                     Log.e(TAG, "Invalid key", e);
                     showToastMessage(this, getString(R.string.invalid_key),
                             Toast.LENGTH_SHORT);
@@ -96,37 +90,17 @@ public final class ImportKeyActivity extends ActivityBase {
                     return;
                 }
 
-                putResultsToCache(hexKey);
-                
+                SecretCache.put(CACHE_KEY_HEX_KEY, keyBytes);
                 resultCode = RESULT_OK;
                 finish();
             }
         };
     }
-    
-    private CryptoSecrets getCryptoSecrets(char[] hexKey, char[] password) {
-        char[] hexKeyCopy = Arrays.copyOf(hexKey, hexKey.length);
-        return getSecretsFromHex(hexKeyCopy, password);
-    }
-    
-    private void putResultsToCache(char[] hexKey) {
-        try {
-            SecretCache.put(CACHE_KEY_HEX_KEY, charsToBytes(hexKey,
-                    StandardCharsets.UTF_8));
-        } catch (CharacterCodingException e) {
-            throw new RuntimeException(e);
-        }
 
-        SecretCache.removeIfExists(CACHE_KEY_PASSWORD); // Should be already removed
-    }
 
-    private char[] getPasswordFromCache() {
-        try {
-            byte[] passwordBytes = requireNonNull(SecretCache.take(CACHE_KEY_PASSWORD),
-                    "Password missing in secret cache");
-            return bytesToChars(passwordBytes, StandardCharsets.UTF_8);
-        } catch (CharacterCodingException e) {
-            throw new RuntimeException(e);
+    private void wipeSensitiveClassFields() {
+        if (hexKey != null) {
+            Arrays.fill(hexKey, '\0');
         }
     }
 

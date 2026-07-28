@@ -10,7 +10,7 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 import static app.notesr.core.util.ActivityUtils.disableBackButton;
 import static app.notesr.core.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.charsToBytes;
-import static app.notesr.core.util.KeyUtils.getKeyBytesFromHex;
+import static app.notesr.core.util.KeyUtils.getKeyBytesFromKeyHex;
 
 import android.content.Context;
 import android.content.Intent;
@@ -96,7 +96,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
             throws IOException, NoSuchAlgorithmException {
 
         char[] hexKeyCopy = Arrays.copyOf(hexKey, hexKey.length);
-        byte[] keyBytes = getKeyBytesFromHex(hexKeyCopy);
+        byte[] keyBytes = getKeyBytesFromKeyHex(hexKeyCopy);
 
         Context context = getApplicationContext();
 
