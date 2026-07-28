@@ -25,7 +25,7 @@ import lombok.Getter;
 
 public final class AuthActivity extends ActivityBase {
 
-    public static final String HEX_KEY = "hex_key";
+    public static final String CACHE_KEY_HEX_KEY = "hexKey";
     public static final String EXTRA_MODE = "mode";
 
     @AllArgsConstructor
@@ -57,7 +57,7 @@ public final class AuthActivity extends ActivityBase {
 
         String mode = getIntent().getStringExtra(EXTRA_MODE);
         var appSecurityService = new AppSecurityService(getApplicationContext());
-        extension = new AuthActivityExtension(this, appSecurityService, passwordBuilder);
+        authHandler = new AuthHandler(this, appSecurityService, passwordBuilder);
 
         try {
             currentMode = Mode.valueOf(mode);

@@ -103,7 +103,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
         try {
             if (appSecurityService.isKeyMatchingWithStored(keyBytes)) {
                 byte[] hexKeyBytes = charsToBytes(hexKey, StandardCharsets.UTF_8);
-                SecretCache.put(AuthActivity.HEX_KEY, hexKeyBytes);
+                SecretCache.put(AuthActivity.CACHE_KEY_HEX_KEY, hexKeyBytes);
 
                 // The hex key has already been wiped by charsToBytes
                 wipeSecretData(keyBytes, hexKeyField);
