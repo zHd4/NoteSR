@@ -19,11 +19,15 @@
 
 ### App Stores
 
-<a href="https://f-droid.org/packages/app.notesr" target="_blank">
-    <img src="https://f-droid.org/badge/get-it-on.png"
-    alt="Get it on F-Droid"
-    height="80">
-</a>
+[<img src="https://f-droid.org/badge/get-it-on.png"
+alt="Get it on F-Droid"
+height="80" width="220">](https://f-droid.org/packages/app.notesr)
+[<img src="https://androidfreeware.net/images/androidfreeware-badge.png"
+alt="Get it on AndroidFreeware"
+height="80" width="220">](https://androidfreeware.net/download-notesr-encrypted-notes-apk.html)
+[<img src="https://openapk.net/images/openapk-badge.png"
+alt="Get it on OpenApk"
+height="80" width="220">](https://openapk.net/notesr-encrypted-notes/app.notesr/)
 
 ### Install from APK
 
