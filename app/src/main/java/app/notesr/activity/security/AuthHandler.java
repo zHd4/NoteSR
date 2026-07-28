@@ -5,7 +5,7 @@
 
 package app.notesr.activity.security;
 
-import static app.notesr.activity.security.AuthActivity.HEX_KEY;
+import static app.notesr.activity.security.AuthActivity.CACHE_KEY_HEX_KEY;
 import static app.notesr.core.util.CharUtils.bytesToChars;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 
@@ -37,9 +37,8 @@ import app.notesr.service.security.AuthenticationFailedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class AuthActivityExtension {
+public final class AuthHandler {
     private static final int MAX_ATTEMPTS = 3;
-    private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
 
     private final AuthActivity activity;
@@ -95,7 +94,7 @@ public final class AuthActivityExtension {
         if (password != null) {
             try {
 
-                byte[] hexKeyBytes = SecretCache.take(HEX_KEY);
+                byte[] hexKeyBytes = SecretCache.take(CACHE_KEY_HEX_KEY);
 
                 if (hexKeyBytes == null) {
                     throw new RuntimeException("Missing hex key");
@@ -143,13 +142,13 @@ public final class AuthActivityExtension {
         TextView topLabel = activity.findViewById(R.id.authTopLabel);
 
         if (createdPassword == null) {
-            if (passwordBuilder.length() >= MIN_PASSWORD_LENGTH) {
+            if (passwordBuilder.length() >= CryptoSecrets.PASSWORD_MIN_LENGTH) {
                 createdPassword = password;
                 topLabel.setText(activity.getString(R.string.repeat_access_code));
             } else {
                 showToastMessage(String.format(
                         activity.getString(R.string.minimum_password_length_is_n),
-                        MIN_PASSWORD_LENGTH));
+                        CryptoSecrets.PASSWORD_MIN_LENGTH));
             }
         } else {
             if (Arrays.equals(password, createdPassword)) {
