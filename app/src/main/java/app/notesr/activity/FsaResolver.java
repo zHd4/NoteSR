@@ -9,7 +9,7 @@ import java.util.Set;
 
 import app.notesr.activity.security.ReEncryptionActivity;
 import app.notesr.service.AndroidServiceRegistry;
-import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
+import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 /**

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.service.security.crypto.update;
+package app.notesr.service.security.rotation;
 
 import static java.util.Objects.requireNonNull;
 import static app.notesr.core.util.CharUtils.bytesToChars;

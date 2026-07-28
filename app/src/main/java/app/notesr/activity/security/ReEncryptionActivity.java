@@ -20,8 +20,8 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
-import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
-import app.notesr.service.security.crypto.update.SecretsUpdateAndroidServiceStarter;
+import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
+import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
 
 public final class ReEncryptionActivity extends ActivityBase {
 

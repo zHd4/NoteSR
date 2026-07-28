@@ -9,7 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
+import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

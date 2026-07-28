@@ -25,7 +25,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.migration.DataVersionManager;
-import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
+import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
