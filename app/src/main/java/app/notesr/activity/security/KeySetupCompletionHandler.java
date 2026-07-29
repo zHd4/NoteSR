@@ -73,7 +73,7 @@ public final class KeySetupCompletionHandler {
 
     private void proceedRegeneration() {
         new DialogFactory(activity)
-                .getThemedAlertDialogBuilder(R.layout.dialog_re_encryption_warning)
+                .getThemedAlertDialogBuilder(R.layout.dialog_secrets_rotation_warning)
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.yes,
                         (dialog, which) -> onRegenerationConfirmed())
