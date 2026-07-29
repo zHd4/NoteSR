@@ -67,7 +67,7 @@ public final class SecretsRotationActivity extends ActivityBase {
 
     private void onSecretsRotationFailed() {
         DialogFactory dialogFactory = new DialogFactory(this);
-        dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_re_encryption_failed)
+        dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_secrets_rotation_failed)
                 .setTitle(R.string.error)
                 .setCancelable(false)
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
