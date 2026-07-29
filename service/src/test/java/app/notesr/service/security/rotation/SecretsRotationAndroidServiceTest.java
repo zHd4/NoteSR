@@ -36,11 +36,11 @@ import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.TransactionalFilesUtil;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.security.AppSecurityService;
 
 @ExtendWith(MockitoExtension.class)
 class SecretsRotationAndroidServiceTest {
@@ -52,7 +52,7 @@ class SecretsRotationAndroidServiceTest {
     private Intent intent;
 
     @Mock
-    private CryptoManager cryptoManager;
+    private AppSecurityService appSecurityService;
 
     @Mock
     private SecretsRotationService secretsRotationService;
@@ -77,7 +77,7 @@ class SecretsRotationAndroidServiceTest {
         newSecrets = new CryptoSecrets(new byte[32], "password".toCharArray());
 
         // Inject basic dependencies using setters
-        service.setCryptoManager(cryptoManager);
+        service.setAppSecurityService(appSecurityService);
         service.setNewSecrets(newSecrets);
         service.setSecretsRotationService(secretsRotationService);
         service.setDbName("test.db");
@@ -97,7 +97,7 @@ class SecretsRotationAndroidServiceTest {
         service.run();
 
         verify(secretsRotationService)
-                .updateSecrets(eq(txFiles), eq(cryptoManager), eq("test.db"), any(), 
+                .updateSecrets(eq(txFiles), eq(appSecurityService), eq("test.db"), any(),
                         eq(newSecrets));
         verify(service).onComplete();
         verify(service).stopService();
@@ -142,7 +142,9 @@ class SecretsRotationAndroidServiceTest {
 
     @Test
     void testSendUpdateBroadcast() {
-        try (MockedStatic<LocalBroadcastManager> mockedStatic = mockStatic(LocalBroadcastManager.class)) {
+        MockedStatic<LocalBroadcastManager> mockedStatic = mockStatic(LocalBroadcastManager.class);
+
+        try (mockedStatic) {
             mockedStatic.when(() -> LocalBroadcastManager.getInstance(any()))
                     .thenReturn(localBroadcastManager);
 
@@ -162,7 +164,9 @@ class SecretsRotationAndroidServiceTest {
 
     @Test
     void testOnStateUpdateUpdatesRegistry() {
-        try (MockedStatic<AndroidServiceRegistry> mockedStatic = mockStatic(AndroidServiceRegistry.class)) {
+        MockedStatic<AndroidServiceRegistry> mockedStatic = mockStatic(AndroidServiceRegistry.class);
+
+        try (mockedStatic) {
             mockedStatic.when(() -> AndroidServiceRegistry.getInstance(any()))
                     .thenReturn(androidServiceRegistry);
 
@@ -191,7 +195,9 @@ class SecretsRotationAndroidServiceTest {
         when(intent.getSerializableExtra(SecretsRotationAndroidService.EXTRA_CURRENT_STATE))
                 .thenReturn(state);
 
-        try (MockedStatic<AndroidServiceRegistry> registryMock = mockStatic(AndroidServiceRegistry.class)) {
+        MockedStatic<AndroidServiceRegistry> registryMock = mockStatic(AndroidServiceRegistry.class);
+
+        try (registryMock) {
             registryMock.when(() -> AndroidServiceRegistry.getInstance(any()))
                     .thenReturn(androidServiceRegistry);
 

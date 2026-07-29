@@ -27,8 +27,6 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 
 import app.notesr.core.util.FilesTransactionException;
@@ -38,6 +36,7 @@ import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.security.AppSecurityService;
 import lombok.AccessLevel;
 import lombok.Setter;
 
@@ -56,7 +55,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
     private static final String CHANNEL_NAME = "Key Rotation";
 
     private String dbName;
-    private CryptoManager cryptoManager;
+    private AppSecurityService appSecurityService;
     private SecretsRotationStateHolder stateHolder;
     private CryptoSecrets newSecrets;
     private SecretsRotationService secretsRotationService;
@@ -66,7 +65,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
     public int onStartCommand(Intent intent, int flags, int startId) {
         dbName = DatabaseProvider.DB_NAME;
 
-        cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        appSecurityService = new AppSecurityService(getApplicationContext());
         newSecrets = getNewSecrets();
 
         var state = (SecretsRotationState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
@@ -121,7 +120,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
     }
 
     String encryptPayload(SecretsRotationAndroidServiceStarter.Payload payload) {
-        return getEncryptedJson(new ObjectMapper(), payload, cryptoManager.getSecrets());
+        return getEncryptedJson(new ObjectMapper(), payload, appSecurityService.getActualSecrets());
     }
 
     String serializeState(SecretsRotationState state) {
@@ -145,7 +144,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
             var transactionId = txFiles.getTransactionId();
 
             stateHolder.setState(stateHolder.getState().setTransactionId(transactionId));
-            secretsRotationService.updateSecrets(txFiles, cryptoManager, dbName, stateHolder,
+            secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName, stateHolder,
                     newSecrets);
 
             onComplete();

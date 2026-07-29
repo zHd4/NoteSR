@@ -14,7 +14,6 @@ import java.util.List;
 
 import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesCryptorFactory;
-import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.security.exception.EncryptionFailedException;
@@ -23,6 +22,7 @@ import app.notesr.core.util.TransactionalFilesUtil;
 import app.notesr.data.AppDatabase;
 import app.notesr.data.model.FileBlobInfo;
 import app.notesr.service.file.FileService;
+import app.notesr.service.security.AppSecurityService;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -42,16 +42,17 @@ public final class SecretsRotationService {
      * <p>
      * It performs a migration of the database and file blobs to the new encryption settings.
      *
-     * @param txFiles     The transactional files utility.
-     * @param cryptoManager The crypto manager instance.
-     * @param dbName      The name of the database file.
-     * @param stateHolder The state holder for tracking rotation progress.
-     * @param newSecrets The new crypto secrets to be applied.
+     * @param txFiles                         The transactional files utility.
+     * @param appSecurityService              The application security service for managing secrets.
+     * @param dbName                          The name of the database file.
+     * @param stateHolder                     The state holder for tracking rotation progress.
+     * @param newSecrets                      The new crypto secrets to be applied.
+     *
      * @throws SecretsRotationFailedException If the secrets rotation fails.
      */
     public void updateSecrets(
             TransactionalFilesUtil txFiles,
-            CryptoManager cryptoManager,
+            AppSecurityService appSecurityService,
             String dbName,
             SecretsRotationStateHolder stateHolder,
             CryptoSecrets newSecrets) {
@@ -62,7 +63,7 @@ public final class SecretsRotationService {
             throw new SecretsRotationFailedException("Invalid new secrets", e);
         }
 
-        var currentSecrets = cryptoManager.getSecrets();
+        var currentSecrets = appSecurityService.getActualSecrets();
 
         try (txFiles) {
             if (getStatus(stateHolder) == null) {
@@ -102,7 +103,7 @@ public final class SecretsRotationService {
                 }
             }
 
-            cryptoManager.setSecrets(context, newSecrets);
+            appSecurityService.setSecrets(newSecrets);
             setStatus(stateHolder, SecretsRotationStatus.DONE);
 
             databaseManager.reinitProvider(newSecrets.getKey());
