@@ -42,9 +42,9 @@ import lombok.AccessLevel;
 import lombok.Setter;
 
 @Setter(AccessLevel.PACKAGE)
-public class SecretsUpdateAndroidService extends AndroidService implements Runnable {
+public class SecretsRotationAndroidService extends AndroidService implements Runnable {
 
-    private static final String TAG = SecretsUpdateAndroidService.class.getSimpleName();
+    private static final String TAG = SecretsRotationAndroidService.class.getSimpleName();
 
     public static final String NEW_KEY = "new_key";
     public static final String PASSWORD = "password";

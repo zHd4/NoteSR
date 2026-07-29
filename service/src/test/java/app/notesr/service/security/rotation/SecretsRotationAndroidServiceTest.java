@@ -43,7 +43,7 @@ import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
 
 @ExtendWith(MockitoExtension.class)
-class SecretsUpdateAndroidServiceTest {
+class SecretsRotationAndroidServiceTest {
 
     @Mock
     private Context context;
@@ -66,13 +66,13 @@ class SecretsUpdateAndroidServiceTest {
     @Mock
     private AndroidServiceRegistry androidServiceRegistry;
 
-    private SecretsUpdateAndroidService service;
+    private SecretsRotationAndroidService service;
     private SecretsUpdateState state;
     private CryptoSecrets newSecrets;
 
     @BeforeEach
     void setUp() {
-        service = spy(new SecretsUpdateAndroidService());
+        service = spy(new SecretsRotationAndroidService());
         state = new SecretsUpdateState();
         newSecrets = new CryptoSecrets(new byte[32], "password".toCharArray());
 
@@ -130,14 +130,14 @@ class SecretsUpdateAndroidServiceTest {
     void testOnCompleteCallsSendBroadcast() {
         doNothing().when(service).sendUpdateBroadcast(anyString());
         service.onComplete();
-        verify(service).sendUpdateBroadcast(SecretsUpdateAndroidService.EXTRA_COMPLETE);
+        verify(service).sendUpdateBroadcast(SecretsRotationAndroidService.EXTRA_COMPLETE);
     }
 
     @Test
     void testOnFailCallsSendBroadcast() {
         doNothing().when(service).sendUpdateBroadcast(anyString());
         service.onFail();
-        verify(service).sendUpdateBroadcast(SecretsUpdateAndroidService.EXTRA_FAIL);
+        verify(service).sendUpdateBroadcast(SecretsRotationAndroidService.EXTRA_FAIL);
     }
 
     @Test
@@ -153,7 +153,7 @@ class SecretsUpdateAndroidServiceTest {
                             doReturn(mock).when(mock).putExtra(anyString(), anyBoolean()));
 
             try (mockedIntent) {
-                service.sendUpdateBroadcast(SecretsUpdateAndroidService.EXTRA_COMPLETE);
+                service.sendUpdateBroadcast(SecretsRotationAndroidService.EXTRA_COMPLETE);
 
                 verify(localBroadcastManager).sendBroadcast(any(Intent.class));
             }
@@ -188,7 +188,7 @@ class SecretsUpdateAndroidServiceTest {
 
     @Test
     void testOnStartCommand() {
-        when(intent.getSerializableExtra(SecretsUpdateAndroidService.EXTRA_CURRENT_STATE))
+        when(intent.getSerializableExtra(SecretsRotationAndroidService.EXTRA_CURRENT_STATE))
                 .thenReturn(state);
 
         try (MockedStatic<AndroidServiceRegistry> registryMock = mockStatic(AndroidServiceRegistry.class)) {

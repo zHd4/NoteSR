@@ -20,7 +20,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
-import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
+import app.notesr.service.security.rotation.SecretsRotationAndroidService;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
 
 public final class SecretsRotationActivity extends ActivityBase {
@@ -37,7 +37,7 @@ public final class SecretsRotationActivity extends ActivityBase {
                         this::onSecretsRotationFailed);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(SecretsUpdateAndroidService.BROADCAST_ACTION));
+                new IntentFilter(SecretsRotationAndroidService.BROADCAST_ACTION));
 
         startSecretsRotationService();
     }
@@ -51,7 +51,7 @@ public final class SecretsRotationActivity extends ActivityBase {
         AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
                 .getInstance(getApplicationContext());
 
-        if (!serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)) {
+        if (!serviceRegistry.isServiceRunning(SecretsRotationAndroidService.class)) {
             try {
                 new SecretsUpdateAndroidServiceStarter().start(getApplicationContext());
             } catch (CharacterCodingException e) {

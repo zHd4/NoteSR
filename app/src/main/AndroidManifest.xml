@@ -117,7 +117,7 @@
             android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".service.security.rotation.SecretsUpdateAndroidService"
+            android:name=".service.security.rotation.SecretsRotationAndroidService"
             android:exported="false"
             android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
