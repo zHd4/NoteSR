@@ -116,7 +116,7 @@ class SecretsRotationAndroidServiceTest {
             doNothing().when(service).stopService();
             
             when(txFiles.getTransactionId()).thenReturn("tx-123");
-            doThrow(new SecretsUpdateFailedException("Failed"))
+            doThrow(new SecretsRotationFailedException("Failed"))
                     .when(secretsUpdateService).updateSecrets(any(), any(), any(), any(), any());
 
             service.run();

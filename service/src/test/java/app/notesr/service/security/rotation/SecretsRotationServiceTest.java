@@ -110,7 +110,7 @@ class SecretsRotationServiceTest {
         stateHolder.setState(new SecretsRotationState().setStatus(SecretsRotationStatus.FAILED));
         CryptoSecrets newSecrets = createNewSecrets();
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw exception if status is already FAILED");
     }
@@ -215,7 +215,7 @@ class SecretsRotationServiceTest {
         doThrow(new RuntimeException("Migration failed"))
                 .when(txFiles).getInternalFile(any(), anyString());
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException and trigger rollback on migration failure");
 
@@ -379,7 +379,7 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsThrowsWhenNewSecretsKeyIsNull() {
         CryptoSecrets newSecrets = new CryptoSecrets(null, password.clone());
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException when new secrets key is null");
     }
@@ -388,7 +388,7 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsThrowsWhenNewSecretsKeyIsEmpty() {
         CryptoSecrets newSecrets = new CryptoSecrets(new byte[0], password.clone());
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException when new secrets key is empty");
     }
@@ -398,7 +398,7 @@ class SecretsRotationServiceTest {
         byte[] wrongSizedKey = new byte[32]; // Wrong size, should be 48
         CryptoSecrets newSecrets = new CryptoSecrets(wrongSizedKey, password.clone());
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException when new secrets key has wrong size");
     }
@@ -408,7 +408,7 @@ class SecretsRotationServiceTest {
         byte[] nulledKey = new byte[KEY_SIZE]; // All zeros
         CryptoSecrets newSecrets = new CryptoSecrets(nulledKey, password.clone());
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException when new secrets key is all zeros");
     }
@@ -417,7 +417,7 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsThrowsWhenNewSecretsPasswordIsNull() {
         CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), null);
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException when new secrets password is null");
     }
@@ -426,7 +426,7 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsThrowsWhenNewSecretsPasswordIsEmpty() {
         CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), new char[0]);
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException when new secrets password is empty");
     }
@@ -436,7 +436,7 @@ class SecretsRotationServiceTest {
         char[] shortPassword = "abc".toCharArray(); // Less than 4 characters
         CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), shortPassword);
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException when new secrets password is too short");
     }
@@ -446,7 +446,7 @@ class SecretsRotationServiceTest {
         char[] nulledPassword = new char[4]; // All '\0' characters
         CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), nulledPassword);
 
-        assertThrows(SecretsUpdateFailedException.class, () -> secretsUpdateService.updateSecrets(
+        assertThrows(SecretsRotationFailedException.class, () -> secretsUpdateService.updateSecrets(
                 txFiles, cryptoManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsUpdateFailedException when new secrets password is all zeros");
     }

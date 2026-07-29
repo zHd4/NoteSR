@@ -149,7 +149,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
                     newSecrets);
 
             onComplete();
-        } catch (SecretsUpdateFailedException | FilesTransactionException e) {
+        } catch (SecretsRotationFailedException | FilesTransactionException e) {
             onFail();
             Log.e(TAG, "Secrets update failed", e);
         } finally {

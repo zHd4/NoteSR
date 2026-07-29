@@ -47,7 +47,7 @@ public final class SecretsRotationService {
      * @param dbName      The name of the database file.
      * @param stateHolder The state holder for tracking update progress.
      * @param newSecrets The new crypto secrets to be applied.
-     * @throws SecretsUpdateFailedException If the secrets update fails.
+     * @throws SecretsRotationFailedException If the secrets update fails.
      */
     public void updateSecrets(
             TransactionalFilesUtil txFiles,
@@ -59,7 +59,7 @@ public final class SecretsRotationService {
         try {
             CryptoSecretsValidator.validate(newSecrets);
         } catch (IllegalArgumentException e) {
-            throw new SecretsUpdateFailedException("Invalid new secrets", e);
+            throw new SecretsRotationFailedException("Invalid new secrets", e);
         }
 
         var currentSecrets = cryptoManager.getSecrets();
@@ -74,7 +74,7 @@ public final class SecretsRotationService {
             }
 
             if (getStatus(stateHolder) == SecretsRotationStatus.FAILED) {
-                throw new SecretsUpdateFailedException("Secrets update is already failed");
+                throw new SecretsRotationFailedException("Secrets update is already failed");
             }
 
             databaseManager.closeProvider();
@@ -109,7 +109,7 @@ public final class SecretsRotationService {
         } catch (Exception e) {
             txFiles.rollback();
             setStatus(stateHolder, SecretsRotationStatus.FAILED);
-            throw new SecretsUpdateFailedException("Secrets update failed", e);
+            throw new SecretsRotationFailedException("Secrets update failed", e);
         } finally {
             currentSecrets.destroy();
             newSecrets.destroy();
