@@ -23,23 +23,23 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
 
-public final class ReEncryptionActivity extends ActivityBase {
+public final class SecretsRotationActivity extends ActivityBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_re_encryption);
+        setContentView(R.layout.activity_secrets_rotation);
         applyInsets(findViewById(R.id.main));
         disableBackButton(this);
 
         ReEncryptionBroadcastReceiver broadcastReceiver =
-                new ReEncryptionBroadcastReceiver(this::onReEncryptionComplete,
-                        this::onReEncryptionFailed);
+                new ReEncryptionBroadcastReceiver(this::onSecretsRotationComplete,
+                        this::onSecretsRotationFailed);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(SecretsUpdateAndroidService.BROADCAST_ACTION));
 
-        startReEncryptionService();
+        startSecretsRotationService();
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class ReEncryptionActivity extends ActivityBase {
         return false;
     }
 
-    private void startReEncryptionService() {
+    private void startSecretsRotationService() {
         AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
                 .getInstance(getApplicationContext());
 
@@ -60,12 +60,12 @@ public final class ReEncryptionActivity extends ActivityBase {
         }
     }
 
-    private void onReEncryptionComplete() {
+    private void onSecretsRotationComplete() {
         startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
         finish();
     }
 
-    private void onReEncryptionFailed() {
+    private void onSecretsRotationFailed() {
         DialogFactory dialogFactory = new DialogFactory(this);
         dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_re_encryption_failed)
                 .setTitle(R.string.error)
