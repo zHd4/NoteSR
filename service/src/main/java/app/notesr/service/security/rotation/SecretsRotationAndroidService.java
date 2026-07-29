@@ -105,7 +105,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
     @NonNull
     @Override
     protected AndroidServiceEntry getEntry(String payload, String state) {
-        return entryBuilder(SecretsUpdateAndroidServiceStarter.class)
+        return entryBuilder(SecretsRotationAndroidServiceStarter.class)
                 .autoStart(true)
                 .requiresAuth(true)
                 .payload(payload)
@@ -113,14 +113,14 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
                 .build();
     }
 
-    private SecretsUpdateAndroidServiceStarter.Payload getPayload() {
-        return new SecretsUpdateAndroidServiceStarter.Payload(
+    private SecretsRotationAndroidServiceStarter.Payload getPayload() {
+        return new SecretsRotationAndroidServiceStarter.Payload(
                 newSecrets.getKey(),
                 newSecrets.getPassword()
         );
     }
 
-    String encryptPayload(SecretsUpdateAndroidServiceStarter.Payload payload) {
+    String encryptPayload(SecretsRotationAndroidServiceStarter.Payload payload) {
         return getEncryptedJson(new ObjectMapper(), payload, cryptoManager.getSecrets());
     }
 

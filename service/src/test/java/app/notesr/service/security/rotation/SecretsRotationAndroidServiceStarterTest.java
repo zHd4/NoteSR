@@ -39,14 +39,14 @@ import app.notesr.core.security.exception.DecryptionFailedException;
 import app.notesr.core.util.KeyUtils;
 
 @ExtendWith(MockitoExtension.class)
-class SecretsUpdateAndroidServiceStarterTest {
+class SecretsRotationAndroidServiceStarterTest {
     
     private static final int KEY_SIZE = 48;
 
     @Mock
     private Context context;
 
-    private SecretsUpdateAndroidServiceStarter starter;
+    private SecretsRotationAndroidServiceStarter starter;
     private ObjectMapper mapper;
 
     @BeforeEach
@@ -62,7 +62,7 @@ class SecretsUpdateAndroidServiceStarterTest {
 
     @Test
     void testStartNullPayloadNoCacheThrowsIllegalStateException() {
-        starter = new SecretsUpdateAndroidServiceStarter();
+        starter = new SecretsRotationAndroidServiceStarter();
         assertThrows(IllegalStateException.class, () -> starter.start(context));
     }
 
@@ -79,7 +79,7 @@ class SecretsUpdateAndroidServiceStarterTest {
                         when(mock.putExtra(anyString(), (Serializable) any())).thenReturn(mock));
 
         try (mockedIntent) {
-            starter = new SecretsUpdateAndroidServiceStarter();
+            starter = new SecretsRotationAndroidServiceStarter();
             starter.start(context);
 
             verify(context).startForegroundService(any(Intent.class));
@@ -99,14 +99,14 @@ class SecretsUpdateAndroidServiceStarterTest {
         char[] newPassword = passwordStr.toCharArray();
         byte[] expectedPasswordBytes = passwordStr.getBytes(StandardCharsets.UTF_8);
 
-        var payload = new SecretsUpdateAndroidServiceStarter.Payload(newKey, newPassword);
+        var payload = new SecretsRotationAndroidServiceStarter.Payload(newKey, newPassword);
 
         MockedConstruction<Intent> mockedIntent = mockConstruction(Intent.class,
                 (mock, context) ->
                         when(mock.putExtra(anyString(), (Serializable) any())).thenReturn(mock));
 
         try (mockedIntent) {
-            starter = new SecretsUpdateAndroidServiceStarter(payload, null);
+            starter = new SecretsRotationAndroidServiceStarter(payload, null);
             starter.start(context);
 
             assertArrayEquals(expectedNewKey,
@@ -132,7 +132,7 @@ class SecretsUpdateAndroidServiceStarterTest {
         char[] newPassword = newPasswordStr.toCharArray();
         byte[] expectedNewPasswordBytes = newPasswordStr.getBytes(StandardCharsets.UTF_8);
 
-        var payload = new SecretsUpdateAndroidServiceStarter.Payload(newKey, newPassword);
+        var payload = new SecretsRotationAndroidServiceStarter.Payload(newKey, newPassword);
 
         String payloadJson = mapper.writeValueAsString(payload);
 
@@ -149,7 +149,7 @@ class SecretsUpdateAndroidServiceStarterTest {
                         when(mock.putExtra(anyString(), (Serializable) any())).thenReturn(mock));
 
         try (mockedIntent) {
-            starter = new SecretsUpdateAndroidServiceStarter();
+            starter = new SecretsRotationAndroidServiceStarter();
             starter.start(context, secrets, encryptedPayload, stateJson);
 
             assertArrayEquals(expectedNewKey,
@@ -170,7 +170,7 @@ class SecretsUpdateAndroidServiceStarterTest {
 
         String encryptedPayload = "invalid_payload";
 
-        starter = new SecretsUpdateAndroidServiceStarter();
+        starter = new SecretsRotationAndroidServiceStarter();
         assertThrows(DecryptionFailedException.class, () -> 
                 starter.start(context, secrets, encryptedPayload, null));
     }
@@ -185,14 +185,14 @@ class SecretsUpdateAndroidServiceStarterTest {
                 KeyUtils.getSecretKeyFromSecrets(secrets)));
         String encryptedPayload = encryptor.encrypt("not a json");
 
-        starter = new SecretsUpdateAndroidServiceStarter();
+        starter = new SecretsRotationAndroidServiceStarter();
         assertThrows(JsonProcessingException.class, () -> 
                 starter.start(context, secrets, encryptedPayload, null));
     }
 
     @Test
     void testStartWithEncryptedDataNullSecretsThrowsNullPointerException() {
-        starter = new SecretsUpdateAndroidServiceStarter();
+        starter = new SecretsRotationAndroidServiceStarter();
         assertThrows(NullPointerException.class, () -> 
                 starter.start(context, null, "payload", null));
     }
@@ -201,7 +201,7 @@ class SecretsUpdateAndroidServiceStarterTest {
     void testStartWithEncryptedDataNullPayloadThrowsNullPointerException() {
         byte[] key = new byte[KEY_SIZE];
         CryptoSecrets secrets = new CryptoSecrets(key, "pass".toCharArray());
-        starter = new SecretsUpdateAndroidServiceStarter();
+        starter = new SecretsRotationAndroidServiceStarter();
         assertThrows(NullPointerException.class, () -> 
                 starter.start(context, secrets, null, null));
     }
