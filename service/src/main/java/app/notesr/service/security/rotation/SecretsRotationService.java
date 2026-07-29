@@ -66,14 +66,14 @@ public final class SecretsRotationService {
 
         try (txFiles) {
             if (getStatus(stateHolder) == null) {
-                setStatus(stateHolder, SecretsUpdateStatus.INITIALIZING);
+                setStatus(stateHolder, SecretsRotationStatus.INITIALIZING);
             }
 
-            if (getStatus(stateHolder) == SecretsUpdateStatus.DONE) {
+            if (getStatus(stateHolder) == SecretsRotationStatus.DONE) {
                 return;
             }
 
-            if (getStatus(stateHolder) == SecretsUpdateStatus.FAILED) {
+            if (getStatus(stateHolder) == SecretsRotationStatus.FAILED) {
                 throw new SecretsUpdateFailedException("Secrets update is already failed");
             }
 
@@ -97,18 +97,18 @@ public final class SecretsRotationService {
 
                 txFiles.commit();
             } else {
-                if (getStatus(stateHolder).isBefore(SecretsUpdateStatus.DONE)) {
-                    setStatus(stateHolder, SecretsUpdateStatus.DONE);
+                if (getStatus(stateHolder).isBefore(SecretsRotationStatus.DONE)) {
+                    setStatus(stateHolder, SecretsRotationStatus.DONE);
                 }
             }
 
             cryptoManager.setSecrets(context, newSecrets);
-            setStatus(stateHolder, SecretsUpdateStatus.DONE);
+            setStatus(stateHolder, SecretsRotationStatus.DONE);
 
             databaseManager.reinitProvider(newSecrets.getKey());
         } catch (Exception e) {
             txFiles.rollback();
-            setStatus(stateHolder, SecretsUpdateStatus.FAILED);
+            setStatus(stateHolder, SecretsRotationStatus.FAILED);
             throw new SecretsUpdateFailedException("Secrets update failed", e);
         } finally {
             currentSecrets.destroy();
@@ -151,12 +151,12 @@ public final class SecretsRotationService {
         var currentDbFile = txFiles.getDatabaseFile(context, dbName);
 
         try {
-            if (getStatus(stateHolder).isBeforeOrEqual(SecretsUpdateStatus.MOVING_BLOBS_DATA)) {
-                setStatus(stateHolder, SecretsUpdateStatus.MOVING_BLOBS_DATA);
+            if (getStatus(stateHolder).isBeforeOrEqual(SecretsRotationStatus.MOVING_BLOBS_DATA)) {
+                setStatus(stateHolder, SecretsRotationStatus.MOVING_BLOBS_DATA);
                 updateBlobsData(txFiles, currentDb, currentBlobsDir, currentCryptor, newCryptor);
             }
 
-            if (getStatus(stateHolder).isBeforeOrEqual(SecretsUpdateStatus.MOVING_DB_DATA)) {
+            if (getStatus(stateHolder).isBeforeOrEqual(SecretsRotationStatus.MOVING_DB_DATA)) {
                 // Staging files for new database
                 File stagedDbFile = txFiles.stageFile(currentDbFile);
 
@@ -169,7 +169,7 @@ public final class SecretsRotationService {
                 var tempDb = databaseManager.getDatabase(stagedDbFile.getAbsolutePath(), newKey);
 
                 try {
-                    setStatus(stateHolder, SecretsUpdateStatus.MOVING_DB_DATA);
+                    setStatus(stateHolder, SecretsRotationStatus.MOVING_DB_DATA);
                     copyDbData(currentDb, tempDb);
                 } finally {
                     tempDb.close();
@@ -289,9 +289,9 @@ public final class SecretsRotationService {
      * Retrieves the current status from the state holder.
      *
      * @param stateHolder The state holder.
-     * @return The current {@link SecretsUpdateStatus}.
+     * @return The current {@link SecretsRotationStatus}.
      */
-    SecretsUpdateStatus getStatus(SecretsRotationStateHolder stateHolder) {
+    SecretsRotationStatus getStatus(SecretsRotationStateHolder stateHolder) {
         return stateHolder.getState().getStatus();
     }
 
@@ -301,7 +301,7 @@ public final class SecretsRotationService {
      * @param stateHolder The state holder.
      * @param status      The new status to set.
      */
-    void setStatus(SecretsRotationStateHolder stateHolder, SecretsUpdateStatus status) {
+    void setStatus(SecretsRotationStateHolder stateHolder, SecretsRotationStatus status) {
         stateHolder.setState(stateHolder.getState().setStatus(status));
     }
 }

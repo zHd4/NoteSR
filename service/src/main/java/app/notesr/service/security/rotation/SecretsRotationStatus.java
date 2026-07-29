@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum SecretsUpdateStatus {
+public enum SecretsRotationStatus {
     INITIALIZING("initializing", 0),
     MOVING_BLOBS_DATA("moving_blobs_data", 1),
     MOVING_DB_DATA("moving_db_data", 2),
@@ -20,11 +20,11 @@ public enum SecretsUpdateStatus {
     private final String status;
     private final int order;
 
-    public boolean isBefore(SecretsUpdateStatus other) {
+    public boolean isBefore(SecretsRotationStatus other) {
         return this.order < other.order;
     }
 
-    public boolean isBeforeOrEqual(SecretsUpdateStatus other) {
+    public boolean isBeforeOrEqual(SecretsRotationStatus other) {
         return this.order <= other.order;
     }
 }

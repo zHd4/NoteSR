@@ -20,12 +20,12 @@ import lombok.ToString;
 public final class SecretsRotationState implements Serializable {
 
     @Getter
-    private SecretsUpdateStatus status;
+    private SecretsRotationStatus status;
 
     @Getter
     private String transactionId;
 
-    public SecretsRotationState setStatus(SecretsUpdateStatus status) {
+    public SecretsRotationState setStatus(SecretsRotationStatus status) {
         this.status = status;
         return this;
     }
