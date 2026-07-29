@@ -67,13 +67,13 @@ class SecretsRotationAndroidServiceTest {
     private AndroidServiceRegistry androidServiceRegistry;
 
     private SecretsRotationAndroidService service;
-    private SecretsUpdateState state;
+    private SecretsRotationState state;
     private CryptoSecrets newSecrets;
 
     @BeforeEach
     void setUp() {
         service = spy(new SecretsRotationAndroidService());
-        state = new SecretsUpdateState();
+        state = new SecretsRotationState();
         newSecrets = new CryptoSecrets(new byte[32], "password".toCharArray());
 
         // Inject basic dependencies using setters

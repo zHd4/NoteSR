@@ -17,7 +17,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
-public final class SecretsUpdateState implements Serializable {
+public final class SecretsRotationState implements Serializable {
 
     @Getter
     private SecretsUpdateStatus status;
@@ -25,21 +25,21 @@ public final class SecretsUpdateState implements Serializable {
     @Getter
     private String transactionId;
 
-    public SecretsUpdateState setStatus(SecretsUpdateStatus status) {
+    public SecretsRotationState setStatus(SecretsUpdateStatus status) {
         this.status = status;
         return this;
     }
 
-    public SecretsUpdateState setTransactionId(String transactionId) {
+    public SecretsRotationState setTransactionId(String transactionId) {
         this.transactionId = transactionId;
         return this;
     }
 
-    public static SecretsUpdateState from(SecretsUpdateState state) {
+    public static SecretsRotationState from(SecretsRotationState state) {
         if (state == null) {
             return null;
         }
 
-        return new SecretsUpdateState(state.getStatus(), state.getTransactionId());
+        return new SecretsRotationState(state.getStatus(), state.getTransactionId());
     }
 }

@@ -140,7 +140,7 @@ class SecretsRotationAndroidServiceStarterTest {
                 KeyUtils.getSecretKeyFromSecrets(secrets)));
         String encryptedPayload = encryptor.encrypt(payloadJson);
 
-        SecretsUpdateState state = new SecretsUpdateState(SecretsUpdateStatus.MOVING_DB_DATA,
+        SecretsRotationState state = new SecretsRotationState(SecretsUpdateStatus.MOVING_DB_DATA,
                 "tx123");
         String stateJson = mapper.writeValueAsString(state);
 

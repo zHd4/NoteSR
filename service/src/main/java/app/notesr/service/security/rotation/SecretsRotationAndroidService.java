@@ -69,7 +69,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
         cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
         newSecrets = getNewSecrets();
 
-        var state = (SecretsUpdateState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
+        var state = (SecretsRotationState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
         stateHolder = new SecretsUpdateStateHolder(this::onStateUpdate).setState(state);
         secretsUpdateService = getSecretsUpdateService();
         encryptedPayload = encryptPayload(getPayload());
@@ -124,7 +124,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
         return getEncryptedJson(new ObjectMapper(), payload, cryptoManager.getSecrets());
     }
 
-    String serializeState(SecretsUpdateState state) {
+    String serializeState(SecretsRotationState state) {
         if (state == null) {
             return null;
         }
@@ -162,7 +162,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
         stopSelf();
     }
 
-    TransactionalFilesUtil getTransactionalFilesUtil(SecretsUpdateState state) {
+    TransactionalFilesUtil getTransactionalFilesUtil(SecretsRotationState state) {
         var filesUtils = new FilesUtils();
         var transactionId = state.getTransactionId();
 
@@ -176,7 +176,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
         super.onTaskRemoved(rootIntent);
     }
 
-    void onStateUpdate(SecretsUpdateState newState) {
+    void onStateUpdate(SecretsRotationState newState) {
         AndroidServiceRegistry.getInstance(getApplicationContext())
                 .updateEntry(getEntry(encryptedPayload, serializeState(newState)));
     }
