@@ -57,7 +57,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
 
     private String dbName;
     private CryptoManager cryptoManager;
-    private SecretsUpdateStateHolder stateHolder;
+    private SecretsRotationStateHolder stateHolder;
     private CryptoSecrets newSecrets;
     private SecretsRotationService secretsUpdateService;
     private String encryptedPayload;
@@ -70,7 +70,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
         newSecrets = getNewSecrets();
 
         var state = (SecretsRotationState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
-        stateHolder = new SecretsUpdateStateHolder(this::onStateUpdate).setState(state);
+        stateHolder = new SecretsRotationStateHolder(this::onStateUpdate).setState(state);
         secretsUpdateService = getSecretsUpdateService();
         encryptedPayload = encryptPayload(getPayload());
 
