@@ -55,7 +55,7 @@ class SecretsUpdateAndroidServiceTest {
     private CryptoManager cryptoManager;
 
     @Mock
-    private SecretsUpdateService secretsUpdateService;
+    private SecretsRotationService secretsUpdateService;
 
     @Mock
     private TransactionalFilesUtil txFiles;

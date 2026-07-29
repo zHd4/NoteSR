@@ -47,7 +47,7 @@ import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
 
 @ExtendWith(MockitoExtension.class)
-class SecretsUpdateServiceTest {
+class SecretsRotationServiceTest {
 
     private static final int KEY_SIZE = 48;
 
@@ -62,7 +62,7 @@ class SecretsUpdateServiceTest {
     @Mock
     private Consumer<SecretsUpdateState> onUpdate;
 
-    private SecretsUpdateService secretsUpdateService;
+    private SecretsRotationService secretsUpdateService;
     private SecretsUpdateStateHolder stateHolder;
 
     private final String dbName = "test.db";
@@ -72,7 +72,7 @@ class SecretsUpdateServiceTest {
 
     @BeforeEach
     void setUp() {
-        secretsUpdateService = new SecretsUpdateService(context, databaseManager);
+        secretsUpdateService = new SecretsRotationService(context, databaseManager);
         stateHolder = new SecretsUpdateStateHolder(onUpdate);
 
         // Initialize keys

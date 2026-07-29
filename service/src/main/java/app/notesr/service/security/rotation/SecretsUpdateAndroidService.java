@@ -59,7 +59,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
     private CryptoManager cryptoManager;
     private SecretsUpdateStateHolder stateHolder;
     private CryptoSecrets newSecrets;
-    private SecretsUpdateService secretsUpdateService;
+    private SecretsRotationService secretsUpdateService;
     private String encryptedPayload;
 
     @Override
@@ -209,10 +209,10 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
         }
     }
 
-    SecretsUpdateService getSecretsUpdateService() {
+    SecretsRotationService getSecretsUpdateService() {
         var context = getApplicationContext();
         var databaseManager = new DatabaseManagerImpl(context);
 
-        return new SecretsUpdateService(context, databaseManager);
+        return new SecretsRotationService(context, databaseManager);
     }
 }
