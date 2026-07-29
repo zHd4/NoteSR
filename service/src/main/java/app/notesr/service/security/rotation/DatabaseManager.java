@@ -9,7 +9,7 @@ import app.notesr.data.AppDatabase;
 
 /**
  * Interface for managing database instances and the global database provider state
- * during secrets updates.
+ * during secrets rotation.
  */
 public interface DatabaseManager {
     AppDatabase getDatabase(String name, byte[] key);

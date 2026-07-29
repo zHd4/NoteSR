@@ -48,18 +48,18 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
 
     public static final String NEW_KEY = "new_key";
     public static final String PASSWORD = "password";
-    public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
+    public static final String BROADCAST_ACTION = "secrets_rotation_service_broadcast";
     public static final String EXTRA_CURRENT_STATE = "current_state";
-    public static final String EXTRA_COMPLETE = "re_encryption_complete";
-    public static final String EXTRA_FAIL = "re_encryption_fail";
-    private static final String CHANNEL_ID = "re_encryption_service_channel";
-    private static final String CHANNEL_NAME = "Re-encryption Service Channel";
+    public static final String EXTRA_COMPLETE = "rotation_completed";
+    public static final String EXTRA_FAIL = "rotation_failed";
+    private static final String CHANNEL_ID = "secrets_rotation_service";
+    private static final String CHANNEL_NAME = "Key Rotation";
 
     private String dbName;
     private CryptoManager cryptoManager;
     private SecretsRotationStateHolder stateHolder;
     private CryptoSecrets newSecrets;
-    private SecretsRotationService secretsUpdateService;
+    private SecretsRotationService secretsRotationService;
     private String encryptedPayload;
 
     @Override
@@ -71,7 +71,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
 
         var state = (SecretsRotationState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
         stateHolder = new SecretsRotationStateHolder(this::onStateUpdate).setState(state);
-        secretsUpdateService = getSecretsUpdateService();
+        secretsRotationService = getSecretsRotationService();
         encryptedPayload = encryptPayload(getPayload());
 
         var thread = new Thread(this);
@@ -145,13 +145,13 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
             var transactionId = txFiles.getTransactionId();
 
             stateHolder.setState(stateHolder.getState().setTransactionId(transactionId));
-            secretsUpdateService.updateSecrets(txFiles, cryptoManager, dbName, stateHolder,
+            secretsRotationService.updateSecrets(txFiles, cryptoManager, dbName, stateHolder,
                     newSecrets);
 
             onComplete();
         } catch (SecretsRotationFailedException | FilesTransactionException e) {
             onFail();
-            Log.e(TAG, "Secrets update failed", e);
+            Log.e(TAG, "Secrets rotation failed", e);
         } finally {
             stopService();
         }
@@ -209,7 +209,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
         }
     }
 
-    SecretsRotationService getSecretsUpdateService() {
+    SecretsRotationService getSecretsRotationService() {
         var context = getApplicationContext();
         var databaseManager = new DatabaseManagerImpl(context);
 

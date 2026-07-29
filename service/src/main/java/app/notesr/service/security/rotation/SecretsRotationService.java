@@ -45,9 +45,9 @@ public final class SecretsRotationService {
      * @param txFiles     The transactional files utility.
      * @param cryptoManager The crypto manager instance.
      * @param dbName      The name of the database file.
-     * @param stateHolder The state holder for tracking update progress.
+     * @param stateHolder The state holder for tracking rotation progress.
      * @param newSecrets The new crypto secrets to be applied.
-     * @throws SecretsRotationFailedException If the secrets update fails.
+     * @throws SecretsRotationFailedException If the secrets rotation fails.
      */
     public void updateSecrets(
             TransactionalFilesUtil txFiles,
@@ -74,7 +74,7 @@ public final class SecretsRotationService {
             }
 
             if (getStatus(stateHolder) == SecretsRotationStatus.FAILED) {
-                throw new SecretsRotationFailedException("Secrets update is already failed");
+                throw new SecretsRotationFailedException("Secrets rotation is already failed");
             }
 
             databaseManager.closeProvider();
@@ -109,7 +109,7 @@ public final class SecretsRotationService {
         } catch (Exception e) {
             txFiles.rollback();
             setStatus(stateHolder, SecretsRotationStatus.FAILED);
-            throw new SecretsRotationFailedException("Secrets update failed", e);
+            throw new SecretsRotationFailedException("Secrets rotation failed", e);
         } finally {
             currentSecrets.destroy();
             newSecrets.destroy();

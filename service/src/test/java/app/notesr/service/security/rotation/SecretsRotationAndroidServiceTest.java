@@ -55,7 +55,7 @@ class SecretsRotationAndroidServiceTest {
     private CryptoManager cryptoManager;
 
     @Mock
-    private SecretsRotationService secretsUpdateService;
+    private SecretsRotationService secretsRotationService;
 
     @Mock
     private TransactionalFilesUtil txFiles;
@@ -79,7 +79,7 @@ class SecretsRotationAndroidServiceTest {
         // Inject basic dependencies using setters
         service.setCryptoManager(cryptoManager);
         service.setNewSecrets(newSecrets);
-        service.setSecretsUpdateService(secretsUpdateService);
+        service.setSecretsRotationService(secretsRotationService);
         service.setDbName("test.db");
     }
 
@@ -96,7 +96,7 @@ class SecretsRotationAndroidServiceTest {
 
         service.run();
 
-        verify(secretsUpdateService)
+        verify(secretsRotationService)
                 .updateSecrets(eq(txFiles), eq(cryptoManager), eq("test.db"), any(), 
                         eq(newSecrets));
         verify(service).onComplete();
@@ -117,7 +117,7 @@ class SecretsRotationAndroidServiceTest {
             
             when(txFiles.getTransactionId()).thenReturn("tx-123");
             doThrow(new SecretsRotationFailedException("Failed"))
-                    .when(secretsUpdateService).updateSecrets(any(), any(), any(), any(), any());
+                    .when(secretsRotationService).updateSecrets(any(), any(), any(), any(), any());
 
             service.run();
 
@@ -196,7 +196,7 @@ class SecretsRotationAndroidServiceTest {
                     .thenReturn(androidServiceRegistry);
 
             doReturn(context).when(service).getApplicationContext();
-            doReturn(secretsUpdateService).when(service).getSecretsUpdateService();
+            doReturn(secretsRotationService).when(service).getSecretsRotationService();
             doReturn(newSecrets).when(service).getNewSecrets();
             doNothing().when(service).showForegroundNotification(anyInt());
             doReturn("encryptedPayload").when(service).encryptPayload(any());
