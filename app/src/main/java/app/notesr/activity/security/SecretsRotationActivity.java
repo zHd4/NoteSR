@@ -32,8 +32,8 @@ public final class SecretsRotationActivity extends ActivityBase {
         applyInsets(findViewById(R.id.main));
         disableBackButton(this);
 
-        ReEncryptionBroadcastReceiver broadcastReceiver =
-                new ReEncryptionBroadcastReceiver(this::onSecretsRotationComplete,
+        SecretsRotationBroadcastReceiver broadcastReceiver =
+                new SecretsRotationBroadcastReceiver(this::onSecretsRotationComplete,
                         this::onSecretsRotationFailed);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
