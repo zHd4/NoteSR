@@ -7,6 +7,8 @@ package app.notesr.service.security.rotation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -22,6 +24,7 @@ import android.content.Context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -125,6 +128,7 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsSuccessfulUpdateFromStart() throws Exception {
         CryptoSecrets currentSecrets = createCurrentSecrets();
         CryptoSecrets newSecrets = createNewSecrets();
+        byte[] expectedNewKey = newKey.clone();
 
         when(appSecurityService.getActualSecrets()).thenReturn(currentSecrets);
         when(txFiles.isCommitted()).thenReturn(false);
@@ -185,7 +189,16 @@ class SecretsRotationServiceTest {
 
         verify(databaseManager).closeProvider();
         verify(txFiles).commit();
-        verify(appSecurityService).setSecrets(any(CryptoSecrets.class));
+
+        var secretsCaptor = ArgumentCaptor.forClass(CryptoSecrets.class);
+        verify(appSecurityService).setSecrets(secretsCaptor.capture());
+
+        CryptoSecrets passedSecrets = secretsCaptor.getValue();
+        assertNotSame(newSecrets, passedSecrets,
+                "setSecrets should receive a copy, not the original instance");
+        assertArrayEquals(expectedNewKey, passedSecrets.getKey(),
+                "Copied secrets must preserve key bytes");
+
         verify(databaseManager).reinitProvider(any());
         assertEquals(SecretsRotationStatus.DONE, stateHolder.getState().getStatus(),
                 "Status should be DONE after successful migration");
@@ -195,6 +208,7 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsAlreadyCommittedUpdatesStatusToDone() throws Exception {
         CryptoSecrets currentSecrets = createCurrentSecrets();
         CryptoSecrets newSecrets = createNewSecrets();
+        byte[] expectedNewKey = newKey.clone();
 
         stateHolder.setState(
                 new SecretsRotationState().setStatus(SecretsRotationStatus.MOVING_DB_DATA));
@@ -206,7 +220,16 @@ class SecretsRotationServiceTest {
                 stateHolder, newSecrets);
 
         verify(txFiles, never()).commit();
-        verify(appSecurityService).setSecrets(any(CryptoSecrets.class));
+
+        var secretsCaptor = ArgumentCaptor.forClass(CryptoSecrets.class);
+        verify(appSecurityService).setSecrets(secretsCaptor.capture());
+
+        CryptoSecrets passedSecrets = secretsCaptor.getValue();
+        assertNotSame(newSecrets, passedSecrets,
+                "setSecrets should receive a copy, not the original instance");
+        assertArrayEquals(expectedNewKey, passedSecrets.getKey(),
+                "Copied secrets must preserve key bytes");
+
         verify(databaseManager).reinitProvider(any());
 
         assertEquals(SecretsRotationStatus.DONE, stateHolder.getState().getStatus(),
