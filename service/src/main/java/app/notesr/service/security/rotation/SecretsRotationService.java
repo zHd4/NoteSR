@@ -103,7 +103,7 @@ public final class SecretsRotationService {
                 }
             }
 
-            appSecurityService.setSecrets(newSecrets);
+            appSecurityService.setSecrets(CryptoSecrets.from(newSecrets));
             setStatus(stateHolder, SecretsRotationStatus.DONE);
 
             databaseManager.reinitProvider(newSecrets.getKey());
