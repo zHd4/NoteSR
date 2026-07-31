@@ -55,6 +55,9 @@ class SecretsRotationAndroidServiceTest {
     private AppSecurityService appSecurityService;
 
     @Mock
+    private DatabaseManager databaseManager;
+
+    @Mock
     private SecretsRotationService secretsRotationService;
 
     @Mock
@@ -78,8 +81,9 @@ class SecretsRotationAndroidServiceTest {
 
         // Inject basic dependencies using setters
         service.setAppSecurityService(appSecurityService);
-        service.setNewSecrets(newSecrets);
+        service.setDatabaseManager(databaseManager);
         service.setSecretsRotationService(secretsRotationService);
+        service.setNewSecrets(newSecrets);
         service.setDbName("test.db");
     }
 
@@ -97,7 +101,7 @@ class SecretsRotationAndroidServiceTest {
         service.run();
 
         verify(secretsRotationService)
-                .updateSecrets(eq(txFiles), eq(appSecurityService), eq("test.db"), any(),
+                .updateSecrets(eq(txFiles), eq(databaseManager), eq("test.db"), any(),
                         eq(newSecrets));
         verify(service).onComplete();
         verify(service).stopService();
@@ -202,7 +206,6 @@ class SecretsRotationAndroidServiceTest {
                     .thenReturn(androidServiceRegistry);
 
             doReturn(context).when(service).getApplicationContext();
-            doReturn(secretsRotationService).when(service).getSecretsRotationService();
             doReturn(newSecrets).when(service).getNewSecrets();
             doNothing().when(service).showForegroundNotification(anyInt());
             doReturn("encryptedPayload").when(service).encryptPayload(any());

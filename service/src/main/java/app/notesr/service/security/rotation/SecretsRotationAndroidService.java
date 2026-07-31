@@ -55,22 +55,26 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
     private static final String CHANNEL_NAME = "Key Rotation";
 
     private String dbName;
+    private DatabaseManager databaseManager;
     private AppSecurityService appSecurityService;
+    private SecretsRotationService secretsRotationService;
     private SecretsRotationStateHolder stateHolder;
     private CryptoSecrets newSecrets;
-    private SecretsRotationService secretsRotationService;
     private String encryptedPayload;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         dbName = DatabaseProvider.DB_NAME;
 
+        databaseManager = new DatabaseManagerImpl(getApplicationContext());
         appSecurityService = new AppSecurityService(getApplicationContext());
+        secretsRotationService = new SecretsRotationService(getApplicationContext(),
+                appSecurityService);
+
         newSecrets = getNewSecrets();
 
         var state = (SecretsRotationState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
         stateHolder = new SecretsRotationStateHolder(this::onStateUpdate).setState(state);
-        secretsRotationService = getSecretsRotationService();
         encryptedPayload = encryptPayload(getPayload());
 
         var thread = new Thread(this);
@@ -144,7 +148,7 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
             var transactionId = txFiles.getTransactionId();
 
             stateHolder.setState(stateHolder.getState().setTransactionId(transactionId));
-            secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName, stateHolder,
+            secretsRotationService.updateSecrets(txFiles, databaseManager, dbName, stateHolder,
                     newSecrets);
 
             onComplete();
@@ -206,12 +210,5 @@ public class SecretsRotationAndroidService extends AndroidService implements Run
         } catch (CharacterCodingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    SecretsRotationService getSecretsRotationService() {
-        var context = getApplicationContext();
-        var databaseManager = new DatabaseManagerImpl(context);
-
-        return new SecretsRotationService(context, databaseManager);
     }
 }

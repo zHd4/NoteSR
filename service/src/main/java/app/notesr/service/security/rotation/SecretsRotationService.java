@@ -35,24 +35,63 @@ import lombok.RequiredArgsConstructor;
 public final class SecretsRotationService {
 
     private final Context context;
-    private final DatabaseManager databaseManager;
+    private final AppSecurityService appSecurityService;
+
+    /**
+     * Updates the password in the crypto secrets.
+     * After the update, the new password are securely cleared to minimize sensitive data
+     * exposure in memory.
+     *
+     * @param newPassword The new password to set.
+     * @throws IllegalArgumentException If the new password is invalid.
+     * @throws SecretsRotationFailedException If the password update fails.
+     */
+    public void updatePassword(char[] newPassword) {
+        try {
+            CryptoSecretsValidator.validatePassword(newPassword);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid password", e);
+        }
+
+        CryptoSecrets currentSecrets = null;
+
+        try {
+            currentSecrets = appSecurityService.getActualSecrets();
+            currentSecrets.setPassword(newPassword);
+            appSecurityService.setSecrets(CryptoSecrets.from(currentSecrets));
+        } catch (Exception e) {
+            throw new SecretsRotationFailedException("Failed to update password", e);
+        } finally {
+            if (currentSecrets != null) {
+                // Also fills the new password with \0
+                currentSecrets.destroy();
+            }
+        }
+    }
 
     /**
      * Updates the crypto secrets (master key and password) and migrates all encrypted data.
+     * This could be heavy and long-term operation, so it should be executed
+     * using {@link SecretsRotationAndroidServiceStarter}.
      * <p>
      * It performs a migration of the database and file blobs to the new encryption settings.
+     * After the migration, the newSecrets are destroyed to minimize sensitive data
+     * exposure in memory.
      *
      * @param txFiles                         The transactional files utility.
-     * @param appSecurityService              The application security service for managing secrets.
+     * @param databaseManager                 The database manager for handling database operations.
      * @param dbName                          The name of the database file.
      * @param stateHolder                     The state holder for tracking rotation progress.
      * @param newSecrets                      The new crypto secrets to be applied.
      *
+     * @throws IllegalArgumentException If the new secrets are invalid.
      * @throws SecretsRotationFailedException If the secrets rotation fails.
+     * @see SecretsRotationAndroidService
+     * @see SecretsRotationAndroidServiceStarter
      */
     public void updateSecrets(
             TransactionalFilesUtil txFiles,
-            AppSecurityService appSecurityService,
+            DatabaseManager databaseManager,
             String dbName,
             SecretsRotationStateHolder stateHolder,
             CryptoSecrets newSecrets) {
@@ -60,12 +99,14 @@ public final class SecretsRotationService {
         try {
             CryptoSecretsValidator.validate(newSecrets);
         } catch (IllegalArgumentException e) {
-            throw new SecretsRotationFailedException("Invalid new secrets", e);
+            throw new IllegalArgumentException("Invalid new secrets", e);
         }
 
-        var currentSecrets = appSecurityService.getActualSecrets();
+        CryptoSecrets currentSecrets = null;
 
         try (txFiles) {
+            currentSecrets = appSecurityService.getActualSecrets();
+
             if (getStatus(stateHolder) == null) {
                 setStatus(stateHolder, SecretsRotationStatus.INITIALIZING);
             }
@@ -81,12 +122,13 @@ public final class SecretsRotationService {
             databaseManager.closeProvider();
 
             if (!txFiles.isCommitted()) {
-                var currentCryptor = AesCryptorFactory.createAesGcmCryptor(currentSecrets);
-                var newCryptor = AesCryptorFactory.createAesGcmCryptor(newSecrets);
-                var currentBlobsDir = txFiles.getInternalFile(context, FileService.BLOBS_DIR_NAME);
+                AesCryptor currentCryptor = AesCryptorFactory.createAesGcmCryptor(currentSecrets);
+                AesCryptor newCryptor = AesCryptorFactory.createAesGcmCryptor(newSecrets);
+                File currentBlobsDir = txFiles.getInternalFile(context, FileService.BLOBS_DIR_NAME);
 
                 migrateData(
                         txFiles,
+                        databaseManager,
                         stateHolder,
                         dbName,
                         currentSecrets.getKey(),
@@ -112,7 +154,10 @@ public final class SecretsRotationService {
             setStatus(stateHolder, SecretsRotationStatus.FAILED);
             throw new SecretsRotationFailedException("Secrets rotation failed", e);
         } finally {
-            currentSecrets.destroy();
+            if (currentSecrets != null) {
+                currentSecrets.destroy();
+            }
+
             newSecrets.destroy();
         }
     }
@@ -121,6 +166,7 @@ public final class SecretsRotationService {
      * Migrates the database and file blobs from the current encryption settings to the new ones.
      *
      * @param txFiles         The transactional files utility.
+     * @param databaseManager The database manager for handling database operations.
      * @param stateHolder     The state holder for the update process.
      * @param dbName          The name of the database to migrate.
      * @param currentKey      The current database encryption key.
@@ -134,6 +180,7 @@ public final class SecretsRotationService {
      */
     void migrateData(
             TransactionalFilesUtil txFiles,
+            DatabaseManager databaseManager,
             SecretsRotationStateHolder stateHolder,
             String dbName,
             byte[] currentKey,

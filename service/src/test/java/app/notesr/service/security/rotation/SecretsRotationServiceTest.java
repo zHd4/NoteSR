@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +80,7 @@ class SecretsRotationServiceTest {
 
     @BeforeEach
     void setUp() {
-        secretsRotationService = new SecretsRotationService(context, databaseManager);
+        secretsRotationService = new SecretsRotationService(context, appSecurityService);
         stateHolder = new SecretsRotationStateHolder(onUpdate);
 
         // Initialize keys
@@ -103,7 +104,7 @@ class SecretsRotationServiceTest {
         stateHolder.setState(new SecretsRotationState().setStatus(SecretsRotationStatus.DONE));
         CryptoSecrets newSecrets = createNewSecrets();
 
-        secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                 stateHolder, newSecrets);
 
         verify(databaseManager, never()).closeProvider();
@@ -119,15 +120,16 @@ class SecretsRotationServiceTest {
         CryptoSecrets newSecrets = createNewSecrets();
 
         assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager,
                         dbName, stateHolder, newSecrets),
                 "Should throw exception if status is already FAILED");
     }
 
     @Test
     void testUpdateSecretsSuccessfulUpdateFromStart() throws Exception {
-        CryptoSecrets currentSecrets = createCurrentSecrets();
-        CryptoSecrets newSecrets = createNewSecrets();
+        CryptoSecrets currentSecrets = spy(createCurrentSecrets());
+        CryptoSecrets newSecrets = spy(createNewSecrets());
+
         byte[] expectedNewKey = newKey.clone();
 
         when(appSecurityService.getActualSecrets()).thenReturn(currentSecrets);
@@ -184,7 +186,7 @@ class SecretsRotationServiceTest {
             return null;
         }).when(tempDbMock).runInTransaction(any(Callable.class));
 
-        secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                 stateHolder, newSecrets);
 
         verify(databaseManager).closeProvider();
@@ -202,12 +204,15 @@ class SecretsRotationServiceTest {
         verify(databaseManager).reinitProvider(any());
         assertEquals(SecretsRotationStatus.DONE, stateHolder.getState().getStatus(),
                 "Status should be DONE after successful migration");
+
+        verify(currentSecrets).destroy();
+        verify(newSecrets).destroy();
     }
 
     @Test
     void testUpdateSecretsAlreadyCommittedUpdatesStatusToDone() throws Exception {
-        CryptoSecrets currentSecrets = createCurrentSecrets();
-        CryptoSecrets newSecrets = createNewSecrets();
+        CryptoSecrets currentSecrets = spy(createCurrentSecrets());
+        CryptoSecrets newSecrets = spy(createNewSecrets());
         byte[] expectedNewKey = newKey.clone();
 
         stateHolder.setState(
@@ -216,7 +221,7 @@ class SecretsRotationServiceTest {
         when(appSecurityService.getActualSecrets()).thenReturn(currentSecrets);
         when(txFiles.isCommitted()).thenReturn(true);
 
-        secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                 stateHolder, newSecrets);
 
         verify(txFiles, never()).commit();
@@ -234,12 +239,15 @@ class SecretsRotationServiceTest {
 
         assertEquals(SecretsRotationStatus.DONE, stateHolder.getState().getStatus(),
                 "Status should be DONE if transaction was already committed");
+
+        verify(currentSecrets).destroy();
+        verify(newSecrets).destroy();
     }
 
     @Test
     void testUpdateSecretsMigrationFailureTriggersRollbackAndSetsFailed() {
-        CryptoSecrets currentSecrets = createCurrentSecrets();
-        CryptoSecrets newSecrets = createNewSecrets();
+        CryptoSecrets currentSecrets = spy(createCurrentSecrets());
+        CryptoSecrets newSecrets = spy(createNewSecrets());
 
         when(appSecurityService.getActualSecrets()).thenReturn(currentSecrets);
         when(txFiles.isCommitted()).thenReturn(false);
@@ -248,12 +256,16 @@ class SecretsRotationServiceTest {
                 .when(txFiles).getInternalFile(any(), anyString());
 
         assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager,
                         dbName, stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException"
                         + " and trigger rollback on migration failure");
 
         verify(txFiles).rollback();
+        verify(databaseManager).closeProvider();
+        verify(currentSecrets).destroy();
+        verify(newSecrets).destroy();
+
         assertEquals(SecretsRotationStatus.FAILED, stateHolder.getState().getStatus(),
                 "Status should be FAILED after migration failure");
     }
@@ -264,7 +276,8 @@ class SecretsRotationServiceTest {
         when(databaseManager.getDatabase(dbName, newKey)).thenReturn(newDb);
         when(databaseManager.isDbAvailable(newDb)).thenReturn(true);
 
-        secretsRotationService.migrateData(txFiles, stateHolder, dbName, currentKey, newKey,
+        secretsRotationService.migrateData(txFiles, databaseManager,
+                stateHolder, dbName, currentKey, newKey,
                 new File("blobs"), mock(AesCryptor.class), mock(AesCryptor.class));
 
         verify(databaseManager, never()).getDatabase(dbName, currentKey);
@@ -416,8 +429,8 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsThrowsWhenNewSecretsKeyIsNull() {
         CryptoSecrets newSecrets = new CryptoSecrets(null, password.clone());
 
-        assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                         stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException when new secrets key is null");
     }
@@ -426,8 +439,8 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsThrowsWhenNewSecretsKeyIsEmpty() {
         CryptoSecrets newSecrets = new CryptoSecrets(new byte[0], password.clone());
 
-        assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                         stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException when new secrets key is empty");
     }
@@ -437,8 +450,8 @@ class SecretsRotationServiceTest {
         byte[] wrongSizedKey = new byte[32]; // Wrong size, should be 48
         CryptoSecrets newSecrets = new CryptoSecrets(wrongSizedKey, password.clone());
 
-        assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                         stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException"
                         + " when new secrets key has wrong size");
@@ -449,8 +462,8 @@ class SecretsRotationServiceTest {
         byte[] nulledKey = new byte[KEY_SIZE]; // All zeros
         CryptoSecrets newSecrets = new CryptoSecrets(nulledKey, password.clone());
 
-        assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                         stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException"
                         + " when new secrets key is all zeros");
@@ -460,8 +473,8 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsThrowsWhenNewSecretsPasswordIsNull() {
         CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), null);
 
-        assertThrows(SecretsRotationFailedException.class, () -> secretsRotationService.updateSecrets(
-                txFiles, appSecurityService, dbName, stateHolder, newSecrets),
+        assertThrows(IllegalArgumentException.class, () -> secretsRotationService.updateSecrets(
+                txFiles, databaseManager, dbName, stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException"
                         + " when new secrets password is null");
     }
@@ -470,8 +483,8 @@ class SecretsRotationServiceTest {
     void testUpdateSecretsThrowsWhenNewSecretsPasswordIsEmpty() {
         CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), new char[0]);
 
-        assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                         stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException"
                         + " when new secrets password is empty");
@@ -482,8 +495,8 @@ class SecretsRotationServiceTest {
         char[] shortPassword = "abc".toCharArray(); // Less than 4 characters
         CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), shortPassword);
 
-        assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                         stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException"
                         + " when new secrets password is too short");
@@ -494,10 +507,122 @@ class SecretsRotationServiceTest {
         char[] nulledPassword = new char[4]; // All '\0' characters
         CryptoSecrets newSecrets = new CryptoSecrets(newKey.clone(), nulledPassword);
 
-        assertThrows(SecretsRotationFailedException.class,
-                () -> secretsRotationService.updateSecrets(txFiles, appSecurityService, dbName,
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
                         stateHolder, newSecrets),
                 "Should throw SecretsRotationFailedException"
                         + " when new secrets password is all zeros");
+    }
+
+    @Test
+    void testUpdateSecretsDestroysNewSecretsEvenWhenCurrentSecretsIsNull() {
+        CryptoSecrets newSecrets = spy(createNewSecrets());
+
+        when(appSecurityService.getActualSecrets()).thenReturn(null);
+        when(txFiles.isCommitted()).thenReturn(false);
+
+        assertThrows(SecretsRotationFailedException.class,
+                () -> secretsRotationService.updateSecrets(txFiles, databaseManager,
+                        dbName, stateHolder, newSecrets),
+                "Should throw SecretsRotationFailedException and still destroy newSecrets");
+
+        verify(newSecrets).destroy();
+    }
+
+    @Test
+    void testUpdatePasswordSuccessfully() {
+        CryptoSecrets currentSecrets = spy(createCurrentSecrets());
+        char[] newPassword = "newPassword123".toCharArray();
+
+        when(appSecurityService.getActualSecrets()).thenReturn(currentSecrets);
+
+        secretsRotationService.updatePassword(newPassword.clone());
+
+        var secretsCaptor = ArgumentCaptor.forClass(CryptoSecrets.class);
+        verify(appSecurityService).setSecrets(secretsCaptor.capture());
+
+        CryptoSecrets passedSecrets = secretsCaptor.getValue();
+        assertArrayEquals(newPassword, passedSecrets.getPassword(),
+                "Passed secrets should contain the new password");
+
+        verify(currentSecrets).destroy();
+    }
+
+    @Test
+    void testUpdatePasswordThrowsWhenPasswordIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updatePassword(null),
+                "Should throw IllegalArgumentException when password is null");
+    }
+
+    @Test
+    void testUpdatePasswordThrowsWhenPasswordIsEmpty() {
+        char[] emptyPassword = new char[0];
+
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updatePassword(emptyPassword),
+                "Should throw IllegalArgumentException when password is empty");
+    }
+
+    @Test
+    void testUpdatePasswordThrowsWhenPasswordIsTooShort() {
+        char[] shortPassword = "abc".toCharArray(); // Less than 4 characters
+
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updatePassword(shortPassword),
+                "Should throw IllegalArgumentException when password is too short");
+    }
+
+    @Test
+    void testUpdatePasswordThrowsWhenPasswordIsAllZeros() {
+        char[] nulledPassword = new char[4]; // All '\0' characters
+
+        assertThrows(IllegalArgumentException.class,
+                () -> secretsRotationService.updatePassword(nulledPassword),
+                "Should throw IllegalArgumentException when password is all zeros");
+    }
+
+    @Test
+    void testUpdatePasswordCleansUpOnException() {
+        CryptoSecrets currentSecrets = mock(CryptoSecrets.class);
+        char[] newPassword = "newPassword123".toCharArray();
+
+        when(appSecurityService.getActualSecrets()).thenReturn(currentSecrets);
+        doThrow(new RuntimeException("Security service error"))
+                .when(appSecurityService).setSecrets(any());
+
+        assertThrows(SecretsRotationFailedException.class,
+                () -> secretsRotationService.updatePassword(newPassword),
+                "Should throw SecretsRotationFailedException when setSecrets fails");
+
+        verify(currentSecrets).destroy();
+    }
+
+    @Test
+    void testUpdatePasswordThrowsSecretsRotationFailedWhenGetSecretsThrows() {
+        char[] newPassword = "newPassword123".toCharArray();
+
+        when(appSecurityService.getActualSecrets())
+                .thenThrow(new RuntimeException("Failed to get secrets"));
+
+        assertThrows(SecretsRotationFailedException.class,
+                () -> secretsRotationService.updatePassword(newPassword),
+                "Should throw SecretsRotationFailedException"
+                        + " when getActualSecrets fails");
+    }
+
+    @Test
+    void testUpdatePasswordNotDestroysCurrentSecretsIfItsNull() {
+        char[] newPassword = "newPassword123".toCharArray();
+        char[] newPasswordCopy = newPassword.clone();
+
+        when(appSecurityService.getActualSecrets()).thenReturn(null);
+
+        assertThrows(SecretsRotationFailedException.class,
+                () -> secretsRotationService.updatePassword(newPassword),
+                "Should throw SecretsRotationFailedException and still destroy newSecrets");
+
+        assertArrayEquals(newPasswordCopy, newPassword,
+                "New password should remain unchanged after exception");
     }
 }
