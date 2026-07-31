@@ -20,6 +20,7 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.service.security.rotation.SecretsRotationService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -57,7 +58,11 @@ public final class AuthActivity extends ActivityBase {
 
         String mode = getIntent().getStringExtra(EXTRA_MODE);
         var appSecurityService = new AppSecurityService(getApplicationContext());
-        authHandler = new AuthHandler(this, appSecurityService, passwordBuilder);
+        var secretsRotationService = new SecretsRotationService(getApplicationContext(),
+                appSecurityService);
+
+        authHandler = new AuthHandler(this, appSecurityService, secretsRotationService,
+                passwordBuilder);
 
         try {
             currentMode = Mode.valueOf(mode);
