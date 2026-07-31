@@ -7,10 +7,9 @@ package app.notesr.core.security.dto;
 
 import java.util.Arrays;
 
-import app.notesr.core.util.CharUtils;
-import app.notesr.core.util.KeyUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Data transfer object containing cryptographic secrets.
@@ -20,6 +19,7 @@ import lombok.Data;
  */
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode
 public final class CryptoSecrets {
 
     public static final int MASTER_KEY_SIZE = 48;
