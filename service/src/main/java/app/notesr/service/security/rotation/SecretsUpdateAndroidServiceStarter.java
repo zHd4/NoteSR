@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 public final class SecretsUpdateAndroidServiceStarter implements AndroidServiceStarter {
 
     private Payload payload;
-    private SecretsRotationState state;
+    private SecretsUpdateState state;
 
     @Override
     public void start(Context context) throws CharacterCodingException {
@@ -61,7 +61,7 @@ public final class SecretsUpdateAndroidServiceStarter implements AndroidServiceS
         var mapper = new ObjectMapper();
 
         if (state != null) {
-            this.state = mapper.readValue(state, SecretsRotationState.class);
+            this.state = mapper.readValue(state, SecretsUpdateState.class);
         }
 
         this.payload = decryptPayload(mapper, secrets, payload);

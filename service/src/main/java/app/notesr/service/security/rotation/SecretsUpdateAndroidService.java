@@ -73,7 +73,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
 
         newSecrets = getNewSecrets();
 
-        var state = (SecretsRotationState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
+        var state = (SecretsUpdateState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
         stateHolder = new SecretsRotationStateHolder(this::onStateUpdate).setState(state);
         encryptedPayload = encryptPayload(getPayload());
 
@@ -127,7 +127,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
         return getEncryptedJson(new ObjectMapper(), payload, appSecurityService.getActualSecrets());
     }
 
-    String serializeState(SecretsRotationState state) {
+    String serializeState(SecretsUpdateState state) {
         if (state == null) {
             return null;
         }
@@ -165,7 +165,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
         stopSelf();
     }
 
-    TransactionalFilesUtil getTransactionalFilesUtil(SecretsRotationState state) {
+    TransactionalFilesUtil getTransactionalFilesUtil(SecretsUpdateState state) {
         var filesUtils = new FilesUtils();
         var transactionId = state.getTransactionId();
 
@@ -179,7 +179,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
         super.onTaskRemoved(rootIntent);
     }
 
-    void onStateUpdate(SecretsRotationState newState) {
+    void onStateUpdate(SecretsUpdateState newState) {
         AndroidServiceRegistry.getInstance(getApplicationContext())
                 .updateEntry(getEntry(encryptedPayload, serializeState(newState)));
     }

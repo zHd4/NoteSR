@@ -12,20 +12,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class SecretsRotationStateHolder {
 
-    private final Consumer<SecretsRotationState> onUpdate;
+    private final Consumer<SecretsUpdateState> onUpdate;
 
-    private SecretsRotationState state = new SecretsRotationState();
+    private SecretsUpdateState state = new SecretsUpdateState();
 
-    public SecretsRotationState getState() {
-        return SecretsRotationState.from(state);
+    public SecretsUpdateState getState() {
+        return SecretsUpdateState.from(state);
     }
 
-    public SecretsRotationStateHolder setState(SecretsRotationState newState) {
+    public SecretsRotationStateHolder setState(SecretsUpdateState newState) {
         if (newState == null) {
             return this;
         }
 
-        state = SecretsRotationState.from(newState);
+        state = SecretsUpdateState.from(newState);
         onUpdate.accept(state);
 
         return this;

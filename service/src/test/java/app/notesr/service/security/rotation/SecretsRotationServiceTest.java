@@ -68,7 +68,7 @@ class SecretsRotationServiceTest {
     private AppSecurityService appSecurityService;
 
     @Mock
-    private Consumer<SecretsRotationState> onUpdate;
+    private Consumer<SecretsUpdateState> onUpdate;
 
     private SecretsRotationService secretsRotationService;
     private SecretsRotationStateHolder stateHolder;
@@ -101,7 +101,7 @@ class SecretsRotationServiceTest {
     @Test
     void testUpdateSecretsAlreadyDoneReturnsImmediately() throws Exception {
         when(appSecurityService.getActualSecrets()).thenReturn(createCurrentSecrets());
-        stateHolder.setState(new SecretsRotationState().setStatus(SecretsRotationStatus.DONE));
+        stateHolder.setState(new SecretsUpdateState().setStatus(SecretsRotationStatus.DONE));
         CryptoSecrets newSecrets = createNewSecrets();
 
         secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
@@ -116,7 +116,7 @@ class SecretsRotationServiceTest {
     @Test
     void testUpdateSecretsAlreadyFailedThrowsException() {
         when(appSecurityService.getActualSecrets()).thenReturn(createCurrentSecrets());
-        stateHolder.setState(new SecretsRotationState().setStatus(SecretsRotationStatus.FAILED));
+        stateHolder.setState(new SecretsUpdateState().setStatus(SecretsRotationStatus.FAILED));
         CryptoSecrets newSecrets = createNewSecrets();
 
         assertThrows(SecretsRotationFailedException.class,
@@ -216,7 +216,7 @@ class SecretsRotationServiceTest {
         byte[] expectedNewKey = newKey.clone();
 
         stateHolder.setState(
-                new SecretsRotationState().setStatus(SecretsRotationStatus.MOVING_DB_DATA));
+                new SecretsUpdateState().setStatus(SecretsRotationStatus.MOVING_DB_DATA));
 
         when(appSecurityService.getActualSecrets()).thenReturn(currentSecrets);
         when(txFiles.isCommitted()).thenReturn(true);
@@ -411,12 +411,12 @@ class SecretsRotationServiceTest {
 
         assertEquals(SecretsRotationStatus.MOVING_DB_DATA, stateHolder.getState().getStatus(),
                 "Status should be updated in the state holder");
-        verify(onUpdate).accept(any(SecretsRotationState.class));
+        verify(onUpdate).accept(any(SecretsUpdateState.class));
     }
 
     @Test
     void testGetStatusReturnsStatusFromStateHolder() {
-        stateHolder.setState(new SecretsRotationState()
+        stateHolder.setState(new SecretsUpdateState()
                 .setStatus(SecretsRotationStatus.MOVING_BLOBS_DATA));
 
         SecretsRotationStatus status = secretsRotationService.getStatus(stateHolder);
