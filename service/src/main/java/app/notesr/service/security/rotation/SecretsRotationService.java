@@ -72,7 +72,7 @@ public final class SecretsRotationService {
     /**
      * Updates the crypto secrets (master key and password) and migrates all encrypted data.
      * This could be heavy and long-term operation, so it should be executed
-     * using {@link SecretsRotationAndroidServiceStarter}.
+     * using {@link SecretsUpdateAndroidServiceStarter}.
      * <p>
      * It performs a migration of the database and file blobs to the new encryption settings.
      * After the migration, the newSecrets are destroyed to minimize sensitive data
@@ -87,7 +87,7 @@ public final class SecretsRotationService {
      * @throws IllegalArgumentException If the new secrets are invalid.
      * @throws SecretsRotationFailedException If the secrets rotation fails.
      * @see SecretsUpdateAndroidService
-     * @see SecretsRotationAndroidServiceStarter
+     * @see SecretsUpdateAndroidServiceStarter
      */
     public void updateSecrets(
             TransactionalFilesUtil txFiles,

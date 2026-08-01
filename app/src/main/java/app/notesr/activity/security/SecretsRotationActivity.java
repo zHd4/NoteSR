@@ -21,7 +21,7 @@ import app.notesr.activity.DialogFactory;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
-import app.notesr.service.security.rotation.SecretsRotationAndroidServiceStarter;
+import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
 
 public final class SecretsRotationActivity extends ActivityBase {
 
@@ -53,7 +53,7 @@ public final class SecretsRotationActivity extends ActivityBase {
 
         if (!serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)) {
             try {
-                new SecretsRotationAndroidServiceStarter().start(getApplicationContext());
+                new SecretsUpdateAndroidServiceStarter().start(getApplicationContext());
             } catch (CharacterCodingException e) {
                 throw new RuntimeException(e);
             }

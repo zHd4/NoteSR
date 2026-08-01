@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public final class SecretsRotationAndroidServiceStarter implements AndroidServiceStarter {
+public final class SecretsUpdateAndroidServiceStarter implements AndroidServiceStarter {
 
     private Payload payload;
     private SecretsRotationState state;
