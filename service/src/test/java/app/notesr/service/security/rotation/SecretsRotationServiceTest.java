@@ -101,7 +101,7 @@ class SecretsRotationServiceTest {
     @Test
     void testUpdateSecretsAlreadyDoneReturnsImmediately() throws Exception {
         when(appSecurityService.getActualSecrets()).thenReturn(createCurrentSecrets());
-        stateHolder.setState(new SecretsUpdateState().setStatus(SecretsRotationStatus.DONE));
+        stateHolder.setState(new SecretsUpdateState().setStatus(SecretsUpdateStatus.DONE));
         CryptoSecrets newSecrets = createNewSecrets();
 
         secretsRotationService.updateSecrets(txFiles, databaseManager, dbName,
@@ -109,14 +109,14 @@ class SecretsRotationServiceTest {
 
         verify(databaseManager, never()).closeProvider();
         verify(txFiles, never()).commit();
-        assertEquals(SecretsRotationStatus.DONE, stateHolder.getState().getStatus(),
+        assertEquals(SecretsUpdateStatus.DONE, stateHolder.getState().getStatus(),
                 "Status should remain DONE if already DONE");
     }
 
     @Test
     void testUpdateSecretsAlreadyFailedThrowsException() {
         when(appSecurityService.getActualSecrets()).thenReturn(createCurrentSecrets());
-        stateHolder.setState(new SecretsUpdateState().setStatus(SecretsRotationStatus.FAILED));
+        stateHolder.setState(new SecretsUpdateState().setStatus(SecretsUpdateStatus.FAILED));
         CryptoSecrets newSecrets = createNewSecrets();
 
         assertThrows(SecretsRotationFailedException.class,
@@ -202,7 +202,7 @@ class SecretsRotationServiceTest {
                 "Copied secrets must preserve key bytes");
 
         verify(databaseManager).reinitProvider(any());
-        assertEquals(SecretsRotationStatus.DONE, stateHolder.getState().getStatus(),
+        assertEquals(SecretsUpdateStatus.DONE, stateHolder.getState().getStatus(),
                 "Status should be DONE after successful migration");
 
         verify(currentSecrets).destroy();
@@ -216,7 +216,7 @@ class SecretsRotationServiceTest {
         byte[] expectedNewKey = newKey.clone();
 
         stateHolder.setState(
-                new SecretsUpdateState().setStatus(SecretsRotationStatus.MOVING_DB_DATA));
+                new SecretsUpdateState().setStatus(SecretsUpdateStatus.MOVING_DB_DATA));
 
         when(appSecurityService.getActualSecrets()).thenReturn(currentSecrets);
         when(txFiles.isCommitted()).thenReturn(true);
@@ -237,7 +237,7 @@ class SecretsRotationServiceTest {
 
         verify(databaseManager).reinitProvider(any());
 
-        assertEquals(SecretsRotationStatus.DONE, stateHolder.getState().getStatus(),
+        assertEquals(SecretsUpdateStatus.DONE, stateHolder.getState().getStatus(),
                 "Status should be DONE if transaction was already committed");
 
         verify(currentSecrets).destroy();
@@ -266,7 +266,7 @@ class SecretsRotationServiceTest {
         verify(currentSecrets).destroy();
         verify(newSecrets).destroy();
 
-        assertEquals(SecretsRotationStatus.FAILED, stateHolder.getState().getStatus(),
+        assertEquals(SecretsUpdateStatus.FAILED, stateHolder.getState().getStatus(),
                 "Status should be FAILED after migration failure");
     }
 
@@ -407,9 +407,9 @@ class SecretsRotationServiceTest {
 
     @Test
     void testSetStatusUpdatesStateHolderAndTriggersOnUpdate() {
-        secretsRotationService.setStatus(stateHolder, SecretsRotationStatus.MOVING_DB_DATA);
+        secretsRotationService.setStatus(stateHolder, SecretsUpdateStatus.MOVING_DB_DATA);
 
-        assertEquals(SecretsRotationStatus.MOVING_DB_DATA, stateHolder.getState().getStatus(),
+        assertEquals(SecretsUpdateStatus.MOVING_DB_DATA, stateHolder.getState().getStatus(),
                 "Status should be updated in the state holder");
         verify(onUpdate).accept(any(SecretsUpdateState.class));
     }
@@ -417,11 +417,11 @@ class SecretsRotationServiceTest {
     @Test
     void testGetStatusReturnsStatusFromStateHolder() {
         stateHolder.setState(new SecretsUpdateState()
-                .setStatus(SecretsRotationStatus.MOVING_BLOBS_DATA));
+                .setStatus(SecretsUpdateStatus.MOVING_BLOBS_DATA));
 
-        SecretsRotationStatus status = secretsRotationService.getStatus(stateHolder);
+        SecretsUpdateStatus status = secretsRotationService.getStatus(stateHolder);
 
-        assertEquals(SecretsRotationStatus.MOVING_BLOBS_DATA, status,
+        assertEquals(SecretsUpdateStatus.MOVING_BLOBS_DATA, status,
                 "Should return the correct status from the state holder");
     }
 
