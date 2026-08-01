@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class SecretsRotationStateHolder {
+public final class SecretsUpdateStateHolder {
 
     private final Consumer<SecretsUpdateState> onUpdate;
 
@@ -20,7 +20,7 @@ public final class SecretsRotationStateHolder {
         return SecretsUpdateState.from(state);
     }
 
-    public SecretsRotationStateHolder setState(SecretsUpdateState newState) {
+    public SecretsUpdateStateHolder setState(SecretsUpdateState newState) {
         if (newState == null) {
             return this;
         }

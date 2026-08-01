@@ -58,7 +58,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
     private DatabaseManager databaseManager;
     private AppSecurityService appSecurityService;
     private SecretsRotationService secretsRotationService;
-    private SecretsRotationStateHolder stateHolder;
+    private SecretsUpdateStateHolder stateHolder;
     private CryptoSecrets newSecrets;
     private String encryptedPayload;
 
@@ -74,7 +74,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
         newSecrets = getNewSecrets();
 
         var state = (SecretsUpdateState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
-        stateHolder = new SecretsRotationStateHolder(this::onStateUpdate).setState(state);
+        stateHolder = new SecretsUpdateStateHolder(this::onStateUpdate).setState(state);
         encryptedPayload = encryptPayload(getPayload());
 
         var thread = new Thread(this);

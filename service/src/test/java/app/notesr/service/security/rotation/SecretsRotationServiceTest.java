@@ -71,7 +71,7 @@ class SecretsRotationServiceTest {
     private Consumer<SecretsUpdateState> onUpdate;
 
     private SecretsRotationService secretsRotationService;
-    private SecretsRotationStateHolder stateHolder;
+    private SecretsUpdateStateHolder stateHolder;
 
     private final String dbName = "test.db";
     private final byte[] currentKey = new byte[KEY_SIZE];
@@ -81,7 +81,7 @@ class SecretsRotationServiceTest {
     @BeforeEach
     void setUp() {
         secretsRotationService = new SecretsRotationService(context, appSecurityService);
-        stateHolder = new SecretsRotationStateHolder(onUpdate);
+        stateHolder = new SecretsUpdateStateHolder(onUpdate);
 
         // Initialize keys
         for (int i = 0; i < KEY_SIZE; i++) {

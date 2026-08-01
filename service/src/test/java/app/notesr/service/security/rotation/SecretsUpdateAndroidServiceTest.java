@@ -89,7 +89,7 @@ class SecretsUpdateAndroidServiceTest {
 
     @Test
     void testRunSuccess() {
-        service.setStateHolder(new SecretsRotationStateHolder(s -> {})
+        service.setStateHolder(new SecretsUpdateStateHolder(s -> {})
                 .setState(state));
 
         doReturn(txFiles).when(service).getTransactionalFilesUtil(any());
@@ -109,7 +109,7 @@ class SecretsUpdateAndroidServiceTest {
 
     @Test
     void testRunFailure() {
-        service.setStateHolder(new SecretsRotationStateHolder(s -> {})
+        service.setStateHolder(new SecretsUpdateStateHolder(s -> {})
                 .setState(state));
 
         MockedStatic<Log> logMock = mockStatic(Log.class);

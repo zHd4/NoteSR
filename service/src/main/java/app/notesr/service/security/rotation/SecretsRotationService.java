@@ -93,7 +93,7 @@ public final class SecretsRotationService {
             TransactionalFilesUtil txFiles,
             DatabaseManager databaseManager,
             String dbName,
-            SecretsRotationStateHolder stateHolder,
+            SecretsUpdateStateHolder stateHolder,
             CryptoSecrets newSecrets) {
 
         try {
@@ -181,7 +181,7 @@ public final class SecretsRotationService {
     void migrateData(
             TransactionalFilesUtil txFiles,
             DatabaseManager databaseManager,
-            SecretsRotationStateHolder stateHolder,
+            SecretsUpdateStateHolder stateHolder,
             String dbName,
             byte[] currentKey,
             byte[] newKey,
@@ -339,7 +339,7 @@ public final class SecretsRotationService {
      * @param stateHolder The state holder.
      * @return The current {@link SecretsRotationStatus}.
      */
-    SecretsRotationStatus getStatus(SecretsRotationStateHolder stateHolder) {
+    SecretsRotationStatus getStatus(SecretsUpdateStateHolder stateHolder) {
         return stateHolder.getState().getStatus();
     }
 
@@ -349,7 +349,7 @@ public final class SecretsRotationService {
      * @param stateHolder The state holder.
      * @param status      The new status to set.
      */
-    void setStatus(SecretsRotationStateHolder stateHolder, SecretsRotationStatus status) {
+    void setStatus(SecretsUpdateStateHolder stateHolder, SecretsRotationStatus status) {
         stateHolder.setState(stateHolder.getState().setStatus(status));
     }
 }
