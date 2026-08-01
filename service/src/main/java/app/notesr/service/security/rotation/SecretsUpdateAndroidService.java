@@ -41,17 +41,17 @@ import lombok.AccessLevel;
 import lombok.Setter;
 
 @Setter(AccessLevel.PACKAGE)
-public class SecretsRotationAndroidService extends AndroidService implements Runnable {
+public class SecretsUpdateAndroidService extends AndroidService implements Runnable {
 
-    private static final String TAG = SecretsRotationAndroidService.class.getSimpleName();
+    private static final String TAG = SecretsUpdateAndroidService.class.getSimpleName();
 
     public static final String NEW_KEY = "new_key";
     public static final String PASSWORD = "password";
-    public static final String BROADCAST_ACTION = "secrets_rotation_service_broadcast";
+    public static final String BROADCAST_ACTION = "secrets_update_service_broadcast";
     public static final String EXTRA_CURRENT_STATE = "current_state";
-    public static final String EXTRA_COMPLETE = "rotation_completed";
-    public static final String EXTRA_FAIL = "rotation_failed";
-    private static final String CHANNEL_ID = "secrets_rotation_service";
+    public static final String EXTRA_COMPLETE = "update_completed";
+    public static final String EXTRA_FAIL = "update_failed";
+    private static final String CHANNEL_ID = "secrets_update_service";
     private static final String CHANNEL_NAME = "Key Rotation";
 
     private String dbName;

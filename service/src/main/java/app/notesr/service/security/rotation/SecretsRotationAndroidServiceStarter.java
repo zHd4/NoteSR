@@ -7,7 +7,7 @@ package app.notesr.service.security.rotation;
 
 import static java.util.Objects.requireNonNull;
 import static app.notesr.core.util.CharUtils.charsToBytes;
-import static app.notesr.service.security.rotation.SecretsRotationAndroidService.EXTRA_CURRENT_STATE;
+import static app.notesr.service.security.rotation.SecretsUpdateAndroidService.EXTRA_CURRENT_STATE;
 
 import android.content.Context;
 import android.content.Intent;
@@ -38,16 +38,16 @@ public final class SecretsRotationAndroidServiceStarter implements AndroidServic
     @Override
     public void start(Context context) throws CharacterCodingException {
         if (payload == null) {
-            if (!SecretCache.contains(SecretsRotationAndroidService.NEW_KEY)
-                    || !SecretCache.contains(SecretsRotationAndroidService.PASSWORD)) {
+            if (!SecretCache.contains(SecretsUpdateAndroidService.NEW_KEY)
+                    || !SecretCache.contains(SecretsUpdateAndroidService.PASSWORD)) {
                 throw new IllegalStateException("Secrets are not set");
             }
         } else {
-            SecretCache.removeIfExists(SecretsRotationAndroidService.NEW_KEY);
-            SecretCache.removeIfExists(SecretsRotationAndroidService.PASSWORD);
+            SecretCache.removeIfExists(SecretsUpdateAndroidService.NEW_KEY);
+            SecretCache.removeIfExists(SecretsUpdateAndroidService.PASSWORD);
 
-            SecretCache.put(SecretsRotationAndroidService.NEW_KEY, payload.getNewKey());
-            SecretCache.put(SecretsRotationAndroidService.PASSWORD,
+            SecretCache.put(SecretsUpdateAndroidService.NEW_KEY, payload.getNewKey());
+            SecretCache.put(SecretsUpdateAndroidService.PASSWORD,
                     charsToBytes(payload.getNewPassword(), StandardCharsets.UTF_8));
         }
 
@@ -81,7 +81,7 @@ public final class SecretsRotationAndroidServiceStarter implements AndroidServic
     }
 
     private Intent buildIntent(Context context) {
-        return new Intent(context, SecretsRotationAndroidService.class)
+        return new Intent(context, SecretsUpdateAndroidService.class)
                 .putExtra(EXTRA_CURRENT_STATE, state);
     }
 

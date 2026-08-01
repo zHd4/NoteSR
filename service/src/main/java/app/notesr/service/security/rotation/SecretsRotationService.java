@@ -86,7 +86,7 @@ public final class SecretsRotationService {
      *
      * @throws IllegalArgumentException If the new secrets are invalid.
      * @throws SecretsRotationFailedException If the secrets rotation fails.
-     * @see SecretsRotationAndroidService
+     * @see SecretsUpdateAndroidService
      * @see SecretsRotationAndroidServiceStarter
      */
     public void updateSecrets(

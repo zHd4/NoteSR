@@ -71,8 +71,8 @@ class SecretsRotationAndroidServiceStarterTest {
         byte[] newKey = "newKey".getBytes();
         byte[] password = "password".getBytes();
 
-        SecretCache.put(SecretsRotationAndroidService.NEW_KEY, newKey);
-        SecretCache.put(SecretsRotationAndroidService.PASSWORD, password);
+        SecretCache.put(SecretsUpdateAndroidService.NEW_KEY, newKey);
+        SecretCache.put(SecretsUpdateAndroidService.PASSWORD, password);
 
         MockedConstruction<Intent> mockedIntent = mockConstruction(Intent.class,
                 (mock, context) ->
@@ -85,7 +85,7 @@ class SecretsRotationAndroidServiceStarterTest {
             verify(context).startForegroundService(any(Intent.class));
             Intent constructed = mockedIntent.constructed().get(0);
             verify(constructed)
-                    .putExtra(eq(SecretsRotationAndroidService.EXTRA_CURRENT_STATE),
+                    .putExtra(eq(SecretsUpdateAndroidService.EXTRA_CURRENT_STATE),
                             (Serializable) eq(null));
         }
     }
@@ -110,9 +110,9 @@ class SecretsRotationAndroidServiceStarterTest {
             starter.start(context);
 
             assertArrayEquals(expectedNewKey,
-                    SecretCache.take(SecretsRotationAndroidService.NEW_KEY));
+                    SecretCache.take(SecretsUpdateAndroidService.NEW_KEY));
             assertArrayEquals(expectedPasswordBytes,
-                    SecretCache.take(SecretsRotationAndroidService.PASSWORD));
+                    SecretCache.take(SecretsUpdateAndroidService.PASSWORD));
 
             verify(context).startForegroundService(any(Intent.class));
         }
@@ -153,13 +153,13 @@ class SecretsRotationAndroidServiceStarterTest {
             starter.start(context, secrets, encryptedPayload, stateJson);
 
             assertArrayEquals(expectedNewKey,
-                    SecretCache.take(SecretsRotationAndroidService.NEW_KEY));
+                    SecretCache.take(SecretsUpdateAndroidService.NEW_KEY));
             assertArrayEquals(expectedNewPasswordBytes,
-                    SecretCache.take(SecretsRotationAndroidService.PASSWORD));
+                    SecretCache.take(SecretsUpdateAndroidService.PASSWORD));
 
             verify(context).startForegroundService(any(Intent.class));
             Intent constructed = mockedIntent.constructed().get(0);
-            verify(constructed).putExtra(SecretsRotationAndroidService.EXTRA_CURRENT_STATE, state);
+            verify(constructed).putExtra(SecretsUpdateAndroidService.EXTRA_CURRENT_STATE, state);
         }
     }
 
