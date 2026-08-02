@@ -80,6 +80,7 @@ public final class AppSecurityService {
      * Retrieves the currently configured cryptographic secrets.
      *
      * @return the current {@link CryptoSecrets} if configured, or null if not yet initialized
+     * @throws SessionExpiredException if secrets are not configured or have expired.
      * @see #isAuthConfigured()
      */
     public CryptoSecrets getActualSecrets() {
