@@ -12,7 +12,6 @@ import static app.notesr.core.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 import static app.notesr.core.util.KeyUtils.getKeyBytesFromKeyHex;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -30,10 +29,8 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
 
-import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -41,6 +38,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
     private static final String TAG = KeyRecoveryActivity.class.toString();
 
     private AppSecurityService appSecurityService;
+    private EditText hexKeyField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +51,13 @@ public final class KeyRecoveryActivity extends ActivityBase {
         ActionBar actionBar = getSupportActionBar();
         Objects.requireNonNull(actionBar).setTitle(getString(R.string.key_recovery));
 
-        EditText hexKeyField = findViewById(R.id.importRecoveryKeyField);
+        hexKeyField = findViewById(R.id.importRecoveryKeyField);
         Button applyButton = findViewById(R.id.applyRecoveryKeyButton);
 
         disableBackButton(this);
 
         hexKeyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
-        applyButton.setOnClickListener(applyButtonOnClick(hexKeyField));
+        applyButton.setOnClickListener(getApplyButtonOnClickListener());
     }
 
     @Override
@@ -67,7 +65,17 @@ public final class KeyRecoveryActivity extends ActivityBase {
         return false;
     }
 
-    private View.OnClickListener applyButtonOnClick(EditText hexKeyField) {
+    @Override
+    public void finish() {
+        if (hexKeyField != null) {
+            hexKeyField.getText().replace(0, hexKeyField.getText().length(), "");
+            hexKeyField.setText("");
+        }
+
+        super.finish();
+    }
+
+    private View.OnClickListener getApplyButtonOnClickListener() {
         return view -> {
             Editable hexKeyEditable = hexKeyField.getText();
             int hexKeyLength = hexKeyEditable.length();
@@ -77,56 +85,49 @@ public final class KeyRecoveryActivity extends ActivityBase {
                 hexKeyEditable.getChars(0, hexKeyLength, hexKey, 0);
 
                 try {
-                    apply(hexKeyField, hexKey);
+                    if (isMatch(hexKey)) {
+                        proceedKeyMatch(hexKey);
+                    } else {
+                        proceedKeyMismatch();
+                    }
                 } catch (IllegalArgumentException e) {
                     Log.e(TAG, "Invalid key", e);
                     showToastMessage(this, getString(R.string.invalid_key),
                             Toast.LENGTH_SHORT);
-                } catch (CharacterCodingException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException | NoSuchAlgorithmException e) {
+                } catch (AppSecurityException | CharacterCodingException e) {
                     Log.e(TAG, e.toString());
                     throw new RuntimeException(e);
+                } finally {
+                    Arrays.fill(hexKey, '\0');
                 }
             }
         };
     }
 
-    private void apply(EditText hexKeyField, char[] hexKey)
-            throws IOException, NoSuchAlgorithmException {
+    private boolean isMatch(char[] hexKey) {
+        byte[] keyBytes = getKeyBytesFromKeyHex(Arrays.copyOf(hexKey, hexKey.length));
+        boolean isMatch = appSecurityService.isKeyMatchingWithStored(keyBytes);
 
-        char[] hexKeyCopy = Arrays.copyOf(hexKey, hexKey.length);
-        byte[] keyBytes = getKeyBytesFromKeyHex(hexKeyCopy);
-
-        Context context = getApplicationContext();
-
-        try {
-            if (appSecurityService.isKeyMatchingWithStored(keyBytes)) {
-                byte[] hexKeyBytes = charsToBytes(hexKey, StandardCharsets.UTF_8);
-                SecretCache.put(AuthActivity.CACHE_KEY_HEX_KEY, hexKeyBytes);
-
-                // The hex key has already been wiped by charsToBytes
-                wipeSecretData(keyBytes, hexKeyField);
-
-                var targetMode = AuthActivity.Mode.KEY_RECOVERY;
-                var authActivityIntent = new Intent(context, AuthActivity.class)
-                        .putExtra(AuthActivity.EXTRA_MODE, targetMode.toString());
-
-                startActivity(authActivityIntent);
-                finish();
-            } else {
-                showToastMessage(this,
-                        getString(R.string.wrong_key),
-                        Toast.LENGTH_SHORT);
-            }
-        } catch (AppSecurityException e) {
-            throw new RuntimeException(e);
-        }
+        Arrays.fill(keyBytes, (byte) 0);
+        return isMatch;
     }
 
-    private void wipeSecretData(byte[] keyBytes, EditText keyField) {
-        Arrays.fill(keyBytes, (byte) 0);
-        keyField.getText().replace(0, keyField.getText().length(), "");
-        keyField.setText("");
+    private void proceedKeyMatch(char[] hexKey) throws CharacterCodingException {
+        byte[] hexKeyBytes = charsToBytes(Arrays.copyOf(hexKey, hexKey.length),
+                StandardCharsets.UTF_8);
+        SecretCache.put(AuthActivity.CACHE_KEY_HEX_KEY, hexKeyBytes);
+
+        var targetMode = AuthActivity.Mode.KEY_RECOVERY;
+        var authActivityIntent = new Intent(getApplicationContext(), AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, targetMode.toString());
+
+        startActivity(authActivityIntent);
+        finish();
+    }
+
+    private void proceedKeyMismatch() {
+        showToastMessage(this,
+                getString(R.string.wrong_key),
+                Toast.LENGTH_SHORT);
     }
 }
