@@ -193,6 +193,7 @@ public final class AuthHandler {
             showToastMessage(R.string.blocked);
             activity.startActivity(new Intent(activity.getApplicationContext(),
                     KeyRecoveryActivity.class));
+            activity.finish();
         } else {
             try {
                 Thread.sleep(DELAY_AFTER_AUTH_FAILED);
