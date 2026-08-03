@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class AuthHandler {
     private static final int MAX_ATTEMPTS = 3;
-    private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
+    private static final int DELAY_AFTER_AUTH_FAILED = 1500;
 
     private final AuthActivity activity;
     private final AppSecurityService appSecurityService;
@@ -195,7 +195,7 @@ public final class AuthHandler {
                     KeyRecoveryActivity.class));
         } else {
             try {
-                Thread.sleep(ON_WRONG_PASSWORD_DELAY_MS);
+                Thread.sleep(DELAY_AFTER_AUTH_FAILED);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
