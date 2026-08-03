@@ -94,10 +94,10 @@ public final class KeySetupCompletionHandler {
             throw new RuntimeException(e);
         }
 
-        Intent secretsRotationIntent = new Intent(activity.getApplicationContext(),
-                SecretsRotationActivity.class);
+        Intent secretsUpdateIntent = new Intent(activity.getApplicationContext(),
+                SecretsUpdateActivity.class);
 
-        activity.startActivity(secretsRotationIntent);
+        activity.startActivity(secretsUpdateIntent);
         activity.finish();
     }
 

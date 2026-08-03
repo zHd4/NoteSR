@@ -13,9 +13,9 @@ import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class SecretsRotationBroadcastReceiver extends BroadcastReceiver {
-    private final Runnable onSecretsRotationComplete;
-    private final Runnable onSecretsRotationFailed;
+public final class SecretsUpdateBroadcastReceiver extends BroadcastReceiver {
+    private final Runnable onSecretsUpdateComplete;
+    private final Runnable onSecretsUpdateFailed;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -27,9 +27,9 @@ public final class SecretsRotationBroadcastReceiver extends BroadcastReceiver {
                     false);
 
             if (isCompleted) {
-                onSecretsRotationComplete.run();
+                onSecretsUpdateComplete.run();
             } else if (isFailed) {
-                onSecretsRotationFailed.run();
+                onSecretsUpdateFailed.run();
             }
         }
     }

@@ -23,23 +23,23 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
 
-public final class SecretsRotationActivity extends ActivityBase {
+public final class SecretsUpdateActivity extends ActivityBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_secrets_rotation);
+        setContentView(R.layout.activity_secrets_update);
         applyInsets(findViewById(R.id.main));
         disableBackButton(this);
 
-        SecretsRotationBroadcastReceiver broadcastReceiver =
-                new SecretsRotationBroadcastReceiver(this::onSecretsRotationComplete,
-                        this::onSecretsRotationFailed);
+        SecretsUpdateBroadcastReceiver broadcastReceiver =
+                new SecretsUpdateBroadcastReceiver(this::onSecretsUpdateComplete,
+                        this::onSecretsUpdateFailed);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(SecretsUpdateAndroidService.BROADCAST_ACTION));
 
-        startSecretsRotationService();
+        startSecretsUpdateService();
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class SecretsRotationActivity extends ActivityBase {
         return false;
     }
 
-    private void startSecretsRotationService() {
+    private void startSecretsUpdateService() {
         AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
                 .getInstance(getApplicationContext());
 
@@ -60,14 +60,14 @@ public final class SecretsRotationActivity extends ActivityBase {
         }
     }
 
-    private void onSecretsRotationComplete() {
+    private void onSecretsUpdateComplete() {
         startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
         finish();
     }
 
-    private void onSecretsRotationFailed() {
+    private void onSecretsUpdateFailed() {
         DialogFactory dialogFactory = new DialogFactory(this);
-        dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_secrets_rotation_failed)
+        dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_secrets_update_failed)
                 .setTitle(R.string.error)
                 .setCancelable(false)
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
