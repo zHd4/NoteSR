@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.service.security.crypto.update;
+package app.notesr.service.security.rotation;
 
 import static java.util.Objects.requireNonNull;
 import static app.notesr.core.util.CharUtils.bytesToChars;
@@ -27,8 +27,6 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 
 import app.notesr.core.security.SecretCache;
-import app.notesr.core.security.crypto.CryptoManager;
-import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
 
 import app.notesr.core.util.FilesTransactionException;
@@ -38,6 +36,7 @@ import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidService;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.security.AppSecurityService;
 import lombok.AccessLevel;
 import lombok.Setter;
 
@@ -48,30 +47,34 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
 
     public static final String NEW_KEY = "new_key";
     public static final String PASSWORD = "password";
-    public static final String BROADCAST_ACTION = "re_encryption_service_broadcast";
+    public static final String BROADCAST_ACTION = "secrets_update_service_broadcast";
     public static final String EXTRA_CURRENT_STATE = "current_state";
-    public static final String EXTRA_COMPLETE = "re_encryption_complete";
-    public static final String EXTRA_FAIL = "re_encryption_fail";
-    private static final String CHANNEL_ID = "re_encryption_service_channel";
-    private static final String CHANNEL_NAME = "Re-encryption Service Channel";
+    public static final String EXTRA_COMPLETE = "update_completed";
+    public static final String EXTRA_FAIL = "update_failed";
+    private static final String CHANNEL_ID = "secrets_update_service";
+    private static final String CHANNEL_NAME = "Key Rotation";
 
     private String dbName;
-    private CryptoManager cryptoManager;
+    private DatabaseManager databaseManager;
+    private AppSecurityService appSecurityService;
+    private SecretsRotationService secretsRotationService;
     private SecretsUpdateStateHolder stateHolder;
     private CryptoSecrets newSecrets;
-    private SecretsUpdateService secretsUpdateService;
     private String encryptedPayload;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         dbName = DatabaseProvider.DB_NAME;
 
-        cryptoManager = CryptoManagerProvider.getInstance(getApplicationContext());
+        databaseManager = new DatabaseManagerImpl(getApplicationContext());
+        appSecurityService = new AppSecurityService(getApplicationContext());
+        secretsRotationService = new SecretsRotationService(getApplicationContext(),
+                appSecurityService);
+
         newSecrets = getNewSecrets();
 
         var state = (SecretsUpdateState) intent.getSerializableExtra(EXTRA_CURRENT_STATE);
         stateHolder = new SecretsUpdateStateHolder(this::onStateUpdate).setState(state);
-        secretsUpdateService = getSecretsUpdateService();
         encryptedPayload = encryptPayload(getPayload());
 
         var thread = new Thread(this);
@@ -121,7 +124,7 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
     }
 
     String encryptPayload(SecretsUpdateAndroidServiceStarter.Payload payload) {
-        return getEncryptedJson(new ObjectMapper(), payload, cryptoManager.getSecrets());
+        return getEncryptedJson(new ObjectMapper(), payload, appSecurityService.getActualSecrets());
     }
 
     String serializeState(SecretsUpdateState state) {
@@ -145,13 +148,13 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
             var transactionId = txFiles.getTransactionId();
 
             stateHolder.setState(stateHolder.getState().setTransactionId(transactionId));
-            secretsUpdateService.updateSecrets(txFiles, cryptoManager, dbName, stateHolder,
+            secretsRotationService.updateSecrets(txFiles, databaseManager, dbName, stateHolder,
                     newSecrets);
 
             onComplete();
-        } catch (SecretsUpdateFailedException | FilesTransactionException e) {
+        } catch (SecretsRotationFailedException | FilesTransactionException e) {
             onFail();
-            Log.e(TAG, "Secrets update failed", e);
+            Log.e(TAG, "Secrets rotation failed", e);
         } finally {
             stopService();
         }
@@ -207,12 +210,5 @@ public class SecretsUpdateAndroidService extends AndroidService implements Runna
         } catch (CharacterCodingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    SecretsUpdateService getSecretsUpdateService() {
-        var context = getApplicationContext();
-        var databaseManager = new DatabaseManagerImpl(context);
-
-        return new SecretsUpdateService(context, databaseManager);
     }
 }

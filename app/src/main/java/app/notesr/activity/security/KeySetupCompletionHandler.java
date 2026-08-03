@@ -25,7 +25,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.migration.DataVersionManager;
-import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
+import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -73,7 +73,7 @@ public final class KeySetupCompletionHandler {
 
     private void proceedRegeneration() {
         new DialogFactory(activity)
-                .getThemedAlertDialogBuilder(R.layout.dialog_re_encryption_warning)
+                .getThemedAlertDialogBuilder(R.layout.dialog_secrets_rotation_warning)
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.yes,
                         (dialog, which) -> onRegenerationConfirmed())
@@ -94,10 +94,10 @@ public final class KeySetupCompletionHandler {
             throw new RuntimeException(e);
         }
 
-        Intent reEncryptionIntent = new Intent(activity.getApplicationContext(),
-                ReEncryptionActivity.class);
+        Intent secretsUpdateIntent = new Intent(activity.getApplicationContext(),
+                SecretsUpdateActivity.class);
 
-        activity.startActivity(reEncryptionIntent);
+        activity.startActivity(secretsUpdateIntent);
         activity.finish();
     }
 

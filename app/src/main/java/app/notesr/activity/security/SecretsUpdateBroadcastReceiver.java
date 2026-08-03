@@ -9,13 +9,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import app.notesr.service.security.crypto.update.SecretsUpdateAndroidService;
+import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class ReEncryptionBroadcastReceiver extends BroadcastReceiver {
-    private final Runnable onReEncryptionComplete;
-    private final Runnable onReEncryptionFailed;
+public final class SecretsUpdateBroadcastReceiver extends BroadcastReceiver {
+    private final Runnable onSecretsUpdateComplete;
+    private final Runnable onSecretsUpdateFailed;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -27,9 +27,9 @@ public final class ReEncryptionBroadcastReceiver extends BroadcastReceiver {
                     false);
 
             if (isCompleted) {
-                onReEncryptionComplete.run();
+                onSecretsUpdateComplete.run();
             } else if (isFailed) {
-                onReEncryptionFailed.run();
+                onSecretsUpdateFailed.run();
             }
         }
     }

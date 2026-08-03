@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.service.security.crypto.update;
+package app.notesr.service.security.rotation;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

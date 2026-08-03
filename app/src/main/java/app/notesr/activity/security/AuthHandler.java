@@ -34,6 +34,7 @@ import app.notesr.core.util.KeyUtils;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.security.AuthenticationFailedException;
+import app.notesr.service.security.rotation.SecretsRotationService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -43,6 +44,7 @@ public final class AuthHandler {
 
     private final AuthActivity activity;
     private final AppSecurityService appSecurityService;
+    private final SecretsRotationService secretsRotationService;
     private final SecureStringBuilder passwordBuilder;
 
     private int attempts = MAX_ATTEMPTS;
@@ -119,21 +121,20 @@ public final class AuthHandler {
     public void changePassword() {
         char[] password = proceedPasswordSetting();
 
-        if (password != null) {
-            try {
-                Context context = activity.getApplicationContext();
-                CryptoSecrets secrets = appSecurityService.getActualSecrets();
+        if (password == null) {
+            // New password entered, but not confirmed (repeated by user)
+            return;
+        }
 
-                secrets.setPassword(password);
-                appSecurityService.setSecrets(secrets);
-                secrets.destroy();
+        try {
+            secretsRotationService.updatePassword(password);
 
-                showToastMessage(R.string.updated);
-                activity.startActivity(new Intent(context, NotesListActivity.class));
-                activity.finish();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            showToastMessage(R.string.updated);
+            activity.startActivity(new Intent(activity.getApplicationContext(),
+                    NotesListActivity.class));
+            activity.finish();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

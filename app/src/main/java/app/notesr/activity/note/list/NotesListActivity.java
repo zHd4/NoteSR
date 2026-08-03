@@ -105,7 +105,7 @@ public final class NotesListActivity extends ActivityBase {
 
         menuActions.put(R.id.lockAppButton, lockAction::lock);
         menuActions.put(R.id.changePasswordMenuItem, this::startChangePasswordActivity);
-        menuActions.put(R.id.generateNewKeyMenuItem, generateNewKeyAction::startActivity);
+        menuActions.put(R.id.rotateKey, generateNewKeyAction::startActivity);
         menuActions.put(R.id.exportMenuItem,
                 () -> startActivity(new Intent(this, ExportActivity.class)));
         menuActions.put(R.id.importMenuItem,

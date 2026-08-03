@@ -17,6 +17,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.security.exception.SessionExpiredException;
 import app.notesr.core.util.CryptoSecretsValidator;
 import app.notesr.data.DatabaseProvider;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +80,7 @@ public final class AppSecurityService {
      * Retrieves the currently configured cryptographic secrets.
      *
      * @return the current {@link CryptoSecrets} if configured, or null if not yet initialized
+     * @throws SessionExpiredException if secrets are not configured or have expired.
      * @see #isAuthConfigured()
      */
     public CryptoSecrets getActualSecrets() {

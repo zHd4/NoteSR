@@ -42,6 +42,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.crypto.CryptoManagerProvider;
 import app.notesr.core.security.dto.CryptoSecrets;
+import app.notesr.core.security.exception.SessionExpiredException;
 import app.notesr.core.util.CryptoSecretsValidator;
 import app.notesr.data.DatabaseProvider;
 
@@ -115,6 +116,15 @@ class AppSecurityServiceTest {
 
         assertNull(actualSecrets);
         verify(mockCryptoManager).getSecrets();
+    }
+
+    @Test
+    void testGetActualSecretsThrowsSessionExpiredException() {
+        when(mockCryptoManager.getSecrets())
+                .thenThrow(new SessionExpiredException("Session expired"));
+
+        assertThrows(SessionExpiredException.class, () -> appSecurityService.getActualSecrets(),
+                "SessionExpiredException should be thrown");
     }
 
     @Test

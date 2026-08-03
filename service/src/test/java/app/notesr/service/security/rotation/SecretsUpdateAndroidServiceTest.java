@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.service.security.crypto.update;
+package app.notesr.service.security.rotation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,11 +36,11 @@ import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.TransactionalFilesUtil;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.security.AppSecurityService;
 
 @ExtendWith(MockitoExtension.class)
 class SecretsUpdateAndroidServiceTest {
@@ -52,10 +52,13 @@ class SecretsUpdateAndroidServiceTest {
     private Intent intent;
 
     @Mock
-    private CryptoManager cryptoManager;
+    private AppSecurityService appSecurityService;
 
     @Mock
-    private SecretsUpdateService secretsUpdateService;
+    private DatabaseManager databaseManager;
+
+    @Mock
+    private SecretsRotationService secretsRotationService;
 
     @Mock
     private TransactionalFilesUtil txFiles;
@@ -77,9 +80,10 @@ class SecretsUpdateAndroidServiceTest {
         newSecrets = new CryptoSecrets(new byte[32], "password".toCharArray());
 
         // Inject basic dependencies using setters
-        service.setCryptoManager(cryptoManager);
+        service.setAppSecurityService(appSecurityService);
+        service.setDatabaseManager(databaseManager);
+        service.setSecretsRotationService(secretsRotationService);
         service.setNewSecrets(newSecrets);
-        service.setSecretsUpdateService(secretsUpdateService);
         service.setDbName("test.db");
     }
 
@@ -96,8 +100,8 @@ class SecretsUpdateAndroidServiceTest {
 
         service.run();
 
-        verify(secretsUpdateService)
-                .updateSecrets(eq(txFiles), eq(cryptoManager), eq("test.db"), any(), 
+        verify(secretsRotationService)
+                .updateSecrets(eq(txFiles), eq(databaseManager), eq("test.db"), any(),
                         eq(newSecrets));
         verify(service).onComplete();
         verify(service).stopService();
@@ -116,8 +120,8 @@ class SecretsUpdateAndroidServiceTest {
             doNothing().when(service).stopService();
             
             when(txFiles.getTransactionId()).thenReturn("tx-123");
-            doThrow(new SecretsUpdateFailedException("Failed"))
-                    .when(secretsUpdateService).updateSecrets(any(), any(), any(), any(), any());
+            doThrow(new SecretsRotationFailedException("Failed"))
+                    .when(secretsRotationService).updateSecrets(any(), any(), any(), any(), any());
 
             service.run();
 
@@ -142,7 +146,9 @@ class SecretsUpdateAndroidServiceTest {
 
     @Test
     void testSendUpdateBroadcast() {
-        try (MockedStatic<LocalBroadcastManager> mockedStatic = mockStatic(LocalBroadcastManager.class)) {
+        MockedStatic<LocalBroadcastManager> mockedStatic = mockStatic(LocalBroadcastManager.class);
+
+        try (mockedStatic) {
             mockedStatic.when(() -> LocalBroadcastManager.getInstance(any()))
                     .thenReturn(localBroadcastManager);
 
@@ -162,7 +168,9 @@ class SecretsUpdateAndroidServiceTest {
 
     @Test
     void testOnStateUpdateUpdatesRegistry() {
-        try (MockedStatic<AndroidServiceRegistry> mockedStatic = mockStatic(AndroidServiceRegistry.class)) {
+        MockedStatic<AndroidServiceRegistry> mockedStatic = mockStatic(AndroidServiceRegistry.class);
+
+        try (mockedStatic) {
             mockedStatic.when(() -> AndroidServiceRegistry.getInstance(any()))
                     .thenReturn(androidServiceRegistry);
 
@@ -191,12 +199,13 @@ class SecretsUpdateAndroidServiceTest {
         when(intent.getSerializableExtra(SecretsUpdateAndroidService.EXTRA_CURRENT_STATE))
                 .thenReturn(state);
 
-        try (MockedStatic<AndroidServiceRegistry> registryMock = mockStatic(AndroidServiceRegistry.class)) {
+        MockedStatic<AndroidServiceRegistry> registryMock = mockStatic(AndroidServiceRegistry.class);
+
+        try (registryMock) {
             registryMock.when(() -> AndroidServiceRegistry.getInstance(any()))
                     .thenReturn(androidServiceRegistry);
 
             doReturn(context).when(service).getApplicationContext();
-            doReturn(secretsUpdateService).when(service).getSecretsUpdateService();
             doReturn(newSecrets).when(service).getNewSecrets();
             doNothing().when(service).showForegroundNotification(anyInt());
             doReturn("encryptedPayload").when(service).encryptPayload(any());
