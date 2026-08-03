@@ -47,7 +47,7 @@ public final class AuthHandler {
     private final SecretsRotationService secretsRotationService;
     private final SecureStringBuilder passwordBuilder;
 
-    private int attempts = MAX_ATTEMPTS;
+    private int authAttempts = MAX_ATTEMPTS;
     private char[] createdPassword;
 
     public void authenticate() {
@@ -181,9 +181,9 @@ public final class AuthHandler {
     }
 
     private void onAuthenticationFailed() {
-        attempts--;
+        authAttempts--;
 
-        if (attempts == 0) {
+        if (authAttempts == 0) {
             try {
                 appSecurityService.blockApp();
             } catch (AppSecurityException e) {
@@ -202,7 +202,7 @@ public final class AuthHandler {
 
             showToastMessage(String.format(
                     activity.getString(R.string.wrong_code_you_have_n_attempts),
-                    attempts));
+                    authAttempts));
         }
 
         resetPassword();
