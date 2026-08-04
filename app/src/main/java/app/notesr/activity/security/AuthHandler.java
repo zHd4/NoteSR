@@ -40,14 +40,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class AuthHandler {
     private static final int MAX_ATTEMPTS = 3;
-    private static final int ON_WRONG_PASSWORD_DELAY_MS = 1500;
+    private static final int DELAY_AFTER_AUTH_FAILED = 1500;
 
     private final AuthActivity activity;
     private final AppSecurityService appSecurityService;
     private final SecretsRotationService secretsRotationService;
     private final SecureStringBuilder passwordBuilder;
 
-    private int attempts = MAX_ATTEMPTS;
+    private int authAttempts = MAX_ATTEMPTS;
     private char[] createdPassword;
 
     public void authenticate() {
@@ -181,9 +181,9 @@ public final class AuthHandler {
     }
 
     private void onAuthenticationFailed() {
-        attempts--;
+        authAttempts--;
 
-        if (attempts == 0) {
+        if (authAttempts == 0) {
             try {
                 appSecurityService.blockApp();
             } catch (AppSecurityException e) {
@@ -193,16 +193,17 @@ public final class AuthHandler {
             showToastMessage(R.string.blocked);
             activity.startActivity(new Intent(activity.getApplicationContext(),
                     KeyRecoveryActivity.class));
+            activity.finish();
         } else {
             try {
-                Thread.sleep(ON_WRONG_PASSWORD_DELAY_MS);
+                Thread.sleep(DELAY_AFTER_AUTH_FAILED);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
             showToastMessage(String.format(
                     activity.getString(R.string.wrong_code_you_have_n_attempts),
-                    attempts));
+                    authAttempts));
         }
 
         resetPassword();
