@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class KeyRecoveryActivity extends ActivityBase {
-    private static final String TAG = KeyRecoveryActivity.class.toString();
+    private static final String TAG = KeyRecoveryActivity.class.getSimpleName();
 
     private AppSecurityService appSecurityService;
     private EditText hexKeyField;
