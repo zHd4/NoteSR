@@ -27,7 +27,7 @@ import java.util.Set;
  * The registry persists the state of running services to {@link SharedPreferences}
  * to allow recovery after application restart.
  */
-public final class AndroidServiceRegistry {
+public class AndroidServiceRegistry {
 
     private static final String PREF_NAME = "android_services_registry_prefs";
     private static final String RUNNING_SERVICES_PREF = "current_running_services";
