@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
  * background process.
  */
 @RequiredArgsConstructor
-public final class FsaResolver {
+public class FsaResolver {
 
     /**
      * Internal registry of associations between services and activities.
