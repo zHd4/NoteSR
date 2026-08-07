@@ -33,6 +33,7 @@ android {
             applicationIdSuffix ".debug"
             enableUnitTestCoverage true
             enableAndroidTestCoverage true
+            testCoverageEnabled true
         }
     }
 
