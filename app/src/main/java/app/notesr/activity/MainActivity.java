@@ -55,7 +55,7 @@ public final class MainActivity extends ActivityBase {
         return false;
     }
 
-    private List<Supplier<Intent>> getIntentSuppliers(
+    List<Supplier<Intent>> getIntentSuppliers(
             Context context,
             AppSecurityService appSecurityService,
             FsaResolver fsaResolver
