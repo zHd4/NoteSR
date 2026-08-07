@@ -45,7 +45,7 @@ public final class MainActivity extends ActivityBase {
 
         var defaultIntent = new Intent(getApplicationContext(), NotesListActivity.class);
 
-        startAppCloseService(serviceRegistry);
+        startAppCloseService(getApplicationContext(), serviceRegistry);
         startActivity(new StartupIntentResolver(intentSuppliers, defaultIntent).resolve());
         finish();
     }
@@ -88,9 +88,9 @@ public final class MainActivity extends ActivityBase {
         );
     }
 
-    private void startAppCloseService(AndroidServiceRegistry serviceRegistry) {
+    void startAppCloseService(Context context, AndroidServiceRegistry serviceRegistry) {
         if (!serviceRegistry.isServiceRunning(AppCloseAndroidService.class)) {
-            new AppCloseAndroidServiceStarter().start(getApplicationContext());
+            new AppCloseAndroidServiceStarter().start(context);
         }
     }
 }
