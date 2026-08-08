@@ -18,7 +18,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import app.notesr.R;
 import app.notesr.activity.security.AuthActivity;
 
-public final class StartActivity extends ActivityBase {
+public class StartActivity extends ActivityBase {
 
     private static final double BANNER_MARGIN_FOR_LOW_HEIGHT = 0.1;
     private static final double BANNER_MARGIN_FOR_LARGE_HEIGHT = 0.2;
