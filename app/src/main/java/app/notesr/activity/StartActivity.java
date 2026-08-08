@@ -45,7 +45,7 @@ public class StartActivity extends ActivityBase {
         return false;
     }
 
-    private void placeBannerFront() {
+    void placeBannerFront() {
         ConstraintLayout layout = findViewById(R.id.bannerFrontLayout);
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
 
