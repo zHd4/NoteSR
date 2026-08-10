@@ -19,11 +19,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import app.notesr.service.security.AppSecurityService;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Setter;
 
 public class ActivityBase extends AppCompatActivity {
 
-    @Getter(AccessLevel.MODULE)
+    @Setter(AccessLevel.MODULE) // For testing purposes only
     private AppSecurityService appSecurityService;
 
     @Override
@@ -31,14 +31,9 @@ public class ActivityBase extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        int windowFlag = WindowManager.LayoutParams.FLAG_SECURE;
-        getWindow().setFlags(windowFlag, windowFlag);
-
         appSecurityService = new AppSecurityService(getApplicationContext());
-
-        if (requiresSession() && !isSessionActive()) {
-            restartApp();
-        }
+        enableWindowProtection();
+        validateSession();
     }
 
     @Override
@@ -63,7 +58,11 @@ public class ActivityBase extends AppCompatActivity {
         return true;
     }
 
-    protected void restartApp() {
+    protected boolean isSessionActive() {
+        return appSecurityService.isAuthConfigured();
+    }
+
+    void restartApp() {
         Intent mainActivityIntent = new Intent(this, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
@@ -71,7 +70,14 @@ public class ActivityBase extends AppCompatActivity {
         finish();
     }
 
-    private boolean isSessionActive() {
-        return appSecurityService.isAuthConfigured();
+    void validateSession() {
+        if (requiresSession() && !isSessionActive()) {
+            restartApp();
+        }
+    }
+
+    void enableWindowProtection() {
+        int windowFlag = WindowManager.LayoutParams.FLAG_SECURE;
+        getWindow().setFlags(windowFlag, windowFlag);
     }
 }
