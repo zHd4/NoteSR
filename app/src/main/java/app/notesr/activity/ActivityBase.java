@@ -60,14 +60,15 @@ public class ActivityBase extends AppCompatActivity {
         return true;
     }
 
-    private boolean isSessionActive() {
-        return appSecurityService.isAuthConfigured();
+    protected void restartApp() {
+        Intent mainActivityIntent = new Intent(this, MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        startActivity(mainActivityIntent);
+        finish();
     }
 
-    private void restartApp() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+    private boolean isSessionActive() {
+        return appSecurityService.isAuthConfigured();
     }
 }
