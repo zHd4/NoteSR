@@ -42,10 +42,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testOnCreateSetsContentView() {
-        Intent activityIntent = new Intent(context, TestActivity.class)
-                .putExtra(EXTRA_REQUIRES_SESSION, false);
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
 
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
+        try (scenario) {
             scenario.onActivity(activity ->
                     assertNotNull("Activity should have a content view",
                             activity.findViewById(android.R.id.content)));
@@ -54,10 +53,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testOnCreateSetsFlagSecure() {
-        Intent activityIntent = new Intent(context, TestActivity.class)
-                .putExtra(EXTRA_REQUIRES_SESSION, false);
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
 
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
+        try (scenario) {
             scenario.onActivity(activity -> {
                 WindowManager.LayoutParams params = activity.getWindow().getAttributes();
                 int flags = params.flags;
@@ -69,10 +67,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testOnCreateConfiguresWindowInsets() {
-        Intent activityIntent = new Intent(context, TestActivity.class)
-                .putExtra(EXTRA_REQUIRES_SESSION, false);
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
 
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
+        try (scenario) {
             scenario.onActivity(activity -> {
                 assertNotNull("Window should be configured",
                         activity.getWindow());
@@ -84,10 +81,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testApplyInsetsAddsPadding() {
-        Intent activityIntent = new Intent(context, TestActivity.class)
-                .putExtra(EXTRA_REQUIRES_SESSION, false);
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
 
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
+        try (scenario) {
             scenario.onActivity(activity -> {
                 View testView = new View(activity);
                 activity.applyInsets(testView);
@@ -120,10 +116,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testOptionsItemSelectedHandlesHomeButton() {
-        Intent activityIntent = new Intent(context, TestActivity.class)
-                .putExtra(EXTRA_REQUIRES_SESSION, false);
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
 
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
+        try (scenario) {
             scenario.onActivity(activity -> {
                 MenuItem mockItem = mock(MenuItem.class);
                 when(mockItem.getItemId()).thenReturn(android.R.id.home);
@@ -138,10 +133,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testOptionsItemSelectedCallsFinishForHomeButton() {
-        Intent activityIntent = new Intent(context, TestActivity.class)
-                .putExtra(EXTRA_REQUIRES_SESSION, false);
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
 
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
+        try (scenario) {
             scenario.onActivity(activity -> {
                 MenuItem mockItem = mock(MenuItem.class);
                 when(mockItem.getItemId()).thenReturn(android.R.id.home);
@@ -158,10 +152,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testOptionsItemSelectedDelegatesOtherItems() {
-        Intent activityIntent = new Intent(context, TestActivity.class)
-                .putExtra(EXTRA_REQUIRES_SESSION, false);
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
 
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
+        try (scenario) {
             scenario.onActivity(activity -> {
                 MenuItem mockItem = mock(MenuItem.class);
                 when(mockItem.getItemId()).thenReturn(999); // Non-home item ID
@@ -189,12 +182,11 @@ public class ActivityBaseTest {
     }
 
     @Test
-    public void testRestartAppCreatesIntentWithCorrectFlags() {
+    public void testRestartAppCalledOnActivityCreation() {
         try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class)) {
-            scenario.onActivity(activity -> {
-                // restartApp is called internally, but we verify the activity creation works
-                assertNotNull("Activity should be instantiated successfully", activity);
-            });
+            scenario.onActivity(activity ->
+                    assertTrue("Activity should call restartApp() on creation",
+                            activity.isRestartCalled()));
         }
     }
 
@@ -221,18 +213,19 @@ public class ActivityBaseTest {
         try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
             scenario.onActivity(activity -> {
                 // AppSecurityService should be initialized in onCreate
-                assertNotNull("Activity should be created and services initialized",
-                        activity);
+                assertNotNull("AppSecurityService should be initialized",
+                        activity.getAppSecurityService());
             });
         }
     }
 
     @Test
     public void testOnCreateValidatesSessionWhenRequired() {
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class)) {
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
+
+        try (scenario) {
             scenario.onActivity(activity -> {
                 activity.setRequiresSessionValue(true);
-                // Session validation logic runs in onCreate
                 assertTrue("Activity should handle session validation",
                         activity.requiresSession());
             });
@@ -241,7 +234,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testOnCreateSkipsSessionValidationWhenNotRequired() {
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class)) {
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
+
+        try (scenario) {
             scenario.onActivity(activity -> {
                 activity.setRequiresSessionValue(false);
                 assertFalse("Activity should skip session validation when not required",
@@ -252,10 +247,9 @@ public class ActivityBaseTest {
 
     @Test
     public void testApplyInsetsWithMultipleViews() {
-        Intent activityIntent = new Intent(context, TestActivity.class)
-                .putExtra(EXTRA_REQUIRES_SESSION, false);
+        ActivityScenario<TestActivity> scenario = ActivityScenario.launch(TestActivity.class);
 
-        try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
+        try (scenario) {
             scenario.onActivity(activity -> {
                 View view1 = new View(activity);
                 View view2 = new View(activity);
@@ -275,7 +269,6 @@ public class ActivityBaseTest {
                 .putExtra(EXTRA_REQUIRES_SESSION, false);
 
         try (ActivityScenario<TestActivity> scenario = ActivityScenario.launch(activityIntent)) {
-            scenario.onActivity(activity -> activity.setRequiresSessionValue(false));
             scenario.recreate();
 
             scenario.onActivity(activity ->
