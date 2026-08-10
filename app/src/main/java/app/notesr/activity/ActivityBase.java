@@ -18,9 +18,12 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import app.notesr.service.security.AppSecurityService;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 public class ActivityBase extends AppCompatActivity {
 
+    @Getter(AccessLevel.MODULE)
     private AppSecurityService appSecurityService;
 
     @Override
