@@ -22,7 +22,7 @@ import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.service.security.AppSecurityService;
 
-public final class MainActivity extends ActivityBase {
+public class MainActivity extends ActivityBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public final class MainActivity extends ActivityBase {
         return false;
     }
 
-    List<Supplier<Intent>> getIntentSuppliers(
+    protected List<Supplier<Intent>> getIntentSuppliers(
             Context context,
             AppSecurityService appSecurityService,
             FsaResolver fsaResolver
@@ -88,7 +88,7 @@ public final class MainActivity extends ActivityBase {
         );
     }
 
-    void startAppCloseService(Context context, AndroidServiceRegistry serviceRegistry) {
+    protected void startAppCloseService(Context context, AndroidServiceRegistry serviceRegistry) {
         if (!serviceRegistry.isServiceRunning(AppCloseAndroidService.class)) {
             new AppCloseAndroidServiceStarter().start(context);
         }
