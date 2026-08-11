@@ -29,7 +29,7 @@ import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class KeySetupCompletionHandler {
+public class KeySetupCompletionHandler {
     private final ActivityBase activity;
     private final AppSecurityService appSecurityService;
     private final KeySetupMode mode;
