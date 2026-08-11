@@ -32,18 +32,9 @@ import lombok.RequiredArgsConstructor;
 public class KeySetupCompletionHandler {
     private final ActivityBase activity;
     private final AppSecurityService appSecurityService;
-    private final KeySetupMode mode;
     private final byte[] keyBytes;
 
-    public void handle() {
-        switch (mode) {
-            case FIRST_RUN -> proceedFirstRun();
-            case REGENERATION -> proceedRegeneration();
-            default -> throw new RuntimeException("Unknown mode: " + mode);
-        }
-    }
-
-    private void proceedFirstRun() {
+    public void proceedFirstRun(DataVersionManager dataVersionManager) {
         try {
             char[] password = getCurrentPassword();
 
@@ -51,18 +42,7 @@ public class KeySetupCompletionHandler {
             appSecurityService.setSecrets(newSecrets);
 
             Context context = activity.getApplicationContext();
-            Intent nextIntent = new Intent(context, NotesListActivity.class);
-
-            var dataVersionManager = new DataVersionManager(context);
-
-            int lastMigrationVersion = dataVersionManager.getCurrentVersion();
-            int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
-
-            if (lastMigrationVersion == DataVersionManager.DEFAULT_FIRST_VERSION) {
-                dataVersionManager.setCurrentVersion(currentDataSchemaVersion);
-            } else if (lastMigrationVersion < currentDataSchemaVersion) {
-                nextIntent = new Intent(context, MigrationActivity.class);
-            }
+            Intent nextIntent = getNextIntent(context, dataVersionManager);
 
             activity.startActivity(nextIntent);
             activity.finish();
@@ -71,7 +51,22 @@ public class KeySetupCompletionHandler {
         }
     }
 
-    private void proceedRegeneration() {
+    private static Intent getNextIntent(Context context, DataVersionManager dataVersionManager) {
+        Intent nextIntent = new Intent(context, NotesListActivity.class);
+
+        int lastMigrationVersion = dataVersionManager.getCurrentVersion();
+        int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
+
+        if (lastMigrationVersion == DataVersionManager.DEFAULT_FIRST_VERSION) {
+            dataVersionManager.setCurrentVersion(currentDataSchemaVersion);
+        } else if (lastMigrationVersion < currentDataSchemaVersion) {
+            nextIntent = new Intent(context, MigrationActivity.class);
+        }
+
+        return nextIntent;
+    }
+
+    public void proceedRegeneration() {
         new DialogFactory(activity)
                 .getThemedAlertDialogBuilder(R.layout.dialog_secrets_rotation_warning)
                 .setTitle(R.string.warning)
@@ -83,7 +78,7 @@ public class KeySetupCompletionHandler {
                 .show();
     }
 
-    private void onRegenerationConfirmed() {
+    protected void onRegenerationConfirmed() {
         try {
             char[] password = getCurrentPassword();
             byte[] passwordBytes = charsToBytes(password, StandardCharsets.UTF_8);
@@ -101,13 +96,13 @@ public class KeySetupCompletionHandler {
         activity.finish();
     }
 
-    private void onRegenerationCanceled() {
+    protected void onRegenerationCanceled() {
         if (keyBytes != null) {
             Arrays.fill(keyBytes, (byte) 0);
         }
     }
 
-    private char[] getCurrentPassword() throws CharacterCodingException {
+    protected char[] getCurrentPassword() throws CharacterCodingException {
         if (appSecurityService.isAuthConfigured()) {
             CryptoSecrets cryptoSecrets = appSecurityService.getActualSecrets();
 
