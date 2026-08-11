@@ -44,10 +44,7 @@ public class MainActivityTest {
 
     @Before
     public void setUp() {
-        var instrumentationRegistry = InstrumentationRegistry.getInstrumentation();
-        instrumentationRegistry.getUiAutomation().adoptShellPermissionIdentity();
-
-        context = instrumentationRegistry.getTargetContext();
+        context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mockServiceRegistry = mock(AndroidServiceRegistry.class);
         mockAppSecurityService = mock(AppSecurityService.class);
         mockFsaResolver = mock(FsaResolver.class);
