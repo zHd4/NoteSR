@@ -37,10 +37,7 @@ public class LockActionTest {
 
     @Before
     public void setUp() {
-        var instrumentationRegistry = InstrumentationRegistry.getInstrumentation();
-        instrumentationRegistry.getUiAutomation().adoptShellPermissionIdentity();
-
-        context = instrumentationRegistry.getTargetContext();
+        context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         activity = mock(ActivityBase.class);
         appSecurityService = mock(AppSecurityService.class);
     }
