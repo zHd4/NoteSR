@@ -61,6 +61,12 @@ public final class SecretsUpdateActivity extends ActivityBase {
     }
 
     private void onSecretsUpdateFailed() {
+        if (isFinishing() || isDestroyed()) {
+            startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
+            finish();
+            return;
+        }
+
         DialogFactory dialogFactory = new DialogFactory(this);
         dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_secrets_update_failed)
                 .setTitle(R.string.error)
