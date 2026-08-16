@@ -42,11 +42,6 @@ public final class SecretsUpdateActivity extends ActivityBase {
         startSecretsUpdateService();
     }
 
-    @Override
-    protected boolean requiresSession() {
-        return false;
-    }
-
     private void startSecretsUpdateService() {
         AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
                 .getInstance(getApplicationContext());
