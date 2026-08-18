@@ -55,7 +55,7 @@ public final class SetupKeyActivity extends ActivityBase {
         setContentView(R.layout.activity_setup_key);
         applyInsets(findViewById(R.id.main));
 
-        mode = KeySetupMode.valueOf(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
+        mode = KeySetupMode.fromValue(requireNonNull(getIntent().getStringExtra(EXTRA_MODE)));
         ActionBar actionBar = requireNonNull(getSupportActionBar());
 
         actionBar.setDisplayHomeAsUpEnabled(mode != KeySetupMode.FIRST_RUN);
