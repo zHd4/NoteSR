@@ -7,8 +7,8 @@ package app.notesr.activity.exporter;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.core.util.ActivityUtils.disableBackButton;
-import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.showToastMessage;
 
 import android.content.Intent;
 import android.content.IntentFilter;
