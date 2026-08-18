@@ -67,7 +67,7 @@ public class GenerateNewKeyActionTest {
 
         assertNotNull("Intent should be created", startedIntent);
         assertEquals("Intent should use regeneration mode",
-                KeySetupMode.REGENERATION.toString(),
+                KeySetupMode.REGENERATION.getMode(),
                 startedIntent.getStringExtra(SetupKeyActivity.EXTRA_MODE));
         verify(activity).startActivity(any(Intent.class));
     }
