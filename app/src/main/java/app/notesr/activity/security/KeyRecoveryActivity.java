@@ -7,8 +7,8 @@ package app.notesr.activity.security;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
-import static app.notesr.core.util.ActivityUtils.disableBackButton;
-import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 import static app.notesr.core.util.KeyUtils.getKeyBytesFromKeyHex;
 

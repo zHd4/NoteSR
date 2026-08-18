@@ -9,7 +9,7 @@ import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSON
 
 import static java.util.Objects.requireNonNull;
 
-import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.KeyUtils.getKeyBytesFromKeyHex;
 
 import android.os.Bundle;

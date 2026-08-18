@@ -5,7 +5,7 @@
 
 package app.notesr.activity.security;
 
-import static app.notesr.core.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.disableBackButton;
 
 import android.content.Intent;
 import android.content.IntentFilter;

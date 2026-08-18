@@ -7,7 +7,7 @@ package app.notesr.activity.file.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.ActivityUtils.showToastMessage;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

@@ -5,7 +5,7 @@
 
 package app.notesr.activity.importer;
 
-import static app.notesr.core.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.disableBackButton;
 
 import android.app.Activity;
 import android.content.Intent;

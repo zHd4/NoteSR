@@ -28,7 +28,7 @@ import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.migration.DataVersionManager;
-import app.notesr.core.util.ActivityUtils;
+import app.notesr.util.ActivityUtils;
 import app.notesr.core.util.KeyUtils;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;

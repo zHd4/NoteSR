@@ -7,8 +7,8 @@ package app.notesr.activity.security;
 
 import static java.util.Objects.requireNonNull;
 
-import static app.notesr.core.util.ActivityUtils.copyToClipboard;
-import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.ActivityUtils.copyToClipboard;
+import static app.notesr.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.KeyUtils.getKeyHexFromKeyBytes;
 
 import android.content.Intent;
