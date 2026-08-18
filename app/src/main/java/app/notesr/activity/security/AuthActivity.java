@@ -18,7 +18,11 @@ import java.util.List;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.FsaResolver;
 import app.notesr.core.util.SecureStringBuilder;
+import app.notesr.service.AndroidServiceBootstrapper;
+import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.security.rotation.SecretsRotationService;
 import lombok.AllArgsConstructor;
@@ -61,8 +65,13 @@ public final class AuthActivity extends ActivityBase {
         var secretsRotationService = new SecretsRotationService(getApplicationContext(),
                 appSecurityService);
 
+        var serviceRegistry = AndroidServiceRegistry.getInstance(getApplicationContext());
+        var serviceBootstrapper = new AndroidServiceBootstrapper(serviceRegistry);
+        var fsaResolver = new FsaResolver(serviceRegistry);
+        var dataVersionManager = new DataVersionManager(getApplicationContext());
+
         authHandler = new AuthHandler(this, appSecurityService, secretsRotationService,
-                passwordBuilder);
+                passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager);
 
         try {
             currentMode = Mode.valueOf(mode);
