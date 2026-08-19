@@ -72,7 +72,7 @@ public class MainActivity extends ActivityBase {
                 () -> !appSecurityService.isAuthConfigured()
                         ? new Intent(context, AuthActivity.class)
                         .putExtra(AuthActivity.EXTRA_MODE,
-                                AuthActivity.Mode.AUTHENTICATION.toString())
+                                AuthActivity.Mode.AUTHENTICATION.getModeName())
                         : null,
 
                 () -> {

@@ -23,7 +23,7 @@ public final class LockAction {
 
         Context context = activity.getApplicationContext();
         Intent authActivityIntent = new Intent(context, AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.toString());
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
 
         activity.startActivity(authActivityIntent);
         activity.finish();

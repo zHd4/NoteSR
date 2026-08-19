@@ -31,7 +31,7 @@ public class StartActivity extends ActivityBase {
         applyInsets(findViewById(R.id.main));
 
         Intent authActivityIntent = new Intent(getApplicationContext(), AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CREATE_PASSWORD.toString());
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CREATE_PASSWORD.getModeName());
 
         View.OnClickListener onGetStartedButtonClick = view -> startActivity(authActivityIntent);
         findViewById(R.id.getStartedButton).setOnClickListener(onGetStartedButtonClick);
