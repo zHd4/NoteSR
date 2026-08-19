@@ -91,7 +91,7 @@ public class AuthHandler {
             }
 
             var setupKeyActivityIntent = getNewIntent(SetupKeyActivity.class)
-                    .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.FIRST_RUN.getMode());
+                    .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.FIRST_RUN.getModeName());
 
             activity.startActivity(setupKeyActivityIntent);
             activity.finish();
