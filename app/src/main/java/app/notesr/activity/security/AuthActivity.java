@@ -33,17 +33,6 @@ public final class AuthActivity extends ActivityBase {
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
     public static final String EXTRA_MODE = "mode";
 
-    @AllArgsConstructor
-    @Getter
-    public enum Mode {
-        AUTHENTICATION("authentication"),
-        CREATE_PASSWORD("create_password"),
-        CHANGE_PASSWORD("change_password"),
-        KEY_RECOVERY("key_recovery");
-
-        private final String mode;
-    }
-
     private AuthHandler authHandler;
     private Mode currentMode;
 
@@ -74,7 +63,7 @@ public final class AuthActivity extends ActivityBase {
                 passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager);
 
         try {
-            currentMode = Mode.valueOf(mode);
+            currentMode = Mode.fromString(mode);
         } catch (Exception e) {
             throw new RuntimeException("Invalid or missing mode: " + mode, e);
         }
@@ -223,5 +212,26 @@ public final class AuthActivity extends ActivityBase {
         }
 
         keyboardContainer.addView(row);
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public enum Mode {
+        AUTHENTICATION("authentication"),
+        CREATE_PASSWORD("create_password"),
+        CHANGE_PASSWORD("change_password"),
+        KEY_RECOVERY("key_recovery");
+
+        private final String modeName;
+
+        public static Mode fromString(String mode) {
+            for (Mode m : Mode.values()) {
+                if (m.modeName.equals(mode)) {
+                    return m;
+                }
+            }
+
+            throw new IllegalArgumentException("Invalid auth activity mode: " + mode);
+        }
     }
 }

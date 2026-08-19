@@ -117,11 +117,10 @@ public final class KeyRecoveryActivity extends ActivityBase {
                 StandardCharsets.UTF_8);
         SecretCache.put(AuthActivity.CACHE_KEY_HEX_KEY, hexKeyBytes);
 
-        var targetMode = AuthActivity.Mode.KEY_RECOVERY;
-        var authActivityIntent = new Intent(getApplicationContext(), AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, targetMode.toString());
+        var authIntent = new Intent(getApplicationContext(), AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.KEY_RECOVERY.getModeName());
 
-        startActivity(authActivityIntent);
+        startActivity(authIntent);
         finish();
     }
 
