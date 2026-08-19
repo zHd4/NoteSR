@@ -14,11 +14,11 @@ public enum KeySetupMode {
     FIRST_RUN("first_run"),
     REGENERATION("regeneration");
 
-    private final String mode;
+    private final String modeName;
 
     public static KeySetupMode fromValue(String value) {
         for (KeySetupMode mode : values()) {
-            if (mode.mode.equals(value)) {
+            if (mode.modeName.equals(value)) {
                 return mode;
             }
         }
