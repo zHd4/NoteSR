@@ -25,6 +25,7 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.security.rotation.SecretsRotationService;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -36,9 +37,13 @@ public final class AuthActivity extends ActivityBase {
     private AuthHandler authHandler;
     private Mode currentMode;
 
+    @Getter(AccessLevel.PROTECTED)
     private final SecureStringBuilder passwordBuilder = new SecureStringBuilder();
 
+    @Getter(AccessLevel.PROTECTED)
     private boolean capsLockEnabled = false;
+
+    @Getter(AccessLevel.PROTECTED)
     private boolean showingSymbols = false;
 
     private LinearLayout keyboardContainer;
@@ -49,7 +54,7 @@ public final class AuthActivity extends ActivityBase {
         setContentView(R.layout.activity_auth);
         applyInsets(findViewById(R.id.main));
 
-        String mode = getIntent().getStringExtra(EXTRA_MODE);
+
         var appSecurityService = new AppSecurityService(getApplicationContext());
         var secretsRotationService = new SecretsRotationService(getApplicationContext(),
                 appSecurityService);
@@ -62,12 +67,7 @@ public final class AuthActivity extends ActivityBase {
         authHandler = new AuthHandler(this, appSecurityService, secretsRotationService,
                 passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager);
 
-        try {
-            currentMode = Mode.fromString(mode);
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid or missing mode: " + mode, e);
-        }
-
+        currentMode = getModeFromIntent();
         keyboardContainer = findViewById(R.id.keyboardContainer);
 
         configure();
@@ -77,6 +77,16 @@ public final class AuthActivity extends ActivityBase {
     @Override
     protected boolean requiresSession() {
         return false;
+    }
+
+    private Mode getModeFromIntent() {
+        String mode = getIntent().getStringExtra(EXTRA_MODE);
+
+        try {
+            return Mode.fromString(mode);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid or missing mode: " + mode, e);
+        }
     }
 
     private void configure() {
