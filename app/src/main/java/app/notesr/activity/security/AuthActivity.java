@@ -225,6 +225,10 @@ public final class AuthActivity extends ActivityBase {
         private final String modeName;
 
         public static Mode fromString(String mode) {
+            if (mode == null) {
+                throw new IllegalArgumentException("Invalid auth activity mode: null");
+            }
+
             for (Mode m : Mode.values()) {
                 if (m.modeName.equals(mode)) {
                     return m;
