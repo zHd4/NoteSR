@@ -67,7 +67,7 @@ public final class AuthActivity extends ActivityBase {
         authHandler = new AuthHandler(this, appSecurityService, secretsRotationService,
                 passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager);
 
-        currentMode = getModeFromIntent();
+        currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
         keyboardContainer = findViewById(R.id.keyboardContainer);
 
         configure();
@@ -77,16 +77,6 @@ public final class AuthActivity extends ActivityBase {
     @Override
     protected boolean requiresSession() {
         return false;
-    }
-
-    private Mode getModeFromIntent() {
-        String mode = getIntent().getStringExtra(EXTRA_MODE);
-
-        try {
-            return Mode.fromString(mode);
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid or missing mode: " + mode, e);
-        }
     }
 
     private void configure() {
