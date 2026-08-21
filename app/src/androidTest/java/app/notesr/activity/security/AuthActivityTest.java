@@ -75,6 +75,19 @@ public class AuthActivityTest {
     }
 
     @Test
+    public void testModeFromStringThrowsForNullMode() {
+        IllegalArgumentException exception = assertThrows(
+                "Missing or null modes should be rejected consistently",
+                IllegalArgumentException.class,
+                () -> AuthActivity.Mode.fromString(null));
+
+        assertNotNull("Null-mode exception message should not be null",
+                exception.getMessage());
+        assertTrue("The null-mode exception message should mention the null value",
+                exception.getMessage().contains("null"));
+    }
+
+    @Test
     public void testKeyboardStartsWithAlphaNumericLayout() {
         Intent intent = new Intent(context, AuthActivity.class)
                 .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
@@ -215,6 +228,46 @@ public class AuthActivityTest {
     }
 
     @Test
+    public void testSymbolKeyboardShowsExpectedCharacters() {
+        Intent intent = new Intent(context, AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
+
+        try (ActivityScenario<AuthActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(activity -> {
+                Button changeLayoutButton = activity.findViewById(R.id.changeKeyboardLayoutButton);
+                changeLayoutButton.performClick();
+
+                LinearLayout keyboardContainer = activity.findViewById(R.id.keyboardContainer);
+                assertEquals("Symbol layout should render three rows",
+                        3,
+                        keyboardContainer.getChildCount());
+
+                String[][] expectedRows = {
+                        {"!", "@", "#", "$", "%", "^", "&", "*", "(", ")"},
+                        {"-", "_", "+", "=", "{", "}", "[", "]", "|", "\\"},
+                        {":", ";", "<", ">", "?", "/", "~", ".", ",", "'"}
+                };
+
+                for (int rowIndex = 0; rowIndex < expectedRows.length; rowIndex++) {
+                    LinearLayout symbolRow = (LinearLayout) keyboardContainer.getChildAt(rowIndex);
+                    assertEquals("Each symbol row should keep the standard ten-key width",
+                            expectedRows[rowIndex].length,
+                            symbolRow.getChildCount());
+
+                    for (int keyIndex = 0; keyIndex < expectedRows[rowIndex].length; keyIndex++) {
+                        Button key = (Button) symbolRow.getChildAt(keyIndex);
+                        assertEquals(
+                                "The symbol keyboard should include the expected key at row "
+                                        + rowIndex + ", index " + keyIndex,
+                                expectedRows[rowIndex][keyIndex],
+                                key.getText().toString());
+                    }
+                }
+            });
+        }
+    }
+
+    @Test
     public void testModeSpecificUiTextForEachMode() {
         Map<String, String> expectedModes = Map.of(
                 AuthActivity.Mode.AUTHENTICATION.getModeName(), "Enter access code",
@@ -227,10 +280,10 @@ public class AuthActivityTest {
             String modeName = modeExpectation.getKey();
             String expectedText = modeExpectation.getValue();
 
-            try (ActivityScenario<AuthActivity> s = ActivityScenario.launch(
+            try (ActivityScenario<AuthActivity> scenario = ActivityScenario.launch(
                     new Intent(context, AuthActivity.class)
                             .putExtra(AuthActivity.EXTRA_MODE, modeName))) {
-                s.onActivity(activity -> {
+                scenario.onActivity(activity -> {
                     TextView topLabel = activity.findViewById(R.id.authTopLabel);
                     assertEquals(
                             "Mode-specific label text should match the expected resource",
@@ -348,9 +401,21 @@ public class AuthActivityTest {
             try (ActivityScenario<AuthActivity> s = ActivityScenario.launch(intent)) {
                 s.onActivity(activity -> {
                     Button okButton = activity.findViewById(R.id.okButton);
-                    // Clicking should not throw,
-                    // behavior is delegated to authHandler which is outside this test's scope
+                    TextView passwordView = activity.findViewById(R.id.censoredPasswordTextView);
+
                     okButton.performClick();
+
+                    assertFalse("The activity "
+                                    + "should not finish from an empty-password click",
+                            activity.isFinishing());
+                    assertEquals("The password builder"
+                                    + " should remain empty after empty validation",
+                            0,
+                            activity.getPasswordBuilder().length());
+                    assertEquals("The password display"
+                                    + " should remain empty after empty validation",
+                            "",
+                            passwordView.getText().toString());
                 });
             }
         }
@@ -384,6 +449,85 @@ public class AuthActivityTest {
     }
 
     @Test
+    public void testBackspaceRemovesLastCharacterAcrossCapsAndSymbolInput() {
+        Intent intent = new Intent(context, AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
+
+        try (ActivityScenario<AuthActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(activity -> {
+                Button capsButton = activity.findViewById(R.id.capsButton);
+                Button changeLayoutButton = activity.findViewById(R.id.changeKeyboardLayoutButton);
+                Button backspaceButton = activity.findViewById(R.id.pinBackspaceButton);
+
+                TextView passwordView = activity.findViewById(R.id.censoredPasswordTextView);
+                LinearLayout keyboardContainer = activity.findViewById(R.id.keyboardContainer);
+
+                capsButton.performClick();
+
+                Button letterKey = (Button) ((LinearLayout) keyboardContainer.getChildAt(2))
+                        .getChildAt(0);
+                letterKey.performClick();
+
+                Button digitKey = (Button) ((LinearLayout) keyboardContainer.getChildAt(0))
+                        .getChildAt(0);
+                digitKey.performClick();
+
+                changeLayoutButton.performClick();
+                Button symbolKey = (Button) ((LinearLayout) keyboardContainer.getChildAt(0))
+                        .getChildAt(0);
+                symbolKey.performClick();
+
+                assertEquals("Mixed input should keep the expected password builder state",
+                        "A1!",
+                        activity.getPasswordBuilder().toString());
+                assertEquals("The password view"
+                                + " should show bullet count for all appended characters",
+                        "•••",
+                        passwordView.getText().toString());
+
+                backspaceButton.performClick();
+                assertEquals("Backspace should remove the newest symbol after mixed input",
+                        "A1",
+                        activity.getPasswordBuilder().toString());
+                assertEquals("Backspace should shorten the displayed bullet count by one",
+                        "••",
+                        passwordView.getText().toString());
+
+                backspaceButton.performClick();
+                assertEquals("Backspace should keep stripping characters in reverse order",
+                        "A",
+                        activity.getPasswordBuilder().toString());
+                assertEquals("The display"
+                                + " should be reduced by the second backspace as well",
+                        "•",
+                        passwordView.getText().toString());
+            });
+        }
+    }
+
+    @Test
+    public void testAuthenticationModeDisablesBackNavigation() {
+        Intent authIntent = new Intent(context, AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
+
+        try (ActivityScenario<AuthActivity> scenario = ActivityScenario.launch(authIntent)) {
+            scenario.onActivity(activity ->
+                    assertTrue("Authentication mode should install a back callback",
+                    activity.getOnBackPressedDispatcher().hasEnabledCallbacks()));
+        }
+
+        Intent createIntent = new Intent(context, AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CREATE_PASSWORD.getModeName());
+
+        try (ActivityScenario<AuthActivity> createScenario =
+                     ActivityScenario.launch(createIntent)) {
+            createScenario.onActivity(activity ->
+                    assertFalse("Create-password mode should not disable back navigation",
+                    activity.getOnBackPressedDispatcher().hasEnabledCallbacks()));
+        }
+    }
+
+    @Test
     public void testAddKeyboardRowSetsAllCapsWhenAppropriate() {
         Intent intent = new Intent(context, AuthActivity.class)
                 .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
@@ -395,6 +539,7 @@ public class AuthActivityTest {
 
                 LinearLayout keyboardContainer = activity.findViewById(R.id.keyboardContainer);
                 LinearLayout letterRow = (LinearLayout) keyboardContainer.getChildAt(2);
+
                 Button aKey = (Button) letterRow.getChildAt(0);
 
                 assertEquals("When caps enabled, letter key text should be uppercase",
