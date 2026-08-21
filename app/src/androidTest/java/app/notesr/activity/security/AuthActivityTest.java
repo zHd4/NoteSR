@@ -283,14 +283,14 @@ public class AuthActivityTest {
     }
 
     @Test
-    public void testAuthButtonValidationForAuthenticationMode() {
+    public void testOkButtonValidationForAuthenticationMode() {
         Intent intent = new Intent(context, AuthActivity.class)
                 .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
 
         try (ActivityScenario<AuthActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                Button authButton = activity.findViewById(R.id.authButton);
-                authButton.performClick();
+                Button okButton = activity.findViewById(R.id.okButton);
+                okButton.performClick();
 
                 assertEquals("Authentication mode"
                                 + " should reject empty passwords without changing the builder",
@@ -304,7 +304,7 @@ public class AuthActivityTest {
     }
 
     @Test
-    public void testAuthButtonValidationForCreatePasswordMode() {
+    public void testOkButtonValidationForCreatePasswordMode() {
         Intent intent = new Intent(context, AuthActivity.class)
                 .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CREATE_PASSWORD.getModeName());
 
@@ -320,8 +320,8 @@ public class AuthActivityTest {
                 activity.getPasswordBuilder().append(testPassword);
                 passwordView.setText(testCensoredPassword);
 
-                Button authButton = activity.findViewById(R.id.authButton);
-                authButton.performClick();
+                Button okButton = activity.findViewById(R.id.okButton);
+                okButton.performClick();
 
                 assertEquals("Create password mode"
                                 + " should require a second confirmation step after"
@@ -340,17 +340,17 @@ public class AuthActivityTest {
     }
 
     @Test
-    public void testAuthButtonDoesNotCrashForEachMode() {
+    public void testOkButtonDoesNotCrashForEachMode() {
         for (AuthActivity.Mode mode : AuthActivity.Mode.values()) {
             Intent intent = new Intent(context, AuthActivity.class)
                     .putExtra(AuthActivity.EXTRA_MODE, mode.getModeName());
 
             try (ActivityScenario<AuthActivity> s = ActivityScenario.launch(intent)) {
                 s.onActivity(activity -> {
-                    Button authButton = activity.findViewById(R.id.authButton);
+                    Button okButton = activity.findViewById(R.id.okButton);
                     // Clicking should not throw,
                     // behavior is delegated to authHandler which is outside this test's scope
-                    authButton.performClick();
+                    okButton.performClick();
                 });
             }
         }

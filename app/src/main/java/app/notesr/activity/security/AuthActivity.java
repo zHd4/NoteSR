@@ -84,7 +84,7 @@ public final class AuthActivity extends ActivityBase {
 
         Button capsButton = findViewById(R.id.capsButton);
         Button backspaceButton = findViewById(R.id.pinBackspaceButton);
-        Button authButton = findViewById(R.id.authButton);
+        Button okButton = findViewById(R.id.okButton);
         Button changeLayoutButton = findViewById(R.id.changeKeyboardLayoutButton);
 
         switch (currentMode) {
@@ -123,7 +123,7 @@ public final class AuthActivity extends ActivityBase {
             }
         });
 
-        authButton.setOnClickListener(view -> {
+        okButton.setOnClickListener(view -> {
             switch (currentMode) {
                 case AUTHENTICATION -> authHandler.authenticate();
                 case CREATE_PASSWORD -> authHandler.createPassword();
