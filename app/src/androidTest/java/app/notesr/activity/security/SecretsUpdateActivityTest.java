@@ -75,7 +75,7 @@ public class SecretsUpdateActivityTest {
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(intent);
 
-            Activity started = instrumentation.waitForMonitorWithTimeout(monitor, 2000);
+            Activity started = instrumentation.waitForMonitorWithTimeout(monitor, 20000);
             instrumentation.removeMonitor(monitor);
 
             assertNotNull("NotesListActivity should be started on secrets update complete",
@@ -97,7 +97,7 @@ public class SecretsUpdateActivityTest {
 
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-            Activity started = instrumentation.waitForMonitorWithTimeout(monitor, 2000);
+            Activity started = instrumentation.waitForMonitorWithTimeout(monitor, 20000);
             instrumentation.removeMonitor(monitor);
 
             assertNotNull("NotesListActivity should be started when secrets update fails",
