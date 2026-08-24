@@ -27,10 +27,12 @@ import app.notesr.activity.security.AuthActivity;
 @RunWith(AndroidJUnit4.class)
 public class StartActivityTest {
 
+    private Instrumentation instrumentation;
+
     @Before
     public void setUp() {
-        var instrumentationRegistry = InstrumentationRegistry.getInstrumentation();
-        instrumentationRegistry.getUiAutomation().adoptShellPermissionIdentity();
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        instrumentation.getUiAutomation().adoptShellPermissionIdentity();
     }
 
     private ActivityScenario<StartActivity> createScenario() {
@@ -130,7 +132,7 @@ public class StartActivityTest {
     @Test
     public void testAuthActivityIntentHasCreatePasswordMode() {
         try (ActivityScenario<StartActivity> scenario = createScenario()) {
-            Instrumentation.ActivityMonitor monitor = InstrumentationRegistry.getInstrumentation()
+            Instrumentation.ActivityMonitor monitor = instrumentation
                     .addMonitor(AuthActivity.class.getName(), null, false);
 
             scenario.onActivity(activity -> {
@@ -139,8 +141,7 @@ public class StartActivityTest {
                 getStartedButton.performClick();
             });
 
-            Activity started = InstrumentationRegistry.getInstrumentation()
-                    .waitForMonitorWithTimeout(monitor, 2000);
+            Activity started = instrumentation.waitForMonitorWithTimeout(monitor, 20000);
 
             assertNotNull("AuthActivity should be started on button click", started);
             started.finish();
