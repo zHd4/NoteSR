@@ -28,15 +28,21 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.util.CryptoSecretsValidator;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 public final class ImportKeyActivity extends ActivityBase {
 
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
     private static final String TAG = ImportKeyActivity.class.getSimpleName();
 
+    @Getter(AccessLevel.PROTECTED)
     private int resultCode = RESULT_CANCELED;
-    private EditText keyField;
+
+    @Getter(AccessLevel.PROTECTED)
     private char[] hexKey;
+
+    private EditText keyField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
