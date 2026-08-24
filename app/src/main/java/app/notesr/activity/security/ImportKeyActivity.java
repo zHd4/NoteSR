@@ -32,7 +32,7 @@ import app.notesr.core.util.CryptoSecretsValidator;
 public final class ImportKeyActivity extends ActivityBase {
 
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
-    private static final String TAG = ImportKeyActivity.class.getCanonicalName();
+    private static final String TAG = ImportKeyActivity.class.getSimpleName();
 
     private int resultCode = RESULT_CANCELED;
     private EditText keyField;
