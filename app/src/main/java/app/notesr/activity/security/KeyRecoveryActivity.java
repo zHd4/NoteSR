@@ -28,6 +28,9 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +40,10 @@ import java.util.Objects;
 public final class KeyRecoveryActivity extends ActivityBase {
     private static final String TAG = KeyRecoveryActivity.class.getSimpleName();
 
+    @Getter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PROTECTED)
     private AppSecurityService appSecurityService;
+
     private EditText hexKeyField;
 
     @Override
