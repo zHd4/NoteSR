@@ -10,8 +10,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 
 import android.app.Activity;
@@ -36,6 +38,7 @@ import app.notesr.R;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.KeyUtils;
+import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
 import io.bloco.faker.Faker;
 
@@ -223,6 +226,36 @@ public class KeyRecoveryActivityTest {
                         recoveryKeyField.getText().toString());
                 assertFalse("Invalid recovery key input should not finish the activity",
                         activity.isFinishing());
+            });
+        }
+    }
+
+    @Test
+    public void testKeyMatchingFailureThrowsRuntimeExceptionWithCause() {
+        try (ActivityScenario<KeyRecoveryActivity> scenario = ActivityScenario.launch(
+                KeyRecoveryActivity.class)) {
+            scenario.onActivity(activity -> {
+                CryptoSecrets testSecrets = getTestCryptoSecrets();
+                AppSecurityService spyAppSecurityService = spy(activity.getAppSecurityService());
+                activity.setAppSecurityService(spyAppSecurityService);
+
+                doThrow(new AppSecurityException("Key matching failed"))
+                        .when(spyAppSecurityService)
+                        .isKeyMatchingWithStored(any(byte[].class));
+
+                EditText recoveryKeyField = activity.findViewById(R.id.importRecoveryKeyField);
+                Button applyButton = activity.findViewById(R.id.applyRecoveryKeyButton);
+                char[] validHex = KeyUtils.getKeyHexFromKeyBytes(testSecrets.getKey());
+
+                recoveryKeyField.setText(new String(validHex));
+
+                try {
+                    applyButton.performClick();
+                    fail("Expected RuntimeException to be thrown when AppSecurityException occurs");
+                } catch (RuntimeException e) {
+                    assertTrue("Cause should be AppSecurityException",
+                            e.getCause() instanceof AppSecurityException);
+                }
             });
         }
     }
