@@ -506,24 +506,39 @@ public class AuthActivityTest {
     }
 
     @Test
-    public void testAuthenticationModeDisablesBackNavigation() {
+    public void testAuthenticationModeBackNavigationFinishesAffinity() {
         Intent authIntent = new Intent(context, AuthActivity.class)
                 .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
 
         try (ActivityScenario<AuthActivity> scenario = ActivityScenario.launch(authIntent)) {
-            scenario.onActivity(activity ->
-                    assertTrue("Authentication mode should install a back callback",
-                    activity.getOnBackPressedDispatcher().hasEnabledCallbacks()));
+            scenario.onActivity(activity -> {
+                assertTrue("Authentication mode should install a back callback",
+                        activity.getOnBackPressedDispatcher().hasEnabledCallbacks());
+
+                activity.getOnBackPressedDispatcher().onBackPressed();
+
+                assertTrue("Authentication mode should finish the activity"
+                                + " when back is pressed",
+                        activity.isFinishing());
+            });
         }
+    }
 
-        Intent createIntent = new Intent(context, AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CREATE_PASSWORD.getModeName());
+    @Test
+    public void testNonAuthenticationModesAllowStandardBackNavigation() {
+        for (AuthActivity.Mode mode : new AuthActivity.Mode[] {
+                AuthActivity.Mode.CREATE_PASSWORD,
+                AuthActivity.Mode.CHANGE_PASSWORD,
+                AuthActivity.Mode.KEY_RECOVERY}) {
+            Intent intent = new Intent(context, AuthActivity.class)
+                    .putExtra(AuthActivity.EXTRA_MODE, mode.getModeName());
 
-        try (ActivityScenario<AuthActivity> createScenario =
-                     ActivityScenario.launch(createIntent)) {
-            createScenario.onActivity(activity ->
-                    assertFalse("Create-password mode should not disable back navigation",
-                    activity.getOnBackPressedDispatcher().hasEnabledCallbacks()));
+            try (ActivityScenario<AuthActivity> scenario = ActivityScenario.launch(intent)) {
+                scenario.onActivity(activity ->
+                        assertFalse("Non-authentication modes should keep"
+                                        + " the default back behavior",
+                                activity.getOnBackPressedDispatcher().hasEnabledCallbacks()));
+            }
         }
     }
 
