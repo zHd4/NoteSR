@@ -7,8 +7,6 @@ package app.notesr.activity.security;
 
 import static java.util.Objects.requireNonNull;
 
-import static app.notesr.util.ActivityUtils.copyToClipboard;
-import static app.notesr.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.KeyUtils.getKeyHexFromKeyBytes;
 
 import android.content.Intent;
@@ -32,6 +30,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.util.ActivityUtils;
 import lombok.Getter;
 
 @Getter
@@ -46,6 +45,7 @@ public final class SetupKeyActivity extends ActivityBase {
     private ActivityResultLauncher<Intent> importKeyLauncher;
     private DataVersionManager dataVersionManager;
     private AppSecurityService appSecurityService;
+    private ActivityUtils activityUtils;
 
     private byte[] newKey;
 
@@ -65,6 +65,7 @@ public final class SetupKeyActivity extends ActivityBase {
                 new ActivityResultContracts.StartActivityForResult(), getImportKeyCallback());
         dataVersionManager = new DataVersionManager(getApplicationContext());
         appSecurityService = getAppSecurityService();
+        activityUtils = new ActivityUtils(this);
 
         newKey = appSecurityService.generateMasterKey();
         showKeyHex(newKey);
@@ -130,8 +131,8 @@ public final class SetupKeyActivity extends ActivityBase {
         return view -> {
             String keyHex = ((TextView) findViewById(R.id.hexKey)).getText().toString();
 
-            copyToClipboard(this, keyHex);
-            showToastMessage(this, getString(R.string.copied), Toast.LENGTH_SHORT);
+            activityUtils.copyToClipboard(keyHex);
+            activityUtils.showToastMessage(getString(R.string.copied), Toast.LENGTH_SHORT);
         };
     }
 

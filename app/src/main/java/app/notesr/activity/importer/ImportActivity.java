@@ -35,6 +35,7 @@ import app.notesr.service.importer.ImportAndroidServiceStarter;
 import app.notesr.service.importer.ImportStatus;
 import app.notesr.core.util.FileExifDataResolver;
 import app.notesr.core.util.FilesUtils;
+import app.notesr.util.ActivityUtils;
 
 public final class ImportActivity extends ActivityBase {
 
@@ -49,6 +50,7 @@ public final class ImportActivity extends ActivityBase {
     private TextView statusTextView;
     private TextView infoTextView;
     private TextView cannotBeCanceledLabel;
+    private ActivityUtils activityUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public final class ImportActivity extends ActivityBase {
 
         actionBar = getSupportActionBar();
         assert actionBar != null;
+        activityUtils = new ActivityUtils(this);
 
         ImportBroadcastReceiver broadcastReceiver = new ImportBroadcastReceiver(
                 this::onImportRunning,
@@ -79,7 +82,7 @@ public final class ImportActivity extends ActivityBase {
             actionBar.setTitle(R.string.import_text);
         } else {
             actionBar.setTitle(R.string.importing);
-            disableBackButton(this);
+            activityUtils.disableBackButton();
         }
 
         fileChooserLauncher = registerForActivityResult(
@@ -188,7 +191,7 @@ public final class ImportActivity extends ActivityBase {
 
             selectedFileTextView.setVisibility(View.INVISIBLE);
 
-            disableBackButton(this);
+            activityUtils.disableBackButton();
             startImport();
 
             progressBar.setVisibility(View.VISIBLE);

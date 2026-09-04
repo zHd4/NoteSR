@@ -7,8 +7,6 @@ package app.notesr.activity.security;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
-import static app.notesr.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 import static app.notesr.core.util.KeyUtils.getKeyBytesFromKeyHex;
 
@@ -28,6 +26,7 @@ import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.util.ActivityUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +43,10 @@ public final class KeyRecoveryActivity extends ActivityBase {
     @Setter(AccessLevel.PROTECTED)
     private AppSecurityService appSecurityService;
 
+    @Getter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PROTECTED)
+    private ActivityUtils activityUtils;
+
     private EditText hexKeyField;
 
     @Override
@@ -53,6 +56,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
         applyInsets(findViewById(R.id.main));
 
         appSecurityService = new AppSecurityService(getApplicationContext());
+        activityUtils = new ActivityUtils(this);
 
         ActionBar actionBar = getSupportActionBar();
         Objects.requireNonNull(actionBar).setTitle(getString(R.string.key_recovery));
@@ -60,7 +64,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
         hexKeyField = findViewById(R.id.importRecoveryKeyField);
         Button applyButton = findViewById(R.id.applyRecoveryKeyButton);
 
-        disableBackButton(this);
+        activityUtils.disableBackButton();
 
         hexKeyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
         applyButton.setOnClickListener(getApplyButtonOnClickListener());
@@ -98,7 +102,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
                     }
                 } catch (IllegalArgumentException e) {
                     Log.e(TAG, "Invalid key", e);
-                    showToastMessage(this, getString(R.string.invalid_key),
+                    activityUtils.showToastMessage(getString(R.string.invalid_key),
                             Toast.LENGTH_SHORT);
                 } catch (AppSecurityException | CharacterCodingException e) {
                     Log.e(TAG, e.toString());
@@ -131,8 +135,7 @@ public final class KeyRecoveryActivity extends ActivityBase {
     }
 
     private void proceedKeyMismatch() {
-        showToastMessage(this,
-                getString(R.string.wrong_key),
+        activityUtils.showToastMessage(getString(R.string.wrong_key),
                 Toast.LENGTH_SHORT);
     }
 }

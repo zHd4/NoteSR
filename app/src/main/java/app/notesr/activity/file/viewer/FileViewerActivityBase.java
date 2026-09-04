@@ -7,8 +7,6 @@ package app.notesr.activity.file.viewer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.util.ActivityUtils.showToastMessage;
-
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +32,7 @@ import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.FileInfo;
 import app.notesr.service.file.FileService;
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.util.ActivityUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +47,7 @@ public class FileViewerActivityBase extends ActivityBase {
     protected FileService fileService;
     protected FileIOHelper fileIOHelper;
     protected DialogFactory dialogFactory;
+    protected ActivityUtils activityUtils;
 
     protected File saveDir = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS);
@@ -74,6 +74,7 @@ public class FileViewerActivityBase extends ActivityBase {
 
         fileIOHelper = new FileIOHelper(new FilesUtils(), fileService);
         dialogFactory = new DialogFactory(this);
+        activityUtils = new ActivityUtils(this);
 
         fileInfo = (FileInfo) getIntent().getSerializableExtra(EXTRA_FILE_INFO);
 
@@ -124,7 +125,7 @@ public class FileViewerActivityBase extends ActivityBase {
         var destFile = new File(saveDir, fileInfo.getName());
 
         Runnable task = () -> fileIOHelper.exportFile(fileInfo.getId(), destFile);
-        Runnable post = () -> showToastMessage(this,
+        Runnable post = () -> activityUtils.showToastMessage(
                 getString(R.string.saved_to, destFile.getAbsolutePath()),
                 Toast.LENGTH_LONG);
 
