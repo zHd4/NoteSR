@@ -5,7 +5,7 @@
 
 package app.notesr.activity.importer;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
+import static java.util.Objects.requireNonNull;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -63,8 +63,7 @@ public final class ImportActivity extends ActivityBase {
         setContentView(R.layout.activity_import);
         applyInsets(findViewById(R.id.main));
 
-        actionBar = getSupportActionBar();
-        assert actionBar != null;
+        actionBar = requireNonNull(getSupportActionBar());
         activityUtils = new ActivityUtils(this);
 
         ImportBroadcastReceiver broadcastReceiver = new ImportBroadcastReceiver(
