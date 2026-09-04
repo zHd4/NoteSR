@@ -28,12 +28,12 @@ import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.migration.DataVersionManager;
-import app.notesr.util.ActivityUtils;
 import app.notesr.core.util.KeyUtils;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.security.AuthenticationFailedException;
 import app.notesr.service.security.rotation.SecretsRotationService;
+import app.notesr.util.ActivityUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +51,7 @@ public class AuthHandler {
     private final FsaResolver fsaResolver;
     private final AndroidServiceBootstrapper androidServiceBootstrapper;
     private final DataVersionManager dataVersionManager;
+    private final ActivityUtils activityUtils;
 
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
@@ -248,6 +249,6 @@ public class AuthHandler {
     }
 
     protected void showToastMessage(String text) {
-        ActivityUtils.showToastMessage(activity, text, Toast.LENGTH_SHORT);
+        activityUtils.showToastMessage(text, Toast.LENGTH_SHORT);
     }
 }

@@ -5,8 +5,6 @@
 
 package app.notesr.activity;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -17,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 
 import app.notesr.R;
 import app.notesr.activity.security.AuthActivity;
+import app.notesr.util.ActivityUtils;
 
 public class StartActivity extends ActivityBase {
 
@@ -36,7 +35,9 @@ public class StartActivity extends ActivityBase {
         View.OnClickListener onGetStartedButtonClick = view -> startActivity(authActivityIntent);
         findViewById(R.id.getStartedButton).setOnClickListener(onGetStartedButtonClick);
 
-        disableBackButton(this);
+        ActivityUtils activityUtils = new ActivityUtils(this);
+        activityUtils.disableBackButton();
+
         placeBannerFront();
     }
 

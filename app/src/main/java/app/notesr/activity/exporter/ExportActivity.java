@@ -7,9 +7,6 @@ package app.notesr.activity.exporter;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
-import static app.notesr.util.ActivityUtils.showToastMessage;
-
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -45,6 +42,7 @@ import app.notesr.service.file.FileService;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.note.NoteService;
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.util.ActivityUtils;
 import app.notesr.util.VersionFetcherImpl;
 
 public final class ExportActivity extends ActivityBase {
@@ -59,6 +57,7 @@ public final class ExportActivity extends ActivityBase {
     private TextView outputFileNameView;
 
     private ActivityResultLauncher<String> exportDestinationPicker;
+    private ActivityUtils activityUtils;
 
     private boolean isExportCompleted = false;
 
@@ -97,10 +96,12 @@ public final class ExportActivity extends ActivityBase {
 
         outputFileNameView = findViewById(R.id.output_file_name_view);
 
+        activityUtils = new ActivityUtils(this);
+
         if (isExportRunning()) {
             actionBar.setTitle(getString(R.string.exporting));
 
-            disableBackButton(this);
+            activityUtils.disableBackButton();
             setCancelButton();
         } else {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -131,7 +132,7 @@ public final class ExportActivity extends ActivityBase {
             if (noteService.getCount() == 0) {
                 runOnUiThread(() -> {
                     var messageText = getString(R.string.no_notes);
-                    showToastMessage(this, messageText, Toast.LENGTH_SHORT);
+                    activityUtils.showToastMessage(messageText, Toast.LENGTH_SHORT);
                 });
 
                 return;
@@ -163,7 +164,7 @@ public final class ExportActivity extends ActivityBase {
             actionBar.setDisplayHomeAsUpEnabled(false);
             actionBar.setTitle(getString(R.string.exporting));
 
-            disableBackButton(this);
+            activityUtils.disableBackButton();
             setCancelButton();
 
             String outputFileName = new FileExifDataResolver(this, new FilesUtils(), uri)
@@ -218,9 +219,11 @@ public final class ExportActivity extends ActivityBase {
             isExportCompleted = true;
 
             if (status == ExportStatus.DONE) {
-                showToastMessage(this, getString(R.string.exported), Toast.LENGTH_LONG);
+                activityUtils.showToastMessage(getString(R.string.exported),
+                        Toast.LENGTH_LONG);
             } else if (status == ExportStatus.ERROR) {
-                showToastMessage(this, getString(R.string.export_failed), Toast.LENGTH_LONG);
+                activityUtils.showToastMessage(getString(R.string.export_failed),
+                        Toast.LENGTH_LONG);
             }
 
             startActivity(new Intent(getApplicationContext(), NotesListActivity.class));

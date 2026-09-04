@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Intent;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,7 @@ import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.security.AuthenticationFailedException;
 import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.security.rotation.SecretsRotationService;
+import app.notesr.util.ActivityUtils;
 
 @ExtendWith(MockitoExtension.class)
 class AuthHandlerTest {
@@ -81,12 +83,16 @@ class AuthHandlerTest {
     @Mock
     private DataVersionManager dataVersionManager;
 
+    @Mock
+    private ActivityUtils activityUtils;
+
     private AuthHandler handler;
 
     @BeforeEach
     void setUp() {
         handler = new AuthHandler(activity, appSecurityService, secretsRotationService,
-                passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager);
+                passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager,
+                activityUtils);
     }
 
     @Test
@@ -94,14 +100,16 @@ class AuthHandlerTest {
         when(passwordBuilder.toCharArray()).thenReturn(new char[0]);
 
         AuthHandler spyAuthHandler = spy(handler);
-        doNothing().when(spyAuthHandler).showToastMessage(any(Integer.class));
+        when(activity.getString(R.string.enter_the_code))
+                .thenReturn("Enter the code!");
 
         spyAuthHandler.authenticate();
 
-        verify(spyAuthHandler, times(1))
-                .showToastMessage(R.string.enter_the_code);
         verify(spyAuthHandler, never()).onAuthenticationSuccessful();
         verify(spyAuthHandler, never()).onAuthenticationFailed();
+
+        verify(activityUtils, times(1))
+                .showToastMessage("Enter the code!", Toast.LENGTH_SHORT);
     }
 
     @Test
@@ -120,7 +128,6 @@ class AuthHandlerTest {
                 .thenReturn("Wrong code, you have %d attempts remaining");
 
         AuthHandler spyAuthHandler = spy(handler);
-        doNothing().when(spyAuthHandler).showToastMessage(any(String.class));
 
         spyAuthHandler.authenticate();
 
@@ -192,7 +199,7 @@ class AuthHandlerTest {
         verify(spyAuthHandler, times(2)).resetPassword();
         verify(mockCensoredPasswordView, times(2)).setText("");
         verify(passwordBuilder, times(2)).wipe();
-        verify(spyAuthHandler, never()).showToastMessage(any(String.class));
+        verify(activityUtils, never()).showToastMessage(any(String.class), any(Integer.class));
     }
 
     @Test
@@ -211,8 +218,6 @@ class AuthHandlerTest {
                 .thenReturn("Minimum password length is %d");
 
         AuthHandler spyAuthHandler = spy(handler);
-        doNothing().when(spyAuthHandler).showToastMessage(any(String.class));
-
         char[] result = spyAuthHandler.proceedPasswordSetting();
 
         assertNull(result,
@@ -220,12 +225,11 @@ class AuthHandlerTest {
         assertNull(spyAuthHandler.getCreatedPassword(),
                 "Created password should remain null for short password");
 
-        verify(spyAuthHandler, times(1)).showToastMessage(any(String.class));
         verify(spyAuthHandler, times(1)).resetPassword();
         verify(spyAuthHandler, times(1)).resetPassword();
-        verify(spyAuthHandler, times(1))
+        verify(activityUtils, times(1))
                 .showToastMessage(String.format("Minimum password length is %d",
-                        CryptoSecrets.PASSWORD_MIN_LENGTH));
+                        CryptoSecrets.PASSWORD_MIN_LENGTH), Toast.LENGTH_SHORT);
         verify(censoredPasswordView, times(1)).setText("");
         verify(passwordBuilder, times(1)).wipe();
         verify(mockTopLabel, never()).setText(any(String.class));
@@ -245,7 +249,10 @@ class AuthHandlerTest {
                 .thenReturn(mockCensoredPasswordView);
 
         AuthHandler spyAuthHandler = spy(handler);
-        doNothing().when(spyAuthHandler).showToastMessage(any(Integer.class));
+        when(activity.getString(R.string.repeat_access_code))
+                .thenReturn("Repeat access code");
+        when(activity.getString(R.string.code_not_match))
+                .thenReturn("Code do not match");
 
         // First entry
         when(passwordBuilder.toCharArray()).thenReturn(firstPassword);
@@ -257,8 +264,8 @@ class AuthHandlerTest {
         char[] secondAttempt = spyAuthHandler.proceedPasswordSetting();
 
         assertNull(secondAttempt, "Mismatched confirmation should return null");
-        verify(spyAuthHandler, times(1))
-                .showToastMessage(R.string.code_not_match);
+        verify(activityUtils, times(1))
+                .showToastMessage("Code do not match", Toast.LENGTH_SHORT);
         verify(spyAuthHandler, times(2)).resetPassword();
     }
 
@@ -373,8 +380,8 @@ class AuthHandlerTest {
         char[] testPassword = "newpassword1".toCharArray();
 
         AuthHandler spyAuthHandler = spy(handler);
+        when(activity.getString(R.string.updated)).thenReturn("Updated!");
         doReturn(testPassword).when(spyAuthHandler).proceedPasswordSetting();
-        doNothing().when(spyAuthHandler).showToastMessage(any(Integer.class));
 
         Intent mockNotesListIntent = mock(Intent.class);
         doReturn(mockNotesListIntent).when(spyAuthHandler).getNewIntent(NotesListActivity.class);
@@ -383,7 +390,8 @@ class AuthHandlerTest {
 
         verify(secretsRotationService, times(1))
                 .updatePassword(testPassword);
-        verify(spyAuthHandler, times(1)).showToastMessage(R.string.updated);
+        verify(activityUtils, times(1))
+                .showToastMessage("Updated!", Toast.LENGTH_SHORT);
         verify(spyAuthHandler, times(1))
                 .getNewIntent(NotesListActivity.class);
         verify(activity, times(1)).startActivity(mockNotesListIntent);
@@ -411,7 +419,6 @@ class AuthHandlerTest {
         when(activity.findViewById(R.id.censoredPasswordTextView)).thenReturn(censoredPasswordView);
 
         AuthHandler spyAuthHandler = spy(handler);
-        doNothing().when(spyAuthHandler).showToastMessage(any(String.class));
         doNothing().when(spyAuthHandler).sleepBeforeRetry();
 
         // Set authAttempts to 2 so one failure leaves 1 remaining
@@ -424,10 +431,11 @@ class AuthHandlerTest {
 
         verify(appSecurityService, never()).blockApp();
         verify(spyAuthHandler, times(1)).sleepBeforeRetry();
-        verify(spyAuthHandler, times(1))
-                .showToastMessage("Wrong code, you have 1 attempts remaining");
+        verify(activityUtils, times(1))
+                .showToastMessage(
+                        "Wrong code, you have 1 attempts remaining", Toast.LENGTH_SHORT);
         verify(spyAuthHandler, times(1)).resetPassword();
-        verify(spyAuthHandler, never()).showToastMessage(R.string.blocked);
+        verify(activityUtils, never()).showToastMessage("Blocked!", Toast.LENGTH_SHORT);
         verify(censoredPasswordView, times(1)).setText("");
         verify(passwordBuilder, times(1)).wipe();
         verify(activity, never()).startActivity(any(Intent.class));
@@ -440,7 +448,7 @@ class AuthHandlerTest {
         when(activity.findViewById(R.id.censoredPasswordTextView)).thenReturn(censoredPasswordView);
 
         AuthHandler spyAuthHandler = spy(handler);
-        doNothing().when(spyAuthHandler).showToastMessage(any(Integer.class));
+        when(activity.getString(R.string.blocked)).thenReturn("Blocked!");
 
         // Set authAttempts to 1 so one failure exhausts attempts
         spyAuthHandler.setAuthAttempts(1);
@@ -455,7 +463,8 @@ class AuthHandlerTest {
                 "Auth attempts should decrement to 0");
 
         verify(appSecurityService, times(1)).blockApp();
-        verify(spyAuthHandler, times(1)).showToastMessage(R.string.blocked);
+        verify(activityUtils, times(1))
+                .showToastMessage("Blocked!", Toast.LENGTH_SHORT);
         verify(activity, times(1)).startActivity(mockKeyRecoveryIntent);
         verify(activity, times(1)).finish();
         verify(spyAuthHandler, times(1)).resetPassword();
@@ -463,8 +472,8 @@ class AuthHandlerTest {
         verify(passwordBuilder, times(1)).wipe();
 
         verify(spyAuthHandler, never()).sleepBeforeRetry();
-        verify(spyAuthHandler, never())
-                .showToastMessage(contains("Wrong code"));
+        verify(activityUtils, never())
+                .showToastMessage(contains("Wrong code"), eq(Toast.LENGTH_SHORT));
     }
 
     @Test
