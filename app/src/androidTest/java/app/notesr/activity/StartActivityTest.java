@@ -7,6 +7,7 @@ package app.notesr.activity;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -79,8 +80,9 @@ public class StartActivityTest {
     @Test
     public void testOnCreateDisablesBackButton() {
         try (ActivityScenario<StartActivity> scenario = createScenario()) {
-            scenario.onActivity(activity ->
-                    assertNotNull("Activity should be created successfully", activity));
+            scenario.onActivity(activity -> assertTrue(
+                    "Back button should be disabled",
+                    activity.getOnBackPressedDispatcher().hasEnabledCallbacks()));
         }
     }
 
