@@ -64,7 +64,8 @@ public class AuthHandler {
         var password = passwordBuilder.toCharArray();
 
         if (password.length == 0) {
-            showToastMessage(R.string.enter_the_code);
+            activityUtils.showToastMessage(activity.getString(R.string.enter_the_code),
+                    Toast.LENGTH_SHORT);
             return;
         }
 
@@ -137,7 +138,8 @@ public class AuthHandler {
         try {
             secretsRotationService.updatePassword(password);
 
-            showToastMessage(R.string.updated);
+            activityUtils.showToastMessage(activity.getString(R.string.updated),
+                    Toast.LENGTH_SHORT);
             activity.startActivity(getNewIntent(NotesListActivity.class));
             activity.finish();
         } catch (Exception e) {
@@ -154,16 +156,17 @@ public class AuthHandler {
                 createdPassword = password;
                 topLabel.setText(activity.getString(R.string.repeat_access_code));
             } else {
-                showToastMessage(String.format(
+                activityUtils.showToastMessage(String.format(
                         activity.getString(R.string.minimum_password_length_is_n),
-                        CryptoSecrets.PASSWORD_MIN_LENGTH));
+                        CryptoSecrets.PASSWORD_MIN_LENGTH), Toast.LENGTH_SHORT);
             }
         } else {
             if (Arrays.equals(password, createdPassword)) {
                 resetPassword();
                 return password;
             } else {
-                showToastMessage(R.string.code_not_match);
+                activityUtils.showToastMessage(activity.getString(R.string.code_not_match),
+                        Toast.LENGTH_SHORT);
             }
         }
 
@@ -196,7 +199,8 @@ public class AuthHandler {
                 throw new RuntimeException(e);
             }
 
-            showToastMessage(R.string.blocked);
+            activityUtils.showToastMessage(activity.getString(R.string.blocked),
+                    Toast.LENGTH_SHORT);
             activity.startActivity(getNewIntent(KeyRecoveryActivity.class));
             activity.finish();
         } else {
@@ -206,9 +210,9 @@ public class AuthHandler {
                 throw new RuntimeException(e);
             }
 
-            showToastMessage(String.format(
+            activityUtils.showToastMessage(String.format(
                     activity.getString(R.string.wrong_code_you_have_n_attempts),
-                    authAttempts));
+                    authAttempts), Toast.LENGTH_SHORT);
         }
 
         resetPassword();
@@ -242,13 +246,5 @@ public class AuthHandler {
 
     protected void sleepBeforeRetry() throws InterruptedException {
         Thread.sleep(DELAY_AFTER_AUTH_FAILED);
-    }
-
-    protected void showToastMessage(int stringResId) {
-        showToastMessage(activity.getString(stringResId));
-    }
-
-    protected void showToastMessage(String text) {
-        activityUtils.showToastMessage(text, Toast.LENGTH_SHORT);
     }
 }
