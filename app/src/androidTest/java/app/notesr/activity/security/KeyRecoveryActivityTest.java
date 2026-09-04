@@ -15,11 +15,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.test.core.app.ActivityScenario;
@@ -40,6 +42,7 @@ import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.KeyUtils;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.util.ActivityUtils;
 import io.bloco.faker.Faker;
 
 @RunWith(AndroidJUnit4.class)
@@ -180,6 +183,9 @@ public class KeyRecoveryActivityTest {
                 doReturn(false).when(spyAppSecurityService)
                         .isKeyMatchingWithStored(any(byte[].class));
 
+                ActivityUtils activityUtils = spy(activity.getActivityUtils());
+                activity.setActivityUtils(activityUtils);
+
                 EditText recoveryKeyField = activity.findViewById(R.id.importRecoveryKeyField);
                 Button applyButton = activity.findViewById(R.id.applyRecoveryKeyButton);
 
@@ -197,6 +203,10 @@ public class KeyRecoveryActivityTest {
                         recoveryKeyField.getText().toString());
                 assertFalse("Wrong recovery keys should not finish the current activity",
                         activity.isFinishing());
+
+                verify(activityUtils).showToastMessage(
+                        "Wrong key!",
+                        Toast.LENGTH_SHORT);
             });
         }
     }
@@ -209,6 +219,9 @@ public class KeyRecoveryActivityTest {
                 AppSecurityService spyAppSecurityService = spy(activity.getAppSecurityService());
                 activity.setAppSecurityService(spyAppSecurityService);
                 spyAppSecurityService.setSecrets(getTestCryptoSecrets());
+
+                ActivityUtils activityUtils = spy(activity.getActivityUtils());
+                activity.setActivityUtils(activityUtils);
 
                 EditText recoveryKeyField = activity.findViewById(R.id.importRecoveryKeyField);
                 Button applyButton = activity.findViewById(R.id.applyRecoveryKeyButton);
@@ -226,6 +239,10 @@ public class KeyRecoveryActivityTest {
                         recoveryKeyField.getText().toString());
                 assertFalse("Invalid recovery key input should not finish the activity",
                         activity.isFinishing());
+
+                verify(activityUtils).showToastMessage(
+                        "Invalid key!",
+                        Toast.LENGTH_SHORT);
             });
         }
     }
