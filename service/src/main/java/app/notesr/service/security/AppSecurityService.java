@@ -44,7 +44,7 @@ import lombok.RequiredArgsConstructor;
  * @see AuthenticationFailedException
  */
 @RequiredArgsConstructor
-public final class AppSecurityService {
+public class AppSecurityService {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
