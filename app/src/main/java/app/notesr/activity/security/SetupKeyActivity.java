@@ -30,6 +30,7 @@ import androidx.appcompat.app.ActionBar;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
+import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
 import lombok.Getter;
 
@@ -43,6 +44,7 @@ public final class SetupKeyActivity extends ActivityBase {
 
     private KeySetupMode mode;
     private ActivityResultLauncher<Intent> importKeyLauncher;
+    private DataVersionManager dataVersionManager;
     private AppSecurityService appSecurityService;
 
     private byte[] newKey;
@@ -61,6 +63,7 @@ public final class SetupKeyActivity extends ActivityBase {
 
         importKeyLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getImportKeyCallback());
+        dataVersionManager = new DataVersionManager(getApplicationContext());
         appSecurityService = getAppSecurityService();
 
         newKey = appSecurityService.generateMasterKey();
@@ -143,7 +146,7 @@ public final class SetupKeyActivity extends ActivityBase {
         return result -> {
             if (result.getResultCode() == RESULT_OK) {
                 newKey = SecretCache.take(ImportKeyActivity.CACHE_KEY_HEX_KEY);
-                getCompletionHandler(newKey).handle();
+                handleKeyCompletion(getCompletionHandler(newKey));
             }
         };
     }
@@ -153,11 +156,19 @@ public final class SetupKeyActivity extends ActivityBase {
     }
 
     private View.OnClickListener nextButtonOnClick() {
-        return view -> getCompletionHandler(newKey).handle();
+        return view -> handleKeyCompletion(getCompletionHandler(newKey));
     }
 
     private KeySetupCompletionHandler getCompletionHandler(byte[] keyBytes) {
-        return new KeySetupCompletionHandler(this, appSecurityService, mode, keyBytes);
+        return new KeySetupCompletionHandler(this, appSecurityService, keyBytes);
+    }
+
+    private void handleKeyCompletion(KeySetupCompletionHandler handler) {
+        if (mode == KeySetupMode.FIRST_RUN) {
+            handler.proceedFirstRun(getDataVersionManager());
+        } else {
+            handler.proceedRegeneration();
+        }
     }
 
     private void clearCache() {
