@@ -30,6 +30,8 @@ public final class SecretsUpdateBroadcastReceiver extends BroadcastReceiver {
                 onSecretsUpdateComplete.run();
             } else if (isFailed) {
                 onSecretsUpdateFailed.run();
+            } else {
+                throw new IllegalStateException("Unexpected intent received: " + intent);
             }
         }
     }
