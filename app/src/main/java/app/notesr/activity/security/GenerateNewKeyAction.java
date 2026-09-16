@@ -19,7 +19,7 @@ public final class GenerateNewKeyAction {
     public void startActivity() {
         Context context = activity.getApplicationContext();
         var intent = new Intent(context, SetupKeyActivity.class)
-                .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.REGENERATION.toString());
+                .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.REGENERATION.getMode());
         activity.startActivity(intent);
     }
 }
