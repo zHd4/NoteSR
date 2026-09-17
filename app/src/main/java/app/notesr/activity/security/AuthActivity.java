@@ -67,7 +67,7 @@ public final class AuthActivity extends ActivityBase {
         authHandler = new AuthHandler(this, appSecurityService, secretsRotationService,
                 passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager);
 
-        currentMode = getModeFromIntent();
+        currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
         keyboardContainer = findViewById(R.id.keyboardContainer);
 
         configure();
@@ -79,22 +79,12 @@ public final class AuthActivity extends ActivityBase {
         return false;
     }
 
-    private Mode getModeFromIntent() {
-        String mode = getIntent().getStringExtra(EXTRA_MODE);
-
-        try {
-            return Mode.fromString(mode);
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid or missing mode: " + mode, e);
-        }
-    }
-
     private void configure() {
         TextView topLabel = findViewById(R.id.authTopLabel);
 
         Button capsButton = findViewById(R.id.capsButton);
         Button backspaceButton = findViewById(R.id.pinBackspaceButton);
-        Button authButton = findViewById(R.id.authButton);
+        Button okButton = findViewById(R.id.okButton);
         Button changeLayoutButton = findViewById(R.id.changeKeyboardLayoutButton);
 
         switch (currentMode) {
@@ -133,7 +123,7 @@ public final class AuthActivity extends ActivityBase {
             }
         });
 
-        authButton.setOnClickListener(view -> {
+        okButton.setOnClickListener(view -> {
             switch (currentMode) {
                 case AUTHENTICATION -> authHandler.authenticate();
                 case CREATE_PASSWORD -> authHandler.createPassword();
@@ -235,6 +225,10 @@ public final class AuthActivity extends ActivityBase {
         private final String modeName;
 
         public static Mode fromString(String mode) {
+            if (mode == null) {
+                throw new IllegalArgumentException("Invalid auth activity mode: null");
+            }
+
             for (Mode m : Mode.values()) {
                 if (m.modeName.equals(mode)) {
                     return m;
