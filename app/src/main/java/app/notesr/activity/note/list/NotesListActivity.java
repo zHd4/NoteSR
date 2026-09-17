@@ -249,7 +249,7 @@ public final class NotesListActivity extends ActivityBase {
 
     private void startChangePasswordActivity() {
         Intent intent = new Intent(getApplicationContext(), AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CHANGE_PASSWORD.toString());
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CHANGE_PASSWORD.getModeName());
         startActivity(intent);
     }
 

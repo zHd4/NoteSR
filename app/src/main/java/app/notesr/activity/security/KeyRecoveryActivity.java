@@ -7,8 +7,8 @@ package app.notesr.activity.security;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
-import static app.notesr.core.util.ActivityUtils.disableBackButton;
-import static app.notesr.core.util.ActivityUtils.showToastMessage;
+import static app.notesr.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 import static app.notesr.core.util.KeyUtils.getKeyBytesFromKeyHex;
 
@@ -117,11 +117,10 @@ public final class KeyRecoveryActivity extends ActivityBase {
                 StandardCharsets.UTF_8);
         SecretCache.put(AuthActivity.CACHE_KEY_HEX_KEY, hexKeyBytes);
 
-        var targetMode = AuthActivity.Mode.KEY_RECOVERY;
-        var authActivityIntent = new Intent(getApplicationContext(), AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, targetMode.toString());
+        var authIntent = new Intent(getApplicationContext(), AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.KEY_RECOVERY.getModeName());
 
-        startActivity(authActivityIntent);
+        startActivity(authIntent);
         finish();
     }
 

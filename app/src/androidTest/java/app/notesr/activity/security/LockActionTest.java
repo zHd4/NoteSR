@@ -71,7 +71,7 @@ public class LockActionTest {
         assertEquals("Intent component should target AuthActivity",
                 AuthActivity.class.getName(), startedIntent.getComponent().getClassName());
         assertEquals("Intent should use authentication mode",
-                AuthActivity.Mode.AUTHENTICATION.toString(),
+                AuthActivity.Mode.AUTHENTICATION.getModeName(),
                 startedIntent.getStringExtra(AuthActivity.EXTRA_MODE));
 
         verify(appSecurityService).logout();

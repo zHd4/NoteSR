@@ -5,7 +5,7 @@
 
 package app.notesr.activity.security;
 
-import static app.notesr.core.util.ActivityUtils.disableBackButton;
+import static app.notesr.util.ActivityUtils.disableBackButton;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -25,6 +25,7 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.security.rotation.SecretsRotationService;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -33,23 +34,16 @@ public final class AuthActivity extends ActivityBase {
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
     public static final String EXTRA_MODE = "mode";
 
-    @AllArgsConstructor
-    @Getter
-    public enum Mode {
-        AUTHENTICATION("authentication"),
-        CREATE_PASSWORD("create_password"),
-        CHANGE_PASSWORD("change_password"),
-        KEY_RECOVERY("key_recovery");
-
-        private final String mode;
-    }
-
     private AuthHandler authHandler;
     private Mode currentMode;
 
+    @Getter(AccessLevel.PROTECTED)
     private final SecureStringBuilder passwordBuilder = new SecureStringBuilder();
 
+    @Getter(AccessLevel.PROTECTED)
     private boolean capsLockEnabled = false;
+
+    @Getter(AccessLevel.PROTECTED)
     private boolean showingSymbols = false;
 
     private LinearLayout keyboardContainer;
@@ -60,7 +54,7 @@ public final class AuthActivity extends ActivityBase {
         setContentView(R.layout.activity_auth);
         applyInsets(findViewById(R.id.main));
 
-        String mode = getIntent().getStringExtra(EXTRA_MODE);
+
         var appSecurityService = new AppSecurityService(getApplicationContext());
         var secretsRotationService = new SecretsRotationService(getApplicationContext(),
                 appSecurityService);
@@ -73,12 +67,7 @@ public final class AuthActivity extends ActivityBase {
         authHandler = new AuthHandler(this, appSecurityService, secretsRotationService,
                 passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager);
 
-        try {
-            currentMode = Mode.valueOf(mode);
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid or missing mode: " + mode, e);
-        }
-
+        currentMode = getModeFromIntent();
         keyboardContainer = findViewById(R.id.keyboardContainer);
 
         configure();
@@ -88,6 +77,16 @@ public final class AuthActivity extends ActivityBase {
     @Override
     protected boolean requiresSession() {
         return false;
+    }
+
+    private Mode getModeFromIntent() {
+        String mode = getIntent().getStringExtra(EXTRA_MODE);
+
+        try {
+            return Mode.fromString(mode);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid or missing mode: " + mode, e);
+        }
     }
 
     private void configure() {
@@ -223,5 +222,26 @@ public final class AuthActivity extends ActivityBase {
         }
 
         keyboardContainer.addView(row);
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public enum Mode {
+        AUTHENTICATION("authentication"),
+        CREATE_PASSWORD("create_password"),
+        CHANGE_PASSWORD("change_password"),
+        KEY_RECOVERY("key_recovery");
+
+        private final String modeName;
+
+        public static Mode fromString(String mode) {
+            for (Mode m : Mode.values()) {
+                if (m.modeName.equals(mode)) {
+                    return m;
+                }
+            }
+
+            throw new IllegalArgumentException("Invalid auth activity mode: " + mode);
+        }
     }
 }

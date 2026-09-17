@@ -28,7 +28,7 @@ import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.migration.DataVersionManager;
-import app.notesr.core.util.ActivityUtils;
+import app.notesr.util.ActivityUtils;
 import app.notesr.core.util.KeyUtils;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
@@ -91,7 +91,7 @@ public class AuthHandler {
             }
 
             var setupKeyActivityIntent = getNewIntent(SetupKeyActivity.class)
-                    .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.FIRST_RUN.getMode());
+                    .putExtra(SetupKeyActivity.EXTRA_MODE, KeySetupMode.FIRST_RUN.getModeName());
 
             activity.startActivity(setupKeyActivityIntent);
             activity.finish();
