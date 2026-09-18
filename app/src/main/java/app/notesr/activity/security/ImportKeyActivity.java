@@ -28,15 +28,21 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.util.CryptoSecretsValidator;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 public final class ImportKeyActivity extends ActivityBase {
 
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
-    private static final String TAG = ImportKeyActivity.class.getCanonicalName();
+    private static final String TAG = ImportKeyActivity.class.getSimpleName();
 
+    @Getter(AccessLevel.PROTECTED)
     private int resultCode = RESULT_CANCELED;
-    private EditText keyField;
+
+    @Getter(AccessLevel.PROTECTED)
     private char[] hexKey;
+
+    private EditText keyField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,27 +82,27 @@ public final class ImportKeyActivity extends ActivityBase {
             hexKey = new char[hexKeyEditable.length()];
             hexKeyEditable.getChars(0, hexKeyEditable.length(), hexKey, 0);
 
-            if (hexKey.length > 0) {
-                byte[] keyBytes;
+            if (hexKey.length == 0) {
+                return;
+            }
 
-                try {
-                    keyBytes = getKeyBytesFromKeyHex(hexKey);
-                    CryptoSecretsValidator.validateKey(keyBytes);
-                } catch (IllegalArgumentException e) {
-                    Log.e(TAG, "Invalid key", e);
-                    showToastMessage(this, getString(R.string.invalid_key),
-                            Toast.LENGTH_SHORT);
-
-                    return;
-                }
-
-                SecretCache.put(CACHE_KEY_HEX_KEY, keyBytes);
+            try {
+                importKey(hexKey);
                 resultCode = RESULT_OK;
                 finish();
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "Invalid key", e);
+                showToastMessage(this, getString(R.string.invalid_key),
+                        Toast.LENGTH_SHORT);
             }
         };
     }
 
+    private void importKey(char[] hexKey) {
+        byte[] keyBytes = getKeyBytesFromKeyHex(hexKey);
+        CryptoSecretsValidator.validateKey(keyBytes);
+        SecretCache.put(CACHE_KEY_HEX_KEY, keyBytes);
+    }
 
     private void wipeSensitiveClassFields() {
         if (hexKey != null) {
