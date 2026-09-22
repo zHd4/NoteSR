@@ -5,8 +5,6 @@
 
 package app.notesr.activity.security;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
-
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -22,6 +20,7 @@ import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
+import app.notesr.util.ActivityUtils;
 
 public final class SecretsUpdateActivity extends ActivityBase {
 
@@ -30,7 +29,8 @@ public final class SecretsUpdateActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_secrets_update);
         applyInsets(findViewById(R.id.main));
-        disableBackButton(this);
+        ActivityUtils activityUtils = new ActivityUtils(this);
+        activityUtils.disableBackButton();
 
         SecretsUpdateBroadcastReceiver broadcastReceiver =
                 new SecretsUpdateBroadcastReceiver(this::onSecretsUpdateComplete,

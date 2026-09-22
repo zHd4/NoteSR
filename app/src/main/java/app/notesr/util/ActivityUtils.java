@@ -12,15 +12,22 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.appcompat.app.AppCompatActivity;
 
-public final class ActivityUtils {
-    public static void showToastMessage(AppCompatActivity activity, String text, int duration) {
+import app.notesr.activity.ActivityBase;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class ActivityUtils {
+    @NonNull
+    private final ActivityBase activity;
+
+    public void showToastMessage(String text, int duration) {
         Toast toast = Toast.makeText(activity, text, duration);
         toast.show();
     }
 
-    public static void copyToClipboard(AppCompatActivity activity, String text) {
+    public void copyToClipboard(String text) {
         ClipboardManager clipboard =
                 (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("", text);
@@ -28,7 +35,7 @@ public final class ActivityUtils {
         clipboard.setPrimaryClip(clip);
     }
 
-    public static void disableBackButton(AppCompatActivity activity) {
+    public void disableBackButton() {
         OnBackPressedDispatcher dispatcher = activity.getOnBackPressedDispatcher();
         dispatcher.addCallback(activity, new OnBackPressedCallback(true) {
             @Override

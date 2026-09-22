@@ -8,8 +8,6 @@ package app.notesr.activity.security;
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 
 import static java.util.Objects.requireNonNull;
-
-import static app.notesr.util.ActivityUtils.showToastMessage;
 import static app.notesr.core.util.KeyUtils.getKeyBytesFromKeyHex;
 
 import android.os.Bundle;
@@ -28,6 +26,7 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.util.CryptoSecretsValidator;
+import app.notesr.util.ActivityUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -43,6 +42,7 @@ public final class ImportKeyActivity extends ActivityBase {
     private char[] hexKey;
 
     private EditText keyField;
+    private ActivityUtils activityUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,8 @@ public final class ImportKeyActivity extends ActivityBase {
 
         keyField = findViewById(R.id.importKeyField);
         keyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
+
+        activityUtils = new ActivityUtils(this);
 
         Button importKeyButton = findViewById(R.id.importKeyButton);
         importKeyButton.setOnClickListener(importKeyButtonOnClick());
@@ -92,7 +94,7 @@ public final class ImportKeyActivity extends ActivityBase {
                 finish();
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, "Invalid key", e);
-                showToastMessage(this, getString(R.string.invalid_key),
+                activityUtils.showToastMessage(getString(R.string.invalid_key),
                         Toast.LENGTH_SHORT);
             }
         };

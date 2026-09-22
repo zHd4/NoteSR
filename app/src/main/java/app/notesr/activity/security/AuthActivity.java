@@ -5,8 +5,6 @@
 
 package app.notesr.activity.security;
 
-import static app.notesr.util.ActivityUtils.disableBackButton;
-
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -25,6 +23,7 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.security.rotation.SecretsRotationService;
+import app.notesr.util.ActivityUtils;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +33,7 @@ public final class AuthActivity extends ActivityBase {
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
     public static final String EXTRA_MODE = "mode";
 
+    private ActivityUtils activityUtils;
     private AuthHandler authHandler;
     private Mode currentMode;
 
@@ -64,8 +64,11 @@ public final class AuthActivity extends ActivityBase {
         var fsaResolver = new FsaResolver(serviceRegistry);
         var dataVersionManager = new DataVersionManager(getApplicationContext());
 
+        activityUtils = new ActivityUtils(this);
+
         authHandler = new AuthHandler(this, appSecurityService, secretsRotationService,
-                passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager);
+                passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager,
+                activityUtils);
 
         currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
         keyboardContainer = findViewById(R.id.keyboardContainer);
@@ -90,7 +93,7 @@ public final class AuthActivity extends ActivityBase {
         switch (currentMode) {
             case AUTHENTICATION -> {
                 topLabel.setText(R.string.enter_access_code);
-                disableBackButton(this);
+                activityUtils.disableBackButton();
             }
             case CHANGE_PASSWORD -> topLabel.setText(R.string.create_new_access_code);
             default -> topLabel.setText(R.string.create_access_code);
