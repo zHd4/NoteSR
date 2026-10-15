@@ -52,6 +52,8 @@ public final class OpenImageActivity extends FileViewerActivityBase {
             return;
         }
 
+        validateSession();
+
         setContentView(R.layout.activity_open_image);
         applyInsets(findViewById(R.id.main));
 

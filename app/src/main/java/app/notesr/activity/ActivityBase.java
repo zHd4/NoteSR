@@ -33,7 +33,6 @@ public class ActivityBase extends AppCompatActivity {
 
         appSecurityService = new AppSecurityService(getApplicationContext());
         enableWindowProtection();
-        validateSession();
     }
 
     @Override

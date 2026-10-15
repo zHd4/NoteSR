@@ -27,8 +27,12 @@ public final class SecretsUpdateActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        validateSession();
+
         setContentView(R.layout.activity_secrets_update);
         applyInsets(findViewById(R.id.main));
+
         ActivityUtils activityUtils = new ActivityUtils(this);
         activityUtils.disableBackButton();
 

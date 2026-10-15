@@ -60,6 +60,8 @@ public final class ImportActivity extends ActivityBase {
             return;
         }
 
+        validateSession();
+
         setContentView(R.layout.activity_import);
         applyInsets(findViewById(R.id.main));
 
