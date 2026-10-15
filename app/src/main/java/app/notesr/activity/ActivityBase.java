@@ -62,18 +62,18 @@ public class ActivityBase extends AppCompatActivity {
         return appSecurityService.isAuthConfigured();
     }
 
+    protected void validateSession() {
+        if (!isSessionActive()) {
+            restartApp();
+        }
+    }
+
     void restartApp() {
         Intent mainActivityIntent = new Intent(this, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         startActivity(mainActivityIntent);
         finish();
-    }
-
-    void validateSession() {
-        if (requiresSession() && !isSessionActive()) {
-            restartApp();
-        }
     }
 
     void enableWindowProtection() {
