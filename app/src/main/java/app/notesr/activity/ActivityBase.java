@@ -53,10 +53,6 @@ public class ActivityBase extends AppCompatActivity {
         });
     }
 
-    protected boolean requiresSession() {
-        return true;
-    }
-
     protected boolean isSessionActive() {
         return appSecurityService.isAuthConfigured();
     }
