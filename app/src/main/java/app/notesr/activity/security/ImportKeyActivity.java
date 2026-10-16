@@ -65,11 +65,6 @@ public final class ImportKeyActivity extends ActivityBase {
     }
 
     @Override
-    protected boolean requiresSession() {
-        return false;
-    }
-
-    @Override
     public void finish() {
         wipeUiFields();
         wipeSensitiveClassFields();

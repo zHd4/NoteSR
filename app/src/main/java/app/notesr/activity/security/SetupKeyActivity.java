@@ -82,11 +82,6 @@ public final class SetupKeyActivity extends ActivityBase {
     }
 
     @Override
-    protected boolean requiresSession() {
-        return false;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();

@@ -38,11 +38,6 @@ public final class MigrationActivity extends ActivityBase {
         startMigrationService();
     }
 
-    @Override
-    protected boolean requiresSession() {
-        return false;
-    }
-
     private void startMigrationService() {
         AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
                 .getInstance(getApplicationContext());

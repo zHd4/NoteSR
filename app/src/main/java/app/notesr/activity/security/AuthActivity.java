@@ -77,11 +77,6 @@ public final class AuthActivity extends ActivityBase {
         buildKeyboard();
     }
 
-    @Override
-    protected boolean requiresSession() {
-        return false;
-    }
-
     private void configure() {
         TextView topLabel = findViewById(R.id.authTopLabel);
 

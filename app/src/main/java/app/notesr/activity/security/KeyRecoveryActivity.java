@@ -71,11 +71,6 @@ public final class KeyRecoveryActivity extends ActivityBase {
     }
 
     @Override
-    protected boolean requiresSession() {
-        return false;
-    }
-
-    @Override
     public void finish() {
         if (hexKeyField != null) {
             hexKeyField.getText().replace(0, hexKeyField.getText().length(), "");
