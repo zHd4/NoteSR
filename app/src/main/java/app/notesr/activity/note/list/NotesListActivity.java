@@ -70,6 +70,8 @@ public final class NotesListActivity extends ActivityBase {
             return;
         }
 
+        validateSession();
+
         setContentView(R.layout.activity_note_list);
         applyInsets(findViewById(R.id.main));
 

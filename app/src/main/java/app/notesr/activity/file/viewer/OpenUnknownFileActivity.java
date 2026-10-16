@@ -18,6 +18,8 @@ public final class OpenUnknownFileActivity extends FileViewerActivityBase {
             return;
         }
 
+        validateSession();
+
         setContentView(R.layout.activity_open_unknown_file);
         applyInsets(findViewById(R.id.main));
     }

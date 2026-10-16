@@ -50,6 +50,8 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
             return;
         }
 
+        validateSession();
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_open_video);
         applyInsets(findViewById(R.id.main));

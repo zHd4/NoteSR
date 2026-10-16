@@ -5,7 +5,6 @@
 
 package app.notesr.activity;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -59,12 +58,8 @@ public class StartActivityTest {
     }
 
     @Test
-    public void testRequiresSessionReturnsFalse() {
-        try (ActivityScenario<StartActivity> scenario = createScenario()) {
-            scenario.onActivity(activity ->
-                    assertFalse("StartActivity should not require session",
-                            activity.requiresSession()));
-        }
+    public void testOnCreateDoesNotCallValidateSession() {
+        // TODO: Check that validateSession is not called on activity creation.
     }
 
     @Test

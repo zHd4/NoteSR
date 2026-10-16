@@ -70,6 +70,8 @@ public final class FilesListActivity extends ActivityBase {
             return;
         }
 
+        validateSession();
+
         setContentView(R.layout.activity_file_list);
         applyInsets(findViewById(R.id.main));
 

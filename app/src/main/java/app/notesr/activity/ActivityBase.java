@@ -33,7 +33,6 @@ public class ActivityBase extends AppCompatActivity {
 
         appSecurityService = new AppSecurityService(getApplicationContext());
         enableWindowProtection();
-        validateSession();
     }
 
     @Override
@@ -54,12 +53,14 @@ public class ActivityBase extends AppCompatActivity {
         });
     }
 
-    protected boolean requiresSession() {
-        return true;
-    }
-
     protected boolean isSessionActive() {
         return appSecurityService.isAuthConfigured();
+    }
+
+    protected void validateSession() {
+        if (!isSessionActive()) {
+            restartApp();
+        }
     }
 
     void restartApp() {
@@ -68,12 +69,6 @@ public class ActivityBase extends AppCompatActivity {
 
         startActivity(mainActivityIntent);
         finish();
-    }
-
-    void validateSession() {
-        if (requiresSession() && !isSessionActive()) {
-            restartApp();
-        }
     }
 
     void enableWindowProtection() {

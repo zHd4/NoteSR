@@ -32,18 +32,14 @@ public class StartActivity extends ActivityBase {
         Intent authActivityIntent = new Intent(getApplicationContext(), AuthActivity.class)
                 .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CREATE_PASSWORD.getModeName());
 
-        View.OnClickListener onGetStartedButtonClick = view -> startActivity(authActivityIntent);
+        View.OnClickListener onGetStartedButtonClick =
+                view -> startActivity(authActivityIntent);
         findViewById(R.id.getStartedButton).setOnClickListener(onGetStartedButtonClick);
 
         ActivityUtils activityUtils = new ActivityUtils(this);
         activityUtils.disableBackButton();
 
         placeBannerFront();
-    }
-
-    @Override
-    protected boolean requiresSession() {
-        return false;
     }
 
     protected void placeBannerFront() {

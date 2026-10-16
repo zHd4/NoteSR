@@ -53,21 +53,6 @@ public class ActivityBaseTest {
     }
 
     @Test
-    public void testRequiresSessionDefaultReturnTrue() {
-        TestActivity activity = createActivity();
-        assertTrue("ActivityBase.requiresSession() should return true by default",
-                activity.requiresSession());
-    }
-
-    @Test
-    public void testRequiresSessionCanBeOverridden() {
-        TestActivity activity = createActivity();
-        activity.setSessionRequired(false);
-        assertFalse("requiresSession() should return false when overridden",
-                activity.requiresSession());
-    }
-
-    @Test
     public void testOptionsItemSelectedHandlesHomeButton() {
         TestActivity activity = createActivity();
         MenuItem mockItem = mock(MenuItem.class);
@@ -110,7 +95,6 @@ public class ActivityBaseTest {
         TestActivity activity = spy(createActivity());
         activity.setAppSecurityService(mockAppSecurityService);
         doNothing().when(activity).restartApp();
-        when(activity.requiresSession()).thenReturn(true);
         when(mockAppSecurityService.isAuthConfigured()).thenReturn(false);
 
         activity.validateSession();
@@ -119,12 +103,11 @@ public class ActivityBaseTest {
     }
 
     @Test
-    public void testOnValidateSessionSkipsRestartWhenNotRequired() {
+    public void testValidateSessionSkipsRestartWhenSessionIsActive() {
         TestActivity activity = spy(createActivity());
         activity.setAppSecurityService(mockAppSecurityService);
 
-        when(activity.requiresSession()).thenReturn(false);
-        when(mockAppSecurityService.isAuthConfigured()).thenReturn(false);
+        when(mockAppSecurityService.isAuthConfigured()).thenReturn(true);
         doNothing().when(activity).restartApp();
 
         activity.validateSession();

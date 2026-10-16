@@ -69,6 +69,8 @@ public final class ExportActivity extends ActivityBase {
             return;
         }
 
+        validateSession();
+
         setContentView(R.layout.activity_export);
         applyInsets(findViewById(R.id.main));
 

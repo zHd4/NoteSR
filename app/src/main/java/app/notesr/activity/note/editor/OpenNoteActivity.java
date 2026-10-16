@@ -90,6 +90,8 @@ public final class OpenNoteActivity extends ActivityBase {
             return;
         }
 
+        validateSession();
+
         setContentView(R.layout.activity_open_note);
         applyInsets(findViewById(R.id.main));
 

@@ -50,11 +50,6 @@ public class MainActivity extends ActivityBase {
         finish();
     }
 
-    @Override
-    protected boolean requiresSession() {
-        return false;
-    }
-
     protected List<Supplier<Intent>> getIntentSuppliers(
             Context context,
             AppSecurityService appSecurityService,
