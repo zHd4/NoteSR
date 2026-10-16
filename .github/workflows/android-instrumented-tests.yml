@@ -29,9 +29,6 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Show disk space
-        run: df -h
-
       - name: Create emulator wait script
         run: |
           cat > wait-for-android.sh <<'EOF'
