@@ -29,6 +29,7 @@ public final class AesGcmCryptor extends AesCryptor {
     private static final int TAG_LENGTH_BIT = 128;
     public static final int TAG_LENGTH = TAG_LENGTH_BIT / 8;
     private static final String CIPHER_ALGORITHM = "AES/GCM/NoPadding";
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final SecretKey key;
 
@@ -40,7 +41,7 @@ public final class AesGcmCryptor extends AesCryptor {
     @Override
     public byte[] encrypt(byte[] plainData) throws GeneralSecurityException {
         byte[] iv = new byte[IV_SIZE];
-        SecureRandom.getInstanceStrong().nextBytes(iv);
+        SECURE_RANDOM.nextBytes(iv);
 
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
@@ -87,7 +88,7 @@ public final class AesGcmCryptor extends AesCryptor {
 
             byte[] iv = new byte[IV_SIZE];
 
-            SecureRandom.getInstanceStrong().nextBytes(iv);
+            SECURE_RANDOM.nextBytes(iv);
             out.write(iv);
 
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);

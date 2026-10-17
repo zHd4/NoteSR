@@ -20,13 +20,14 @@ class AesCbcCryptorTest {
     private static final int IV_SIZE = 16;
     private static final String PASSWORD = "testPassword";
     private static final byte[] DATA = "CBC test data".getBytes();
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private AesCbcCryptor cryptor;
 
     @BeforeEach
     void setUp() throws Exception {
         byte[] iv = new byte[IV_SIZE];
-        SecureRandom.getInstanceStrong().nextBytes(iv);
+        SECURE_RANDOM.nextBytes(iv);
 
         cryptor = new AesCbcCryptor(PASSWORD.toCharArray(), iv);
     }
