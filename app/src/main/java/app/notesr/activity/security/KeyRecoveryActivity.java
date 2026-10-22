@@ -27,6 +27,7 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,12 +37,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+@AndroidEntryPoint
 public final class KeyRecoveryActivity extends ActivityBase {
     private static final String TAG = KeyRecoveryActivity.class.getSimpleName();
 
+    @Inject
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
-    private AppSecurityService appSecurityService;
+    AppSecurityService appSecurityService;
 
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
