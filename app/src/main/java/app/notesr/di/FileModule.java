@@ -10,11 +10,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import app.notesr.core.security.crypto.AesCryptorFactory;
-import app.notesr.core.security.crypto.CryptoManager;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.data.AppDatabase;
 import app.notesr.service.file.FileService;
+import app.notesr.service.security.AppSecurityService;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -36,15 +36,15 @@ public class FileModule {
      *
      * @param context the application context
      * @param appDatabase the application database instance
-     * @param cryptoManager the manager supplying the current encryption secrets
+     * @param appSecurityService the application security service instance
      * @return a {@link FileService} using a cryptor created from the current secrets
      */
     @Provides
     FileService provideFileService(
             @NonNull @ApplicationContext Context context,
             @NonNull AppDatabase appDatabase,
-            @NonNull CryptoManager cryptoManager) {
-        CryptoSecrets cryptoSecrets = cryptoManager.getSecrets();
+            @NonNull AppSecurityService appSecurityService) {
+        CryptoSecrets cryptoSecrets = appSecurityService.getActualSecrets();
 
         return new FileService(
                 context,
