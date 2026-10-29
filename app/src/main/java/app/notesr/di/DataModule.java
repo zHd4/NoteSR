@@ -36,7 +36,6 @@ public class DataModule {
      * @return the singleton AppDatabase instance
      */
     @Provides
-    @Singleton
     AppDatabase provideAppDatabase(
             @NonNull @ApplicationContext Context context) {
         return DatabaseProvider.getInstance(context);
