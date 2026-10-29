@@ -36,7 +36,6 @@ public class ActivityBase extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        appSecurityService = new AppSecurityService(getApplicationContext());
         enableWindowProtection();
     }
 
