@@ -7,8 +7,6 @@ package app.notesr.di;
 
 import androidx.annotation.NonNull;
 
-import javax.inject.Singleton;
-
 import app.notesr.data.AppDatabase;
 import app.notesr.service.note.NoteService;
 import dagger.Module;
@@ -33,7 +31,6 @@ public class NoteModule {
      * @return the singleton NoteService instance
      */
     @Provides
-    @Singleton
     NoteService provideNoteService(@NonNull AppDatabase appDatabase) {
         return new NoteService(appDatabase);
     }
