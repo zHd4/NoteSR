@@ -29,11 +29,8 @@ import java.time.format.DateTimeFormatter;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.util.FileExifDataResolver;
 import app.notesr.core.util.FilesUtils;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.exporter.ExportAndroidService;
 import app.notesr.service.exporter.ExportAndroidServiceStarter;
@@ -41,16 +38,27 @@ import app.notesr.service.exporter.ExportStatus;
 import app.notesr.service.file.FileService;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.note.NoteService;
-import app.notesr.service.security.AppSecurityService;
 import app.notesr.util.ActivityUtils;
-import app.notesr.util.VersionFetcherImpl;
+import app.notesr.core.util.VersionFetcher;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
+@AndroidEntryPoint
 public final class ExportActivity extends ActivityBase {
 
     private static final String TAG = ExportActivity.class.getSimpleName();
 
-    private NoteService noteService;
-    private FileService fileService;
+    @Inject
+    NoteService noteService;
+
+    @Inject
+    FileService fileService;
+
+    @Inject
+    AndroidServiceRegistry serviceRegistry;
+
+    @Inject
+    VersionFetcher versionFetcher;
 
     private ActionBar actionBar;
     private Button startStopButton;
@@ -73,15 +81,6 @@ public final class ExportActivity extends ActivityBase {
 
         setContentView(R.layout.activity_export);
         applyInsets(findViewById(R.id.main));
-
-        var context = getApplicationContext();
-        var db = DatabaseProvider.getInstance(this);
-
-        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
-                new AppSecurityService(context).getActualSecrets());
-
-        noteService = new NoteService(db);
-        fileService = new FileService(context, db, cryptor, new FilesUtils());
 
         actionBar = getSupportActionBar();
 
@@ -179,8 +178,6 @@ public final class ExportActivity extends ActivityBase {
     }
 
     private void startExportService(Uri uri) {
-        var versionFetcher = new VersionFetcherImpl();
-
         try {
             var appVersion = versionFetcher.fetchVersionName(this, false);
 
@@ -241,7 +238,7 @@ public final class ExportActivity extends ActivityBase {
     }
 
     private boolean isExportRunning() {
-        return AndroidServiceRegistry.getInstance(getApplicationContext())
+        return serviceRegistry
                 .isServiceRunning(ExportAndroidService.class);
     }
 
