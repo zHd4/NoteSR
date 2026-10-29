@@ -36,7 +36,10 @@ import app.notesr.service.importer.ImportStatus;
 import app.notesr.core.util.FileExifDataResolver;
 import app.notesr.core.util.FilesUtils;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
+@AndroidEntryPoint
 public final class ImportActivity extends ActivityBase {
 
     private static final String TAG = ImportActivity.class.getCanonicalName();
@@ -50,7 +53,12 @@ public final class ImportActivity extends ActivityBase {
     private TextView statusTextView;
     private TextView infoTextView;
     private TextView cannotBeCanceledLabel;
-    private ActivityUtils activityUtils;
+
+    @Inject
+    ActivityUtils activityUtils;
+
+    @Inject
+    AndroidServiceRegistry serviceRegistry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +74,6 @@ public final class ImportActivity extends ActivityBase {
         applyInsets(findViewById(R.id.main));
 
         actionBar = requireNonNull(getSupportActionBar());
-        activityUtils = new ActivityUtils(this);
 
         ImportBroadcastReceiver broadcastReceiver = new ImportBroadcastReceiver(
                 this::onImportRunning,
@@ -242,7 +249,7 @@ public final class ImportActivity extends ActivityBase {
     }
 
     private boolean isImportRunning() {
-        return AndroidServiceRegistry.getInstance(getApplicationContext())
+        return serviceRegistry
                 .isServiceRunning(ImportAndroidService.class);
     }
 }
