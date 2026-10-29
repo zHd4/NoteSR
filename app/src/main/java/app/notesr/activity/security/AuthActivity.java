@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import java.util.List;
+import javax.inject.Inject;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
@@ -24,10 +25,12 @@ import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.security.rotation.SecretsRotationService;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AndroidEntryPoint
 public final class AuthActivity extends ActivityBase {
 
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
@@ -48,21 +51,28 @@ public final class AuthActivity extends ActivityBase {
 
     private LinearLayout keyboardContainer;
 
+    @Inject
+    AppSecurityService appSecurityService;
+
+    @Inject
+    AndroidServiceRegistry serviceRegistry;
+
+    @Inject
+    AndroidServiceBootstrapper serviceBootstrapper;
+
+    @Inject
+    SecretsRotationService secretsRotationService;
+
+    @Inject
+    DataVersionManager dataVersionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         applyInsets(findViewById(R.id.main));
 
-
-        var appSecurityService = new AppSecurityService(getApplicationContext());
-        var secretsRotationService = new SecretsRotationService(getApplicationContext(),
-                appSecurityService);
-
-        var serviceRegistry = AndroidServiceRegistry.getInstance(getApplicationContext());
-        var serviceBootstrapper = new AndroidServiceBootstrapper(serviceRegistry);
         var fsaResolver = new FsaResolver(serviceRegistry);
-        var dataVersionManager = new DataVersionManager(getApplicationContext());
 
         activityUtils = new ActivityUtils(this);
 
