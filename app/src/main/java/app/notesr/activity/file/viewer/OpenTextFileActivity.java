@@ -16,7 +16,9 @@ import java.io.IOException;
 
 import app.notesr.R;
 import app.notesr.core.security.exception.DecryptionFailedException;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public final class OpenTextFileActivity extends FileViewerActivityBase {
 
     @Override
