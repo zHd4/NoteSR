@@ -24,21 +24,24 @@ import app.notesr.core.security.crypto.AesCryptor;
 import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.crypto.AesGcmCryptor;
 import app.notesr.core.security.crypto.EncryptedMediaDataSourceFactory;
-import app.notesr.core.util.FilesUtils;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
 import app.notesr.service.security.AppSecurityService;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
 import java.io.File;
 import java.util.stream.Collectors;
 
+@AndroidEntryPoint
 public final class OpenVideoActivity extends FileViewerActivityBase {
 
     private static final int CACHE_VIDEO_BLOCKS = 4;
     private static final int BLOCK_METADATA_LENGTH = AesGcmCryptor.IV_SIZE
             + AesGcmCryptor.TAG_LENGTH;
 
-    private FileService fileService;
+    @Inject
+    AppSecurityService appSecurityService;
+
     private PlayerView videoView;
     private ExoPlayer player;
 
@@ -58,13 +61,7 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
 
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 
-        var context = getApplicationContext();
-        var db = DatabaseProvider.getInstance(context);
-
-        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
-                new AppSecurityService(context).getActualSecrets());
-
-        fileService = new FileService(context, db, cryptor, new FilesUtils());
+        var cryptor = AesCryptorFactory.createAesGcmCryptor(appSecurityService.getActualSecrets());
         videoView = findViewById(R.id.video_view);
 
         configurePlayer(cryptor);
