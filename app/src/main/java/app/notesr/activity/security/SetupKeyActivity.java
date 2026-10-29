@@ -25,15 +25,19 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 
+import javax.inject.Inject;
+
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
 import lombok.Getter;
 
 @Getter
+@AndroidEntryPoint
 public final class SetupKeyActivity extends ActivityBase {
 
     public static final String CACHE_KEY_PASSWORD = "password";
@@ -43,9 +47,15 @@ public final class SetupKeyActivity extends ActivityBase {
 
     private KeySetupMode mode;
     private ActivityResultLauncher<Intent> importKeyLauncher;
-    private DataVersionManager dataVersionManager;
-    private AppSecurityService appSecurityService;
-    private ActivityUtils activityUtils;
+
+    @Inject
+    AppSecurityService appSecurityService;
+
+    @Inject
+    DataVersionManager dataVersionManager;
+
+    @Inject
+    ActivityUtils activityUtils;
 
     private byte[] newKey;
 
@@ -63,9 +73,6 @@ public final class SetupKeyActivity extends ActivityBase {
 
         importKeyLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getImportKeyCallback());
-        dataVersionManager = new DataVersionManager(getApplicationContext());
-        appSecurityService = getAppSecurityService();
-        activityUtils = new ActivityUtils(this);
 
         newKey = appSecurityService.generateMasterKey();
         showKeyHex(newKey);
@@ -145,10 +152,6 @@ public final class SetupKeyActivity extends ActivityBase {
                 handleKeyCompletion(getCompletionHandler(newKey));
             }
         };
-    }
-
-    private AppSecurityService getAppSecurityService() {
-        return new AppSecurityService(getApplicationContext());
     }
 
     private View.OnClickListener nextButtonOnClick() {
