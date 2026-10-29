@@ -21,8 +21,14 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
+@AndroidEntryPoint
 public final class SecretsUpdateActivity extends ActivityBase {
+
+    @Inject
+    AndroidServiceRegistry serviceRegistry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +53,6 @@ public final class SecretsUpdateActivity extends ActivityBase {
     }
 
     private void startSecretsUpdateService() {
-        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
-                .getInstance(getApplicationContext());
-
         if (!serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)) {
             try {
                 new SecretsUpdateAndroidServiceStarter().start(getApplicationContext());
