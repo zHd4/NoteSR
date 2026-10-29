@@ -48,9 +48,10 @@ public final class KeyRecoveryActivity extends ActivityBase {
     @Setter(AccessLevel.PROTECTED)
     AppSecurityService appSecurityService;
 
+    @Inject
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
-    private ActivityUtils activityUtils;
+    ActivityUtils activityUtils;
 
     private EditText hexKeyField;
 
@@ -59,9 +60,6 @@ public final class KeyRecoveryActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_key_recovery);
         applyInsets(findViewById(R.id.main));
-
-        appSecurityService = new AppSecurityService(getApplicationContext());
-        activityUtils = new ActivityUtils(this);
 
         ActionBar actionBar = getSupportActionBar();
         Objects.requireNonNull(actionBar).setTitle(getString(R.string.key_recovery));
