@@ -19,8 +19,14 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.migration.AppMigrationAndroidService;
 import app.notesr.service.migration.AppMigrationAndroidServiceStarter;
 import app.notesr.service.migration.DataVersionManager;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
+@AndroidEntryPoint
 public final class MigrationActivity extends ActivityBase {
+
+    @Inject
+    DataVersionManager dataVersionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +56,6 @@ public final class MigrationActivity extends ActivityBase {
     }
 
     private void onMigrationComplete() {
-        DataVersionManager dataVersionManager = new DataVersionManager(getApplicationContext());
         dataVersionManager.setCurrentVersion(BuildConfig.DATA_SCHEMA_VERSION);
 
         startActivity(new Intent(getApplicationContext(), NotesListActivity.class));
