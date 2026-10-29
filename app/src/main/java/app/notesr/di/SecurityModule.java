@@ -38,7 +38,6 @@ public class SecurityModule {
      * @return the singleton CryptoManager instance
      */
     @Provides
-    @Singleton
     CryptoManager provideCryptoManager(
             @NonNull @ApplicationContext Context context) {
         return CryptoManagerProvider.getInstance(context);
@@ -52,7 +51,6 @@ public class SecurityModule {
      * @return the singleton AppSecurityService instance
      */
     @Provides
-    @Singleton
     AppSecurityService provideAppSecurityService(
             @NonNull @ApplicationContext Context context,
             @NonNull CryptoManager cryptoManager) {
@@ -67,7 +65,6 @@ public class SecurityModule {
      * @return the singleton SecretsRotationService instance
      */
     @Provides
-    @Singleton
     SecretsRotationService provideSecretsRotationService(
             @NonNull @ApplicationContext Context context,
             @NonNull AppSecurityService appSecurityService) {
