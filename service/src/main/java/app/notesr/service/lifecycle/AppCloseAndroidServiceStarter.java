@@ -11,7 +11,7 @@ import android.content.Intent;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.service.AndroidServiceStarter;
 
-public final class AppCloseAndroidServiceStarter implements AndroidServiceStarter {
+public class AppCloseAndroidServiceStarter implements AndroidServiceStarter {
 
     @Override
     public void start(Context context) {
