@@ -8,9 +8,6 @@ package app.notesr.activity.file.viewer;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import app.notesr.activity.DialogFactory;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesCryptorFactory;
-import app.notesr.core.util.FilesUtils;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
@@ -30,18 +27,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import app.notesr.R;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.core.security.exception.DecryptionFailedException;
-import app.notesr.service.file.FileService;
-import app.notesr.service.security.AppSecurityService;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public final class OpenImageActivity extends FileViewerActivityBase {
 
     private static final String TAG = OpenImageActivity.class.getCanonicalName();
 
     private ImageView imageView;
     private TextView errorMessageTextView;
-    private FileService fileService;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -60,8 +55,6 @@ public final class OpenImageActivity extends FileViewerActivityBase {
         saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         imageView = findViewById(R.id.image_view);
         errorMessageTextView = findViewById(R.id.error_message_text_view);
-        fileService = getFileService();
-
         imageView.setScaleType(ImageView.ScaleType.MATRIX);
         imageView.setOnTouchListener(new ZoomableImageTouchListener(imageView));
 
@@ -173,15 +166,4 @@ public final class OpenImageActivity extends FileViewerActivityBase {
     }
 
 
-    private FileService getFileService() {
-        var context = getApplicationContext();
-        var db = DatabaseProvider.getInstance(this);
-
-        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
-                new AppSecurityService(context).getActualSecrets());
-
-        var filesUtils = new FilesUtils();
-
-        return new FileService(context, db, cryptor, filesUtils);
-    }
 }
