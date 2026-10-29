@@ -18,17 +18,20 @@ import dagger.hilt.components.SingletonComponent;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
- * Provides Android Service Framework dependencies to the app-wide Hilt component.
+ * Dagger Hilt module for integrating Android Services Framework with the application.
+ * <p>
+ * Bindings in this module make the dependencies needed by Android service
+ * management available from the app-wide component.
  */
 @Module
 @InstallIn(SingletonComponent.class)
 public class AndroidServiceModule {
 
     /**
-     * Provides the {@link AndroidServiceRegistry} instance for tracking running services.
+     * Provides the registry used to track running Android services.
      *
      * @param context the application context
-     * @return the singleton AndroidServiceRegistry instance
+     * @return the shared {@link AndroidServiceRegistry} for the application
      */
     @Provides
     AndroidServiceRegistry provideAndroidServiceRegistry(
@@ -37,10 +40,10 @@ public class AndroidServiceModule {
     }
 
     /**
-     * Provides the {@link AndroidServiceBootstrapper} instance for managing auto-start services.
+     * Creates a bootstrapper for managing Android services that start automatically.
      *
      * @param registry the AndroidServiceRegistry instance
-     * @return an AndroidServiceBootstrapper backed by the supplied registry
+     * @return an {@link AndroidServiceBootstrapper} backed by the supplied registry
      */
     @Provides
     AndroidServiceBootstrapper provideAndroidServiceBootstrapper(
