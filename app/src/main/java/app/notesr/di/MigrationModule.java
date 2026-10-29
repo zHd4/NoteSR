@@ -34,7 +34,6 @@ public class MigrationModule {
      * @return the singleton DataVersionManager instance
      */
     @Provides
-    @Singleton
     DataVersionManager provideDataVersionManager(
             @NonNull @ApplicationContext Context context) {
         return new DataVersionManager(context);
