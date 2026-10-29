@@ -31,14 +31,9 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.file.FilesListActivity;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesCryptorFactory;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
-import app.notesr.core.util.FilesUtils;
-import app.notesr.service.security.AppSecurityService;
 import io.noties.markwon.Markwon;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -47,14 +42,20 @@ import java.util.Objects;
 
 import static androidx.core.view.inputmethod.EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
+@AndroidEntryPoint
 public final class OpenNoteActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
     private static final String STATE_OPEN_MODE = "openMode";
     private static final long MAX_COUNT_IN_BADGE = 9;
 
-    private NoteService noteService;
-    private FileService fileService;
+    @Inject
+    NoteService noteService;
+
+    @Inject
+    FileService fileService;
     private Note note;
 
     private ActionBar actionBar;
@@ -95,14 +96,6 @@ public final class OpenNoteActivity extends ActivityBase {
         setContentView(R.layout.activity_open_note);
         applyInsets(findViewById(R.id.main));
 
-        var context = getApplicationContext();
-        var db = DatabaseProvider.getInstance(context);
-
-        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
-                new AppSecurityService(context).getActualSecrets());
-
-        noteService = new NoteService(db);
-        fileService = new FileService(context, db, cryptor, new FilesUtils());
         dialogFactory = new DialogFactory(this);
         markwon = Markwon.create(this);
         openFilesListLauncher = registerForActivityResult(
