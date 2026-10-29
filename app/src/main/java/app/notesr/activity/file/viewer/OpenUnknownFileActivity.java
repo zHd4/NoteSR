@@ -7,7 +7,9 @@ package app.notesr.activity.file.viewer;
 
 import android.os.Bundle;
 import app.notesr.R;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public final class OpenUnknownFileActivity extends FileViewerActivityBase {
 
     @Override
