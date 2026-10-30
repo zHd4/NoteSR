@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.DialogFactory;
 import app.notesr.core.security.SecretCache;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
@@ -56,6 +57,9 @@ public final class SetupKeyActivity extends ActivityBase {
 
     @Inject
     ActivityUtils activityUtils;
+
+    @Inject
+    DialogFactory dialogFactory;
 
     private byte[] newKey;
 
@@ -159,7 +163,8 @@ public final class SetupKeyActivity extends ActivityBase {
     }
 
     private KeySetupCompletionHandler getCompletionHandler(byte[] keyBytes) {
-        return new KeySetupCompletionHandler(this, appSecurityService, keyBytes);
+        return new KeySetupCompletionHandler(
+                this, appSecurityService, dialogFactory, keyBytes);
     }
 
     private void handleKeyCompletion(KeySetupCompletionHandler handler) {
