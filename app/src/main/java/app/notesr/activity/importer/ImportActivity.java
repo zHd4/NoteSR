@@ -60,6 +60,9 @@ public final class ImportActivity extends ActivityBase {
     @Inject
     AndroidServiceRegistry serviceRegistry;
 
+    @Inject
+    FilesUtils fileUtils;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,7 +162,7 @@ public final class ImportActivity extends ActivityBase {
                     selectedFileUri = data.getData();
 
                     FileExifDataResolver resolver = new FileExifDataResolver(
-                            getApplicationContext(), new FilesUtils(), selectedFileUri);
+                            getApplicationContext(), fileUtils, selectedFileUri);
                     String filename = resolver.getFileName();
 
                     selectedFileTextView.setVisibility(View.VISIBLE);
