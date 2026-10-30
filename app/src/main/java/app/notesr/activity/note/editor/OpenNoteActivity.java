@@ -56,11 +56,14 @@ public final class OpenNoteActivity extends ActivityBase {
 
     @Inject
     FileService fileService;
+
+    @Inject
+    DialogFactory dialogFactory;
+
     private Note note;
 
     private ActionBar actionBar;
     private Menu menu;
-    private DialogFactory dialogFactory;
     private EditText nameField;
     private EditText textField;
     private TextView markdownViewer;
@@ -96,7 +99,6 @@ public final class OpenNoteActivity extends ActivityBase {
         setContentView(R.layout.activity_open_note);
         applyInsets(findViewById(R.id.main));
 
-        dialogFactory = new DialogFactory(this);
         markwon = Markwon.create(this);
         openFilesListLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
