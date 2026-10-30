@@ -60,12 +60,17 @@ public final class ExportActivity extends ActivityBase {
     @Inject
     VersionFetcher versionFetcher;
 
+    @Inject
+    ActivityUtils activityUtils;
+
+    @Inject
+    FilesUtils fileUtils;
+
     private ActionBar actionBar;
     private Button startStopButton;
     private TextView outputFileNameView;
 
     private ActivityResultLauncher<String> exportDestinationPicker;
-    private ActivityUtils activityUtils;
 
     private boolean isExportCompleted = false;
 
@@ -96,8 +101,6 @@ public final class ExportActivity extends ActivityBase {
         startStopButton.setOnClickListener(startStopButtonOnClick());
 
         outputFileNameView = findViewById(R.id.output_file_name_view);
-
-        activityUtils = new ActivityUtils(this);
 
         if (isExportRunning()) {
             actionBar.setTitle(getString(R.string.exporting));
@@ -168,7 +171,7 @@ public final class ExportActivity extends ActivityBase {
             activityUtils.disableBackButton();
             setCancelButton();
 
-            String outputFileName = new FileExifDataResolver(this, new FilesUtils(), uri)
+            String outputFileName = new FileExifDataResolver(this, fileUtils, uri)
                     .getFileName();
 
             outputFileNameView.setVisibility(View.VISIBLE);
