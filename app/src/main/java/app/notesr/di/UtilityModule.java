@@ -31,7 +31,7 @@ import dagger.hilt.components.SingletonComponent;
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public class UtilityModule {
+public final class UtilityModule {
 
     /**
      * Provides the application-scoped implementation for retrieving app version information.

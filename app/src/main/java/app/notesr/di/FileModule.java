@@ -29,7 +29,7 @@ import dagger.hilt.components.SingletonComponent;
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public class FileModule {
+public final class FileModule {
 
     /**
      * Creates a file service configured with the application's database and encryption.

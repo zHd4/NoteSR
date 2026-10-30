@@ -27,7 +27,7 @@ import dagger.hilt.components.SingletonComponent;
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public class DataModule {
+public final class DataModule {
 
     /**
      * Provides the {@link AppDatabase} instance for database operations.

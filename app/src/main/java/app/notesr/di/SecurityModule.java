@@ -29,7 +29,7 @@ import javax.inject.Singleton;
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public class SecurityModule {
+public final class SecurityModule {
 
     /**
      * Provides the {@link CryptoManager} instance for cryptographic operations.

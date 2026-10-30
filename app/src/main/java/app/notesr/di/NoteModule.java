@@ -22,7 +22,7 @@ import dagger.hilt.components.SingletonComponent;
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public class NoteModule {
+public final class NoteModule {
 
     /**
      * Provides the {@link NoteService} instance for note management operations.

@@ -26,7 +26,7 @@ import dagger.hilt.components.SingletonComponent;
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public class MigrationModule {
+public final class MigrationModule {
     /**
      * Provides the {@link DataVersionManager} instance for tracking data schema version.
      *

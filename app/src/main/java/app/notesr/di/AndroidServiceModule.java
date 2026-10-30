@@ -26,7 +26,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public class AndroidServiceModule {
+public final class AndroidServiceModule {
 
     /**
      * Provides the registry used to track running Android services.
