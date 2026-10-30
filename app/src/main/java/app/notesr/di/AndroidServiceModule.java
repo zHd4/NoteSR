@@ -9,6 +9,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import app.notesr.activity.FsaResolver;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.AndroidServiceRegistry;
 import dagger.Module;
@@ -49,5 +50,17 @@ public class AndroidServiceModule {
     AndroidServiceBootstrapper provideAndroidServiceBootstrapper(
             @NonNull AndroidServiceRegistry registry) {
         return new AndroidServiceBootstrapper(registry);
+    }
+
+    /**
+     * Provides Foreground Service Association resolver for determining the activities
+     * of running services.
+     *
+     * @param registry the registry used to locate Android services
+     * @return an {@link FsaResolver} backed by the supplied registry
+     */
+    @Provides
+    FsaResolver provideFsaResolver(@NonNull AndroidServiceRegistry registry) {
+        return new FsaResolver(registry);
     }
 }
