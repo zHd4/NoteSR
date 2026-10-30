@@ -26,6 +26,8 @@ import android.widget.TextView;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import app.notesr.R;
 import app.notesr.core.security.exception.DecryptionFailedException;
 import dagger.hilt.android.AndroidEntryPoint;
@@ -34,6 +36,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 public final class OpenImageActivity extends FileViewerActivityBase {
 
     private static final String TAG = OpenImageActivity.class.getCanonicalName();
+
+    @Inject
+    DialogFactory dialogFactory;
 
     private ImageView imageView;
     private TextView errorMessageTextView;
@@ -62,7 +67,7 @@ public final class OpenImageActivity extends FileViewerActivityBase {
     }
 
     private void loadImage() {
-        var progressDialog = new DialogFactory(this)
+        var progressDialog = dialogFactory
                 .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
         newSingleThreadExecutor().execute(() -> {
