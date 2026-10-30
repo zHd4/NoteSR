@@ -57,6 +57,10 @@ public final class FilesListActivity extends ActivityBase {
 
     @Inject
     FileService fileService;
+
+    @Inject
+    DialogFactory dialogFactory;
+
     private ActivityResultLauncher<Intent> viewerLauncher;
     private ActivityResultLauncher<Intent> filePickerLauncher;
     private Note note;
@@ -114,9 +118,8 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     private void loadFiles(String noteId) {
-        var progressDialog = new DialogFactory(this)
-                .getThemedProgressDialog(R.layout.progress_dialog_loading);
-
+        var progressDialog =
+                dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_loading);
         var handler = new Handler(Looper.getMainLooper());
 
         newSingleThreadExecutor().execute(() -> {
@@ -222,8 +225,7 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     private void addFiles(Intent data) {
-        var progressDialog = new DialogFactory(this)
-                .getThemedProgressDialog(R.layout.progress_dialog_adding);
+        var progressDialog = dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_adding);
 
         newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);
