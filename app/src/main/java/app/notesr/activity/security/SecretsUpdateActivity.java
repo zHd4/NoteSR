@@ -30,6 +30,12 @@ public final class SecretsUpdateActivity extends ActivityBase {
     @Inject
     AndroidServiceRegistry serviceRegistry;
 
+    @Inject
+    DialogFactory dialogFactory;
+
+    @Inject
+    ActivityUtils activityUtils;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +45,6 @@ public final class SecretsUpdateActivity extends ActivityBase {
         setContentView(R.layout.activity_secrets_update);
         applyInsets(findViewById(R.id.main));
 
-        ActivityUtils activityUtils = new ActivityUtils(this);
         activityUtils.disableBackButton();
 
         SecretsUpdateBroadcastReceiver broadcastReceiver =
@@ -74,7 +79,6 @@ public final class SecretsUpdateActivity extends ActivityBase {
             return;
         }
 
-        DialogFactory dialogFactory = new DialogFactory(this);
         dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_secrets_update_failed)
                 .setTitle(R.string.error)
                 .setCancelable(false)
