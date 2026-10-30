@@ -66,6 +66,9 @@ public final class NotesListActivity extends ActivityBase {
     @Inject
     NoteService noteService;
 
+    @Inject
+    DialogFactory dialogFactory;
+
     private ActivityResultLauncher<Intent> noteEditorLauncher;
     private LockAction lockAction;
     private GenerateNewKeyAction generateNewKeyAction;
@@ -187,7 +190,7 @@ public final class NotesListActivity extends ActivityBase {
     }
 
     private void loadNotes(String searchQuery) {
-        Dialog progressDialog = new DialogFactory(this)
+        Dialog progressDialog = dialogFactory
                 .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
         Handler handler = new Handler(Looper.getMainLooper());
