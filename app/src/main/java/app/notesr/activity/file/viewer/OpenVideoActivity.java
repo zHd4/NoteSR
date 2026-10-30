@@ -27,6 +27,7 @@ import app.notesr.core.security.crypto.EncryptedMediaDataSourceFactory;
 import app.notesr.service.file.FileService;
 import app.notesr.service.security.AppSecurityService;
 import dagger.hilt.android.AndroidEntryPoint;
+
 import javax.inject.Inject;
 
 import java.io.File;
@@ -42,8 +43,10 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
     @Inject
     AppSecurityService appSecurityService;
 
+    @Inject
+    ExoPlayer player;
+
     private PlayerView videoView;
-    private ExoPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,6 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
 
     @OptIn(markerClass = UnstableApi.class)
     private void configurePlayer(AesCryptor cryptor) {
-        player = new ExoPlayer.Builder(getApplicationContext()).build();
         videoView.setPlayer(player);
 
         var mediaItem = new MediaItem.Builder()
@@ -89,7 +91,7 @@ public final class OpenVideoActivity extends FileViewerActivityBase {
                     blockFiles, BLOCK_METADATA_LENGTH, CACHE_VIDEO_BLOCKS);
 
             var mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
-                            .createMediaSource(mediaItem);
+                    .createMediaSource(mediaItem);
 
             runOnUiThread(() -> {
                 player.setMediaSource(mediaSource);
