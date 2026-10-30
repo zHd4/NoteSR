@@ -36,7 +36,6 @@ public final class AuthActivity extends ActivityBase {
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
     public static final String EXTRA_MODE = "mode";
 
-    private ActivityUtils activityUtils;
     private AuthHandler authHandler;
     private Mode currentMode;
 
@@ -52,6 +51,9 @@ public final class AuthActivity extends ActivityBase {
     private LinearLayout keyboardContainer;
 
     @Inject
+    ActivityUtils activityUtils;
+
+    @Inject
     AppSecurityService appSecurityService;
 
     @Inject
@@ -59,6 +61,9 @@ public final class AuthActivity extends ActivityBase {
 
     @Inject
     AndroidServiceBootstrapper serviceBootstrapper;
+
+    @Inject
+    FsaResolver fsaResolver;
 
     @Inject
     SecretsRotationService secretsRotationService;
@@ -71,10 +76,6 @@ public final class AuthActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         applyInsets(findViewById(R.id.main));
-
-        var fsaResolver = new FsaResolver(serviceRegistry);
-
-        activityUtils = new ActivityUtils(this);
 
         authHandler = new AuthHandler(this, appSecurityService, secretsRotationService,
                 passwordBuilder, fsaResolver, serviceBootstrapper, dataVersionManager,
