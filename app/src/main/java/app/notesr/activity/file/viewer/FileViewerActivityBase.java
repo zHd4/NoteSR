@@ -43,11 +43,18 @@ public class FileViewerActivityBase extends ActivityBase {
     public static final String EXTRA_FILE_MODIFIED = "fileModified";
 
     protected FileInfo fileInfo;
+
     @Inject
     protected FileService fileService;
-    protected FileIOHelper fileIOHelper;
-    protected DialogFactory dialogFactory;
+
+    @Inject
     protected ActivityUtils activityUtils;
+
+    @Inject
+    protected FileIOHelper fileIOHelper;
+
+    @Inject
+    protected DialogFactory dialogFactory;
 
     protected File saveDir = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS);
@@ -59,10 +66,6 @@ public class FileViewerActivityBase extends ActivityBase {
         if (isFinishing()) {
             return;
         }
-
-        fileIOHelper = new FileIOHelper(new FilesUtils(), fileService);
-        dialogFactory = new DialogFactory(this);
-        activityUtils = new ActivityUtils(this);
 
         fileInfo = (FileInfo) getIntent().getSerializableExtra(EXTRA_FILE_INFO);
 
