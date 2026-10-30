@@ -35,6 +35,9 @@ public class MainActivity extends ActivityBase {
     AndroidServiceBootstrapper serviceBootstrapper;
 
     @Inject
+    FsaResolver fsaResolver;
+
+    @Inject
     AppCloseAndroidServiceStarter appCloseServiceStarter;
 
     @Override
@@ -42,8 +45,6 @@ public class MainActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         applyInsets(findViewById(R.id.main));
-
-        var fsaResolver = new FsaResolver(serviceRegistry);
 
         serviceBootstrapper
                 .startServicesPreAuth(getApplicationContext());
