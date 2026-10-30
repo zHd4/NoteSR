@@ -32,16 +32,13 @@ import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.file.viewer.FileViewerActivityBase;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.security.exception.DecryptionFailedException;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
-import app.notesr.core.util.FilesUtils;
-import app.notesr.service.security.AppSecurityService;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,13 +46,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@AndroidEntryPoint
 public final class FilesListActivity extends ActivityBase {
 
     public static final String EXTRA_NOTE_ID = "noteId";
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
-    private NoteService noteService;
-    private FileService fileService;
+    @Inject
+    NoteService noteService;
+
+    @Inject
+    FileService fileService;
+
+    @Inject
+    DialogFactory dialogFactory;
+
     private ActivityResultLauncher<Intent> viewerLauncher;
     private ActivityResultLauncher<Intent> filePickerLauncher;
     private Note note;
@@ -81,14 +86,6 @@ public final class FilesListActivity extends ActivityBase {
             throw new RuntimeException("Note id didn't provided");
         }
 
-        var context = getApplicationContext();
-        var db = DatabaseProvider.getInstance(context);
-
-        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
-                new AppSecurityService(context).getActualSecrets());
-
-        fileService = new FileService(context, db, cryptor, new FilesUtils());
-        noteService = new NoteService(db);
         viewerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getViewerResultCallback());
         filePickerLauncher = registerForActivityResult(
@@ -121,9 +118,8 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     private void loadFiles(String noteId) {
-        var progressDialog = new DialogFactory(this)
-                .getThemedProgressDialog(R.layout.progress_dialog_loading);
-
+        var progressDialog =
+                dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_loading);
         var handler = new Handler(Looper.getMainLooper());
 
         newSingleThreadExecutor().execute(() -> {
@@ -229,8 +225,7 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     private void addFiles(Intent data) {
-        var progressDialog = new DialogFactory(this)
-                .getThemedProgressDialog(R.layout.progress_dialog_adding);
+        var progressDialog = dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_adding);
 
         newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);

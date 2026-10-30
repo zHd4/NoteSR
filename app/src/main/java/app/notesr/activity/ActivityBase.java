@@ -17,21 +17,25 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import javax.inject.Inject;
+
 import app.notesr.service.security.AppSecurityService;
+import dagger.hilt.android.AndroidEntryPoint;
 import lombok.AccessLevel;
 import lombok.Setter;
 
+@AndroidEntryPoint
 public class ActivityBase extends AppCompatActivity {
 
+    @Inject
     @Setter(AccessLevel.MODULE) // For testing purposes only
-    private AppSecurityService appSecurityService;
+    AppSecurityService appSecurityService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        appSecurityService = new AppSecurityService(getApplicationContext());
         enableWindowProtection();
     }
 

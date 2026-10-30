@@ -22,14 +22,18 @@ import androidx.appcompat.app.ActionBar;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.util.CryptoSecretsValidator;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
 import lombok.AccessLevel;
 import lombok.Getter;
 
+@AndroidEntryPoint
 public final class ImportKeyActivity extends ActivityBase {
 
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
@@ -42,7 +46,9 @@ public final class ImportKeyActivity extends ActivityBase {
     private char[] hexKey;
 
     private EditText keyField;
-    private ActivityUtils activityUtils;
+
+    @Inject
+    ActivityUtils activityUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +63,6 @@ public final class ImportKeyActivity extends ActivityBase {
 
         keyField = findViewById(R.id.importKeyField);
         keyField.setImeOptions(IME_FLAG_NO_PERSONALIZED_LEARNING);
-
-        activityUtils = new ActivityUtils(this);
 
         Button importKeyButton = findViewById(R.id.importKeyButton);
         importKeyButton.setOnClickListener(importKeyButtonOnClick());

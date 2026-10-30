@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class KeySetupCompletionHandler {
     private final ActivityBase activity;
     private final AppSecurityService appSecurityService;
+    private final DialogFactory dialogFactory;
     private final byte[] keyBytes;
 
     public void proceedFirstRun(DataVersionManager dataVersionManager) {
@@ -67,7 +68,7 @@ public class KeySetupCompletionHandler {
     }
 
     public void proceedRegeneration() {
-        new DialogFactory(activity)
+        dialogFactory
                 .getThemedAlertDialogBuilder(R.layout.dialog_secrets_rotation_warning)
                 .setTitle(R.string.warning)
                 .setPositiveButton(R.string.yes,

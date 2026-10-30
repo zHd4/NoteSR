@@ -12,17 +12,33 @@ import android.os.Bundle;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.inject.Inject;
+
 import app.notesr.R;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.AndroidServiceRegistry;
-import app.notesr.service.lifecycle.AppCloseAndroidService;
 import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;
 import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.service.lifecycle.AppCloseAndroidService;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class MainActivity extends ActivityBase {
+
+    @Inject
+    AndroidServiceRegistry serviceRegistry;
+
+    @Inject
+    AndroidServiceBootstrapper serviceBootstrapper;
+
+    @Inject
+    FsaResolver fsaResolver;
+
+    @Inject
+    AppCloseAndroidServiceStarter appCloseServiceStarter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,13 +46,9 @@ public class MainActivity extends ActivityBase {
         setContentView(R.layout.activity_main);
         applyInsets(findViewById(R.id.main));
 
-        var serviceRegistry = AndroidServiceRegistry.getInstance(getApplicationContext());
-        var fsaResolver = new FsaResolver(serviceRegistry);
-
-        new AndroidServiceBootstrapper(serviceRegistry)
+        serviceBootstrapper
                 .startServicesPreAuth(getApplicationContext());
 
-        var appSecurityService = new AppSecurityService(getApplicationContext());
         var intentSuppliers = getIntentSuppliers(
                 getApplicationContext(),
                 appSecurityService,
@@ -85,7 +97,7 @@ public class MainActivity extends ActivityBase {
 
     protected void startAppCloseService(Context context, AndroidServiceRegistry serviceRegistry) {
         if (!serviceRegistry.isServiceRunning(AppCloseAndroidService.class)) {
-            new AppCloseAndroidServiceStarter().start(context);
+            appCloseServiceStarter.start(context);
         }
     }
 }

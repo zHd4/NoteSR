@@ -40,16 +40,18 @@ import app.notesr.activity.note.editor.OpenNoteActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.GenerateNewKeyAction;
 import app.notesr.activity.security.LockAction;
-import app.notesr.data.AppDatabase;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.Note;
 import app.notesr.service.note.NoteService;
 import app.notesr.service.security.AppSecurityService;
+import dagger.hilt.android.AndroidEntryPoint;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+@AndroidEntryPoint
 public final class NotesListActivity extends ActivityBase {
 
     private static final int SEARCH_DELAY = 300;
@@ -57,6 +59,15 @@ public final class NotesListActivity extends ActivityBase {
     private final SparseArray<Runnable> menuActions = new SparseArray<>();
     private final Map<Long, String> notesIdsMap = new HashMap<>();
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
+
+    @Inject
+    AppSecurityService appSecurityService;
+
+    @Inject
+    NoteService noteService;
+
+    @Inject
+    DialogFactory dialogFactory;
 
     private ActivityResultLauncher<Intent> noteEditorLauncher;
     private LockAction lockAction;
@@ -74,8 +85,6 @@ public final class NotesListActivity extends ActivityBase {
 
         setContentView(R.layout.activity_note_list);
         applyInsets(findViewById(R.id.main));
-
-        var appSecurityService = new AppSecurityService(getApplicationContext());
 
         lockAction = new LockAction(this, appSecurityService);
         generateNewKeyAction = new GenerateNewKeyAction(this);
@@ -181,11 +190,9 @@ public final class NotesListActivity extends ActivityBase {
     }
 
     private void loadNotes(String searchQuery) {
-        Dialog progressDialog = new DialogFactory(this)
+        Dialog progressDialog = dialogFactory
                 .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
-        AppDatabase db = DatabaseProvider.getInstance(getApplicationContext());
-        NoteService noteService = new NoteService(db);
         Handler handler = new Handler(Looper.getMainLooper());
 
         newSingleThreadExecutor().execute(() -> {

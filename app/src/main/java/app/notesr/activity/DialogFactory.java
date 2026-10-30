@@ -14,7 +14,7 @@ import app.notesr.R;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class DialogFactory {
+public class DialogFactory {
     private final Activity activity;
 
     public AlertDialog.Builder getThemedAlertDialogBuilder(@LayoutRes int layoutRes) {

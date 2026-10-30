@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +31,7 @@ import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.service.AndroidServiceRegistry;
+import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;
 import app.notesr.service.lifecycle.AppCloseAndroidService;
 import app.notesr.service.security.AppSecurityService;
 
@@ -195,9 +197,13 @@ public class MainActivityTest {
                 .thenReturn(false);
 
         MainActivity activity = createActivity();
+        AppCloseAndroidServiceStarter mockStarter = mock(AppCloseAndroidServiceStarter.class);
+        activity.appCloseServiceStarter = mockStarter;
+
         activity.startAppCloseService(context, mockServiceRegistry);
 
         verify(mockServiceRegistry).isServiceRunning(AppCloseAndroidService.class);
+        verify(mockStarter).start(context);
     }
 
     @Test
@@ -206,9 +212,13 @@ public class MainActivityTest {
                 .thenReturn(true);
 
         MainActivity activity = createActivity();
+        AppCloseAndroidServiceStarter mockStarter = mock(AppCloseAndroidServiceStarter.class);
+        activity.appCloseServiceStarter = mockStarter;
+
         activity.startAppCloseService(context, mockServiceRegistry);
 
         verify(mockServiceRegistry).isServiceRunning(AppCloseAndroidService.class);
+        verify(mockStarter, never()).start(context);
     }
 
     @Test

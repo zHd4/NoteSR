@@ -25,18 +25,17 @@ import app.notesr.activity.DialogFactory;
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.file.helper.FileIOHelper;
-import app.notesr.core.security.crypto.AesCryptor;
-import app.notesr.core.security.crypto.AesCryptorFactory;
 import app.notesr.core.util.FilesUtils;
-import app.notesr.data.DatabaseProvider;
 import app.notesr.data.model.FileInfo;
 import app.notesr.service.file.FileService;
-import app.notesr.service.security.AppSecurityService;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
 import java.io.File;
 import java.io.IOException;
 
+@AndroidEntryPoint
 public class FileViewerActivityBase extends ActivityBase {
 
     private static final String TAG = FileViewerActivityBase.class.getCanonicalName();
@@ -44,10 +43,18 @@ public class FileViewerActivityBase extends ActivityBase {
     public static final String EXTRA_FILE_MODIFIED = "fileModified";
 
     protected FileInfo fileInfo;
+
+    @Inject
     protected FileService fileService;
-    protected FileIOHelper fileIOHelper;
-    protected DialogFactory dialogFactory;
+
+    @Inject
     protected ActivityUtils activityUtils;
+
+    @Inject
+    protected FileIOHelper fileIOHelper;
+
+    @Inject
+    protected DialogFactory dialogFactory;
 
     protected File saveDir = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS);
@@ -59,22 +66,6 @@ public class FileViewerActivityBase extends ActivityBase {
         if (isFinishing()) {
             return;
         }
-
-        var context = getApplicationContext();
-
-        AesCryptor cryptor = AesCryptorFactory.createAesGcmCryptor(
-                new AppSecurityService(context).getActualSecrets());
-
-        fileService = new FileService(
-                context,
-                DatabaseProvider.getInstance(context),
-                cryptor,
-                new FilesUtils()
-        );
-
-        fileIOHelper = new FileIOHelper(new FilesUtils(), fileService);
-        dialogFactory = new DialogFactory(this);
-        activityUtils = new ActivityUtils(this);
 
         fileInfo = (FileInfo) getIntent().getSerializableExtra(EXTRA_FILE_INFO);
 

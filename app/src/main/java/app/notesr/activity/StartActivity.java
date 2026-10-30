@@ -13,15 +13,22 @@ import android.view.View;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import javax.inject.Inject;
+
 import app.notesr.R;
 import app.notesr.activity.security.AuthActivity;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class StartActivity extends ActivityBase {
 
     private static final double BANNER_MARGIN_FOR_LOW_HEIGHT = 0.1;
     private static final double BANNER_MARGIN_FOR_LARGE_HEIGHT = 0.2;
     private static final int LOW_SCREEN_HEIGHT = 800;
+
+    @Inject
+    ActivityUtils activityUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +43,7 @@ public class StartActivity extends ActivityBase {
                 view -> startActivity(authActivityIntent);
         findViewById(R.id.getStartedButton).setOnClickListener(onGetStartedButtonClick);
 
-        ActivityUtils activityUtils = new ActivityUtils(this);
         activityUtils.disableBackButton();
-
         placeBannerFront();
     }
 

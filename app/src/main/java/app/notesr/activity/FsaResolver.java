@@ -27,6 +27,7 @@ public class FsaResolver {
      * Internal registry of associations between services and activities.
      */
     private static final Set<FsaEntry> fsaRegistry = Set.of(
+// TODO: Add FsaEntry for:
 //            new FsaEntry(AppMigrationAndroidService.class, MigrationActivity.class),
 //            new FsaEntry(ExportAndroidService.class, ExportActivity.class),
 //            new FsaEntry(ImportAndroidService.class, ImportActivity.class),

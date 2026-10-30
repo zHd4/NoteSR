@@ -21,8 +21,20 @@ import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidService;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
+@AndroidEntryPoint
 public final class SecretsUpdateActivity extends ActivityBase {
+
+    @Inject
+    AndroidServiceRegistry serviceRegistry;
+
+    @Inject
+    DialogFactory dialogFactory;
+
+    @Inject
+    ActivityUtils activityUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +45,6 @@ public final class SecretsUpdateActivity extends ActivityBase {
         setContentView(R.layout.activity_secrets_update);
         applyInsets(findViewById(R.id.main));
 
-        ActivityUtils activityUtils = new ActivityUtils(this);
         activityUtils.disableBackButton();
 
         SecretsUpdateBroadcastReceiver broadcastReceiver =
@@ -47,9 +58,6 @@ public final class SecretsUpdateActivity extends ActivityBase {
     }
 
     private void startSecretsUpdateService() {
-        AndroidServiceRegistry serviceRegistry = AndroidServiceRegistry
-                .getInstance(getApplicationContext());
-
         if (!serviceRegistry.isServiceRunning(SecretsUpdateAndroidService.class)) {
             try {
                 new SecretsUpdateAndroidServiceStarter().start(getApplicationContext());
@@ -71,7 +79,6 @@ public final class SecretsUpdateActivity extends ActivityBase {
             return;
         }
 
-        DialogFactory dialogFactory = new DialogFactory(this);
         dialogFactory.getThemedAlertDialogBuilder(R.layout.dialog_secrets_update_failed)
                 .setTitle(R.string.error)
                 .setCancelable(false)
