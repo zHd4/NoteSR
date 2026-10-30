@@ -43,14 +43,15 @@ public class FileModule {
     FileService provideFileService(
             @NonNull @ApplicationContext Context context,
             @NonNull AppDatabase appDatabase,
-            @NonNull AppSecurityService appSecurityService) {
+            @NonNull AppSecurityService appSecurityService,
+            @NonNull FilesUtils fileUtils) {
         CryptoSecrets cryptoSecrets = appSecurityService.getActualSecrets();
 
         return new FileService(
                 context,
                 appDatabase,
                 AesCryptorFactory.createAesGcmCryptor(cryptoSecrets),
-                new FilesUtils()
+                fileUtils
         );
     }
 
