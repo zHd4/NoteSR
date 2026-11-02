@@ -33,6 +33,7 @@ public class StartActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        validateKeyNotExists();
         setContentView(R.layout.activity_start);
         applyInsets(findViewById(R.id.main));
 
@@ -45,6 +46,14 @@ public class StartActivity extends ActivityBase {
 
         activityUtils.disableBackButton();
         placeBannerFront();
+    }
+
+    protected void validateKeyNotExists() {
+        if (appSecurityService.isKeyExists()) {
+            throw new IllegalStateException(
+                    "StartActivity is inaccessible if application is already configured" +
+                            " and key already exists");
+        }
     }
 
     protected void placeBannerFront() {
