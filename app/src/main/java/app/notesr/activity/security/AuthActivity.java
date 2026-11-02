@@ -84,8 +84,17 @@ public final class AuthActivity extends ActivityBase {
         currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
         keyboardContainer = findViewById(R.id.keyboardContainer);
 
+        validateModePermitted();
         configure();
         buildKeyboard();
+    }
+
+    private void validateModePermitted() {
+        if (currentMode == Mode.CREATE_PASSWORD && appSecurityService.isKeyExists()) {
+            throw new IllegalStateException(
+                    "Key already exists, so CREATE_PASSWORD mode is not permitted," +
+                            " use CHANGE_PASSWORD instead");
+        }
     }
 
     private void configure() {
