@@ -3,13 +3,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.di;
+package app.notesr.di.migration;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-
-import javax.inject.Singleton;
 
 import app.notesr.service.migration.DataVersionManager;
 import dagger.Module;

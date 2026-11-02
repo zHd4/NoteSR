@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.di;
+package app.notesr.di.service.lifecycle;
 
 import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;
 import dagger.Module;
@@ -12,10 +12,7 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 
 /**
- * Dagger Hilt module for dependencies that integrate services with application lifecycle events.
- * <p>
- * Bindings in this module are available from the app-wide component and support
- * actions associated with application lifecycle transitions.
+ * Dagger Hilt module for providing the Android service starter used on app close.
  */
 @Module
 @InstallIn(SingletonComponent.class)

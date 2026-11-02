@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.di;
+package app.notesr.di.service.note;
 
 import androidx.annotation.NonNull;
 
@@ -15,14 +15,11 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 
 /**
- * Dagger Hilt module for providing note-related services.
- * <p>
- * This module provides dependencies for note management operations,
- * including CRUD operations and note data handling.
+ * Dagger Hilt module for providing NoteService.
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public final class NoteModule {
+public final class NoteServiceModule {
 
     /**
      * Provides the {@link NoteService} instance for note management operations.
