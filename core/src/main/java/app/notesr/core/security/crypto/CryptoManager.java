@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  * This class handles the encryption and decryption of the master key used within the application.
  */
 @RequiredArgsConstructor
-public final class CryptoManager {
+public class CryptoManager {
 
     private static final String KEY_HASH_PREF = "key_hash";
     private static final String BLOCK_MARKER_PREF = "is_blocked";
