@@ -30,6 +30,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -43,13 +44,19 @@ import app.notesr.core.util.KeyUtils;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.util.ActivityUtils;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 import io.bloco.faker.Faker;
 
+@HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class KeyRecoveryActivityTest {
 
     private static final Faker FAKER = new Faker();
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
+    @Rule
+    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     private Instrumentation instrumentation;
 

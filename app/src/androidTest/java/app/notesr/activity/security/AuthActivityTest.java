@@ -10,6 +10,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import static java.util.Objects.requireNonNull;
 
 import android.app.Instrumentation;
 import android.content.Context;
@@ -23,18 +28,33 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Map;
 
 import app.notesr.R;
+import app.notesr.di.service.security.AppSecurityServiceModule;
+import app.notesr.service.security.AppSecurityService;
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 import io.bloco.faker.Faker;
 
 @RunWith(AndroidJUnit4.class)
+@HiltAndroidTest
+@UninstallModules(AppSecurityServiceModule.class)
 public class AuthActivityTest {
 
     private static final Faker FAKER = new Faker();
+
+    @Rule
+    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+    @BindValue
+    AppSecurityService appSecurityService = mock(AppSecurityService.class);
 
     private Context context;
 
@@ -44,6 +64,9 @@ public class AuthActivityTest {
         instrumentation.getUiAutomation().adoptShellPermissionIdentity();
 
         context = instrumentation.getTargetContext();
+
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+        hiltRule.inject();
     }
 
     @Test
@@ -71,7 +94,7 @@ public class AuthActivityTest {
 
         assertNotNull("Exception message should not be null", exception.getMessage());
         assertTrue("The exception message should include the invalid value",
-                exception.getMessage().contains("invalid"));
+                requireNonNull(exception.getMessage()).contains("invalid"));
     }
 
     @Test
@@ -82,9 +105,9 @@ public class AuthActivityTest {
                 () -> AuthActivity.Mode.fromString(null));
 
         assertNotNull("Null-mode exception message should not be null",
-                exception.getMessage());
+                requireNonNull(exception.getMessage()));
         assertTrue("The null-mode exception message should mention the null value",
-                exception.getMessage().contains("null"));
+                requireNonNull(exception.getMessage()).contains("null"));
     }
 
     @Test
@@ -393,6 +416,27 @@ public class AuthActivityTest {
     }
 
     @Test
+    public void testCreatePasswordModeValidationDependsOnKeyExistence() {
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+
+        Intent intent = new Intent(context, AuthActivity.class)
+                .putExtra(AuthActivity.EXTRA_MODE,
+                        AuthActivity.Mode.CREATE_PASSWORD.getModeName());
+
+        try (ActivityScenario<AuthActivity> scenario = ActivityScenario.launch(intent)) {
+            verify(appSecurityService).isKeyExists();
+
+            when(appSecurityService.isKeyExists()).thenReturn(true);
+            scenario.onActivity(activity -> {
+                IllegalStateException exception = assertThrows(
+                        IllegalStateException.class,
+                        activity::validateModePermitted);
+                assertTrue(requireNonNull(exception.getMessage()).contains("Key already exists"));
+            });
+        }
+    }
+
+    @Test
     public void testOkButtonDoesNotCrashForEachMode() {
         for (AuthActivity.Mode mode : AuthActivity.Mode.values()) {
             Intent intent = new Intent(context, AuthActivity.class)
@@ -526,7 +570,7 @@ public class AuthActivityTest {
 
     @Test
     public void testNonAuthenticationModesAllowStandardBackNavigation() {
-        for (AuthActivity.Mode mode : new AuthActivity.Mode[] {
+        for (AuthActivity.Mode mode : new AuthActivity.Mode[]{
                 AuthActivity.Mode.CREATE_PASSWORD,
                 AuthActivity.Mode.CHANGE_PASSWORD,
                 AuthActivity.Mode.KEY_RECOVERY}) {

@@ -6,7 +6,13 @@
 package app.notesr.activity;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import static java.util.Objects.requireNonNull;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -18,14 +24,29 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.core.app.ActivityScenario;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import app.notesr.R;
 import app.notesr.activity.security.AuthActivity;
+import app.notesr.di.service.security.AppSecurityServiceModule;
+import app.notesr.service.security.AppSecurityService;
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 
 @RunWith(AndroidJUnit4.class)
+@HiltAndroidTest
+@UninstallModules(AppSecurityServiceModule.class)
 public class StartActivityTest {
+
+    @Rule
+    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+    @BindValue
+    AppSecurityService appSecurityService = mock(AppSecurityService.class);
 
     private Instrumentation instrumentation;
 
@@ -60,6 +81,24 @@ public class StartActivityTest {
     @Test
     public void testOnCreateDoesNotCallValidateSession() {
         // TODO: Check that validateSession is not called on activity creation.
+    }
+
+    @Test
+    public void testValidateKeyNotExistsThrowsWhenKeyExists() {
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+
+        try (ActivityScenario<StartActivity> scenario = createScenario()) {
+            verify(appSecurityService).isKeyExists();
+            when(appSecurityService.isKeyExists()).thenReturn(true);
+
+            scenario.onActivity(activity -> {
+                IllegalStateException exception = assertThrows(
+                        IllegalStateException.class,
+                        activity::validateKeyNotExists);
+
+                assertTrue(requireNonNull(exception.getMessage()).contains("key already exists"));
+            });
+        }
     }
 
     @Test
