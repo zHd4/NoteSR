@@ -19,6 +19,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -28,9 +29,15 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.AndroidServiceEntry;
 import app.notesr.service.security.rotation.SecretsUpdateAndroidServiceStarter;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 
+@HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class SecretsUpdateActivityTest {
+
+    @Rule
+    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     private Context context;
     private Instrumentation instrumentation;
