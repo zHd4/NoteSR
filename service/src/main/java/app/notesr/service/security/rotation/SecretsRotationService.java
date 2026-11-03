@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
  * to the new encryption settings in a transactional manner.
  */
 @RequiredArgsConstructor
-public final class SecretsRotationService {
+public class SecretsRotationService {
 
     private final Context context;
     private final AppSecurityService appSecurityService;
