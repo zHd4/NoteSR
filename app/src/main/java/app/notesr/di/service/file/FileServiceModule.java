@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.di;
+package app.notesr.di.service.file;
 
 import android.content.Context;
 
@@ -22,14 +22,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
 /**
- * Dagger Hilt module for dependencies used by application note's file operations.
+ * Dagger Hilt module for providing the application's file service.
  * <p>
- * Bindings in this module are available from the app-wide component and support
- * file access that depends on application data and security configuration.
+ * The service uses the application database, security configuration, and file utilities.
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public final class FileModule {
+public final class FileServiceModule {
 
     /**
      * Creates a file service configured with the application's database and encryption.

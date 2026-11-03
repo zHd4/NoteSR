@@ -3,13 +3,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.di;
+package app.notesr.di.data;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-
-import javax.inject.Singleton;
 
 import app.notesr.data.AppDatabase;
 import app.notesr.data.DatabaseProvider;
@@ -27,7 +25,7 @@ import dagger.hilt.components.SingletonComponent;
  */
 @Module
 @InstallIn(SingletonComponent.class)
-public final class DataModule {
+public final class AppDatabaseModule {
 
     /**
      * Provides the {@link AppDatabase} instance for database operations.
