@@ -214,18 +214,18 @@ public final class NotesListActivity extends ActivityBase {
         ListView notesView = findViewById(R.id.notesListView);
         TextView missingNotesLabel = findViewById(R.id.missingNotesLabel);
 
+        NotesListAdapter adapter = new NotesListAdapter(
+                getApplicationContext(),
+                R.layout.notes_list_item,
+                notes);
+
+        notesView.setAdapter(adapter);
+
         if (!notes.isEmpty()) {
             missingNotesLabel.setVisibility(View.INVISIBLE);
 
             notesView.setEnabled(true);
             notesView.setVisibility(View.VISIBLE);
-
-            NotesListAdapter adapter = new NotesListAdapter(
-                    getApplicationContext(),
-                    R.layout.notes_list_item,
-                    notes);
-
-            notesView.setAdapter(adapter);
         } else {
             missingNotesLabel.setVisibility(View.VISIBLE);
 
