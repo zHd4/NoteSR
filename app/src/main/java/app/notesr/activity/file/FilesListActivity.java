@@ -177,14 +177,23 @@ public final class FilesListActivity extends ActivityBase {
         ListView filesView = findViewById(R.id.filesListView);
         TextView missingFilesLabel = findViewById(R.id.missingFilesLabel);
 
+        var adapter = new FilesListAdapter(
+                getApplicationContext(),
+                R.layout.files_list_item,
+                filesInfos);
+
+        filesView.setAdapter(adapter);
+
         if (!filesInfos.isEmpty()) {
             missingFilesLabel.setVisibility(View.INVISIBLE);
-            var adapter = new FilesListAdapter(
-                    getApplicationContext(),
-                    R.layout.files_list_item,
-                    filesInfos);
 
-            filesView.setAdapter(adapter);
+            filesView.setEnabled(true);
+            filesView.setVisibility(View.VISIBLE);
+        } else {
+            missingFilesLabel.setVisibility(View.VISIBLE);
+
+            filesView.setEnabled(false);
+            filesView.setVisibility(View.INVISIBLE);
         }
     }
 
