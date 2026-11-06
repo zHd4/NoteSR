@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public final class FileService {
+public class FileService {
 
     private static final String TAG = FileService.class.getCanonicalName();
     public static final String BLOBS_DIR_NAME = "fblobs";
