@@ -37,6 +37,7 @@ import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
+import app.notesr.util.DatabaseThreadFactory;
 import dagger.hilt.android.AndroidEntryPoint;
 import javax.inject.Inject;
 
@@ -45,12 +46,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
 @AndroidEntryPoint
 public final class FilesListActivity extends ActivityBase {
 
     public static final String EXTRA_NOTE_ID = "noteId";
+    private static final String TAG = FilesListActivity.class.getSimpleName();
+
     private final Map<Long, String> filesIdsMap = new HashMap<>();
+
+    final AtomicReference<Throwable> uncaughtDatabaseException = new AtomicReference<>();
+    final ExecutorService databaseExecutor =
+            newSingleThreadExecutor(new DatabaseThreadFactory(uncaughtDatabaseException, TAG));
 
     @Inject
     NoteService noteService;
@@ -80,11 +89,7 @@ public final class FilesListActivity extends ActivityBase {
         setContentView(R.layout.activity_file_list);
         applyInsets(findViewById(R.id.main));
 
-        var noteId = getIntent().getStringExtra(EXTRA_NOTE_ID);
-
-        if (noteId == null) {
-            throw new RuntimeException("Note id didn't provided");
-        }
+        var noteId = requireNoteId(getIntent());
 
         viewerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getViewerResultCallback());
@@ -100,6 +105,20 @@ public final class FilesListActivity extends ActivityBase {
                 });
 
         loadFiles(noteId);
+    }
+
+    static String requireNoteId(Intent intent) {
+        var noteId = intent.getStringExtra(EXTRA_NOTE_ID);
+        if (noteId == null) {
+            throw new IllegalStateException("Note id didn't provided");
+        }
+        return noteId;
+    }
+
+    @Override
+    protected void onDestroy() {
+        databaseExecutor.shutdown();
+        super.onDestroy();
     }
 
     @Override
@@ -122,7 +141,7 @@ public final class FilesListActivity extends ActivityBase {
                 dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_loading);
         var handler = new Handler(Looper.getMainLooper());
 
-        newSingleThreadExecutor().execute(() -> {
+        databaseExecutor.execute(() -> {
             handler.post(progressDialog::show);
             note = noteService.get(noteId);
 
@@ -197,7 +216,7 @@ public final class FilesListActivity extends ActivityBase {
         }
     }
 
-    private ActivityResultCallback<ActivityResult> getViewerResultCallback() {
+    ActivityResultCallback<ActivityResult> getViewerResultCallback() {
         return result -> {
             if (result.getResultCode() == FilesListActivity.RESULT_OK) {
                 var data = result.getData();
@@ -215,7 +234,7 @@ public final class FilesListActivity extends ActivityBase {
         };
     }
 
-    private ActivityResultCallback<ActivityResult> getAddFilesResultCallback() {
+    ActivityResultCallback<ActivityResult> getAddFilesResultCallback() {
         return result -> {
             int resultCode = result.getResultCode();
 
@@ -236,7 +255,7 @@ public final class FilesListActivity extends ActivityBase {
     private void addFiles(Intent data) {
         var progressDialog = dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_adding);
 
-        newSingleThreadExecutor().execute(() -> {
+        databaseExecutor.execute(() -> {
             runOnUiThread(progressDialog::show);
 
             try {
@@ -249,7 +268,7 @@ public final class FilesListActivity extends ActivityBase {
         });
     }
 
-    private List<Uri> getFileUris(Intent data) {
+    List<Uri> getFileUris(Intent data) {
         var result = new ArrayList<Uri>();
 
         if (data.getClipData() != null) {
