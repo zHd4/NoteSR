@@ -26,12 +26,14 @@ import static java.util.Objects.requireNonNull;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -53,10 +55,12 @@ import app.notesr.data.model.Note;
 import app.notesr.di.service.file.FileServiceModule;
 import app.notesr.di.service.note.NoteServiceModule;
 import app.notesr.di.service.security.AppSecurityServiceModule;
+import app.notesr.di.util.ActivityUtilsModule;
 import app.notesr.di.util.DialogFactoryModule;
 import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.util.ActivityUtils;
 import app.notesr.util.DatabaseUtils;
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
@@ -79,7 +83,8 @@ import java.util.concurrent.atomic.AtomicReference;
         NoteServiceModule.class,
         FileServiceModule.class,
         DialogFactoryModule.class,
-        AppSecurityServiceModule.class
+        AppSecurityServiceModule.class,
+        ActivityUtilsModule.class
 })
 public class FilesListActivityTest {
     private static final String NOTE_ID = "test-note-id";
@@ -103,6 +108,9 @@ public class FilesListActivityTest {
 
     @BindValue
     AppSecurityService appSecurityService = mock(AppSecurityService.class);
+
+    @BindValue
+    ActivityUtils activityUtils = mock(ActivityUtils.class);
 
     @Before
     public void setUp() {
@@ -228,6 +236,9 @@ public class FilesListActivityTest {
                 callback.onActivityResult(new ActivityResult(Activity.RESULT_OK, null));
                 assertTrue("Activity should finish when file-result data is missing",
                         activity.isFinishing());
+                verify(activityUtils).showToastMessage(
+                        activity.getString(R.string.files_list_missing_file_data),
+                        Toast.LENGTH_SHORT);
             });
         }
     }
@@ -241,6 +252,11 @@ public class FilesListActivityTest {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
             assertEquals("Activity should finish immediately when note id is missing",
                     Lifecycle.State.DESTROYED, scenario.getState());
+
+            Context context = ApplicationProvider.getApplicationContext();
+            verify(activityUtils).showToastMessage(
+                    context.getString(R.string.files_list_missing_note_id),
+                    Toast.LENGTH_SHORT);
         }
     }
 
@@ -293,6 +309,10 @@ public class FilesListActivityTest {
             scenario.onActivity(activity ->
                     assertTrue("Activity should finish when saving files fails",
                             activity.isFinishing()));
+            Context context = ApplicationProvider.getApplicationContext();
+            verify(activityUtils).showToastMessage(
+                    context.getString(R.string.files_list_save_failed),
+                    Toast.LENGTH_SHORT);
         }
     }
 
