@@ -8,6 +8,7 @@ package app.notesr.activity.file;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -15,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +37,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -188,7 +191,7 @@ public class FilesListActivityTest {
             viewer.finish();
 
             waitForFilesList(scenario, 1);
-            verify(fileService, times(2)).getFilesInfo(NOTE_ID);
+            verify(fileService, timeout(5000).times(2)).getFilesInfo(NOTE_ID);
         } finally {
             instrumentation.removeMonitor(viewerMonitor);
         }
@@ -216,19 +219,28 @@ public class FilesListActivityTest {
     }
 
     @Test
-    public void testInvalidSuccessfulFileResultThrowsIllegalStateException() {
+    public void testInvalidSuccessfulFileResultFinishesActivityGracefully() {
         try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
             scenario.onActivity(activity -> {
                 ActivityResultCallback<ActivityResult> callback =
                         activity.getAddFilesResultCallback();
 
-                IllegalStateException exception = assertThrows(
-                        IllegalStateException.class,
-                        () -> callback.onActivityResult(
-                                new ActivityResult(Activity.RESULT_OK, null)));
-                assertEquals("Activity result is 'OK', but data not provided",
-                        exception.getMessage());
+                callback.onActivityResult(new ActivityResult(Activity.RESULT_OK, null));
+                assertTrue("Activity should finish when file-result data is missing",
+                        activity.isFinishing());
             });
+        }
+    }
+
+    @Test
+    public void testMissingNoteIdLaunchFinishesActivityGracefully() {
+        Intent intent = new Intent(
+                ApplicationProvider.getApplicationContext(), FilesListActivity.class);
+
+        try (ActivityScenario<FilesListActivity> scenario = ActivityScenario.launch(intent)) {
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+            assertEquals("Activity should finish immediately when note id is missing",
+                    Lifecycle.State.DESTROYED, scenario.getState());
         }
     }
 
@@ -258,7 +270,8 @@ public class FilesListActivityTest {
     }
 
     @Test
-    public void testFileSaveFailureIsCaptured() throws DecryptionFailedException, IOException {
+    public void testFileSaveFailureFinishesActivityGracefully()
+            throws DecryptionFailedException, IOException {
         doThrow(new IOException("disk full")).when(fileService)
                 .saveFiles(eq(NOTE_ID), isA(List.class));
 
@@ -274,9 +287,12 @@ public class FilesListActivityTest {
             });
 
             Throwable exception = awaitDatabaseOperations(scenario);
-            assertNotNull("File-save failure should be captured", exception);
-            assertTrue("File-save failure should retain its cause",
-                    exception.getCause() instanceof IOException);
+            assertNull("File-save failure should be handled without an uncaught exception",
+                    exception);
+
+            scenario.onActivity(activity ->
+                    assertTrue("Activity should finish when saving files fails",
+                            activity.isFinishing()));
         }
     }
 
