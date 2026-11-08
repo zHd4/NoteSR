@@ -14,10 +14,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
@@ -37,6 +39,7 @@ import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
+import app.notesr.util.ActivityUtils;
 import app.notesr.util.DatabaseThreadFactory;
 import dagger.hilt.android.AndroidEntryPoint;
 import javax.inject.Inject;
@@ -52,8 +55,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @AndroidEntryPoint
 public final class FilesListActivity extends ActivityBase {
 
-    public static final String EXTRA_NOTE_ID = "noteId";
     private static final String TAG = FilesListActivity.class.getSimpleName();
+
+    public static final String EXTRA_NOTE_ID = "noteId";
 
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
@@ -69,6 +73,9 @@ public final class FilesListActivity extends ActivityBase {
 
     @Inject
     DialogFactory dialogFactory;
+
+    @Inject
+    ActivityUtils activityUtils;
 
     private ActivityResultLauncher<Intent> viewerLauncher;
     private ActivityResultLauncher<Intent> filePickerLauncher;
@@ -89,7 +96,15 @@ public final class FilesListActivity extends ActivityBase {
         setContentView(R.layout.activity_file_list);
         applyInsets(findViewById(R.id.main));
 
-        var noteId = requireNoteId(getIntent());
+        String noteId;
+
+        try {
+            noteId = requireNoteId(getIntent());
+        } catch (IllegalStateException e) {
+            finishWithError(R.string.files_list_missing_note_id,
+                    "Missing note id in FilesListActivity intent", e);
+            return;
+        }
 
         viewerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), getViewerResultCallback());
@@ -109,10 +124,18 @@ public final class FilesListActivity extends ActivityBase {
 
     static String requireNoteId(Intent intent) {
         var noteId = intent.getStringExtra(EXTRA_NOTE_ID);
+
         if (noteId == null) {
             throw new IllegalStateException("Note id didn't provided");
         }
+
         return noteId;
+    }
+
+    private void finishWithError(int messageId, String logMessage, Throwable throwable) {
+        Log.e(TAG, logMessage, throwable);
+        activityUtils.showToastMessage(getString(messageId), Toast.LENGTH_SHORT);
+        finish();
     }
 
     @Override
@@ -146,7 +169,7 @@ public final class FilesListActivity extends ActivityBase {
             note = noteService.get(noteId);
 
             if (note == null) {
-                throw new RuntimeException("Note with id " + noteId + " not found");
+                throw new IllegalArgumentException("Note with id " + noteId + " not found");
             }
 
             long filesCount = fileService.getFilesCount(note.getId());
@@ -245,8 +268,10 @@ public final class FilesListActivity extends ActivityBase {
 
                     filesModified = true;
                 } else {
-                    throw new IllegalStateException("Activity result is 'OK'" +
-                            ", but data not provided");
+                    finishWithError(R.string.files_list_missing_file_data,
+                            "FilesListActivity add-files result was OK without data",
+                            new IllegalStateException(
+                                    "Activity result is 'OK', but data not provided"));
                 }
             }
         };
@@ -261,7 +286,13 @@ public final class FilesListActivity extends ActivityBase {
             try {
                 fileService.saveFiles(note.getId(), getFileUris(data));
             } catch (IOException | DecryptionFailedException e) {
-                throw new RuntimeException(e);
+                runOnUiThread(() -> {
+                    progressDialog.dismiss();
+                    finishWithError(R.string.files_list_save_failed,
+                            "FilesListActivity failed to save files", e);
+                });
+
+                return;
             }
 
             runOnUiThread(progressDialog::dismiss);
