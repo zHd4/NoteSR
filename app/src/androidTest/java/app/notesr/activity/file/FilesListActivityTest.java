@@ -112,9 +112,13 @@ public class FilesListActivityTest {
     @BindValue
     ActivityUtils activityUtils = mock(ActivityUtils.class);
 
+    private Context context;
+
     @Before
     public void setUp() {
         hiltRule.inject();
+
+        context = ApplicationProvider.getApplicationContext();
 
         Note note = new Note();
         note.setId(NOTE_ID);
@@ -207,8 +211,7 @@ public class FilesListActivityTest {
 
     @Test
     public void testMissingNoteIdThrowsIllegalStateException() {
-        Intent intent = new Intent(
-                ApplicationProvider.getApplicationContext(), FilesListActivity.class);
+        Intent intent = new Intent(context, FilesListActivity.class);
 
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class, () -> FilesListActivity.requireNoteId(intent));
@@ -245,15 +248,13 @@ public class FilesListActivityTest {
 
     @Test
     public void testMissingNoteIdLaunchFinishesActivityGracefully() {
-        Intent intent = new Intent(
-                ApplicationProvider.getApplicationContext(), FilesListActivity.class);
+        Intent intent = new Intent(context, FilesListActivity.class);
 
         try (ActivityScenario<FilesListActivity> scenario = ActivityScenario.launch(intent)) {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
             assertEquals("Activity should finish immediately when note id is missing",
                     Lifecycle.State.DESTROYED, scenario.getState());
 
-            Context context = ApplicationProvider.getApplicationContext();
             verify(activityUtils).showToastMessage(
                     context.getString(R.string.files_list_missing_note_id),
                     Toast.LENGTH_SHORT);
@@ -309,7 +310,7 @@ public class FilesListActivityTest {
             scenario.onActivity(activity ->
                     assertTrue("Activity should finish when saving files fails",
                             activity.isFinishing()));
-            Context context = ApplicationProvider.getApplicationContext();
+
             verify(activityUtils).showToastMessage(
                     context.getString(R.string.files_list_save_failed),
                     Toast.LENGTH_SHORT);
@@ -352,8 +353,7 @@ public class FilesListActivityTest {
     }
 
     private ActivityScenario<FilesListActivity> launchActivity() {
-        Intent intent = new Intent(
-                ApplicationProvider.getApplicationContext(), FilesListActivity.class)
+        Intent intent = new Intent(context, FilesListActivity.class)
                 .putExtra(FilesListActivity.EXTRA_NOTE_ID, NOTE_ID);
 
         return ActivityScenario.launch(intent);
