@@ -134,13 +134,19 @@ public final class NotesListActivity extends ActivityBase {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
         int itemId = item.getItemId();
 
-        if (itemId != R.id.searchNotesButton) {
-            requireNonNull(menuActions.get(itemId)).run();
+        if (itemId == android.R.id.home || itemId == R.id.searchNotesButton) {
+            return super.onOptionsItemSelected(item);
         }
 
+        Runnable action = menuActions.get(itemId);
+
+        if (action == null) {
+            return super.onOptionsItemSelected(item);
+        }
+
+        action.run();
         return true;
     }
 
