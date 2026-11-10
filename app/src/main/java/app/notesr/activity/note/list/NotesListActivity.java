@@ -195,6 +195,10 @@ public final class NotesListActivity extends ActivityBase {
     }
 
     private void loadNotes(String searchQuery) {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+
         Dialog progressDialog = dialogFactory
                 .getThemedProgressDialog(R.layout.progress_dialog_loading);
 
@@ -207,11 +211,13 @@ public final class NotesListActivity extends ActivityBase {
                     ? noteService.search(searchQuery)
                     : noteService.getAll();
 
-            notesIdsMap.clear();
-            notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
-            runOnUiThread(() -> fillNotesListView(notes));
+            runOnUiThread(() -> {
+                notesIdsMap.clear();
+                notes.forEach(note -> notesIdsMap.put(note.getDecimalId(), note.getId()));
 
-            progressDialog.dismiss();
+                fillNotesListView(notes);
+                progressDialog.dismiss();
+            });
         });
     }
 
