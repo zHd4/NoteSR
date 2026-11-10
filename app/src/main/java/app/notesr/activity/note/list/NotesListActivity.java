@@ -154,7 +154,12 @@ public final class NotesListActivity extends ActivityBase {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                searchHandler.removeCallbacksAndMessages(null);
                 searchHandler.postDelayed(() -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
                     String query = newText == null || newText.isEmpty() ? null : newText;
                     loadNotes(query);
                 }, SEARCH_DELAY);
