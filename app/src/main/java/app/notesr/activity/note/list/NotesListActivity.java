@@ -73,11 +73,15 @@ public final class NotesListActivity extends ActivityBase {
     private LockAction lockAction;
     private GenerateNewKeyAction generateNewKeyAction;
 
+    boolean isFinishingOrDestroyed() {
+        return isFinishing() || isDestroyed();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (isFinishing()) {
+        if (isFinishingOrDestroyed()) {
             return;
         }
 
@@ -150,7 +154,7 @@ public final class NotesListActivity extends ActivityBase {
         return true;
     }
 
-    private SearchView.OnQueryTextListener getSearchQueryListener() {
+    SearchView.OnQueryTextListener getSearchQueryListener() {
         return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -162,7 +166,7 @@ public final class NotesListActivity extends ActivityBase {
             public boolean onQueryTextChange(String newText) {
                 searchHandler.removeCallbacksAndMessages(null);
                 searchHandler.postDelayed(() -> {
-                    if (isFinishing() || isDestroyed()) {
+                    if (isFinishingOrDestroyed()) {
                         return;
                     }
 
@@ -175,7 +179,7 @@ public final class NotesListActivity extends ActivityBase {
         };
     }
 
-    private SearchView.OnAttachStateChangeListener getSearchViewAttachStateChangeListener() {
+    View.OnAttachStateChangeListener getSearchViewAttachStateChangeListener() {
         return new SearchView.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(@NonNull View view) {
@@ -184,7 +188,7 @@ public final class NotesListActivity extends ActivityBase {
 
             @Override
             public void onViewDetachedFromWindow(@NonNull View view) {
-                if (isFinishing() || isDestroyed()) {
+                if (isFinishingOrDestroyed()) {
                     return;
                 }
 
@@ -201,7 +205,7 @@ public final class NotesListActivity extends ActivityBase {
     }
 
     private void loadNotes(String searchQuery) {
-        if (isFinishing() || isDestroyed()) {
+        if (isFinishingOrDestroyed()) {
             return;
         }
 
@@ -251,7 +255,7 @@ public final class NotesListActivity extends ActivityBase {
         }
     }
 
-    private ActivityResultCallback<ActivityResult> getOpenNoteResultCallback() {
+    ActivityResultCallback<ActivityResult> getOpenNoteResultCallback() {
         return result -> {
             if (result.getResultCode() == RESULT_OK) {
                 loadNotes();
