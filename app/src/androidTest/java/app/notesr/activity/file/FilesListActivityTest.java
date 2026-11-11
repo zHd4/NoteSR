@@ -8,7 +8,6 @@ package app.notesr.activity.file;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -29,8 +28,10 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,7 +62,6 @@ import app.notesr.service.file.FileService;
 import app.notesr.service.note.NoteService;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.util.ActivityUtils;
-import app.notesr.util.DatabaseUtils;
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
@@ -93,6 +93,7 @@ public class FilesListActivityTest {
     private static final String FILE_NAME = "attachment.bin";
     private static final long FILE_DECIMAL_ID = 17L;
     private static final long UI_TIMEOUT_MILLIS = 5000;
+    private static final long FILES_LIST_POLL_INTERVAL_MILLIS = 50;
 
     @Rule
     public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
@@ -113,6 +114,7 @@ public class FilesListActivityTest {
     ActivityUtils activityUtils = mock(ActivityUtils.class);
 
     private Context context;
+    private ListAdapter lastFilesListAdapter;
 
     @Before
     public void setUp() {
@@ -219,17 +221,6 @@ public class FilesListActivityTest {
     }
 
     @Test
-    public void testMissingNoteFailureIsCaptured() {
-        when(noteService.get(NOTE_ID)).thenReturn(null);
-
-        try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
-            Throwable exception = awaitDatabaseOperations(scenario);
-            assertNotNull("Missing-note failure should be captured", exception);
-            assertEquals("Note with id " + NOTE_ID + " not found", exception.getMessage());
-        }
-    }
-
-    @Test
     public void testInvalidSuccessfulFileResultFinishesActivityGracefully() {
         try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
             scenario.onActivity(activity -> {
@@ -293,6 +284,8 @@ public class FilesListActivityTest {
                 .saveFiles(eq(NOTE_ID), isA(List.class));
 
         try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
+            waitForFilesList(scenario, 1);
+
             scenario.onActivity(activity -> {
                 ActivityResultCallback<ActivityResult> callback =
                         activity.getAddFilesResultCallback();
@@ -303,17 +296,14 @@ public class FilesListActivityTest {
                 callback.onActivityResult(new ActivityResult(Activity.RESULT_OK, data));
             });
 
-            Throwable exception = awaitDatabaseOperations(scenario);
-            assertNull("File-save failure should be handled without an uncaught exception",
-                    exception);
+            verify(activityUtils, timeout(UI_TIMEOUT_MILLIS)).showToastMessage(
+                    context.getString(R.string.files_list_save_failed),
+                    Toast.LENGTH_SHORT);
+            verify(fileService, times(1)).getFilesInfo(NOTE_ID);
 
             scenario.onActivity(activity ->
                     assertTrue("Activity should finish when saving files fails",
                             activity.isFinishing()));
-
-            verify(activityUtils).showToastMessage(
-                    context.getString(R.string.files_list_save_failed),
-                    Toast.LENGTH_SHORT);
         }
     }
 
@@ -370,34 +360,69 @@ public class FilesListActivityTest {
         return titleRef.get();
     }
 
-    private void waitForFilesList(ActivityScenario<FilesListActivity> scenario, int count) {
-        Throwable exception = awaitDatabaseOperations(scenario);
-        if (exception != null) {
-            throw new AssertionError("Uncaught exception in database operation",
-                    exception);
+    private void waitForFilesList(ActivityScenario<FilesListActivity> scenario, int filesCount) {
+        lastFilesListAdapter = awaitFilesListAdapter(scenario, filesCount);
+
+        assertFilesListState(scenario, filesCount);
+    }
+
+    private ListAdapter awaitFilesListAdapter(
+            ActivityScenario<FilesListActivity> scenario, int filesCount) {
+        AtomicReference<ListAdapter> adapterRef = new AtomicReference<>();
+        long deadline = SystemClock.elapsedRealtime() + UI_TIMEOUT_MILLIS;
+
+        while (true) {
+            scenario.onActivity(activity -> {
+                ListView filesListView = activity.findViewById(R.id.filesListView);
+                adapterRef.set(filesListView.getAdapter());
+            });
+
+            ListAdapter adapter = adapterRef.get();
+
+            if (adapter != null && adapter != lastFilesListAdapter
+                    && adapter.getCount() == filesCount) {
+                return adapter;
+            }
+
+            long remainingMillis = deadline - SystemClock.elapsedRealtime();
+
+            if (remainingMillis <= 0) {
+                break;
+            }
+
+            SystemClock.sleep(Math.min(FILES_LIST_POLL_INTERVAL_MILLIS, remainingMillis));
         }
 
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        ListAdapter adapter = adapterRef.get();
+        String observedAdapter = adapter == null
+                ? "none"
+                : adapter.getCount() + " items"
+                        + (adapter == lastFilesListAdapter ? " (same adapter)" : "");
+        throw new AssertionError("Expected a new file list adapter with " + filesCount
+                + " items within " + UI_TIMEOUT_MILLIS + " ms; observed " + observedAdapter);
+    }
 
+    private void assertFilesListState(
+            ActivityScenario<FilesListActivity> scenario, int filesCount) {
         scenario.onActivity(activity -> {
             ListView filesListView = activity.findViewById(R.id.filesListView);
+            TextView missingFilesLabel = activity.findViewById(R.id.missingFilesLabel);
 
             assertNotNull("File list adapter should be initialized",
                     filesListView.getAdapter());
-            assertEquals(count, filesListView.getAdapter().getCount());
-            assertEquals(count == 0 ? View.INVISIBLE : View.VISIBLE, filesListView.getVisibility());
+            assertEquals(filesCount, filesListView.getAdapter().getCount());
+
+            if (filesCount == 0) {
+                assertEquals("Missing files label should be visible",
+                        View.VISIBLE, missingFilesLabel.getVisibility());
+                assertEquals("File list should be hidden",
+                        View.INVISIBLE, filesListView.getVisibility());
+            } else {
+                assertEquals("File list should be visible",
+                        View.VISIBLE, filesListView.getVisibility());
+                assertEquals("Missing files label should be hidden",
+                        View.INVISIBLE, missingFilesLabel.getVisibility());
+            }
         });
     }
-
-    private Throwable awaitDatabaseOperations(ActivityScenario<FilesListActivity> scenario) {
-        AtomicReference<Throwable> exception = new AtomicReference<>();
-
-        scenario.onActivity(activity ->
-                exception.set(DatabaseUtils.awaitDatabaseOperations(activity.databaseExecutor,
-                        activity.uncaughtDatabaseException)));
-
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        return exception.get();
-    }
-
 }

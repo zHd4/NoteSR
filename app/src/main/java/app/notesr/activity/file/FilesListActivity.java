@@ -40,8 +40,8 @@ import app.notesr.service.note.NoteService;
 import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
 import app.notesr.util.ActivityUtils;
-import app.notesr.util.DatabaseThreadFactory;
 import dagger.hilt.android.AndroidEntryPoint;
+
 import javax.inject.Inject;
 
 import java.io.IOException;
@@ -49,8 +49,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicReference;
 
 @AndroidEntryPoint
 public final class FilesListActivity extends ActivityBase {
@@ -60,10 +58,6 @@ public final class FilesListActivity extends ActivityBase {
     public static final String EXTRA_NOTE_ID = "noteId";
 
     private final Map<Long, String> filesIdsMap = new HashMap<>();
-
-    final AtomicReference<Throwable> uncaughtDatabaseException = new AtomicReference<>();
-    final ExecutorService databaseExecutor =
-            newSingleThreadExecutor(new DatabaseThreadFactory(uncaughtDatabaseException, TAG));
 
     @Inject
     NoteService noteService;
@@ -139,12 +133,6 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     @Override
-    protected void onDestroy() {
-        databaseExecutor.shutdown();
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackButtonPressed();
@@ -164,7 +152,7 @@ public final class FilesListActivity extends ActivityBase {
                 dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_loading);
         var handler = new Handler(Looper.getMainLooper());
 
-        databaseExecutor.execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             handler.post(progressDialog::show);
             note = noteService.get(noteId);
 
@@ -264,9 +252,6 @@ public final class FilesListActivity extends ActivityBase {
             if (resultCode == Activity.RESULT_OK) {
                 if (result.getData() != null) {
                     addFiles(result.getData());
-                    loadFiles(note.getId());
-
-                    filesModified = true;
                 } else {
                     finishWithError(R.string.files_list_missing_file_data,
                             "FilesListActivity add-files result was OK without data",
@@ -280,7 +265,7 @@ public final class FilesListActivity extends ActivityBase {
     private void addFiles(Intent data) {
         var progressDialog = dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_adding);
 
-        databaseExecutor.execute(() -> {
+        newSingleThreadExecutor().execute(() -> {
             runOnUiThread(progressDialog::show);
 
             try {
@@ -295,7 +280,11 @@ public final class FilesListActivity extends ActivityBase {
                 return;
             }
 
-            runOnUiThread(progressDialog::dismiss);
+            runOnUiThread(() -> {
+                progressDialog.dismiss();
+                filesModified = true;
+                loadFiles(note.getId());
+            });
         });
     }
 
