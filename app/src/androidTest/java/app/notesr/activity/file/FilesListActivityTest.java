@@ -150,7 +150,8 @@ public class FilesListActivityTest {
         when(fileService.getFilesCount(NOTE_ID)).thenReturn(0L);
         when(fileService.getFilesInfo(NOTE_ID)).thenReturn(List.of());
 
-        try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launch(getFilesListActivityIntent())) {
             waitForFilesList(scenario, 0);
 
             scenario.onActivity(activity -> {
@@ -173,7 +174,8 @@ public class FilesListActivityTest {
         Instrumentation.ActivityMonitor viewerMonitor = instrumentation.addMonitor(
                 OpenUnknownFileActivity.class.getName(), null, false);
 
-        try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launch(getFilesListActivityIntent())) {
             waitForFilesList(scenario, 1);
             assertEquals(
                     "(1) Files of: " + NOTE_NAME,
@@ -205,7 +207,8 @@ public class FilesListActivityTest {
             viewer.finish();
 
             waitForFilesList(scenario, 1);
-            verify(fileService, timeout(5000).times(2)).getFilesInfo(NOTE_ID);
+            verify(fileService, timeout(5000).times(2))
+                    .getFilesInfo(NOTE_ID);
         } finally {
             instrumentation.removeMonitor(viewerMonitor);
         }
@@ -222,7 +225,8 @@ public class FilesListActivityTest {
 
     @Test
     public void testInvalidSuccessfulFileResultFinishesActivityGracefully() {
-        try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launch(getFilesListActivityIntent())) {
             scenario.onActivity(activity -> {
                 ActivityResultCallback<ActivityResult> callback =
                         activity.getAddFilesResultCallback();
@@ -254,7 +258,8 @@ public class FilesListActivityTest {
 
     @Test
     public void testGetFileUrisHandlesClipDataAndSingleUri() {
-        try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launch(getFilesListActivityIntent())) {
             scenario.onActivity(activity -> {
                 Intent clipIntent = new Intent();
 
@@ -283,7 +288,8 @@ public class FilesListActivityTest {
         doThrow(new IOException("disk full")).when(fileService)
                 .saveFiles(eq(NOTE_ID), isA(List.class));
 
-        try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launch(getFilesListActivityIntent())) {
             waitForFilesList(scenario, 1);
 
             scenario.onActivity(activity -> {
@@ -309,7 +315,8 @@ public class FilesListActivityTest {
 
     @Test
     public void testFileModifiedViewerResultRefreshesFilesList() {
-        try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launch(getFilesListActivityIntent())) {
             waitForFilesList(scenario, 1);
 
             scenario.onActivity(activity -> {
@@ -328,8 +335,50 @@ public class FilesListActivityTest {
     }
 
     @Test
+    public void testFinishReturnsCanceledWhenFilesRemainUnchanged() {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launchActivityForResult(getFilesListActivityIntent())) {
+            waitForFilesList(scenario, 1);
+
+            scenario.onActivity(activity -> {
+                assertFalse("Starting state should indicate no modifications",
+                        activity.isFilesModified());
+                activity.finish();
+            });
+
+            assertEquals("Unchanged files should finish with RESULT_CANCELED",
+                    Activity.RESULT_CANCELED,
+                    scenario.getResult().getResultCode());
+        }
+    }
+
+    @Test
+    public void testFinishReturnsOkWhenFilesWereModified() {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launchActivityForResult(getFilesListActivityIntent())) {
+            waitForFilesList(scenario, 1);
+
+            scenario.onActivity(activity -> {
+                ActivityResultCallback<ActivityResult> callback =
+                        activity.getViewerResultCallback();
+
+                Intent data = new Intent();
+                data.putExtra(FileViewerActivityBase.EXTRA_FILE_MODIFIED, true);
+
+                callback.onActivityResult(new ActivityResult(Activity.RESULT_OK, data));
+                activity.finish();
+            });
+
+            assertEquals("Modified files should finish with RESULT_OK",
+                    Activity.RESULT_OK,
+                    scenario.getResult().getResultCode());
+        }
+    }
+
+    @Test
     public void testHomeButtonAndDefaultMenuItemAreHandledAsExpected() {
-        try (ActivityScenario<FilesListActivity> scenario = launchActivity()) {
+        try (ActivityScenario<FilesListActivity> scenario =
+                     ActivityScenario.launch(getFilesListActivityIntent())) {
             scenario.onActivity(activity -> {
                 MenuItem home = mock(MenuItem.class);
                 when(home.getItemId()).thenReturn(android.R.id.home);
@@ -342,11 +391,9 @@ public class FilesListActivityTest {
         }
     }
 
-    private ActivityScenario<FilesListActivity> launchActivity() {
-        Intent intent = new Intent(context, FilesListActivity.class)
+    private Intent getFilesListActivityIntent() {
+        return new Intent(context, FilesListActivity.class)
                 .putExtra(FilesListActivity.EXTRA_NOTE_ID, NOTE_ID);
-
-        return ActivityScenario.launch(intent);
     }
 
     private String getActionBarTitle(ActivityScenario<FilesListActivity> scenario) {
@@ -397,7 +444,7 @@ public class FilesListActivityTest {
         String observedAdapter = adapter == null
                 ? "none"
                 : adapter.getCount() + " items"
-                        + (adapter == lastFilesListAdapter ? " (same adapter)" : "");
+                + (adapter == lastFilesListAdapter ? " (same adapter)" : "");
         throw new AssertionError("Expected a new file list adapter with " + filesCount
                 + " items within " + UI_TIMEOUT_MILLIS + " ms; observed " + observedAdapter);
     }
