@@ -106,6 +106,9 @@
     <string name="migrating_your_data_please_wait">Migrating your data,\nplease wait…</string>
     <string name="files_list_action_bar_title_format">(%1$s) Files of: %2$s</string>
     <string name="error">Error</string>
+    <string name="files_list_missing_note_id">The attachment list could not be opened</string>
+    <string name="files_list_missing_file_data">The selected files could not be added</string>
+    <string name="files_list_save_failed">The selected files could not be saved</string>
     <string name="re_encryption_failed_your_key_and_your_data_remains_unchanged">Re-encryption failed, your key and your data remains unchanged.</string>
     <string name="view_text">View Text</string>
     <string name="view_markdown">Markdown View</string>
