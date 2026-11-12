@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FileService {
 
-    private static final String TAG = FileService.class.getCanonicalName();
+    private static final String TAG = FileService.class.getSimpleName();
     public static final String BLOBS_DIR_NAME = "fblobs";
     private static final int FILE_BLOB_MAX_SIZE = 500000;
 
