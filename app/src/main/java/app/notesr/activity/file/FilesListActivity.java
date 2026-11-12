@@ -51,34 +51,78 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Displays the files attached to a note and lets the user open or add files.
+ *
+ * <p>The activity reports whether the note's files were modified when it closes.</p>
+ * <p>Returns RESULT_OK if the files were modified, otherwise RESULT_CANCELED.</p>
+ */
 @AndroidEntryPoint
 public final class FilesListActivity extends ActivityBase {
 
     private static final String TAG = FilesListActivity.class.getSimpleName();
 
+    /**
+     * Intent extra containing the ID of the note whose files are displayed.
+     */
     public static final String EXTRA_NOTE_ID = "noteId";
 
+    /**
+     * Maps each file's decimal ID to its database file ID.
+     */
     private final Map<Long, String> filesIdsMap = new HashMap<>();
 
+    /**
+     * Service used to retrieve the note associated with this activity.
+     */
     @Inject
     NoteService noteService;
 
+    /**
+     * Service used to retrieve and save note files.
+     */
     @Inject
     FileService fileService;
 
+    /**
+     * Factory for themed progress dialogs.
+     */
     @Inject
     DialogFactory dialogFactory;
 
+    /**
+     * Utility for displaying activity messages.
+     */
     @Inject
     ActivityUtils activityUtils;
 
+    /**
+     * Launcher used to open a file viewer and receive its result.
+     */
     private ActivityResultLauncher<Intent> viewerLauncher;
+
+    /**
+     * Launcher used to select files and receive the selection result.
+     */
     private ActivityResultLauncher<Intent> filePickerLauncher;
+
+    /**
+     * Note whose files are displayed.
+     */
     private Note note;
 
+    /**
+     * Whether any file was added or modified during this activity.
+     */
     @Getter
     private boolean filesModified;
 
+    /**
+     * Initializes the activity, validates its note ID, registers result launchers,
+     * and loads the note's files.
+     *
+     * @param savedInstanceState previously saved activity state, if available
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,12 +188,26 @@ public final class FilesListActivity extends ActivityBase {
         return noteId;
     }
 
+    /**
+     * Logs an activity error, displays the corresponding message, and finishes.
+     *
+     * @param messageId  string resource for the user-facing message
+     * @param logMessage message to write to the error log
+     * @param throwable  cause of the error
+     */
     private void finishWithError(int messageId, String logMessage, Throwable throwable) {
         Log.e(TAG, logMessage, throwable);
         activityUtils.showToastMessage(getString(messageId), Toast.LENGTH_SHORT);
         finish();
     }
 
+    /**
+     * Handles action-bar menu selections, routing the home button through the
+     * activity's modified-result handling.
+     *
+     * @param item selected menu item
+     * @return {@code true} if the item was handled
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -160,10 +218,18 @@ public final class FilesListActivity extends ActivityBase {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Sets the result according to whether files changed, then closes the activity.
+     */
     private void onBackButtonPressed() {
         finish();
     }
 
+    /**
+     * Loads the note and its files on a worker thread, then updates the UI.
+     *
+     * @param noteId ID of the note whose files should be loaded
+     */
     private void loadFiles(String noteId) {
         var progressDialog =
                 dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_loading);
@@ -196,6 +262,11 @@ public final class FilesListActivity extends ActivityBase {
         });
     }
 
+    /**
+     * Updates the action-bar title with the file count and note name.
+     *
+     * @param filesCount number of files attached to the note
+     */
     private void configureActionBar(long filesCount) {
         ActionBar actionBar = getSupportActionBar();
         requireNonNull(actionBar);
@@ -207,12 +278,18 @@ public final class FilesListActivity extends ActivityBase {
         actionBar.setTitle(title);
     }
 
+    /**
+     * Attaches the add-file action to its floating action button.
+     */
     private void configureButtons() {
         FloatingActionButton addFileButton = findViewById(R.id.addFileButton);
 
         addFileButton.setOnClickListener(new AddFileOnClick(this, filePickerLauncher));
     }
 
+    /**
+     * Attaches the file-opening action to the files list.
+     */
     private void configureFilesListView() {
         ListView filesListView = findViewById(R.id.filesListView);
         filesListView.setOnItemClickListener(
@@ -220,6 +297,11 @@ public final class FilesListActivity extends ActivityBase {
         );
     }
 
+    /**
+     * Displays the files in the list and toggles the empty-list message.
+     *
+     * @param filesInfos file information to display
+     */
     private void fillFilesListView(List<FileInfo> filesInfos) {
         ListView filesView = findViewById(R.id.filesListView);
         TextView missingFilesLabel = findViewById(R.id.missingFilesLabel);
@@ -244,6 +326,11 @@ public final class FilesListActivity extends ActivityBase {
         }
     }
 
+    /**
+     * Creates a callback that reloads the list when a viewed file was modified.
+     *
+     * @return callback for results from the file viewer
+     */
     ActivityResultCallback<ActivityResult> getViewerResultCallback() {
         return result -> {
             if (result.getResultCode() == FilesListActivity.RESULT_OK) {
@@ -262,6 +349,11 @@ public final class FilesListActivity extends ActivityBase {
         };
     }
 
+    /**
+     * Creates a callback that handles the result of selecting files to add.
+     *
+     * @return callback for results from the file picker
+     */
     ActivityResultCallback<ActivityResult> getAddFilesResultCallback() {
         return result -> {
             int resultCode = result.getResultCode();
@@ -279,6 +371,11 @@ public final class FilesListActivity extends ActivityBase {
         };
     }
 
+    /**
+     * Saves the selected files for the current note and refreshes the list.
+     *
+     * @param data result intent containing the selected file URIs
+     */
     private void addFiles(Intent data) {
         var progressDialog = dialogFactory.getThemedProgressDialog(R.layout.progress_dialog_adding);
 
@@ -305,6 +402,13 @@ public final class FilesListActivity extends ActivityBase {
         });
     }
 
+    /**
+     * Extracts all selected URIs from an intent, supporting both multi-select
+     * clip data and a single selected item.
+     *
+     * @param data intent returned by the file picker
+     * @return selected file URIs
+     */
     List<Uri> getFileUris(Intent data) {
         var result = new ArrayList<Uri>();
 
