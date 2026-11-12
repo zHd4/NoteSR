@@ -116,6 +116,12 @@ public final class FilesListActivity extends ActivityBase {
         loadFiles(noteId);
     }
 
+    @Override
+    public void finish() {
+        setResult(filesModified ? RESULT_OK : RESULT_CANCELED);
+        super.finish();
+    }
+
     static String requireNoteId(Intent intent) {
         var noteId = intent.getStringExtra(EXTRA_NOTE_ID);
 
@@ -143,7 +149,6 @@ public final class FilesListActivity extends ActivityBase {
     }
 
     private void onBackButtonPressed() {
-        setResult(filesModified ? RESULT_OK : RESULT_CANCELED);
         finish();
     }
 
