@@ -41,6 +41,7 @@ import app.notesr.data.model.FileInfo;
 import app.notesr.data.model.Note;
 import app.notesr.util.ActivityUtils;
 import dagger.hilt.android.AndroidEntryPoint;
+import lombok.Getter;
 
 import javax.inject.Inject;
 
@@ -75,6 +76,7 @@ public final class FilesListActivity extends ActivityBase {
     private ActivityResultLauncher<Intent> filePickerLauncher;
     private Note note;
 
+    @Getter
     private boolean filesModified;
 
     @Override
@@ -116,12 +118,22 @@ public final class FilesListActivity extends ActivityBase {
         loadFiles(noteId);
     }
 
+    /**
+     * Closes the activity with the appropriate result code.
+     */
     @Override
     public void finish() {
         setResult(filesModified ? RESULT_OK : RESULT_CANCELED);
         super.finish();
     }
 
+    /**
+     * Reads the note ID from an activity intent.
+     *
+     * @param intent intent expected to contain {@link #EXTRA_NOTE_ID}
+     * @return the note ID
+     * @throws IllegalStateException if the intent does not contain a note ID
+     */
     static String requireNoteId(Intent intent) {
         var noteId = intent.getStringExtra(EXTRA_NOTE_ID);
 
