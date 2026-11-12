@@ -40,11 +40,20 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * Manages note file metadata and encrypted file contents stored as ordered blobs.
+ *
+ * <p>File metadata is persisted through the database, while encrypted blob data
+ * is stored in the application's internal {@value #BLOBS_DIR_NAME} directory.
+ */
 @RequiredArgsConstructor
 public class FileService {
 
     private static final String TAG = FileService.class.getSimpleName();
+
+    /** Name of the internal directory containing encrypted file blobs. */
     public static final String BLOBS_DIR_NAME = "fblobs";
+
     private static final int FILE_BLOB_MAX_SIZE = 500000;
 
     private final Context context;
@@ -52,6 +61,13 @@ public class FileService {
     private final AesCryptor cryptor;
     private final FilesUtilsAdapter filesUtils;
 
+    /**
+     * Returns the number of files associated with a note.
+     *
+     * @param noteId identifier of the note
+     * @return the number of files
+     * @throws NullPointerException if the database returns a null count
+     */
     public long getFilesCount(String noteId) {
         Long count = db.getFileInfoDao().getCountByNoteId(noteId);
 
@@ -62,6 +78,11 @@ public class FileService {
         return count;
     }
 
+    /**
+     * Returns metadata for all files, with each file's decimal ID populated.
+     *
+     * @return metadata for all files
+     */
     public List<FileInfo> getFilesInfo() {
         return db.getFileInfoDao()
                 .getAll()
@@ -70,6 +91,12 @@ public class FileService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns metadata for the files associated with a note, with decimal IDs populated.
+     *
+     * @param noteId identifier of the note
+     * @return metadata for the note's files
+     */
     public List<FileInfo> getFilesInfo(String noteId) {
         List<FileInfo> filesInfos = db.getFileInfoDao().getByNoteId(noteId);
 
@@ -78,22 +105,57 @@ public class FileService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns metadata for all stored file blobs.
+     *
+     * @return metadata for all blobs
+     */
     public List<FileBlobInfo> getFilesBlobInfo() {
         return db.getFileBlobInfoDao().getAll();
     }
 
+    /**
+     * Returns the blob identifiers associated with a file.
+     *
+     * @param fileId identifier of the file
+     * @return identifiers of the file's blobs
+     */
     public List<String> getFileBlobInfoIds(String fileId) {
         return db.getFileBlobInfoDao().getBlobIdsByFileId(fileId);
     }
 
+    /**
+     * Returns metadata for a file and populates its decimal ID.
+     *
+     * @param fileId identifier of the file
+     * @return the file metadata
+     */
     public FileInfo getFileInfo(String fileId) {
         return setDecimalId(db.getFileInfoDao().get(fileId));
     }
 
+    /**
+     * Returns metadata for a blob.
+     *
+     * @param blobInfoId identifier of the blob metadata record
+     * @return the blob metadata
+     */
     public FileBlobInfo getFileBlobInfo(String blobInfoId) {
         return db.getFileBlobInfoDao().get(blobInfoId);
     }
 
+    /**
+     * Creates metadata and encrypted blob data for each supplied content URI.
+     *
+     * <p>The database operations are run in a transaction. The supplied note ID
+     * and URI list must not be null, and the URI list must not be empty.
+     *
+     * @param noteId identifier of the note to associate with the files
+     * @param filesUri URIs of the file contents to save
+     * @throws IllegalArgumentException if the note ID is null or the URI list is null or empty
+     * @throws IOException if a file cannot be read or written
+     * @throws DecryptionFailedException if the file content operation fails with a security error
+     */
     public void saveFiles(String noteId, List<Uri> filesUri)
             throws IOException, DecryptionFailedException {
 
@@ -123,6 +185,15 @@ public class FileService {
         }
     }
 
+    /**
+     * Inserts or updates file metadata and refreshes the parent note's update time.
+     *
+     * <p>A missing file ID is generated, and missing creation or update timestamps
+     * are initialized to the current time.
+     *
+     * @param fileInfo metadata to persist
+     * @return the persisted file identifier
+     */
     public String saveFileInfo(FileInfo fileInfo) {
         return db.runInTransaction(() -> {
             if (fileInfo.getId() == null) {
@@ -149,6 +220,14 @@ public class FileService {
         });
     }
 
+    /**
+     * Opens the content URI and saves its contents as encrypted blobs.
+     *
+     * @param fileId identifier of the file whose contents are being saved
+     * @param uri URI of the content to read
+     * @throws IOException if the content cannot be read or stored
+     * @throws DecryptionFailedException if a security error occurs while saving the content
+     */
     public void saveFileData(String fileId, Uri uri)
             throws IOException, DecryptionFailedException {
 
@@ -156,6 +235,16 @@ public class FileService {
         saveFileData(fileId, inputStream);
     }
 
+    /**
+     * Replaces a file's existing blob data with encrypted chunks from an input stream.
+     *
+     * <p>The input stream is closed after processing.
+     *
+     * @param fileId identifier of the file whose contents are being saved
+     * @param inputStream stream containing the plaintext file data
+     * @throws IOException if the stream or file storage cannot be read or written
+     * @throws DecryptionFailedException if a security error occurs while storing the content
+     */
     public void saveFileData(String fileId, InputStream inputStream)
             throws IOException, DecryptionFailedException {
 
@@ -183,6 +272,14 @@ public class FileService {
         }
     }
 
+    /**
+     * Reads and decrypts all blobs for a file into a single byte array.
+     *
+     * @param fileId identifier of the file to read
+     * @return the complete plaintext file contents
+     * @throws IOException if a blob cannot be read
+     * @throws DecryptionFailedException if a blob cannot be decrypted
+     */
     public byte[] read(String fileId) throws IOException, DecryptionFailedException {
         Set<String> ids = new LinkedHashSet<>(db.getFileBlobInfoDao().getBlobIdsByFileId(fileId));
         File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
@@ -207,6 +304,15 @@ public class FileService {
         return fileBytes;
     }
 
+    /**
+     * Reads and decrypts a file one blob at a time, passing each plaintext chunk to an action.
+     *
+     * @param fileId identifier of the file to read
+     * @param actionPerChunk action to invoke with each decrypted blob
+     * @return the total number of plaintext bytes passed to the action
+     * @throws IOException if a blob cannot be read
+     * @throws DecryptionFailedException if a blob cannot be decrypted
+     */
     public long read(String fileId, Consumer<byte[]> actionPerChunk)
             throws IOException, DecryptionFailedException {
 
@@ -231,6 +337,12 @@ public class FileService {
         return readBytes;
     }
 
+    /**
+     * Deletes a file's blob data and metadata, then refreshes its parent note's update time.
+     *
+     * @param fileId identifier of the file to delete
+     * @throws IOException if a blob file cannot be deleted
+     */
     public void delete(String fileId) throws IOException {
         FileInfo fileInfo = db.getFileInfoDao().get(fileId);
 
@@ -256,10 +368,21 @@ public class FileService {
         }
     }
 
+    /**
+     * Imports a file metadata record without generating identifiers or timestamps.
+     *
+     * @param fileInfo metadata record to insert
+     */
     public void importFileInfo(FileInfo fileInfo) {
         db.getFileInfoDao().insert(fileInfo);
     }
 
+    /**
+     * Imports blob metadata after verifying that its parent file exists.
+     *
+     * @param fileBlobInfo blob metadata record to insert
+     * @throws IllegalArgumentException if the blob's parent file does not exist
+     */
     public void importFileBlobInfo(FileBlobInfo fileBlobInfo) {
         String fileId = fileBlobInfo.getFileId();
 
@@ -270,6 +393,14 @@ public class FileService {
         db.getFileBlobInfoDao().insert(fileBlobInfo);
     }
 
+    /**
+     * Encrypts and writes imported plaintext blob data to internal storage.
+     *
+     * @param blobId identifier used as the stored blob filename
+     * @param blobData plaintext blob contents
+     * @throws IOException if the blob cannot be written
+     * @throws EncryptionFailedException if the blob cannot be encrypted
+     */
     public void importFileBlobData(String blobId, byte[] blobData)
             throws IOException, EncryptionFailedException {
         File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
@@ -288,14 +419,33 @@ public class FileService {
         }
     }
 
+    /**
+     * Returns the total number of file metadata records.
+     *
+     * @return the number of files
+     */
     public long getFilesCount() {
         return db.getFileInfoDao().getRowsCount();
     }
 
+    /**
+     * Returns the total number of blob metadata records.
+     *
+     * @return the number of blobs
+     */
     public long getBlobsCount() {
         return db.getFileBlobInfoDao().getRowsCount();
     }
 
+    /**
+     * Reads an input stream, encrypts it in bounded chunks, and stores each chunk with metadata.
+     *
+     * @param fileId identifier of the file to associate with the chunks
+     * @param inputStream plaintext file data stream; closed by this method
+     * @param blobsDir directory in which encrypted blob files are stored
+     * @throws IOException if reading the stream or writing a blob fails
+     * @throws GeneralSecurityException if encryption fails
+     */
     private void writeFileData(String fileId, InputStream inputStream, File blobsDir)
             throws IOException, GeneralSecurityException {
 
@@ -335,6 +485,13 @@ public class FileService {
         }
     }
 
+    /**
+     * Resolves file metadata and an optional image or video thumbnail from a content URI.
+     *
+     * @param noteId identifier of the note to associate with the file
+     * @param uri URI of the file content
+     * @return newly constructed file metadata
+     */
     private FileInfo getFileInfo(String noteId, Uri uri) {
         FileExifDataResolver resolver = new FileExifDataResolver(context, filesUtils, uri);
 
@@ -357,6 +514,14 @@ public class FileService {
         return fileInfo;
     }
 
+    /**
+     * Reads and decrypts a stored blob.
+     *
+     * @param blobId identifier of the blob
+     * @return the plaintext blob contents
+     * @throws IOException if the blob cannot be read
+     * @throws DecryptionFailedException if the blob cannot be decrypted
+     */
     public byte[] getBlobData(String blobId) throws IOException, DecryptionFailedException {
         try {
             File blobsDir = filesUtils.getInternalFile(context, BLOBS_DIR_NAME);
@@ -368,6 +533,12 @@ public class FileService {
         }
     }
 
+    /**
+     * Computes and assigns the decimal representation of a file's UUID.
+     *
+     * @param fileInfo metadata whose decimal ID is to be populated
+     * @return the same metadata object, updated with its decimal ID
+     */
     private FileInfo setDecimalId(FileInfo fileInfo) {
         UUID uuid = UUID.fromString(fileInfo.getId());
         long hash = HashUtils.getUUIDHash(uuid);
@@ -377,6 +548,13 @@ public class FileService {
         return fileInfo;
     }
 
+    /**
+     * Creates a thumbnail for supported image and video MIME types.
+     *
+     * @param uri URI of the source file
+     * @param mimeType MIME type used to select a thumbnail creator
+     * @return the generated thumbnail, or {@code null} for unsupported types or thumbnail errors
+     */
     private byte[] getFileThumbnail(Uri uri, String mimeType) {
         try {
             String type = mimeType.split("/")[0];
