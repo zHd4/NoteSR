@@ -54,6 +54,8 @@ import javax.inject.Inject;
 @AndroidEntryPoint
 public final class NotesListActivity extends ActivityBase {
 
+    private static final String TAG = NotesListActivity.class.getSimpleName();
+
     private static final int SEARCH_DELAY = 300;
 
     private final SparseArray<Runnable> menuActions = new SparseArray<>();
@@ -183,7 +185,7 @@ public final class NotesListActivity extends ActivityBase {
         return new SearchView.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(@NonNull View view) {
-                Log.d("SearchView", "View attached");
+                Log.d(TAG, "SearchView attached");
             }
 
             @Override
