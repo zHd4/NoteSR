@@ -123,7 +123,14 @@ public class AuthHandler {
                 throw new RuntimeException(e);
             }
 
-            activity.startActivity(getNewIntent(NotesListActivity.class));
+            bootstrapPostAuthServices(activity.getApplicationContext());
+
+            Intent requiredIntent = getRequiredIntent();
+            Intent nextIntent = requiredIntent == null
+                    ? getNewIntent(NotesListActivity.class)
+                    : requiredIntent;
+
+            activity.startActivity(nextIntent);
             activity.finish();
         }
     }
