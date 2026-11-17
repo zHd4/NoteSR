@@ -52,7 +52,8 @@ public class AuthenticationHandler {
     }
 
     protected void onAuthenticationSuccessful() {
-        passwordFlowCompletionHelper.clearPasswordAndBootstrapServices(activity.getApplicationContext());
+        passwordConfirmationHelper.resetPassword();
+        passwordFlowCompletionHelper.bootstrapPostAuthServices(activity.getApplicationContext());
         passwordFlowCompletionHelper.navigateAfterAuth();
     }
 

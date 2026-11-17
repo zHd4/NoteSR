@@ -7,10 +7,8 @@ package app.notesr.activity.security;
 
 import android.content.Context;
 import android.content.Intent;
-import android.widget.TextView;
 
 import app.notesr.BuildConfig;
-import app.notesr.R;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.FsaResolver;
 import app.notesr.activity.migration.MigrationActivity;
@@ -29,10 +27,7 @@ public class PasswordFlowCompletionHelper {
     private final AndroidServiceBootstrapper androidServiceBootstrapper;
     private final DataVersionManager dataVersionManager;
 
-    public void clearPasswordAndBootstrapServices(Context context) {
-        TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
-        censoredPasswordView.setText("");
-
+    public void bootstrapPostAuthServices(Context context) {
         androidServiceBootstrapper.startServicesPostAuth(context,
                 appSecurityService.getActualSecrets());
     }
