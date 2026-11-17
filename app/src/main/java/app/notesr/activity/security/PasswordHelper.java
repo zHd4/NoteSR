@@ -12,7 +12,7 @@ import app.notesr.core.util.SecureStringBuilder;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PasswordConfirmationHelper {
+public class PasswordHelper {
 
     private final AuthActivity activity;
     private final SecureStringBuilder passwordBuilder;

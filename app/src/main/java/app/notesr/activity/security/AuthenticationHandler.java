@@ -26,7 +26,7 @@ public class AuthenticationHandler {
     private final SecureStringBuilder passwordBuilder;
     private final ActivityUtils activityUtils;
     private final PasswordFlowCompletionHelper passwordFlowCompletionHelper;
-    private final PasswordConfirmationHelper passwordConfirmationHelper;
+    private final PasswordHelper passwordHelper;
 
     private int authAttempts = MAX_ATTEMPTS;
 
@@ -52,7 +52,7 @@ public class AuthenticationHandler {
     }
 
     protected void onAuthenticationSuccessful() {
-        passwordConfirmationHelper.resetPassword();
+        passwordHelper.resetPassword();
         passwordFlowCompletionHelper.bootstrapPostAuthServices(activity.getApplicationContext());
         passwordFlowCompletionHelper.navigateAfterAuth();
     }
@@ -84,7 +84,7 @@ public class AuthenticationHandler {
                     authAttempts), Toast.LENGTH_SHORT);
         }
 
-        passwordConfirmationHelper.resetPassword();
+        passwordHelper.resetPassword();
     }
 
     protected void sleepBeforeRetry() throws InterruptedException {
