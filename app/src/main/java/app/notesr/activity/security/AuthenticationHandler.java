@@ -25,7 +25,7 @@ public class AuthenticationHandler {
     private final AppSecurityService appSecurityService;
     private final SecureStringBuilder passwordBuilder;
     private final ActivityUtils activityUtils;
-    private final PostAuthNavigationHelper postAuthNavigationHelper;
+    private final PasswordFlowCompletionHelper passwordFlowCompletionHelper;
     private final PasswordConfirmationHelper passwordConfirmationHelper;
 
     private int authAttempts = MAX_ATTEMPTS;
@@ -52,8 +52,8 @@ public class AuthenticationHandler {
     }
 
     protected void onAuthenticationSuccessful() {
-        postAuthNavigationHelper.clearPasswordAndBootstrap(activity.getApplicationContext());
-        postAuthNavigationHelper.navigateAfterAuth();
+        passwordFlowCompletionHelper.clearPasswordAndBootstrapServices(activity.getApplicationContext());
+        passwordFlowCompletionHelper.navigateAfterAuth();
     }
 
     protected void onAuthenticationFailed() {
@@ -69,7 +69,7 @@ public class AuthenticationHandler {
             activityUtils.showToastMessage(activity.getString(R.string.blocked),
                     Toast.LENGTH_SHORT);
             activity.startActivity(
-                    postAuthNavigationHelper.getNewIntent(KeyRecoveryActivity.class));
+                    passwordFlowCompletionHelper.getNewIntent(KeyRecoveryActivity.class));
             activity.finish();
         } else {
             try {

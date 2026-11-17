@@ -21,7 +21,7 @@ import app.notesr.service.security.AppSecurityService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PostAuthNavigationHelper {
+public class PasswordFlowCompletionHelper {
 
     private final AuthActivity activity;
     private final AppSecurityService appSecurityService;
@@ -29,10 +29,10 @@ public class PostAuthNavigationHelper {
     private final AndroidServiceBootstrapper androidServiceBootstrapper;
     private final DataVersionManager dataVersionManager;
 
-    public void clearPasswordAndBootstrap(Context context) {
+    public void clearPasswordAndBootstrapServices(Context context) {
         TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
-
         censoredPasswordView.setText("");
+
         androidServiceBootstrapper.startServicesPostAuth(context,
                 appSecurityService.getActualSecrets());
     }
