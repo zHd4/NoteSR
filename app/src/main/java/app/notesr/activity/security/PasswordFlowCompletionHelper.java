@@ -12,7 +12,6 @@ import app.notesr.BuildConfig;
 import app.notesr.activity.ActivityBase;
 import app.notesr.activity.FsaResolver;
 import app.notesr.activity.migration.MigrationActivity;
-import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.migration.DataVersionManager;
 import app.notesr.service.security.AppSecurityService;
@@ -32,7 +31,21 @@ public class PasswordFlowCompletionHelper {
                 appSecurityService.getActualSecrets());
     }
 
-    public Intent getRequiredIntent() {
+    public void navigateNextOrIntermediateActivity(Intent targetActivity) {
+        Intent intermediateActivity = getIntermediateActivityIntent();
+        Intent nextActivity = intermediateActivity == null
+                ? targetActivity
+                : intermediateActivity;
+
+        navigateNextActivity(nextActivity);
+    }
+
+    public void navigateNextActivity(Intent nextActivity) {
+        activity.startActivity(nextActivity);
+        activity.finish();
+    }
+
+    public Intent getIntermediateActivityIntent() {
         Intent fsaIntent = getFsaIntent();
 
         if (fsaIntent != null) {
@@ -40,19 +53,15 @@ public class PasswordFlowCompletionHelper {
         }
 
         if (isMigrationRequired()) {
-            return getNewIntent(MigrationActivity.class);
+            return getNewActivityIntent(MigrationActivity.class);
         }
 
         return null;
     }
 
-    public Intent getNewIntent(Class<? extends ActivityBase> activityClass) {
-        return new Intent(activity.getApplicationContext(), activityClass);
-    }
-
     public Intent getFsaIntent() {
         var fsaEntry = fsaResolver.getFsaEntryOfCurrentRunningFs();
-        return fsaEntry != null ? getNewIntent(fsaEntry.getActivityClass()) : null;
+        return fsaEntry != null ? getNewActivityIntent(fsaEntry.getActivityClass()) : null;
     }
 
     public boolean isMigrationRequired() {
@@ -61,13 +70,7 @@ public class PasswordFlowCompletionHelper {
         return lastMigrationVersion < currentDataSchemaVersion;
     }
 
-    public void navigateAfterAuth() {
-        Intent requiredIntent = getRequiredIntent();
-        Intent nextIntent = requiredIntent == null
-                ? getNewIntent(NotesListActivity.class)
-                : requiredIntent;
-
-        activity.startActivity(nextIntent);
-        activity.finish();
+    public Intent getNewActivityIntent(Class<? extends ActivityBase> activityClass) {
+        return new Intent(activity.getApplicationContext(), activityClass);
     }
 }

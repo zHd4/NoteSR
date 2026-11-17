@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import android.widget.Toast;
 
 import app.notesr.R;
+import app.notesr.activity.note.list.NotesListActivity;
 import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AuthenticationHandler {
+
     private static final int MAX_ATTEMPTS = 3;
     private static final int DELAY_AFTER_AUTH_FAILED = 1500;
 
@@ -54,7 +56,9 @@ public class AuthenticationHandler {
     protected void onAuthenticationSuccessful() {
         passwordHelper.resetPassword();
         passwordFlowCompletionHelper.bootstrapPostAuthServices(activity.getApplicationContext());
-        passwordFlowCompletionHelper.navigateAfterAuth();
+
+        passwordFlowCompletionHelper.navigateNextOrIntermediateActivity(
+                passwordFlowCompletionHelper.getNewActivityIntent(NotesListActivity.class));
     }
 
     protected void onAuthenticationFailed() {
@@ -69,9 +73,9 @@ public class AuthenticationHandler {
 
             activityUtils.showToastMessage(activity.getString(R.string.blocked),
                     Toast.LENGTH_SHORT);
-            activity.startActivity(
-                    passwordFlowCompletionHelper.getNewIntent(KeyRecoveryActivity.class));
-            activity.finish();
+
+            passwordFlowCompletionHelper.navigateNextActivity(
+                    passwordFlowCompletionHelper.getNewActivityIntent(KeyRecoveryActivity.class));
         } else {
             try {
                 sleepBeforeRetry();
