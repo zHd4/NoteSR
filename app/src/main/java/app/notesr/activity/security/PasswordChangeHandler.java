@@ -19,6 +19,10 @@ import app.notesr.service.security.rotation.SecretsRotationService;
 import app.notesr.util.ActivityUtils;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Coordinates the password-change flow, including confirmation of the new password and
+ * rotation of the stored secrets.
+ */
 @RequiredArgsConstructor
 public class PasswordChangeHandler {
 
@@ -32,10 +36,14 @@ public class PasswordChangeHandler {
     private char[] createdPassword;
 
     /**
-     * Changes the app password.
+     * Collects and confirms the new password, updates the password and stored secrets, then
+     * navigates to the notes list.
      *
-     * @throws IllegalArgumentException       If the new password is invalid.
-     * @throws SecretsRotationFailedException If the password update fails.
+     * <p>If the password has not yet been entered and confirmed, this method only advances
+     * the password-entry flow and returns without changing the password.
+     *
+     * @throws IllegalArgumentException if the new password is invalid
+     * @throws SecretsRotationFailedException if rotating the stored secrets fails
      */
     public void changePassword() {
         char[] password = proceedPasswordSetting();
@@ -52,6 +60,15 @@ public class PasswordChangeHandler {
                 passwordFlowCompletionHelper.getNewActivityIntent(NotesListActivity.class));
     }
 
+    /**
+     * Processes the password entered in the current step of the change flow.
+     *
+     * <p>The first valid entry is retained for comparison and prompts the user to repeat it.
+     * A matching second entry is returned; an insufficient-length or nonmatching entry is
+     * rejected and the password input is reset.
+     *
+     * @return the confirmed password, or {@code null} if another entry is required
+     */
     protected char[] proceedPasswordSetting() {
         char[] password = passwordBuilder.toCharArray();
 
@@ -79,6 +96,9 @@ public class PasswordChangeHandler {
         return null;
     }
 
+    /**
+     * Clears the password currently entered in the password input.
+     */
     protected void resetPassword() {
         passwordHelper.resetPassword();
     }
