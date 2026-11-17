@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.service.security.AppSecurityService;
 import lombok.RequiredArgsConstructor;
 

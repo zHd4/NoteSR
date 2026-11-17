@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.security;
+package app.notesr.activity.security.password;
 
-import static app.notesr.activity.security.AuthActivity.CACHE_KEY_HEX_KEY;
+import static app.notesr.activity.security.password.AuthActivity.CACHE_KEY_HEX_KEY;
 import static app.notesr.core.util.CharUtils.bytesToChars;
 
 import android.widget.TextView;

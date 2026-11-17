@@ -26,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.service.security.AppSecurityService;
 
 @RunWith(AndroidJUnit4.class)

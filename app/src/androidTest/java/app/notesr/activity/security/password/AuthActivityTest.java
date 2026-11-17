@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.security;
+package app.notesr.activity.security.password;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

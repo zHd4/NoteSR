@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.security;
+package app.notesr.activity.security.password;
 
 import android.os.Bundle;
 import android.util.Log;

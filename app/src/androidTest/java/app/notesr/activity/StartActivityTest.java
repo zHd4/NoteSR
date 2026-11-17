@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import app.notesr.R;
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.di.service.security.AppSecurityServiceModule;
 import app.notesr.service.security.AppSecurityService;
 import dagger.hilt.android.testing.BindValue;

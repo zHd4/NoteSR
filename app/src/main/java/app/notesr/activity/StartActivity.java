@@ -16,7 +16,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import javax.inject.Inject;
 
 import app.notesr.R;
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.util.ActivityUtils;
 import dagger.hilt.android.AndroidEntryPoint;
 

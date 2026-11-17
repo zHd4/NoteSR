@@ -23,6 +23,7 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;

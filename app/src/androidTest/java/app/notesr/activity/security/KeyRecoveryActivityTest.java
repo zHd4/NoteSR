@@ -38,6 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 import app.notesr.R;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.KeyUtils;

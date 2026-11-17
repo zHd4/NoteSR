@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.security;
+package app.notesr.activity.security.password;
 
 import static app.notesr.core.util.CharUtils.charsToBytes;
 
@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import app.notesr.R;
+import app.notesr.activity.security.KeySetupMode;
+import app.notesr.activity.security.SetupKeyActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.SecureStringBuilder;

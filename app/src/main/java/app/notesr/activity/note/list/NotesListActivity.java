@@ -37,7 +37,7 @@ import app.notesr.activity.DialogFactory;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
 import app.notesr.activity.note.editor.OpenNoteActivity;
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.activity.security.GenerateNewKeyAction;
 import app.notesr.activity.security.LockAction;
 import app.notesr.data.model.Note;

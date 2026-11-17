@@ -42,7 +42,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import app.notesr.R;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.note.editor.OpenNoteActivity;
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.data.model.Note;
 import app.notesr.di.service.file.FileServiceModule;
 import app.notesr.di.service.note.NoteServiceModule;

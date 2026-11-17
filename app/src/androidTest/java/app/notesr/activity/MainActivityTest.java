@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import app.notesr.activity.note.list.NotesListActivity;
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package app.notesr.activity.security;
+package app.notesr.activity.security.password;
 
 import android.os.SystemClock;
 import android.util.Log;
@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import app.notesr.R;
 import app.notesr.activity.note.list.NotesListActivity;
+import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
