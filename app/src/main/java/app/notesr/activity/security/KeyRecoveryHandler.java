@@ -21,12 +21,13 @@ import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.KeyUtils;
 import app.notesr.core.util.SecureStringBuilder;
-import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
-import app.notesr.service.security.AuthenticationFailedException;
 import app.notesr.util.ActivityUtils;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Coordinates password confirmation and app-key recovery for the access code activity.
+ */
 @RequiredArgsConstructor
 public class KeyRecoveryHandler {
 
@@ -40,12 +41,15 @@ public class KeyRecoveryHandler {
     private char[] createdPassword;
 
     /**
-     * Recovers the app key.
+     * Completes the key-recovery flow after the user enters and confirms a new
+     * password.
      *
-     * @throws AppSecurityException          If the key recovery fails.
-     * @throws AuthenticationFailedException if the key is invalid
-     * @throws CharacterCodingException      If the key recovery fails due to character
-     *                                       encoding issues.
+     * <p>If the password has not yet been confirmed, prompts for confirmation and
+     * returns without recovering the key. Once confirmed, consumes the cached key,
+     * unlocks the app, resets the password input, initializes post-authentication
+     * services, and navigates to the next activity.
+     *
+     * @throws CharacterCodingException if the cached key cannot be decoded as UTF-8
      */
     public void recoverKey() throws CharacterCodingException {
         char[] password = proceedPasswordSetting();
@@ -72,6 +76,16 @@ public class KeyRecoveryHandler {
         }
     }
 
+    /**
+     * Validates the entered password and, on the second entry, checks that it
+     * matches the first entry.
+     *
+     * <p>On the first valid entry, stores the password for comparison and updates
+     * the prompt to request confirmation. Input is reset after each attempt.
+     *
+     * @return the confirmed password if both entries match; {@code null} if the
+     *         password is too short or the confirmation does not match
+     */
     protected char[] proceedPasswordSetting() {
         char[] password = passwordBuilder.toCharArray();
 
@@ -100,6 +114,9 @@ public class KeyRecoveryHandler {
         return null;
     }
 
+    /**
+     * Clears the current password input through the password helper.
+     */
     protected void resetPassword() {
         passwordHelper.resetPassword();
     }
