@@ -46,17 +46,11 @@ public class PasswordFlowCompletionHelper {
     }
 
     public Intent getIntermediateActivityIntent() {
-        Intent fsaIntent = getFsaIntent();
-
-        if (fsaIntent != null) {
-            return fsaIntent;
-        }
-
         if (isMigrationRequired()) {
             return getNewActivityIntent(MigrationActivity.class);
         }
 
-        return null;
+        return getFsaIntent();
     }
 
     public Intent getFsaIntent() {
