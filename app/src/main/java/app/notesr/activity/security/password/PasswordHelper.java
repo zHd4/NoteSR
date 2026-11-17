@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PasswordHelper {
 
-    private final AuthActivity activity;
+    private final AppPasswordActivity activity;
     private final SecureStringBuilder passwordBuilder;
 
     public void resetPassword() {

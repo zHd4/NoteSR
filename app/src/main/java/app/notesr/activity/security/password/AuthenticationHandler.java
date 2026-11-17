@@ -20,8 +20,8 @@ import app.notesr.util.ActivityUtils;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Coordinates password authentication and the resulting navigation for the access code
- * activity.
+ * Coordinates password authentication and the resulting navigation for the
+ * {@link AppPasswordActivity}.
  *
  * <p>Failed attempts are counted and eventually block the app, directing the user to key
  * recovery.
@@ -34,7 +34,7 @@ public class AuthenticationHandler {
     private static final int MAX_ATTEMPTS = 3;
     private static final int DELAY_AFTER_AUTH_FAILED = 1500;
 
-    private final AuthActivity activity;
+    private final AppPasswordActivity activity;
     private final AppSecurityService appSecurityService;
     private final SecureStringBuilder passwordBuilder;
     private final ActivityUtils activityUtils;

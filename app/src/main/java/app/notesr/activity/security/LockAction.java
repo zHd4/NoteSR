@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import app.notesr.activity.ActivityBase;
-import app.notesr.activity.security.password.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.service.security.AppSecurityService;
 import lombok.RequiredArgsConstructor;
 
@@ -23,10 +23,11 @@ public final class LockAction {
         appSecurityService.logout();
 
         Context context = activity.getApplicationContext();
-        Intent authActivityIntent = new Intent(context, AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.AUTHENTICATION.getModeName());
+        Intent appPasswordActivityIntent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
 
-        activity.startActivity(authActivityIntent);
+        activity.startActivity(appPasswordActivityIntent);
         activity.finish();
     }
 }

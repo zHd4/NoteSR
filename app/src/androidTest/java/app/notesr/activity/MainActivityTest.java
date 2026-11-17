@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import app.notesr.activity.note.list.NotesListActivity;
-import app.notesr.activity.security.password.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;
@@ -111,7 +111,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void testGetIntentSuppliersWhenAuthNotConfiguredReturnsAuthActivityIntent() {
+    public void testGetIntentSuppliersWhenAuthNotConfiguredReturnsAppPasswordActivityIntent() {
         when(mockAppSecurityService.isAppBlocked()).thenReturn(false);
         when(mockAppSecurityService.isKeyExists()).thenReturn(true);
         when(mockAppSecurityService.isAuthConfigured()).thenReturn(false);
@@ -130,14 +130,14 @@ public class MainActivityTest {
 
         Intent resolvedIntent = suppliers.get(2).get();
 
-        assertNotNull("Third supplier should return AuthActivity intent",
+        assertNotNull("Third supplier should return AppPasswordActivity intent",
                 resolvedIntent);
         assertNotNull("Intent component should not be null",
                 resolvedIntent.getComponent());
-        assertEquals("Intent component should be set to AuthActivity",
-                AuthActivity.class.getName(), resolvedIntent.getComponent().getClassName());
+        assertEquals("Intent component should be set to AppPasswordActivity",
+                AppPasswordActivity.class.getName(), resolvedIntent.getComponent().getClassName());
         assertNotNull("Auth mode extra should be set",
-                resolvedIntent.getStringExtra(AuthActivity.EXTRA_MODE));
+                resolvedIntent.getStringExtra(AppPasswordActivity.EXTRA_MODE));
     }
 
     @Test

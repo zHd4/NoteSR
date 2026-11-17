@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 import app.notesr.R;
-import app.notesr.activity.security.password.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.core.util.KeyUtils;
@@ -117,7 +117,7 @@ public class KeyRecoveryActivityTest {
                 applyButton.performClick();
 
                 assertFalse("Empty recovery input should not write a key to the cache",
-                        SecretCache.contains(AuthActivity.CACHE_KEY_HEX_KEY));
+                        SecretCache.contains(AppPasswordActivity.CACHE_KEY_HEX_KEY));
                 assertEquals("Empty recovery input should leave the field blank",
                         "",
                         recoveryKeyField.getText().toString());
@@ -128,9 +128,9 @@ public class KeyRecoveryActivityTest {
     }
 
     @Test
-    public void testValidRecoveryKeyStoresSecretAndStartsAuthActivity() {
+    public void testValidRecoveryKeyStoresSecretAndStartsAppPasswordActivity() {
         Instrumentation.ActivityMonitor monitor = instrumentation.addMonitor(
-                AuthActivity.class.getName(), null, false);
+                AppPasswordActivity.class.getName(), null, false);
 
         try (ActivityScenario<KeyRecoveryActivity> scenario = ActivityScenario.launch(
                 KeyRecoveryActivity.class)) {
@@ -153,11 +153,11 @@ public class KeyRecoveryActivityTest {
                 applyButton.performClick();
 
                 assertTrue("A valid recovery key should be cached before auth starts",
-                        SecretCache.contains(AuthActivity.CACHE_KEY_HEX_KEY));
+                        SecretCache.contains(AppPasswordActivity.CACHE_KEY_HEX_KEY));
                 assertArrayEquals(
                         "The cached recovery key should contain the hex characters",
                         expectedCacheValue,
-                        SecretCache.take(AuthActivity.CACHE_KEY_HEX_KEY));
+                        SecretCache.take(AppPasswordActivity.CACHE_KEY_HEX_KEY));
                 assertEquals(
                         "A successful recovery should clear the entered key from the field",
                         "",
@@ -167,12 +167,12 @@ public class KeyRecoveryActivityTest {
             Activity started = instrumentation.waitForMonitorWithTimeout(monitor, 20000);
 
             assertNotNull(
-                    "AuthActivity should be started after a valid recovery key is accepted",
+                    "AppPasswordActivity should be started after a valid recovery key is accepted",
                     started);
             assertEquals(
-                    "Recovered key flow should start AuthActivity in key recovery mode",
-                    AuthActivity.Mode.KEY_RECOVERY.getModeName(),
-                    started.getIntent().getStringExtra(AuthActivity.EXTRA_MODE));
+                    "Recovered key flow should start AppPasswordActivity in key recovery mode",
+                    AppPasswordActivity.Mode.KEY_RECOVERY.getModeName(),
+                    started.getIntent().getStringExtra(AppPasswordActivity.EXTRA_MODE));
 
             started.finish();
         }
@@ -204,7 +204,7 @@ public class KeyRecoveryActivityTest {
                 applyButton.performClick();
 
                 assertFalse("Wrong recovery keys should not store anything in the cache",
-                        SecretCache.contains(AuthActivity.CACHE_KEY_HEX_KEY));
+                        SecretCache.contains(AppPasswordActivity.CACHE_KEY_HEX_KEY));
                 assertEquals(
                         "Wrong recovery keys should be left in the field for correction",
                         new String(wrongKeyHex),
@@ -240,7 +240,7 @@ public class KeyRecoveryActivityTest {
 
                 assertFalse(
                         "Invalid recovery key input should not be stored in the cache",
-                        SecretCache.contains(AuthActivity.CACHE_KEY_HEX_KEY));
+                        SecretCache.contains(AppPasswordActivity.CACHE_KEY_HEX_KEY));
                 assertEquals("Invalid recovery keys should stay visible"
                                 + " so the user can fix them",
                         invalidKey,

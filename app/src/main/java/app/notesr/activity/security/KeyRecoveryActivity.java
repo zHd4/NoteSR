@@ -23,7 +23,7 @@ import androidx.appcompat.app.ActionBar;
 
 import app.notesr.R;
 import app.notesr.activity.ActivityBase;
-import app.notesr.activity.security.password.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.core.security.SecretCache;
 import app.notesr.service.security.AppSecurityException;
 import app.notesr.service.security.AppSecurityService;
@@ -124,10 +124,10 @@ public final class KeyRecoveryActivity extends ActivityBase {
     private void proceedKeyMatch(char[] hexKey) throws CharacterCodingException {
         byte[] hexKeyBytes = charsToBytes(Arrays.copyOf(hexKey, hexKey.length),
                 StandardCharsets.UTF_8);
-        SecretCache.put(AuthActivity.CACHE_KEY_HEX_KEY, hexKeyBytes);
+        SecretCache.put(AppPasswordActivity.CACHE_KEY_HEX_KEY, hexKeyBytes);
 
-        var authIntent = new Intent(getApplicationContext(), AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.KEY_RECOVERY.getModeName());
+        var authIntent = new Intent(getApplicationContext(), AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE, AppPasswordActivity.Mode.KEY_RECOVERY.getModeName());
 
         startActivity(authIntent);
         finish();

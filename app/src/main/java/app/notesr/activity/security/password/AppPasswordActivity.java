@@ -35,9 +35,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AndroidEntryPoint
-public final class AuthActivity extends ActivityBase {
+public final class AppPasswordActivity extends ActivityBase {
 
-    private static final String TAG = AuthActivity.class.getSimpleName();
+    private static final String TAG = AppPasswordActivity.class.getSimpleName();
 
     public static final String CACHE_KEY_HEX_KEY = "hexKey";
     public static final String EXTRA_MODE = "mode";
@@ -84,7 +84,7 @@ public final class AuthActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auth);
+        setContentView(R.layout.activity_app_password);
         applyInsets(findViewById(R.id.main));
 
         var passwordHelper = new PasswordHelper(

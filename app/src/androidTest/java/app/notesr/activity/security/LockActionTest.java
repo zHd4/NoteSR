@@ -26,7 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import app.notesr.activity.ActivityBase;
-import app.notesr.activity.security.password.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.service.security.AppSecurityService;
 
 @RunWith(AndroidJUnit4.class)
@@ -57,7 +57,7 @@ public class LockActionTest {
     }
 
     @Test
-    public void testLockStartsAuthActivityWithAuthenticationMode() {
+    public void testLockStartsAppPasswordActivityWithAuthenticationMode() {
         when(activity.getApplicationContext()).thenReturn(context);
 
         LockAction lockAction = new LockAction(activity, appSecurityService);
@@ -69,11 +69,11 @@ public class LockActionTest {
 
         assertNotNull("Intent should be created", startedIntent);
         assertNotNull("Intent component should be set", startedIntent.getComponent());
-        assertEquals("Intent component should target AuthActivity",
-                AuthActivity.class.getName(), startedIntent.getComponent().getClassName());
+        assertEquals("Intent component should target AppPasswordActivity",
+                AppPasswordActivity.class.getName(), startedIntent.getComponent().getClassName());
         assertEquals("Intent should use authentication mode",
-                AuthActivity.Mode.AUTHENTICATION.getModeName(),
-                startedIntent.getStringExtra(AuthActivity.EXTRA_MODE));
+                AppPasswordActivity.Mode.AUTHENTICATION.getModeName(),
+                startedIntent.getStringExtra(AppPasswordActivity.EXTRA_MODE));
 
         verify(appSecurityService).logout();
         verify(activity).finish();

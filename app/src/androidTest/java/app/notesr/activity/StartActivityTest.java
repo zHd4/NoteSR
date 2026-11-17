@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import app.notesr.R;
-import app.notesr.activity.security.password.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.di.service.security.AppSecurityServiceModule;
 import app.notesr.service.security.AppSecurityService;
 import dagger.hilt.android.testing.BindValue;
@@ -166,10 +166,10 @@ public class StartActivityTest {
     }
 
     @Test
-    public void testAuthActivityIntentHasCreatePasswordMode() {
+    public void testAppPasswordActivityIntentHasCreatePasswordMode() {
         try (ActivityScenario<StartActivity> scenario = createScenario()) {
             Instrumentation.ActivityMonitor monitor = instrumentation
-                    .addMonitor(AuthActivity.class.getName(), null, false);
+                    .addMonitor(AppPasswordActivity.class.getName(), null, false);
 
             scenario.onActivity(activity -> {
                 View getStartedButton = activity.findViewById(R.id.getStartedButton);
@@ -179,7 +179,7 @@ public class StartActivityTest {
 
             Activity started = instrumentation.waitForMonitorWithTimeout(monitor, 20000);
 
-            assertNotNull("AuthActivity should be started on button click", started);
+            assertNotNull("AppPasswordActivity should be started on button click", started);
             started.finish();
         }
     }

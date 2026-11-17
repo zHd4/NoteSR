@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PasswordFlowCompletionHelper {
 
-    private final AuthActivity activity;
+    private final AppPasswordActivity activity;
     private final AppSecurityService appSecurityService;
     private final FsaResolver fsaResolver;
     private final AndroidServiceBootstrapper androidServiceBootstrapper;

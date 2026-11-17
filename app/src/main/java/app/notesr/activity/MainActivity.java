@@ -15,11 +15,11 @@ import java.util.function.Supplier;
 import javax.inject.Inject;
 
 import app.notesr.R;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.service.AndroidServiceBootstrapper;
 import app.notesr.service.AndroidServiceRegistry;
 import app.notesr.service.lifecycle.AppCloseAndroidServiceStarter;
 import app.notesr.activity.note.list.NotesListActivity;
-import app.notesr.activity.security.password.AuthActivity;
 import app.notesr.activity.security.KeyRecoveryActivity;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.service.lifecycle.AppCloseAndroidService;
@@ -77,9 +77,9 @@ public class MainActivity extends ActivityBase {
                         : null,
 
                 () -> !appSecurityService.isAuthConfigured()
-                        ? new Intent(context, AuthActivity.class)
-                        .putExtra(AuthActivity.EXTRA_MODE,
-                                AuthActivity.Mode.AUTHENTICATION.getModeName())
+                        ? new Intent(context, AppPasswordActivity.class)
+                        .putExtra(AppPasswordActivity.EXTRA_MODE,
+                                AppPasswordActivity.Mode.AUTHENTICATION.getModeName())
                         : null,
 
                 () -> {

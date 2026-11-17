@@ -5,7 +5,7 @@
 
 package app.notesr.activity.security.password;
 
-import static app.notesr.activity.security.password.AuthActivity.CACHE_KEY_HEX_KEY;
+import static app.notesr.activity.security.password.AppPasswordActivity.CACHE_KEY_HEX_KEY;
 import static app.notesr.core.util.CharUtils.bytesToChars;
 
 import android.widget.TextView;
@@ -26,12 +26,12 @@ import app.notesr.util.ActivityUtils;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Coordinates password confirmation and app-key recovery for the access code activity.
+ * Coordinates password confirmation and app-key recovery for the {@link AppPasswordActivity}.
  */
 @RequiredArgsConstructor
 public class KeyRecoveryHandler {
 
-    private final AuthActivity activity;
+    private final AppPasswordActivity activity;
     private final AppSecurityService appSecurityService;
     private final SecureStringBuilder passwordBuilder;
     private final ActivityUtils activityUtils;
