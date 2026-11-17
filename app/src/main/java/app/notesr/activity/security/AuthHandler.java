@@ -9,6 +9,7 @@ import static app.notesr.activity.security.AuthActivity.CACHE_KEY_HEX_KEY;
 import static app.notesr.core.util.CharUtils.bytesToChars;
 import static app.notesr.core.util.CharUtils.charsToBytes;
 
+import android.content.Context;
 import android.content.Intent;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -122,7 +123,14 @@ public class AuthHandler {
                 throw new RuntimeException(e);
             }
 
-            activity.startActivity(getNewIntent(NotesListActivity.class));
+            bootstrapPostAuthServices(activity.getApplicationContext());
+
+            Intent requiredIntent = getRequiredIntent();
+            Intent nextIntent = requiredIntent == null
+                    ? getNewIntent(NotesListActivity.class)
+                    : requiredIntent;
+
+            activity.startActivity(nextIntent);
             activity.finish();
         }
     }
@@ -178,14 +186,14 @@ public class AuthHandler {
         TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
         censoredPasswordView.setText("");
 
-        var context = activity.getApplicationContext();
+        bootstrapPostAuthServices(activity.getApplicationContext());
 
-        androidServiceBootstrapper.startServicesPostAuth(
-                context,
-                appSecurityService.getActualSecrets()
-        );
+        Intent requiredIntent = getRequiredIntent();
+        Intent nextIntent = requiredIntent == null
+                ? getNewIntent(NotesListActivity.class)
+                : requiredIntent;
 
-        activity.startActivity(getNextIntentAfterAuth());
+        activity.startActivity(nextIntent);
         activity.finish();
     }
 
@@ -218,6 +226,7 @@ public class AuthHandler {
         resetPassword();
     }
 
+    @Deprecated(forRemoval = true)
     protected Intent getNextIntentAfterAuth() {
         var fsaEntry = fsaResolver.getFsaEntryOfCurrentRunningFs();
 
@@ -233,6 +242,32 @@ public class AuthHandler {
         return getNewIntent(NotesListActivity.class);
     }
 
+    protected Intent getFsaIntent() {
+        var fsaEntry = fsaResolver.getFsaEntryOfCurrentRunningFs();
+        return fsaEntry != null ? getNewIntent(fsaEntry.getActivityClass()) : null;
+    }
+
+    protected boolean isMigrationRequired() {
+        int lastMigrationVersion = dataVersionManager.getCurrentVersion();
+        int currentDataSchemaVersion = BuildConfig.DATA_SCHEMA_VERSION;
+
+        return lastMigrationVersion < currentDataSchemaVersion;
+    }
+
+    protected Intent getRequiredIntent() {
+        Intent fsaIntent = getFsaIntent();
+
+        if (fsaIntent != null) {
+            return fsaIntent;
+        }
+
+        if (isMigrationRequired()) {
+            return getNewIntent(MigrationActivity.class);
+        }
+
+        return null;
+    }
+
     protected Intent getNewIntent(Class<? extends ActivityBase> activityClass) {
         return new Intent(activity.getApplicationContext(), activityClass);
     }
@@ -242,6 +277,11 @@ public class AuthHandler {
 
         censoredPasswordView.setText("");
         passwordBuilder.wipe();
+    }
+
+    protected void bootstrapPostAuthServices(Context context) {
+        androidServiceBootstrapper.startServicesPostAuth(context,
+                appSecurityService.getActualSecrets());
     }
 
     protected void sleepBeforeRetry() throws InterruptedException {
