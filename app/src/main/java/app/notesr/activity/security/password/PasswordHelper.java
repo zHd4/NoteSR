@@ -16,6 +16,13 @@ import app.notesr.core.util.SecureStringBuilder;
 import app.notesr.util.ActivityUtils;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Validates access-code input and manages the two-entry confirmation required
+ * when creating a password.
+ *
+ * <p>The helper retains the first valid entry while the user confirms it and
+ * clears the visible and buffered input after each attempt.
+ */
 @RequiredArgsConstructor
 public class PasswordHelper {
 
@@ -32,8 +39,9 @@ public class PasswordHelper {
      * <p>On the first valid entry, stores the password for comparison and updates
      * the prompt to request confirmation. Input is reset after each attempt.
      *
-     * @return the confirmed password if both entries match; {@code null} if the
-     * password is too short or the confirmation does not match
+     * @return the entered password when the confirmation matches; {@code null}
+     *         while awaiting confirmation, or if the password is too short or
+     *         does not match the first entry
      */
     public char[] proceedPasswordSetting() {
         char[] password = passwordBuilder.toCharArray();
@@ -64,7 +72,10 @@ public class PasswordHelper {
     }
 
     /**
-     * Resets the password input and clears the cached password.
+     * Clears the visible password text and wipes the current input buffer.
+     *
+     * <p>If confirmation is in progress, the first entered password is retained
+     * so that the user can try entering its confirmation again.
      */
     public void resetPassword() {
         TextView censoredPasswordView = activity.findViewById(R.id.censoredPasswordTextView);
