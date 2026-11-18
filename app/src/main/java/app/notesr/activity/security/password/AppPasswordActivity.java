@@ -88,7 +88,7 @@ public final class AppPasswordActivity extends ActivityBase {
         applyInsets(findViewById(R.id.main));
 
         var passwordHelper = new PasswordHelper(
-                this, passwordBuilder);
+                this, passwordBuilder, activityUtils);
 
         var passwordFlowCompletionHelper = new PasswordFlowCompletionHelper(
                 this, appSecurityService, fsaResolver, serviceBootstrapper,
@@ -98,15 +98,13 @@ public final class AppPasswordActivity extends ActivityBase {
                 this, appSecurityService, passwordBuilder, activityUtils,
                 passwordFlowCompletionHelper, passwordHelper);
 
-        passwordSetupHandler = new PasswordSetupHandler(this, passwordBuilder,
-                activityUtils, passwordHelper, passwordFlowCompletionHelper);
+        passwordSetupHandler = new PasswordSetupHandler(passwordHelper,
+                passwordFlowCompletionHelper);
 
         keyRecoveryHandler = new KeyRecoveryHandler(this, appSecurityService,
-                passwordBuilder, activityUtils, passwordFlowCompletionHelper,
-                passwordHelper);
-        passwordChangeHandler = new PasswordChangeHandler(this, passwordBuilder,
-                activityUtils, secretsRotationService, passwordFlowCompletionHelper,
-                passwordHelper);
+                passwordFlowCompletionHelper, passwordHelper);
+        passwordChangeHandler = new PasswordChangeHandler(this, activityUtils,
+                secretsRotationService, passwordFlowCompletionHelper, passwordHelper);
 
         currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
         keyboardContainer = findViewById(R.id.keyboardContainer);
