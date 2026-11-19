@@ -130,10 +130,24 @@ public final class AppPasswordActivity extends ActivityBase {
         passwordChangeHandler = new PasswordChangeHandler(this, activityUtils,
                 secretsRotationService, passwordFlowCompletionHelper, passwordHelper);
 
-        currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
+        try {
+            currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
+        } catch (IllegalArgumentException e) {
+            finishWithError(R.string.app_password_invalid_mode,
+                    "Invalid AppPasswordActivity mode", e);
+            return;
+        }
+
         keyboardContainer = findViewById(R.id.keyboardContainer);
 
-        validateModePermitted();
+        try {
+            validateModePermitted();
+        } catch (IllegalStateException e) {
+            finishWithError(R.string.app_password_creation_not_permitted,
+                    "CREATE_PASSWORD mode is not permitted", e);
+            return;
+        }
+
         configure();
         buildKeyboard();
     }
@@ -263,9 +277,8 @@ public final class AppPasswordActivity extends ActivityBase {
         try {
             authenticationHandler.authenticate();
         } catch (Exception e) {
-            Log.e(TAG, "Error occurred while authenticating", e);
-            activityUtils.showToastMessage(getString(R.string.authentication_error),
-                    Toast.LENGTH_SHORT);
+            finishWithError(R.string.authentication_error,
+                    "Error occurred while authenticating", e);
         }
     }
 
@@ -276,9 +289,8 @@ public final class AppPasswordActivity extends ActivityBase {
         try {
             passwordSetupHandler.createPassword();
         } catch (Exception e) {
-            Log.e(TAG, "Error occurred while creating password", e);
-            activityUtils.showToastMessage(getString(R.string.password_creation_error),
-                    Toast.LENGTH_SHORT);
+            finishWithError(R.string.password_creation_error,
+                    "Error occurred while creating password", e);
         }
     }
 
@@ -289,9 +301,8 @@ public final class AppPasswordActivity extends ActivityBase {
         try {
             passwordChangeHandler.changePassword();
         } catch (Exception e) {
-            Log.e(TAG, "Error occurred while changing password", e);
-            activityUtils.showToastMessage(getString(R.string.password_change_error),
-                    Toast.LENGTH_SHORT);
+            finishWithError(R.string.password_change_error,
+                    "Error occurred while changing password", e);
         }
     }
 
@@ -302,10 +313,22 @@ public final class AppPasswordActivity extends ActivityBase {
         try {
             keyRecoveryHandler.recoverKey();
         } catch (Exception e) {
-            Log.e(TAG, "Error occurred while recovering key", e);
-            activityUtils.showToastMessage(getString(R.string.key_recovery_error),
-                    Toast.LENGTH_SHORT);
+            finishWithError(R.string.key_recovery_error,
+                    "Error occurred while recovering key", e);
         }
+    }
+
+    /**
+     * Logs an activity error, displays the corresponding message, and finishes.
+     *
+     * @param messageId  string resource for the user-facing message
+     * @param logMessage message to write to the error log
+     * @param throwable  cause of the error
+     */
+    private void finishWithError(int messageId, String logMessage, Throwable throwable) {
+        Log.e(TAG, logMessage, throwable);
+        activityUtils.showToastMessage(getString(messageId), Toast.LENGTH_SHORT);
+        finish();
     }
 
     /**

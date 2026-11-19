@@ -119,4 +119,6 @@
     <string name="password_creation_error">Failed to create password</string>
     <string name="password_change_error">Failed to change password</string>
     <string name="key_recovery_error">Failed to recover key</string>
+    <string name="app_password_invalid_mode">The requested access-code screen could not be opened</string>
+    <string name="app_password_creation_not_permitted">An access code already exists. Change it instead.</string>
 </resources>
