@@ -10,6 +10,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -35,20 +38,18 @@ import org.junit.runner.RunWith;
 import java.util.Map;
 
 import app.notesr.R;
+import app.notesr.core.security.dto.CryptoSecrets;
 import app.notesr.di.service.security.AppSecurityServiceModule;
 import app.notesr.service.security.AppSecurityService;
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import dagger.hilt.android.testing.UninstallModules;
-import io.bloco.faker.Faker;
 
 @RunWith(AndroidJUnit4.class)
 @HiltAndroidTest
 @UninstallModules(AppSecurityServiceModule.class)
 public class AppPasswordActivityTest {
-
-    private static final Faker FAKER = new Faker();
 
     @Rule
     public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
@@ -67,6 +68,34 @@ public class AppPasswordActivityTest {
 
         when(appSecurityService.isKeyExists()).thenReturn(false);
         hiltRule.inject();
+    }
+
+    private void enterPasswordUsingKeyboard(AppPasswordActivity activity, String password) {
+        LinearLayout keyboardContainer = activity.findViewById(R.id.keyboardContainer);
+
+        for (char character : password.toCharArray()) {
+            String keyText = String.valueOf(character);
+            boolean keyFound = false;
+
+            for (int rowIndex = 0; rowIndex < keyboardContainer.getChildCount(); rowIndex++) {
+                LinearLayout row = (LinearLayout) keyboardContainer.getChildAt(rowIndex);
+
+                for (int keyIndex = 0; keyIndex < row.getChildCount(); keyIndex++) {
+                    Button key = (Button) row.getChildAt(keyIndex);
+                    if (keyText.equals(key.getText().toString())) {
+                        key.performClick();
+                        keyFound = true;
+                        break;
+                    }
+                }
+
+                if (keyFound) {
+                    break;
+                }
+            }
+
+            assertTrue("Keyboard should contain the test character " + character, keyFound);
+        }
     }
 
     @Test
@@ -111,6 +140,18 @@ public class AppPasswordActivityTest {
     }
 
     @Test
+    public void testInvalidModeFinishesActivityGracefully() {
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE, "invalid");
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+            assertEquals("Activity should finish when its mode is invalid",
+                    Lifecycle.State.DESTROYED, scenario.getState());
+        }
+    }
+
+    @Test
     public void testKeyboardStartsWithAlphaNumericLayout() {
         Intent intent = new Intent(context, AppPasswordActivity.class)
                 .putExtra(AppPasswordActivity.EXTRA_MODE, AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
@@ -138,6 +179,42 @@ public class AppPasswordActivityTest {
                         "The first key should display the digit one",
                         "1",
                         firstKey.getText().toString());
+            });
+        }
+    }
+
+    @Test
+    public void testAlphaNumericKeyboardShowsExactRows() {
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(activity -> {
+                LinearLayout keyboardContainer = activity.findViewById(R.id.keyboardContainer);
+                String[][] expectedRows = {
+                        {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"},
+                        {"q", "w", "e", "r", "t", "y", "u", "i", "o", "p"},
+                        {"a", "s", "d", "f", "g", "h", "j", "k", "l"},
+                        {"z", "x", "c", "v", "b", "n", "m"}
+                };
+
+                assertEquals("Alpha numeric layout should render four rows",
+                        4, keyboardContainer.getChildCount());
+
+                for (int rowIndex = 0; rowIndex < expectedRows.length; rowIndex++) {
+                    LinearLayout row = (LinearLayout) keyboardContainer.getChildAt(rowIndex);
+                    assertEquals("Row " + rowIndex + " should have the exact key count",
+                            expectedRows[rowIndex].length, row.getChildCount());
+
+                    for (int keyIndex = 0; keyIndex < expectedRows[rowIndex].length;
+                         keyIndex++) {
+                        Button key = (Button) row.getChildAt(keyIndex);
+                        assertEquals("Unexpected key at row " + rowIndex + ", index " + keyIndex,
+                                expectedRows[rowIndex][keyIndex],
+                                key.getText().toString());
+                    }
+                }
             });
         }
     }
@@ -291,6 +368,32 @@ public class AppPasswordActivityTest {
     }
 
     @Test
+    public void testCapsLockDoesNotUppercaseSymbols() {
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(activity -> {
+                activity.findViewById(R.id.capsButton).performClick();
+                activity.findViewById(R.id.changeKeyboardLayoutButton).performClick();
+
+                LinearLayout keyboardContainer = activity.findViewById(R.id.keyboardContainer);
+                LinearLayout symbolRow = (LinearLayout) keyboardContainer.getChildAt(0);
+                Button atKey = (Button) symbolRow.getChildAt(1);
+                atKey.performClick();
+
+                assertTrue("Caps lock should remain enabled in symbol layout",
+                        activity.isCapsLockEnabled());
+                assertEquals("Symbol layout should not transform symbols",
+                        "@", atKey.getText().toString());
+                assertEquals("Pressed symbol should be appended without casing",
+                        "@", activity.getPasswordBuilder().toString());
+            });
+        }
+    }
+
+    @Test
     public void testModeSpecificUiTextForEachMode() {
         Map<String, String> expectedModes = Map.of(
                 AppPasswordActivity.Mode.AUTHENTICATION.getModeName(), "Enter access code",
@@ -387,7 +490,7 @@ public class AppPasswordActivityTest {
         try (ActivityScenario<AppPasswordActivity> scenario =
                      ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                String testPassword = FAKER.internet.password();
+                String testPassword = "1234";
                 String testCensoredPassword = "•".repeat(testPassword.length());
 
                 TextView topLabel = activity.findViewById(R.id.authTopLabel);
@@ -416,6 +519,127 @@ public class AppPasswordActivityTest {
     }
 
     @Test
+    public void testCreatePasswordRejectsTooShortInput() {
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(activity -> {
+                enterPasswordUsingKeyboard(activity,
+                        "1".repeat(CryptoSecrets.PASSWORD_MIN_LENGTH - 1));
+
+                Button okButton = activity.findViewById(R.id.okButton);
+                okButton.performClick();
+
+                TextView topLabel = activity.findViewById(R.id.authTopLabel);
+                TextView passwordView = activity.findViewById(R.id.censoredPasswordTextView);
+
+                assertEquals("Too-short input should retain the create-password label",
+                        activity.getString(R.string.create_access_code),
+                        topLabel.getText().toString());
+                assertEquals("Too-short input should clear the password builder",
+                        0, activity.getPasswordBuilder().length());
+                assertEquals("Too-short input should clear the censored display",
+                        "", passwordView.getText().toString());
+            });
+        }
+    }
+
+    @Test
+    public void testCreatePasswordMismatchClearsInputAndKeepsConfirmationStep() {
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(activity -> {
+                enterPasswordUsingKeyboard(activity, "1234");
+                activity.findViewById(R.id.okButton).performClick();
+
+                TextView topLabel = activity.findViewById(R.id.authTopLabel);
+                TextView passwordView = activity.findViewById(R.id.censoredPasswordTextView);
+
+                assertEquals("Valid first entry should open the confirmation step",
+                        activity.getString(R.string.repeat_access_code),
+                        topLabel.getText().toString());
+                assertEquals("First entry should clear the password builder",
+                        0, activity.getPasswordBuilder().length());
+                assertEquals("First entry should clear the censored display",
+                        "", passwordView.getText().toString());
+
+                enterPasswordUsingKeyboard(activity, "1235");
+                activity.findViewById(R.id.okButton).performClick();
+
+                assertEquals("Mismatch should retain the confirmation step",
+                        activity.getString(R.string.repeat_access_code),
+                        topLabel.getText().toString());
+                assertEquals("Mismatch should clear the password builder",
+                        0, activity.getPasswordBuilder().length());
+                assertEquals("Mismatch should clear the censored display",
+                        "", passwordView.getText().toString());
+            });
+        }
+    }
+
+    @Test
+    public void testChangeAndRecoveryModesRejectTooShortInput() {
+        for (AppPasswordActivity.Mode mode : new AppPasswordActivity.Mode[]{
+                AppPasswordActivity.Mode.CHANGE_PASSWORD,
+                AppPasswordActivity.Mode.KEY_RECOVERY}) {
+            Intent intent = new Intent(context, AppPasswordActivity.class)
+                    .putExtra(AppPasswordActivity.EXTRA_MODE, mode.getModeName());
+
+            try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+                scenario.onActivity(activity -> {
+                    enterPasswordUsingKeyboard(activity,
+                            "1".repeat(CryptoSecrets.PASSWORD_MIN_LENGTH - 1));
+                    activity.findViewById(R.id.okButton).performClick();
+
+                    assertEquals("Too-short input should clear " + mode + " password builder",
+                            0, activity.getPasswordBuilder().length());
+                    assertEquals("Too-short input should clear " + mode + " censored display",
+                            "",
+                            ((TextView) activity.findViewById(R.id.censoredPasswordTextView))
+                                    .getText().toString());
+                });
+            }
+        }
+    }
+
+    @Test
+    public void testChangeAndRecoveryModesClearMismatchConfirmation() {
+        for (AppPasswordActivity.Mode mode : new AppPasswordActivity.Mode[]{
+                AppPasswordActivity.Mode.CHANGE_PASSWORD,
+                AppPasswordActivity.Mode.KEY_RECOVERY}) {
+            Intent intent = new Intent(context, AppPasswordActivity.class)
+                    .putExtra(AppPasswordActivity.EXTRA_MODE, mode.getModeName());
+
+            try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+                scenario.onActivity(activity -> {
+                    enterPasswordUsingKeyboard(activity, "1234");
+                    activity.findViewById(R.id.okButton).performClick();
+
+                    assertEquals("Mismatch setup should show repeat label for " + mode,
+                            activity.getString(R.string.repeat_access_code),
+                            ((TextView) activity.findViewById(R.id.authTopLabel))
+                                    .getText().toString());
+
+                    enterPasswordUsingKeyboard(activity, "5678");
+                    activity.findViewById(R.id.okButton).performClick();
+
+                    assertEquals("Mismatch should clear " + mode + " password builder",
+                            0, activity.getPasswordBuilder().length());
+                    assertEquals("Mismatch should clear " + mode + " censored display",
+                            "",
+                            ((TextView) activity.findViewById(R.id.censoredPasswordTextView))
+                                    .getText().toString());
+                });
+            }
+        }
+    }
+
+    @Test
     public void testCreatePasswordModeValidationDependsOnKeyExistence() {
         when(appSecurityService.isKeyExists()).thenReturn(false);
 
@@ -423,15 +647,34 @@ public class AppPasswordActivityTest {
                 .putExtra(AppPasswordActivity.EXTRA_MODE,
                         AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName());
 
-        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+        try (ActivityScenario<AppPasswordActivity> ignored = ActivityScenario.launch(intent)) {
             verify(appSecurityService).isKeyExists();
+        }
 
-            when(appSecurityService.isKeyExists()).thenReturn(true);
+        when(appSecurityService.isKeyExists()).thenReturn(true);
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+            assertEquals("Activity should finish when password creation is not permitted",
+                    Lifecycle.State.DESTROYED, scenario.getState());
+        }
+    }
+
+    @Test
+    public void testAuthenticationFailureFinishesActivityGracefully() {
+        doThrow(new RuntimeException("Authentication service failed"))
+                .when(appSecurityService).authenticate(any(char[].class));
+
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
-                IllegalStateException exception = assertThrows(
-                        IllegalStateException.class,
-                        activity::validateModePermitted);
-                assertTrue(requireNonNull(exception.getMessage()).contains("Key already exists"));
+                enterPasswordUsingKeyboard(activity, "1");
+                activity.findViewById(R.id.okButton).performClick();
+
+                assertTrue("Activity should finish when authentication fails",
+                        activity.isFinishing());
             });
         }
     }
