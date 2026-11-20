@@ -16,7 +16,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import javax.inject.Inject;
 
 import app.notesr.R;
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.util.ActivityUtils;
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -37,11 +37,12 @@ public class StartActivity extends ActivityBase {
         setContentView(R.layout.activity_start);
         applyInsets(findViewById(R.id.main));
 
-        Intent authActivityIntent = new Intent(getApplicationContext(), AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CREATE_PASSWORD.getModeName());
+        Intent appPasswordActivity = new Intent(getApplicationContext(), AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName());
 
         View.OnClickListener onGetStartedButtonClick =
-                view -> startActivity(authActivityIntent);
+                view -> startActivity(appPasswordActivity);
         findViewById(R.id.getStartedButton).setOnClickListener(onGetStartedButtonClick);
 
         activityUtils.disableBackButton();

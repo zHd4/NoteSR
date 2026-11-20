@@ -42,7 +42,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import app.notesr.R;
 import app.notesr.activity.DialogFactory;
 import app.notesr.activity.note.editor.OpenNoteActivity;
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.data.model.Note;
 import app.notesr.di.service.file.FileServiceModule;
 import app.notesr.di.service.note.NoteServiceModule;
@@ -350,8 +350,8 @@ public class NotesListActivityTest {
         when(noteService.getAll()).thenReturn(List.of(createTestNote()));
 
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        Instrumentation.ActivityMonitor authActivityMonitor = instrumentation.addMonitor(
-                AuthActivity.class.getName(), null, false);
+        Instrumentation.ActivityMonitor appPasswordActivityMonitor = instrumentation.addMonitor(
+                AppPasswordActivity.class.getName(), null, false);
 
         try (ActivityScenario<NotesListActivity> scenario = launchActivity()) {
             waitForNotesList(scenario, 1);
@@ -362,13 +362,13 @@ public class NotesListActivityTest {
                 assertTrue(activity.onOptionsItemSelected(item));
             });
 
-            Activity authActivity = instrumentation.waitForMonitorWithTimeout(authActivityMonitor,
-                    UI_TIMEOUT_MILLIS);
+            Activity appPasswordActivity = instrumentation.waitForMonitorWithTimeout(
+                    appPasswordActivityMonitor, UI_TIMEOUT_MILLIS);
 
-            assertNotNull("Auth activity should start after locking", authActivity);
+            assertNotNull("Auth activity should start after locking", appPasswordActivity);
             verify(appSecurityService, timeout(5000)).logout();
         } finally {
-            instrumentation.removeMonitor(authActivityMonitor);
+            instrumentation.removeMonitor(appPasswordActivityMonitor);
         }
     }
 

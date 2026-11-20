@@ -37,7 +37,7 @@ import app.notesr.activity.DialogFactory;
 import app.notesr.activity.exporter.ExportActivity;
 import app.notesr.activity.importer.ImportActivity;
 import app.notesr.activity.note.editor.OpenNoteActivity;
-import app.notesr.activity.security.AuthActivity;
+import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.activity.security.GenerateNewKeyAction;
 import app.notesr.activity.security.LockAction;
 import app.notesr.data.model.Note;
@@ -354,8 +354,8 @@ public final class NotesListActivity extends ActivityBase {
 
     /** Starts the authentication flow for changing the app password. */
     private void startChangePasswordActivity() {
-        Intent intent = new Intent(getApplicationContext(), AuthActivity.class)
-                .putExtra(AuthActivity.EXTRA_MODE, AuthActivity.Mode.CHANGE_PASSWORD.getModeName());
+        Intent intent = new Intent(getApplicationContext(), AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE, AppPasswordActivity.Mode.CHANGE_PASSWORD.getModeName());
         startActivity(intent);
     }
 
