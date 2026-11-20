@@ -70,7 +70,7 @@ jobs:
           target: default
           profile: pixel_4
 
-          emulator-boot-timeout: 900
+          emulator-boot-timeout: 1800
 
           disable-spellchecker: true
 
