@@ -23,9 +23,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+          cache: gradle
 
       - name: Make gradlew executable
         run: chmod +x gradlew
