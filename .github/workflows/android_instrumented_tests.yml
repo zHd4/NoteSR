@@ -7,11 +7,12 @@ on:
 jobs:
   instrumented-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
 
     env:
       GRADLE_OPTS: -Xmx4g
-      ADB_INSTALL_TIMEOUT: 15
+      ADB_INSTALL_TIMEOUT: 30
+      ANDROID_I_WANT_MY_TCG: "yes"
 
     steps:
       - name: Checkout
@@ -22,9 +23,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+          cache: gradle
 
       - name: Make gradlew executable
         run: chmod +x gradlew
@@ -70,7 +69,7 @@ jobs:
           target: default
           profile: pixel_4
 
-          emulator-boot-timeout: 900
+          emulator-boot-timeout: 1800
 
           disable-spellchecker: true
 

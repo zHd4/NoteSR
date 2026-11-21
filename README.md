@@ -8,6 +8,7 @@
 <p align="center">
     <a href="https://github.com/zHd4/NoteSR/releases"><img src="https://img.shields.io/github/v/release/zHd4/NoteSR" /></a>
     <a href="https://github.com/zHd4/NoteSR/actions/workflows/java_ci.yml"><img src="https://github.com/zHd4/NoteSR/actions/workflows/java_ci.yml/badge.svg" /></a>
+    <a href="https://github.com/zHd4/NoteSR/actions/workflows/android_instrumented_tests.yml"><img src="https://github.com/zHd4/NoteSR/actions/workflows/android_instrumented_tests.yml/badge.svg" /></a>
     <a href="https://qlty.sh/gh/zHd4/projects/NoteSR"><img src="https://qlty.sh/gh/zHd4/projects/NoteSR/maintainability.svg" alt="Maintainability" /></a>
 </p>
 
