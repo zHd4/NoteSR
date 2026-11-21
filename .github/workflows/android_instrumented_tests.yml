@@ -12,6 +12,7 @@ jobs:
     env:
       GRADLE_OPTS: -Xmx4g
       ADB_INSTALL_TIMEOUT: 30
+      ANDROID_I_WANT_MY_TCG: "yes"
 
     steps:
       - name: Checkout
