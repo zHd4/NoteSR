@@ -188,7 +188,10 @@ public final class AppPasswordActivity extends ActivityBase {
                 topLabel.setText(R.string.enter_access_code);
                 activityUtils.disableBackButton();
             }
-            case CHANGE_PASSWORD -> topLabel.setText(R.string.create_new_access_code);
+            case CHANGE_PASSWORD -> {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                topLabel.setText(R.string.create_new_access_code);
+            }
             default -> topLabel.setText(R.string.create_access_code);
         }
 
