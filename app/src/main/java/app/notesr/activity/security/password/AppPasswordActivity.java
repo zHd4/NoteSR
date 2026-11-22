@@ -173,10 +173,10 @@ public final class AppPasswordActivity extends ActivityBase {
      * by password modes.
      */
     private void configure() {
-        TextView topLabel = findViewById(R.id.authTopLabel);
         ActionBar actionBar = requireNonNull(getSupportActionBar());
         actionBar.setTitle("");
 
+        TextView accessCodePrompt = findViewById(R.id.accessCodePrompt);
 
         Button capsButton = findViewById(R.id.capsButton);
         Button backspaceButton = findViewById(R.id.pinBackspaceButton);
@@ -185,14 +185,14 @@ public final class AppPasswordActivity extends ActivityBase {
 
         switch (currentMode) {
             case AUTHENTICATION -> {
-                topLabel.setText(R.string.enter_access_code);
+                accessCodePrompt.setText(R.string.enter_access_code);
                 activityUtils.disableBackButton();
             }
             case CHANGE_PASSWORD -> {
                 actionBar.setDisplayHomeAsUpEnabled(true);
-                topLabel.setText(R.string.create_new_access_code);
+                accessCodePrompt.setText(R.string.create_new_access_code);
             }
-            default -> topLabel.setText(R.string.create_access_code);
+            default -> accessCodePrompt.setText(R.string.create_access_code);
         }
 
         capsButton.setOnClickListener(getCapsButtonClickListener());

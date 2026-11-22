@@ -28,7 +28,7 @@ class PasswordHelperTest {
 
     private AppPasswordActivity activity;
     private ActivityUtils activityUtils;
-    private TextView topLabel;
+    private TextView accessCodePrompt;
     private TextView censoredPasswordView;
     private SecureStringBuilder passwordBuilder;
     private PasswordHelper passwordHelper;
@@ -37,11 +37,11 @@ class PasswordHelperTest {
     void setUp() {
         activity = mock(AppPasswordActivity.class);
         activityUtils = mock(ActivityUtils.class);
-        topLabel = mock(TextView.class);
+        accessCodePrompt = mock(TextView.class);
         censoredPasswordView = mock(TextView.class);
         passwordBuilder = new SecureStringBuilder();
 
-        when(activity.findViewById(R.id.authTopLabel)).thenReturn(topLabel);
+        when(activity.findViewById(R.id.accessCodePrompt)).thenReturn(accessCodePrompt);
         when(activity.findViewById(R.id.censoredPasswordTextView))
                 .thenReturn(censoredPasswordView);
 
@@ -80,7 +80,7 @@ class PasswordHelperTest {
         assertEquals(0, passwordBuilder.length(),
                 "Valid first entry should clear the password builder");
 
-        verify(topLabel).setText("Repeat access code");
+        verify(accessCodePrompt).setText("Repeat access code");
         verify(censoredPasswordView).setText("");
     }
 
