@@ -5,6 +5,8 @@
 
 package app.notesr.activity.security.password;
 
+import static java.util.Objects.requireNonNull;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
 
 import java.util.List;
@@ -166,10 +169,14 @@ public final class AppPasswordActivity extends ActivityBase {
     }
 
     /**
-     * Configures labels and click handlers for the controls shared by password modes.
+     * Configures action bar, top label, and click handlers for the controls shared
+     * by password modes.
      */
     private void configure() {
         TextView topLabel = findViewById(R.id.authTopLabel);
+        ActionBar actionBar = requireNonNull(getSupportActionBar());
+        actionBar.setTitle("");
+
 
         Button capsButton = findViewById(R.id.capsButton);
         Button backspaceButton = findViewById(R.id.pinBackspaceButton);
