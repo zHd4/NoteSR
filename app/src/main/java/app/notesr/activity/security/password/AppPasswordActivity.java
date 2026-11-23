@@ -151,7 +151,8 @@ public final class AppPasswordActivity extends ActivityBase {
             return;
         }
 
-        configure();
+        configurePasswordMode();
+        setupHandlers();
         buildKeyboard();
     }
 
@@ -169,19 +170,13 @@ public final class AppPasswordActivity extends ActivityBase {
     }
 
     /**
-     * Configures action bar, top label, and click handlers for the controls shared
-     * by password modes.
+     * Applies the UI configuration for the current mode.
      */
-    private void configure() {
+    private void configurePasswordMode() {
         ActionBar actionBar = requireNonNull(getSupportActionBar());
         actionBar.setTitle("");
 
         TextView accessCodePrompt = findViewById(R.id.accessCodePrompt);
-
-        Button capsButton = findViewById(R.id.capsButton);
-        Button backspaceButton = findViewById(R.id.pinBackspaceButton);
-        Button okButton = findViewById(R.id.okButton);
-        Button changeLayoutButton = findViewById(R.id.changeKeyboardLayoutButton);
 
         switch (currentMode) {
             case AUTHENTICATION -> {
@@ -194,9 +189,18 @@ public final class AppPasswordActivity extends ActivityBase {
             }
             default -> accessCodePrompt.setText(R.string.create_access_code);
         }
+    }
+
+    /**
+     * Configures the activity's control handlers.
+     */
+    private void setupHandlers() {
+        Button capsButton = findViewById(R.id.capsButton);
+        Button backspaceButton = findViewById(R.id.pinBackspaceButton);
+        Button okButton = findViewById(R.id.okButton);
+        Button changeLayoutButton = findViewById(R.id.changeKeyboardLayoutButton);
 
         capsButton.setOnClickListener(getCapsButtonClickListener());
-
         backspaceButton.setOnClickListener(getBackspaceButtonClickListener());
         okButton.setOnClickListener(getOkButtonClickListener());
         changeLayoutButton.setOnClickListener(getChangeLayoutButtonClickListener());
