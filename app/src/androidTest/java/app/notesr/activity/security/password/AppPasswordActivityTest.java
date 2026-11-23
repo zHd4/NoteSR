@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -415,6 +416,39 @@ public class AppPasswordActivityTest {
                             "Mode-specific label text should match the expected resource",
                             expectedText,
                             accessCodePrompt.getText().toString());
+                });
+            }
+        }
+    }
+
+    @Test
+    public void testActionBarBackNavigationIsEnabledOnlyForChangePasswordMode() {
+        Map<String, Boolean> expectedModes = Map.of(
+                AppPasswordActivity.Mode.AUTHENTICATION.getModeName(), false,
+                AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName(), false,
+                AppPasswordActivity.Mode.CHANGE_PASSWORD.getModeName(), true,
+                AppPasswordActivity.Mode.KEY_RECOVERY.getModeName(), false
+        );
+
+        for (Map.Entry<String, Boolean> modeExpectation : expectedModes.entrySet()) {
+            String modeName = modeExpectation.getKey();
+            boolean shouldShowBackNavigation = modeExpectation.getValue();
+
+            try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(
+                    new Intent(context, AppPasswordActivity.class)
+                            .putExtra(AppPasswordActivity.EXTRA_MODE, modeName))) {
+                scenario.onActivity(activity -> {
+                    ActionBar actionBar = activity.getSupportActionBar();
+                    assertNotNull("Action bar should be available", actionBar);
+
+                    boolean backNavigationEnabled = (actionBar.getDisplayOptions()
+                            & ActionBar.DISPLAY_HOME_AS_UP) == ActionBar.DISPLAY_HOME_AS_UP;
+
+                    assertEquals("Action bar title should remain empty",
+                            "", actionBar.getTitle());
+                    assertEquals(
+                            "Back navigation visibility should match the password mode",
+                            shouldShowBackNavigation, backNavigationEnabled);
                 });
             }
         }
