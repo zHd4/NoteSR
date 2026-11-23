@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -410,13 +411,65 @@ public class AppPasswordActivityTest {
                     new Intent(context, AppPasswordActivity.class)
                             .putExtra(AppPasswordActivity.EXTRA_MODE, modeName))) {
                 scenario.onActivity(activity -> {
-                    TextView topLabel = activity.findViewById(R.id.authTopLabel);
+                    TextView accessCodePrompt = activity.findViewById(R.id.accessCodePrompt);
                     assertEquals(
                             "Mode-specific label text should match the expected resource",
                             expectedText,
-                            topLabel.getText().toString());
+                            accessCodePrompt.getText().toString());
                 });
             }
+        }
+    }
+
+    @Test
+    public void testActionBarBackNavigationIsEnabledOnlyForChangePasswordMode() {
+        Map<String, Boolean> expectedModes = Map.of(
+                AppPasswordActivity.Mode.AUTHENTICATION.getModeName(), false,
+                AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName(), false,
+                AppPasswordActivity.Mode.CHANGE_PASSWORD.getModeName(), true,
+                AppPasswordActivity.Mode.KEY_RECOVERY.getModeName(), false
+        );
+
+        for (Map.Entry<String, Boolean> modeExpectation : expectedModes.entrySet()) {
+            String modeName = modeExpectation.getKey();
+            boolean shouldShowBackNavigation = modeExpectation.getValue();
+
+            try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(
+                    new Intent(context, AppPasswordActivity.class)
+                            .putExtra(AppPasswordActivity.EXTRA_MODE, modeName))) {
+                scenario.onActivity(activity -> {
+                    ActionBar actionBar = activity.getSupportActionBar();
+                    assertNotNull("Action bar should be available", actionBar);
+
+                    boolean backNavigationEnabled = (actionBar.getDisplayOptions()
+                            & ActionBar.DISPLAY_HOME_AS_UP) == ActionBar.DISPLAY_HOME_AS_UP;
+
+                    assertEquals("Action bar title should remain empty",
+                            "", actionBar.getTitle());
+                    assertEquals(
+                            "Back navigation visibility should match the password mode",
+                            shouldShowBackNavigation, backNavigationEnabled);
+                });
+            }
+        }
+    }
+
+    @Test
+    public void testAuthenticationModeDisablesBackNavigation() {
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(activity -> {
+                assertTrue("Authentication mode should install an enabled back callback",
+                        activity.getOnBackPressedDispatcher().hasEnabledCallbacks());
+
+                activity.getOnBackPressedDispatcher().onBackPressed();
+
+                assertTrue("Back press in authentication mode should finish the activity",
+                        activity.isFinishing());
+            });
         }
     }
 
@@ -493,7 +546,7 @@ public class AppPasswordActivityTest {
                 String testPassword = "1234";
                 String testCensoredPassword = "•".repeat(testPassword.length());
 
-                TextView topLabel = activity.findViewById(R.id.authTopLabel);
+                TextView accessCodePrompt = activity.findViewById(R.id.accessCodePrompt);
                 TextView passwordView = activity.findViewById(R.id.censoredPasswordTextView);
 
                 activity.getPasswordBuilder().append(testPassword);
@@ -506,7 +559,7 @@ public class AppPasswordActivityTest {
                                 + " should require a second confirmation step after"
                                 + " a valid first entry",
                         activity.getString(R.string.repeat_access_code),
-                        topLabel.getText().toString());
+                        accessCodePrompt.getText().toString());
                 assertEquals("The password buffer"
                                 + " should clear after the first create-password validation pass",
                         0,
@@ -532,12 +585,12 @@ public class AppPasswordActivityTest {
                 Button okButton = activity.findViewById(R.id.okButton);
                 okButton.performClick();
 
-                TextView topLabel = activity.findViewById(R.id.authTopLabel);
+                TextView accessCodePrompt = activity.findViewById(R.id.accessCodePrompt);
                 TextView passwordView = activity.findViewById(R.id.censoredPasswordTextView);
 
                 assertEquals("Too-short input should retain the create-password label",
                         activity.getString(R.string.create_access_code),
-                        topLabel.getText().toString());
+                        accessCodePrompt.getText().toString());
                 assertEquals("Too-short input should clear the password builder",
                         0, activity.getPasswordBuilder().length());
                 assertEquals("Too-short input should clear the censored display",
@@ -557,12 +610,12 @@ public class AppPasswordActivityTest {
                 enterPasswordUsingKeyboard(activity, "1234");
                 activity.findViewById(R.id.okButton).performClick();
 
-                TextView topLabel = activity.findViewById(R.id.authTopLabel);
+                TextView accessCodePrompt = activity.findViewById(R.id.accessCodePrompt);
                 TextView passwordView = activity.findViewById(R.id.censoredPasswordTextView);
 
                 assertEquals("Valid first entry should open the confirmation step",
                         activity.getString(R.string.repeat_access_code),
-                        topLabel.getText().toString());
+                        accessCodePrompt.getText().toString());
                 assertEquals("First entry should clear the password builder",
                         0, activity.getPasswordBuilder().length());
                 assertEquals("First entry should clear the censored display",
@@ -573,7 +626,7 @@ public class AppPasswordActivityTest {
 
                 assertEquals("Mismatch should retain the confirmation step",
                         activity.getString(R.string.repeat_access_code),
-                        topLabel.getText().toString());
+                        accessCodePrompt.getText().toString());
                 assertEquals("Mismatch should clear the password builder",
                         0, activity.getPasswordBuilder().length());
                 assertEquals("Mismatch should clear the censored display",
@@ -622,7 +675,7 @@ public class AppPasswordActivityTest {
 
                     assertEquals("Mismatch setup should show repeat label for " + mode,
                             activity.getString(R.string.repeat_access_code),
-                            ((TextView) activity.findViewById(R.id.authTopLabel))
+                            ((TextView) activity.findViewById(R.id.accessCodePrompt))
                                     .getText().toString());
 
                     enterPasswordUsingKeyboard(activity, "5678");

@@ -5,6 +5,8 @@
 
 package app.notesr.activity.security.password;
 
+import static java.util.Objects.requireNonNull;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
 
 import java.util.List;
@@ -148,7 +151,8 @@ public final class AppPasswordActivity extends ActivityBase {
             return;
         }
 
-        configure();
+        configurePasswordMode();
+        setupHandlers();
         buildKeyboard();
     }
 
@@ -166,27 +170,37 @@ public final class AppPasswordActivity extends ActivityBase {
     }
 
     /**
-     * Configures labels and click handlers for the controls shared by password modes.
+     * Applies the UI configuration for the current mode.
      */
-    private void configure() {
-        TextView topLabel = findViewById(R.id.authTopLabel);
+    private void configurePasswordMode() {
+        ActionBar actionBar = requireNonNull(getSupportActionBar());
+        actionBar.setTitle("");
 
+        TextView accessCodePrompt = findViewById(R.id.accessCodePrompt);
+
+        switch (currentMode) {
+            case AUTHENTICATION -> {
+                accessCodePrompt.setText(R.string.enter_access_code);
+                activityUtils.disableBackButton();
+            }
+            case CHANGE_PASSWORD -> {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                accessCodePrompt.setText(R.string.create_new_access_code);
+            }
+            default -> accessCodePrompt.setText(R.string.create_access_code);
+        }
+    }
+
+    /**
+     * Configures the activity's control handlers.
+     */
+    private void setupHandlers() {
         Button capsButton = findViewById(R.id.capsButton);
         Button backspaceButton = findViewById(R.id.pinBackspaceButton);
         Button okButton = findViewById(R.id.okButton);
         Button changeLayoutButton = findViewById(R.id.changeKeyboardLayoutButton);
 
-        switch (currentMode) {
-            case AUTHENTICATION -> {
-                topLabel.setText(R.string.enter_access_code);
-                activityUtils.disableBackButton();
-            }
-            case CHANGE_PASSWORD -> topLabel.setText(R.string.create_new_access_code);
-            default -> topLabel.setText(R.string.create_access_code);
-        }
-
         capsButton.setOnClickListener(getCapsButtonClickListener());
-
         backspaceButton.setOnClickListener(getBackspaceButtonClickListener());
         okButton.setOnClickListener(getOkButtonClickListener());
         changeLayoutButton.setOnClickListener(getChangeLayoutButtonClickListener());

@@ -40,7 +40,7 @@
             android:name=".activity.security.password.AppPasswordActivity"
             android:exported="false"
             android:screenOrientation="locked"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.security.KeyRecoveryActivity"
             android:exported="false"

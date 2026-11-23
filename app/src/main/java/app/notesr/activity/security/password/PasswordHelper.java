@@ -50,8 +50,8 @@ public class PasswordHelper {
             if (passwordBuilder.length() >= CryptoSecrets.PASSWORD_MIN_LENGTH) {
                 createdPassword = password;
 
-                TextView topLabel = activity.findViewById(R.id.authTopLabel);
-                topLabel.setText(activity.getString(R.string.repeat_access_code));
+                TextView accessCodePrompt = activity.findViewById(R.id.accessCodePrompt);
+                accessCodePrompt.setText(activity.getString(R.string.repeat_access_code));
             } else {
                 activityUtils.showToastMessage(String.format(
                         activity.getString(R.string.minimum_password_length_is_n),
