@@ -455,6 +455,25 @@ public class AppPasswordActivityTest {
     }
 
     @Test
+    public void testAuthenticationModeDisablesBackNavigation() {
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(activity -> {
+                assertTrue("Authentication mode should install an enabled back callback",
+                        activity.getOnBackPressedDispatcher().hasEnabledCallbacks());
+
+                activity.getOnBackPressedDispatcher().onBackPressed();
+
+                assertTrue("Back press in authentication mode should finish the activity",
+                        activity.isFinishing());
+            });
+        }
+    }
+
+    @Test
     public void testPasswordEntryUsesActualCharactersAndKeepsCapsAcrossLayoutToggle() {
         Intent intent = new Intent(context, AppPasswordActivity.class)
                 .putExtra(AppPasswordActivity.EXTRA_MODE, AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
