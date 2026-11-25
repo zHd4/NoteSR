@@ -8,9 +8,11 @@ package app.notesr.activity;
 import android.content.Intent;
 import android.graphics.Insets;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -20,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 import javax.inject.Inject;
 
 import app.notesr.service.security.AppSecurityService;
+import app.notesr.util.ActivityUtils;
 import dagger.hilt.android.AndroidEntryPoint;
 import lombok.AccessLevel;
 import lombok.Setter;
@@ -30,6 +33,9 @@ public class ActivityBase extends AppCompatActivity {
     @Inject
     @Setter(AccessLevel.MODULE) // For testing purposes only
     AppSecurityService appSecurityService;
+
+    @Inject
+    ActivityUtils activityUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,23 @@ public class ActivityBase extends AppCompatActivity {
         if (!isSessionActive()) {
             restartApp();
         }
+    }
+
+    /**
+     * Logs an activity error, displays the corresponding message, and finishes.
+     *
+     * @param messageId  string resource for the user-facing message
+     * @param logMessage message to write to the error log
+     * @param throwable  cause of the error
+     */
+    protected void finishWithError(
+            String tag,
+            int messageId,
+            String logMessage,
+            Throwable throwable) {
+        Log.e(tag, logMessage, throwable);
+        activityUtils.showToastMessage(getString(messageId), Toast.LENGTH_SHORT);
+        finish();
     }
 
     void restartApp() {
