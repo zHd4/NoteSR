@@ -23,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class StartActivity extends ActivityBase {
 
+    private static final String TAG = StartActivity.class.getSimpleName();
     private static final double BANNER_MARGIN_FOR_LOW_HEIGHT = 0.1;
     private static final double BANNER_MARGIN_FOR_LARGE_HEIGHT = 0.2;
     private static final int LOW_SCREEN_HEIGHT = 800;
@@ -49,11 +50,16 @@ public class StartActivity extends ActivityBase {
         placeBannerFront();
     }
 
-    protected void validateKeyNotExists() {
+    protected void ensureAccessible() {
         if (appSecurityService.isKeyExists()) {
             throw new IllegalStateException(
                     "StartActivity is inaccessible if application is already configured" +
                             " and key already exists");
+        }
+
+        if (appSecurityService.isAppBlocked()) {
+            throw new IllegalStateException(
+                    "StartActivity is inaccessible if application is blocked");
         }
     }
 

@@ -94,7 +94,7 @@ public class StartActivityTest {
             scenario.onActivity(activity -> {
                 IllegalStateException exception = assertThrows(
                         IllegalStateException.class,
-                        activity::validateKeyNotExists);
+                        activity::ensureAccessible);
 
                 assertTrue(requireNonNull(exception.getMessage()).contains("key already exists"));
             });
