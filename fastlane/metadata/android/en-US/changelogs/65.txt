@@ -1,0 +1,9 @@
+Improvements:
+
+• Improved access code and key recovery flows.
+• Removed an unnecessary storage permission.
+
+Bug Fixes:
+
+• Fixed an issue where the file list could remain outdated after deleting the last file.
+• Fixed issues that could interrupt key recovery and leave app services unavailable.
