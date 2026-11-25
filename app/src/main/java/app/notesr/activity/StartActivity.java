@@ -34,7 +34,15 @@ public class StartActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        validateKeyNotExists();
+
+        try {
+            ensureAccessible();
+        } catch (IllegalStateException e) {
+            finishWithError(TAG, R.string.start_activity_invalid_state,
+                    "Invalid state in StartActivity", e);
+            return;
+        }
+
         setContentView(R.layout.activity_start);
         applyInsets(findViewById(R.id.main));
 
