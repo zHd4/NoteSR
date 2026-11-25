@@ -111,6 +111,24 @@ public final class AppPasswordActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        try {
+            currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
+        } catch (IllegalArgumentException e) {
+            finishWithError(R.string.app_password_invalid_mode,
+                    "Invalid AppPasswordActivity mode", e);
+            return;
+        }
+
+        try {
+            validateModePermitted();
+        } catch (IllegalStateException e) {
+            finishWithError(R.string.app_password_invalid_mode,
+                    "The requested AppPasswordActivity mode is not permitted"
+                            + " for the current state", e);
+            return;
+        }
+
         setContentView(R.layout.activity_app_password);
         applyInsets(findViewById(R.id.main));
 
@@ -133,23 +151,7 @@ public final class AppPasswordActivity extends ActivityBase {
         passwordChangeHandler = new PasswordChangeHandler(this, activityUtils,
                 secretsRotationService, passwordFlowCompletionHelper, passwordHelper);
 
-        try {
-            currentMode = Mode.fromString(getIntent().getStringExtra(EXTRA_MODE));
-        } catch (IllegalArgumentException e) {
-            finishWithError(R.string.app_password_invalid_mode,
-                    "Invalid AppPasswordActivity mode", e);
-            return;
-        }
-
         keyboardContainer = findViewById(R.id.keyboardContainer);
-
-        try {
-            validateModePermitted();
-        } catch (IllegalStateException e) {
-            finishWithError(R.string.app_password_creation_not_permitted,
-                    "CREATE_PASSWORD mode is not permitted", e);
-            return;
-        }
 
         configurePasswordMode();
         setupHandlers();
@@ -159,13 +161,21 @@ public final class AppPasswordActivity extends ActivityBase {
     /**
      * Checks whether the selected mode is permitted in the current security state.
      *
-     * @throws IllegalStateException if password creation is requested after a key already exists
+     * @throws IllegalStateException if the mode is not permitted for the current state
      */
     void validateModePermitted() {
-        if (currentMode == Mode.CREATE_PASSWORD && appSecurityService.isKeyExists()) {
-            throw new IllegalStateException(
-                    "Key already exists, so CREATE_PASSWORD mode is not permitted," +
-                            " use CHANGE_PASSWORD instead");
+        if (currentMode == Mode.CREATE_PASSWORD) {
+            if (appSecurityService.isKeyExists()) {
+                throw new IllegalStateException(
+                        "Key already exists, so CREATE_PASSWORD mode is not permitted," +
+                                " use CHANGE_PASSWORD instead");
+            }
+
+            if (appSecurityService.isAppBlocked()) {
+                throw new IllegalStateException(
+                        "App is blocked, so CREATE_PASSWORD mode is not permitted," +
+                                " use KEY_RECOVERY instead");
+            }
         }
     }
 
