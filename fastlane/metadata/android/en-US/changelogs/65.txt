@@ -7,3 +7,4 @@ Bug Fixes:
 
 • Fixed an issue where the file list could remain outdated after deleting the last file.
 • Fixed issues that could interrupt key recovery and leave app services unavailable.
+• Prevented returning to first-run setup after key recovery, which could replace the recovered key.
