@@ -121,4 +121,7 @@
     <string name="key_recovery_error">Failed to recover key</string>
     <string name="app_password_invalid_mode">The requested access-code screen could not be opened</string>
     <string name="app_password_creation_not_permitted">An access code already exists. Change it instead.</string>
+    <string name="key_setup_key_already_exists">Key already exists. Change it instead.</string>
+    <string name="key_setup_error">Failed to set up key</string>
+    <string name="start_activity_invalid_state">The app is in an invalid state, it cannot be started</string>
 </resources>

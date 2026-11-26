@@ -84,7 +84,7 @@ public class StartActivityTest {
     }
 
     @Test
-    public void testValidateKeyNotExistsThrowsWhenKeyExists() {
+    public void testEnsureAccessibleThrowsWhenKeyExists() {
         when(appSecurityService.isKeyExists()).thenReturn(false);
 
         try (ActivityScenario<StartActivity> scenario = createScenario()) {
@@ -94,9 +94,28 @@ public class StartActivityTest {
             scenario.onActivity(activity -> {
                 IllegalStateException exception = assertThrows(
                         IllegalStateException.class,
-                        activity::validateKeyNotExists);
+                        activity::ensureAccessible);
 
                 assertTrue(requireNonNull(exception.getMessage()).contains("key already exists"));
+            });
+        }
+    }
+
+    @Test
+    public void testEnsureAccessibleThrowsWhenAppIsBlocked() {
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+        when(appSecurityService.isAppBlocked()).thenReturn(false);
+
+        try (ActivityScenario<StartActivity> scenario = createScenario()) {
+            when(appSecurityService.isAppBlocked()).thenReturn(true);
+
+            scenario.onActivity(activity -> {
+                IllegalStateException exception = assertThrows(
+                        IllegalStateException.class,
+                        activity::ensureAccessible);
+
+                assertTrue(requireNonNull(exception.getMessage())
+                        .contains("application is blocked"));
             });
         }
     }

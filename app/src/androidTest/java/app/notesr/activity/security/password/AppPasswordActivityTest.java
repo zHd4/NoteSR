@@ -517,7 +517,8 @@ public class AppPasswordActivityTest {
     @Test
     public void testOkButtonValidationForAuthenticationMode() {
         Intent intent = new Intent(context, AppPasswordActivity.class)
-                .putExtra(AppPasswordActivity.EXTRA_MODE, AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.AUTHENTICATION.getModeName());
 
         try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
@@ -538,7 +539,8 @@ public class AppPasswordActivityTest {
     @Test
     public void testOkButtonValidationForCreatePasswordMode() {
         Intent intent = new Intent(context, AppPasswordActivity.class)
-                .putExtra(AppPasswordActivity.EXTRA_MODE, AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName());
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName());
 
         try (ActivityScenario<AppPasswordActivity> scenario =
                      ActivityScenario.launch(intent)) {
@@ -693,8 +695,9 @@ public class AppPasswordActivityTest {
     }
 
     @Test
-    public void testCreatePasswordModeValidationDependsOnKeyExistence() {
+    public void testCreatePasswordModeValidationDependsOnSecurityState() {
         when(appSecurityService.isKeyExists()).thenReturn(false);
+        when(appSecurityService.isAppBlocked()).thenReturn(false);
 
         Intent intent = new Intent(context, AppPasswordActivity.class)
                 .putExtra(AppPasswordActivity.EXTRA_MODE,
@@ -702,12 +705,45 @@ public class AppPasswordActivityTest {
 
         try (ActivityScenario<AppPasswordActivity> ignored = ActivityScenario.launch(intent)) {
             verify(appSecurityService).isKeyExists();
+            verify(appSecurityService).isAppBlocked();
         }
 
         when(appSecurityService.isKeyExists()).thenReturn(true);
         try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
             assertEquals("Activity should finish when password creation is not permitted",
+                    Lifecycle.State.DESTROYED, scenario.getState());
+        }
+    }
+
+    @Test
+    public void testCreatePasswordModeIsNotPermittedWhenAppIsBlockedAndKeyNotExists() {
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+        when(appSecurityService.isAppBlocked()).thenReturn(true);
+
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+            assertEquals("Activity should finish when the app is blocked",
+                    Lifecycle.State.DESTROYED, scenario.getState());
+        }
+    }
+
+    @Test
+    public void testCreatePasswordModeIsNotPermittedWhenAppIsBlockedAndKeyExists() {
+        when(appSecurityService.isKeyExists()).thenReturn(true);
+        when(appSecurityService.isAppBlocked()).thenReturn(true);
+
+        Intent intent = new Intent(context, AppPasswordActivity.class)
+                .putExtra(AppPasswordActivity.EXTRA_MODE,
+                        AppPasswordActivity.Mode.CREATE_PASSWORD.getModeName());
+
+        try (ActivityScenario<AppPasswordActivity> scenario = ActivityScenario.launch(intent)) {
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+            assertEquals("Activity should finish when the app is blocked and a key exists",
                     Lifecycle.State.DESTROYED, scenario.getState());
         }
     }

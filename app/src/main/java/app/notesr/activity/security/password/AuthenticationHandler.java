@@ -5,6 +5,7 @@
 
 package app.notesr.activity.security.password;
 
+import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
@@ -100,8 +101,11 @@ public class AuthenticationHandler {
             activityUtils.showToastMessage(activity.getString(R.string.blocked),
                     Toast.LENGTH_SHORT);
 
-            passwordFlowCompletionHelper.navigateNextActivity(
-                    passwordFlowCompletionHelper.getNewActivityIntent(KeyRecoveryActivity.class));
+            Intent nextActivityIntent = passwordFlowCompletionHelper
+                    .getNewActivityIntent(KeyRecoveryActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            passwordFlowCompletionHelper.navigateNextActivity(nextActivityIntent);
         } else {
             sleepBeforeRetry();
 

@@ -14,12 +14,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
@@ -141,7 +139,7 @@ public final class FilesListActivity extends ActivityBase {
         try {
             noteId = requireNoteId(getIntent());
         } catch (IllegalStateException e) {
-            finishWithError(R.string.files_list_missing_note_id,
+            finishWithError(TAG, R.string.files_list_missing_note_id,
                     "Missing note id in FilesListActivity intent", e);
             return;
         }
@@ -186,19 +184,6 @@ public final class FilesListActivity extends ActivityBase {
         }
 
         return noteId;
-    }
-
-    /**
-     * Logs an activity error, displays the corresponding message, and finishes.
-     *
-     * @param messageId  string resource for the user-facing message
-     * @param logMessage message to write to the error log
-     * @param throwable  cause of the error
-     */
-    private void finishWithError(int messageId, String logMessage, Throwable throwable) {
-        Log.e(TAG, logMessage, throwable);
-        activityUtils.showToastMessage(getString(messageId), Toast.LENGTH_SHORT);
-        finish();
     }
 
     /**
@@ -362,7 +347,7 @@ public final class FilesListActivity extends ActivityBase {
                 if (result.getData() != null) {
                     addFiles(result.getData());
                 } else {
-                    finishWithError(R.string.files_list_missing_file_data,
+                    finishWithError(TAG, R.string.files_list_missing_file_data,
                             "FilesListActivity add-files result was OK without data",
                             new IllegalStateException(
                                     "Activity result is 'OK', but data not provided"));
@@ -387,7 +372,7 @@ public final class FilesListActivity extends ActivityBase {
             } catch (IOException | DecryptionFailedException e) {
                 runOnUiThread(() -> {
                     progressDialog.dismiss();
-                    finishWithError(R.string.files_list_save_failed,
+                    finishWithError(TAG, R.string.files_list_save_failed,
                             "FilesListActivity failed to save files", e);
                 });
 
