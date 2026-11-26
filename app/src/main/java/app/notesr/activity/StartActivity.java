@@ -20,6 +20,9 @@ import app.notesr.activity.security.password.AppPasswordActivity;
 import app.notesr.util.ActivityUtils;
 import dagger.hilt.android.AndroidEntryPoint;
 
+/**
+ * Displays the initial setup screen for an application that has not been configured yet.
+ */
 @AndroidEntryPoint
 public class StartActivity extends ActivityBase {
 
@@ -58,6 +61,12 @@ public class StartActivity extends ActivityBase {
         placeBannerFront();
     }
 
+    /**
+     * Checks that the application is in a state that allows initial setup.
+     *
+     * @throws IllegalStateException if application configuration already exists or the
+     *                              application is blocked
+     */
     protected void ensureAccessible() {
         if (appSecurityService.isKeyExists()) {
             throw new IllegalStateException(
@@ -71,6 +80,9 @@ public class StartActivity extends ActivityBase {
         }
     }
 
+    /**
+     * Positions the front banner according to the device's screen height.
+     */
     protected void placeBannerFront() {
         ConstraintLayout layout = findViewById(R.id.bannerFrontLayout);
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
