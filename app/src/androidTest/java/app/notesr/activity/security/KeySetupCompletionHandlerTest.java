@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
@@ -77,9 +79,12 @@ public class KeySetupCompletionHandlerTest {
     }
 
     @Test
-    public void proceedFirstRunSetsSecretsAndStartsNotesListWhenFirstVersion() {
+    public void proceedFirstRunSetsSecretsAndStartsNotesListWhenFirstVersion()
+            throws CharacterCodingException {
         when(activity.getApplicationContext()).thenReturn(context);
         when(appSecurityService.isAuthConfigured()).thenReturn(false);
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+        when(appSecurityService.isAppBlocked()).thenReturn(false);
 
         byte[] passwordBytes = FAKER.internet.password().getBytes(StandardCharsets.UTF_8);
         byte[] passwordBytesCopy = passwordBytes.clone();
@@ -121,9 +126,12 @@ public class KeySetupCompletionHandlerTest {
     }
 
     @Test
-    public void proceedFirstRunStartsMigrationWhenSchemaOutdated() {
+    public void proceedFirstRunStartsMigrationWhenSchemaOutdated()
+            throws CharacterCodingException {
         when(activity.getApplicationContext()).thenReturn(context);
         when(appSecurityService.isAuthConfigured()).thenReturn(false);
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+        when(appSecurityService.isAppBlocked()).thenReturn(false);
 
         byte[] passwordBytes = FAKER.internet.password().getBytes(StandardCharsets.UTF_8);
         SecretCache.put(SetupKeyActivity.CACHE_KEY_PASSWORD, passwordBytes);
@@ -148,6 +156,60 @@ public class KeySetupCompletionHandlerTest {
                 MigrationActivity.class.getName(), startedIntent.getComponent().getClassName());
 
         verify(activity).finish();
+    }
+
+    @Test
+    public void proceedFirstRunThrowsWhenKeyExists() {
+        when(appSecurityService.isKeyExists()).thenReturn(true);
+
+        KeySetupCompletionHandler handler = new KeySetupCompletionHandler(activity,
+                appSecurityService, dialogFactory, getTestKey());
+        DataVersionManager dataVersionManager = mock(DataVersionManager.class);
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> handler.proceedFirstRun(dataVersionManager));
+
+        assertEquals("Key already exists, cannot proceed with first run setup",
+                exception.getMessage());
+        verify(appSecurityService, never()).setSecrets(any());
+        verify(activity, never()).startActivity(any());
+    }
+
+    @Test
+    public void proceedFirstRunThrowsWhenAppIsBlocked() {
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+        when(appSecurityService.isAppBlocked()).thenReturn(true);
+
+        KeySetupCompletionHandler handler = new KeySetupCompletionHandler(activity,
+                appSecurityService, dialogFactory, getTestKey());
+        DataVersionManager dataVersionManager = mock(DataVersionManager.class);
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> handler.proceedFirstRun(dataVersionManager));
+
+        assertEquals("App is blocked, cannot proceed with first run setup",
+                exception.getMessage());
+        verify(appSecurityService, never()).setSecrets(any());
+        verify(activity, never()).startActivity(any());
+    }
+
+    @Test
+    public void proceedFirstRunThrowsCharacterCodingExceptionForInvalidPassword() {
+        when(appSecurityService.isKeyExists()).thenReturn(false);
+        when(appSecurityService.isAppBlocked()).thenReturn(false);
+        when(appSecurityService.isAuthConfigured()).thenReturn(false);
+
+        SecretCache.put(SetupKeyActivity.CACHE_KEY_PASSWORD, new byte[]{(byte) 0xff});
+
+        KeySetupCompletionHandler handler = new KeySetupCompletionHandler(activity,
+                appSecurityService, dialogFactory, getTestKey());
+        DataVersionManager dataVersionManager = mock(DataVersionManager.class);
+
+        assertThrows(CharacterCodingException.class,
+                () -> handler.proceedFirstRun(dataVersionManager));
+        verify(appSecurityService, never()).setSecrets(any());
     }
 
     @Test

@@ -12,6 +12,7 @@ import static app.notesr.core.util.KeyUtils.getKeyHexFromKeyBytes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,8 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
+
+import java.nio.charset.CharacterCodingException;
 
 import javax.inject.Inject;
 
@@ -40,6 +43,8 @@ import lombok.Getter;
 @Getter
 @AndroidEntryPoint
 public final class SetupKeyActivity extends ActivityBase {
+
+    private static final String TAG = SetupKeyActivity.class.getSimpleName();
 
     public static final String CACHE_KEY_PASSWORD = "password";
     public static final String EXTRA_MODE = "mode";
@@ -169,7 +174,17 @@ public final class SetupKeyActivity extends ActivityBase {
 
     private void handleKeyCompletion(KeySetupCompletionHandler handler) {
         if (mode == KeySetupMode.FIRST_RUN) {
-            handler.proceedFirstRun(getDataVersionManager());
+            try {
+                handler.proceedFirstRun(getDataVersionManager());
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Error occurred while proceeding with first run setup", e);
+                activityUtils.showToastMessage(getString(R.string.key_setup_key_already_exists),
+                        Toast.LENGTH_SHORT);
+            } catch (CharacterCodingException e) {
+                Log.e(TAG, "Error occurred while converting password", e);
+                activityUtils.showToastMessage(getString(R.string.key_setup_error),
+                        Toast.LENGTH_SHORT);
+            }
         } else {
             handler.proceedRegeneration();
         }

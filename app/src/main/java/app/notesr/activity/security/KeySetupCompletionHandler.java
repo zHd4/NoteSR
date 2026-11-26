@@ -35,21 +35,28 @@ public class KeySetupCompletionHandler {
     private final DialogFactory dialogFactory;
     private final byte[] keyBytes;
 
-    public void proceedFirstRun(DataVersionManager dataVersionManager) {
-        try {
-            char[] password = getCurrentPassword();
-
-            CryptoSecrets newSecrets = new CryptoSecrets(keyBytes, password);
-            appSecurityService.setSecrets(newSecrets);
-
-            Context context = activity.getApplicationContext();
-            Intent nextIntent = getNextIntent(context, dataVersionManager);
-
-            activity.startActivity(nextIntent);
-            activity.finish();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public void proceedFirstRun(DataVersionManager dataVersionManager)
+            throws CharacterCodingException {
+        if (appSecurityService.isKeyExists()) {
+            throw new IllegalStateException(
+                    "Key already exists, cannot proceed with first run setup");
         }
+
+        if (appSecurityService.isAppBlocked()) {
+            throw new IllegalStateException(
+                    "App is blocked, cannot proceed with first run setup");
+        }
+
+        char[] password = getCurrentPassword();
+
+        CryptoSecrets newSecrets = new CryptoSecrets(keyBytes, password);
+        appSecurityService.setSecrets(newSecrets);
+
+        Context context = activity.getApplicationContext();
+        Intent nextIntent = getNextIntent(context, dataVersionManager);
+
+        activity.startActivity(nextIntent);
+        activity.finish();
     }
 
     private static Intent getNextIntent(Context context, DataVersionManager dataVersionManager) {
