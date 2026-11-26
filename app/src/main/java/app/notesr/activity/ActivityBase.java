@@ -24,8 +24,6 @@ import javax.inject.Inject;
 import app.notesr.service.security.AppSecurityService;
 import app.notesr.util.ActivityUtils;
 import dagger.hilt.android.AndroidEntryPoint;
-import lombok.AccessLevel;
-import lombok.Setter;
 
 /**
  * Base activity for screens that use the app's shared window and security behavior.
@@ -37,7 +35,6 @@ import lombok.Setter;
 public class ActivityBase extends AppCompatActivity {
 
     @Inject
-    @Setter(AccessLevel.MODULE) // For testing purposes only
     AppSecurityService appSecurityService;
 
     @Inject
