@@ -155,6 +155,9 @@ class AuthenticationHandlerTest {
         Intent recoveryIntent = mock(Intent.class);
         when(completionHelper.getNewActivityIntent(KeyRecoveryActivity.class))
                 .thenReturn(recoveryIntent);
+        when(recoveryIntent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK))
+                .thenReturn(recoveryIntent);
 
         handler.authenticate();
         passwordBuilder.append("wrong");
@@ -167,6 +170,8 @@ class AuthenticationHandlerTest {
 
         verify(appSecurityService).blockApp();
         verify(activityUtils).showToastMessage("Blocked!", Toast.LENGTH_SHORT);
+        verify(recoveryIntent).addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         verify(completionHelper).navigateNextActivity(recoveryIntent);
         verify(passwordHelper, times(3)).resetPassword();
     }
