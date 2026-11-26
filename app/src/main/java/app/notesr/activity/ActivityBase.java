@@ -27,6 +27,12 @@ import dagger.hilt.android.AndroidEntryPoint;
 import lombok.AccessLevel;
 import lombok.Setter;
 
+/**
+ * Base activity for screens that use the app's shared window and security behavior.
+ *
+ * <p>Disables decor fitting for system windows and protects the window from screenshots.
+ * Subclasses can apply system-bar insets and validate that authentication is configured.
+ */
 @AndroidEntryPoint
 public class ActivityBase extends AppCompatActivity {
 
@@ -55,6 +61,11 @@ public class ActivityBase extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Applies the system-bar insets as padding to a view.
+     *
+     * @param main view that should receive system-bar padding
+     */
     protected void applyInsets(View main) {
         ViewCompat.setOnApplyWindowInsetsListener(main, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars()).toPlatformInsets();
@@ -63,10 +74,18 @@ public class ActivityBase extends AppCompatActivity {
         });
     }
 
+    /**
+     * Checks whether app user is authenticated.
+     *
+     * @return {@code true} if authentication is configured
+     */
     protected boolean isSessionActive() {
         return appSecurityService.isAuthConfigured();
     }
 
+    /**
+     * Restarts the app user is not authenticated
+     */
     protected void validateSession() {
         if (!isSessionActive()) {
             restartApp();
@@ -76,6 +95,7 @@ public class ActivityBase extends AppCompatActivity {
     /**
      * Logs an activity error, displays the corresponding message, and finishes.
      *
+     * @param tag        tag to use for the error log
      * @param messageId  string resource for the user-facing message
      * @param logMessage message to write to the error log
      * @param throwable  cause of the error
@@ -90,6 +110,9 @@ public class ActivityBase extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Starts the main activity with a cleared task stack, then finishes this activity.
+     */
     void restartApp() {
         Intent mainActivityIntent = new Intent(this, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -98,6 +121,10 @@ public class ActivityBase extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Prevents this activity's window contents from appearing in screenshots or
+     * non-secure displays.
+     */
     void enableWindowProtection() {
         int windowFlag = WindowManager.LayoutParams.FLAG_SECURE;
         getWindow().setFlags(windowFlag, windowFlag);
